@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadDataState
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadXMLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.UpdateStatementBinder;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
@@ -52,11 +53,12 @@ public final class DMLStatementBindEngine {
     /**
      * Bind DML statement.
      *
+     * @param databaseType database type
      * @param statement to be bound DML statement
      * @return bound DML statement
      */
-    public DMLStatement bind(final DMLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
+    public DMLStatement bind(final DatabaseType databaseType, final DMLStatement statement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
         if (statement instanceof SelectStatement) {
             return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);
         }

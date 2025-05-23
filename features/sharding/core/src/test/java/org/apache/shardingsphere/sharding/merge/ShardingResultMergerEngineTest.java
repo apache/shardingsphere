@@ -63,7 +63,7 @@ class ShardingResultMergerEngineTest {
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()),
-                Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, new ConfigurationProperties(new Properties()), sqlStatementContext),
                 instanceOf(ShardingDQLResultMerger.class));
     }
@@ -71,7 +71,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(mock(ShowStatement.class));
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, mock(ShowStatement.class));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
@@ -89,13 +89,13 @@ class ShardingResultMergerEngineTest {
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new InsertStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), insertStatement, "foo_db");
+        return new InsertStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), insertStatement, "foo_db");
     }
     
     @Test
     void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(mock(FetchStatement.class));
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, mock(FetchStatement.class));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }
 }

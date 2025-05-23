@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +34,7 @@ class FunctionExpressionSegmentBinderTest {
     @Test
     void assertBindFunctionExpressionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "('%','abc','%')");
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "foo_db", new HintValueContext(), mock(SQLStatement.class));
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "foo_db", new HintValueContext(), mock(), mock());
         FunctionSegment actual = FunctionExpressionSegmentBinder.bind(functionSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
         assertThat(actual.getStartIndex(), is(functionSegment.getStartIndex()));
         assertThat(actual.getStopIndex(), is(functionSegment.getStopIndex()));

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.context.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 
 /**
@@ -25,8 +26,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateS
  */
 public final class CreateSchemaStatementContext extends CommonSQLStatementContext {
     
-    public CreateSchemaStatementContext(final CreateSchemaStatement sqlStatement) {
-        super(sqlStatement);
+    public CreateSchemaStatementContext(final DatabaseType databaseType, final CreateSchemaStatement sqlStatement) {
+        super(databaseType, sqlStatement);
     }
     
     @Override

@@ -47,7 +47,7 @@ class ShardingDeleteSupportedCheckerTest {
         sqlStatement.setTable(tableSegment);
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.containsShardingTable(new HashSet<>(Arrays.asList("user", "order", "order_item")))).thenReturn(true);
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(sqlStatement);
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(mock(), sqlStatement);
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingDeleteSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
 }

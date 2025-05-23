@@ -80,6 +80,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLBatchedStatementsExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Mock
     private ProxyDatabaseConnectionManager databaseConnectionManager;
     
@@ -120,7 +122,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))));
         when(insertStatement.getValues()).thenReturn(Collections.emptyList());
         when(insertStatement.getCommentSegments()).thenReturn(Collections.emptyList());
-        when(insertStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(insertStatement.getDatabaseType()).thenReturn(databaseType);
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(insertStatement);
         return result;
@@ -133,7 +135,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));

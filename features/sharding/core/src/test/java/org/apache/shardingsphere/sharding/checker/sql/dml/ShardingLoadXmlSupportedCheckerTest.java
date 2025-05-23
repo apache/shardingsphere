@@ -44,7 +44,7 @@ class ShardingLoadXmlSupportedCheckerTest {
     void assertCheckWithSingleTable() {
         LoadXMLStatement sqlStatement = mock(LoadXMLStatement.class);
         when(sqlStatement.getTableSegment()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(sqlStatement)));
+        assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(mock(), sqlStatement)));
     }
     
     @Test
@@ -52,6 +52,6 @@ class ShardingLoadXmlSupportedCheckerTest {
         LoadXMLStatement sqlStatement = mock(LoadXMLStatement.class);
         when(sqlStatement.getTableSegment()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(sqlStatement)));
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new LoadXMLStatementContext(mock(), sqlStatement)));
     }
 }

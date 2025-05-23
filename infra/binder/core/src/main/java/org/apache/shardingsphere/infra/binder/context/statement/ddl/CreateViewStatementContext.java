@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -45,12 +46,13 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     
     private final SelectStatementContext selectStatementContext;
     
-    public CreateViewStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final CreateViewStatement sqlStatement, final String currentDatabaseName) {
-        super(sqlStatement);
+    public CreateViewStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
+                                      final CreateViewStatement sqlStatement, final String currentDatabaseName) {
+        super(databaseType, sqlStatement);
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables());
-        selectStatementContext = new SelectStatementContext(metaData, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(metaData, databaseType, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
         selectStatementContext.setSubqueryType(SubqueryType.VIEW_DEFINITION);
     }
     

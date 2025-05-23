@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class GrantStatementContextTest {
     
@@ -37,7 +38,7 @@ class GrantStatementContextTest {
     void assertNewInstance() {
         GrantStatement sqlStatement = new SQL92GrantStatement();
         sqlStatement.getTables().addAll(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
-        GrantStatementContext actual = new GrantStatementContext(sqlStatement);
+        GrantStatementContext actual = new GrantStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));

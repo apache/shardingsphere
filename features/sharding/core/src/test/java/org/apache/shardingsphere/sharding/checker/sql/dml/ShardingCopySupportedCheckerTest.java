@@ -56,6 +56,6 @@ class ShardingCopySupportedCheckerTest {
     private CopyStatementContext createCopyStatementContext() {
         CopyStatement sqlStatement = mock(CopyStatement.class);
         when(sqlStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
-        return new CopyStatementContext(sqlStatement);
+        return new CopyStatementContext(mock(), sqlStatement);
     }
 }

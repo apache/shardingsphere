@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -48,6 +50,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ShardingAlterViewSupportedCheckerTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private ShardingRule rule;
     
@@ -63,7 +67,7 @@ class ShardingAlterViewSupportedCheckerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, Collections.emptyList(), sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, databaseType, Collections.emptyList(), sqlStatement, "foo_db");
         when(rule.isShardingTable("t_order")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
@@ -80,7 +84,7 @@ class ShardingAlterViewSupportedCheckerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, Collections.emptyList(), sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, databaseType, Collections.emptyList(), sqlStatement, "foo_db");
         when(rule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(EngagedViewException.class, () -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
@@ -90,7 +94,7 @@ class ShardingAlterViewSupportedCheckerTest {
         AlterViewStatement sqlStatement = mock(AlterViewStatement.class);
         when(sqlStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         when(sqlStatement.getRenameView()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new")))));
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(mock(ShardingSphereMetaData.class), Collections.emptyList(), sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(mock(ShardingSphereMetaData.class), databaseType, Collections.emptyList(), sqlStatement, "foo_db");
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
 }

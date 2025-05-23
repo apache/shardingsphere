@@ -83,14 +83,16 @@ class PostgreSQLAdminExecutorCreatorTest {
             + "       AND pg_catalog.pg_table_is_visible(c.oid)\n"
             + "ORDER BY 1,2;";
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(new PostgreSQLInsertStatement())), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(databaseType, new PostgreSQLInsertStatement())), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(new PostgreSQLShowStatement("client_encoding")));
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(databaseType, new PostgreSQLShowStatement("client_encoding")));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
     }
@@ -146,8 +148,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSetStatement() {
-        PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(setStatement);
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, new PostgreSQLSetStatement());
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
@@ -156,14 +157,14 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithResetStatement() {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
-                .create(new UnknownSQLStatementContext(new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
+                .create(new UnknownSQLStatementContext(databaseType, new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
     }
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new PostgreSQLDeleteStatement());
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new PostgreSQLDeleteStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

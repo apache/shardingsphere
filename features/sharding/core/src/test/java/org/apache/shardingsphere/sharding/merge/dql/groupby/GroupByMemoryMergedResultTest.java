@@ -127,7 +127,7 @@ class GroupByMemoryMergedResultTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private SelectStatementContext createSelectStatementContext(final ShardingSphereDatabase database) {
@@ -140,7 +140,7 @@ class GroupByMemoryMergedResultTest {
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(projectionsSegment);
         return new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     @Test
@@ -248,7 +248,7 @@ class GroupByMemoryMergedResultTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private SelectStatementContext createSelectStatementContextForCountGroupByDifferentOrderBy() {
@@ -261,6 +261,6 @@ class GroupByMemoryMergedResultTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
 }

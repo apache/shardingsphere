@@ -26,13 +26,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class DropTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
         DropTableStatement dropTableStatement = new SQL92DropTableStatement();
-        DropTableStatementContext actual = new DropTableStatementContext(dropTableStatement);
+        DropTableStatementContext actual = new DropTableStatementContext(mock(), dropTableStatement);
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
         assertThat(actual.getSqlStatement(), is(dropTableStatement));

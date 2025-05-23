@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
@@ -71,6 +72,8 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private final ShardingSphereMetaData metaData;
     
+    private final DatabaseType databaseType;
+    
     private final String currentDatabaseName;
     
     private final Map<String, Integer> insertColumnNamesAndIndexes;
@@ -94,9 +97,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private GeneratedKeyContext generatedKeyContext;
     
-    public InsertStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final InsertStatement sqlStatement, final String currentDatabaseName) {
-        super(sqlStatement);
+    public InsertStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
+                                  final InsertStatement sqlStatement, final String currentDatabaseName) {
+        super(databaseType, sqlStatement);
         this.metaData = metaData;
+        this.databaseType = databaseType;
         this.currentDatabaseName = currentDatabaseName;
         valueExpressions = getAllValueExpressions(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
@@ -141,7 +146,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
             return Optional.empty();
         }
         SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
-        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, params, insertSelectSegment.getSelect(), currentDatabaseName, Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, databaseType, params, insertSelectSegment.getSelect(), currentDatabaseName, Collections.emptyList());
         selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
         setCombineSelectSubqueryType(selectStatementContext);
         setProjectionSelectSubqueryType(selectStatementContext);
@@ -190,7 +195,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        String defaultSchema = new DatabaseTypeRegistry(getDatabaseType()).getDefaultSchemaName(databaseName);
+        String defaultSchema = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }
     

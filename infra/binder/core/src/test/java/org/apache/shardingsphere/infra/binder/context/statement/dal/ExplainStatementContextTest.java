@@ -36,7 +36,7 @@ class ExplainStatementContextTest {
         ExplainStatement explainStatement = mock(ExplainStatement.class);
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(explainStatement.getSqlStatement()).thenReturn(sqlStatement);
-        ExplainStatementContext actual = new ExplainStatementContext(mock(ShardingSphereMetaData.class), explainStatement, Collections.emptyList(), "foo_db");
+        ExplainStatementContext actual = new ExplainStatementContext(mock(ShardingSphereMetaData.class), mock(), explainStatement, Collections.emptyList(), "foo_db");
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getSqlStatement().getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatem
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -56,6 +58,8 @@ import static org.mockito.Mockito.when;
 
 class OrderByValueTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertCompareToForAsc() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SelectStatement selectStatement = new SQL92SelectStatement();
@@ -63,7 +67,7 @@ class OrderByValueTest {
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                createShardingSphereMetaData(), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(
@@ -96,8 +100,8 @@ class OrderByValueTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(),
-                Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                createShardingSphereMetaData(), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getTable("foo_tbl")).thenReturn(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
         QueryResult queryResult1 = createQueryResult("1", "2");
@@ -125,8 +129,8 @@ class OrderByValueTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(),
-                Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                createShardingSphereMetaData(), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
         OrderByValue orderByValue1 = new OrderByValue(queryResult1, Arrays.asList(

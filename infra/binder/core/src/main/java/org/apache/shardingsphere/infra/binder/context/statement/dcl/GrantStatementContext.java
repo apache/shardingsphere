@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
 
 /**
@@ -31,8 +32,8 @@ public final class GrantStatementContext extends CommonSQLStatementContext imple
     
     private final TablesContext tablesContext;
     
-    public GrantStatementContext(final GrantStatement sqlStatement) {
-        super(sqlStatement);
+    public GrantStatementContext(final DatabaseType databaseType, final GrantStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables());
     }
     

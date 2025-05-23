@@ -23,10 +23,12 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -39,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
@@ -60,6 +61,8 @@ import static org.mockito.Mockito.when;
 
 class SubquerySegmentBinderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertBind() {
         SelectStatement selectStatement = new SQL92SelectStatement();
@@ -71,7 +74,7 @@ class SubquerySegmentBinderTest {
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
         selectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, selectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
-        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), mock(SQLStatement.class));
+        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, selectStatement);
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
         boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(
                 new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_order_item"), new IdentifierValue("user_id"), TableSourceType.TEMPORARY_TABLE));

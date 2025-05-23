@@ -81,7 +81,7 @@ class AlterTableStatementContextTest {
         DropIndexDefinitionSegment dropIndexDefinitionSegment = mock(DropIndexDefinitionSegment.class);
         when(dropIndexDefinitionSegment.getIndexSegment()).thenReturn(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("drop_index"))));
         alterTableStatement.getDropIndexDefinitions().add(dropIndexDefinitionSegment);
-        AlterTableStatementContext actual = new AlterTableStatementContext(alterTableStatement);
+        AlterTableStatementContext actual = new AlterTableStatementContext(mock(), alterTableStatement);
         assertThat(actual.getSqlStatement(), is(alterTableStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("foo_tbl", "rename_foo_tbl", "foo_tbl", "foo_tbl", "foo_tbl")));

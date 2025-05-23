@@ -45,7 +45,7 @@ class ShowColumnsStatementContextTest {
         when(sqlStatement.getTable()).thenReturn(new SimpleTableSegment(tableNameSegment));
         FromDatabaseSegment fromDatabase = new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db")));
         when(sqlStatement.getFromDatabase()).thenReturn(Optional.of(fromDatabase));
-        ShowColumnsStatementContext actual = new ShowColumnsStatementContext(sqlStatement);
+        ShowColumnsStatementContext actual = new ShowColumnsStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("foo_tbl")));

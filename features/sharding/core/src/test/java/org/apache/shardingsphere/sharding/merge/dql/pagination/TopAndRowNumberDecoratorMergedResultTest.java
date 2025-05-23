@@ -45,6 +45,8 @@ import static org.mockito.Mockito.when;
 
 class TopAndRowNumberDecoratorMergedResultTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
     @Test
     void assertNextForSkipAll() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -53,8 +55,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Long.MAX_VALUE, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(
                 Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mockDatabase(), mock(ConnectionContext.class));
         assertFalse(actual.next());
@@ -62,14 +64,14 @@ class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextWithoutOffsetWithRowCount() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, null, new NumberLiteralLimitValueSegment(0, 0, 5L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(
                 Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mockDatabase(), mock(ConnectionContext.class));
         for (int i = 0; i < 5; i++) {
@@ -86,8 +88,8 @@ class TopAndRowNumberDecoratorMergedResultTest {
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(
                 Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mockDatabase(), mock(ConnectionContext.class));
         for (int i = 0; i < 7; i++) {
@@ -98,14 +100,14 @@ class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextWithOffsetBoundOpenedFalse() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, false), new NumberLiteralLimitValueSegment(0, 0, 4L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(
                 Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mockDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());
@@ -115,14 +117,14 @@ class TopAndRowNumberDecoratorMergedResultTest {
     
     @Test
     void assertNextWithOffsetBoundOpenedTrue() throws SQLException {
-        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
+        final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, true), new NumberLiteralLimitValueSegment(0, 0, 4L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), sqlStatement, "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(
                 Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, mockDatabase(), mock(ConnectionContext.class));
         assertTrue(actual.next());

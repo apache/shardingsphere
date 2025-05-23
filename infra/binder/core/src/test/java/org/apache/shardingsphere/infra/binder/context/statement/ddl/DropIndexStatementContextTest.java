@@ -42,7 +42,7 @@ class DropIndexStatementContextTest {
                 new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx"))),
                 new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("bar_idx"))));
         when(dropIndexStatement.getIndexes()).thenReturn(indexes);
-        DropIndexStatementContext actual = new DropIndexStatementContext(dropIndexStatement);
+        DropIndexStatementContext actual = new DropIndexStatementContext(mock(), dropIndexStatement);
         assertThat(actual.getSqlStatement(), is(dropIndexStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_idx", "bar_idx")));

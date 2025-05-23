@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
@@ -36,8 +37,8 @@ public final class RenameTableStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public RenameTableStatementContext(final RenameTableStatement sqlStatement) {
-        super(sqlStatement);
+    public RenameTableStatementContext(final DatabaseType databaseType, final RenameTableStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(getTables(sqlStatement));
     }
     

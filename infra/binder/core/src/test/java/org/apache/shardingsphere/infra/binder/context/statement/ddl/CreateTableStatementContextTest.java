@@ -45,7 +45,7 @@ class CreateTableStatementContextTest {
     @Test
     void assertNewInstance() {
         CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
-        CreateTableStatementContext actual = new CreateTableStatementContext(sqlStatement);
+        CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         sqlStatement.setTable(table);
         assertThat(actual, instanceOf(ConstraintAvailable.class));

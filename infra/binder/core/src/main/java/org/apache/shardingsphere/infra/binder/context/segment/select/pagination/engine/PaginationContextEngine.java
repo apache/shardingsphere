@@ -68,7 +68,7 @@ public final class PaginationContextEngine {
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
-        if (!expressions.isEmpty() && new DatabaseTypeRegistry(selectStatement.getDatabaseType()).getDialectDatabaseMetaData().getPaginationOption().isContainsRowNumber()) {
+        if (!expressions.isEmpty() && new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption().isContainsRowNumber()) {
             return new RowNumberPaginationContextEngine(databaseType).createPaginationContext(expressions, projectionsContext, params);
         }
         return new PaginationContext(null, null, params);

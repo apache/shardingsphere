@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
 
 /**
@@ -31,8 +32,8 @@ public final class FlushStatementContext extends CommonSQLStatementContext imple
     
     private final TablesContext tablesContext;
     
-    public FlushStatementContext(final FlushStatement sqlStatement) {
-        super(sqlStatement);
+    public FlushStatementContext(final DatabaseType databaseType, final FlushStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables());
     }
     

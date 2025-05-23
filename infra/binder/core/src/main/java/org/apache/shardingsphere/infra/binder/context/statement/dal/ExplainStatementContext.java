@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -43,10 +44,11 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     
     private final SQLStatementContext sqlStatementContext;
     
-    public ExplainStatementContext(final ShardingSphereMetaData metaData, final ExplainStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        super(sqlStatement);
+    public ExplainStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final ExplainStatement sqlStatement, final List<Object> params,
+                                   final String currentDatabaseName) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
-        sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, sqlStatement.getSqlStatement(), params, currentDatabaseName);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getSqlStatement(), params, currentDatabaseName);
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {

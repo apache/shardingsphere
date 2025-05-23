@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.orderby.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -36,7 +38,10 @@ import java.util.List;
 /**
  * Order by context engine.
  */
+@RequiredArgsConstructor
 public final class OrderByContextEngine {
+    
+    private final DatabaseType databaseType;
     
     /**
      * Create order by context.
@@ -65,7 +70,7 @@ public final class OrderByContextEngine {
         if (groupByContext.getItems().isEmpty() && selectStatement.getProjections().isDistinctRow()) {
             int index = 0;
             List<OrderByItem> orderByItems = new LinkedList<>();
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(selectStatement.getDatabaseType()).getDialectDatabaseMetaData();
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
             for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
                     ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;

@@ -58,6 +58,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStat
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -121,160 +122,165 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param metaData metadata
+     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param params SQL parameters
      * @param currentDatabaseName current database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
+                                                  final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, (DMLStatement) sqlStatement, params, currentDatabaseName);
+            return getDMLStatementContext(metaData, databaseType, (DMLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, (DDLStatement) sqlStatement, params, currentDatabaseName);
+            return getDDLStatementContext(metaData, databaseType, (DDLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLStatementContext((DCLStatement) sqlStatement);
+            return getDCLStatementContext(databaseType, (DCLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALStatementContext(metaData, (DALStatement) sqlStatement, params, currentDatabaseName);
+            return getDALStatementContext(metaData, databaseType, (DALStatement) sqlStatement, params, currentDatabaseName);
         }
-        return new UnknownSQLStatementContext(sqlStatement);
+        return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
+                                                              final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
+            return new SelectStatementContext(metaData, databaseType, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement);
+            return new UpdateStatementContext(databaseType, (UpdateStatement) sqlStatement);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement);
+            return new DeleteStatementContext(databaseType, (DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, currentDatabaseName);
+            return new InsertStatementContext(metaData, databaseType, params, (InsertStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CopyStatement) {
-            return new CopyStatementContext((CopyStatement) sqlStatement);
+            return new CopyStatementContext(databaseType, (CopyStatement) sqlStatement);
         }
         if (sqlStatement instanceof LoadDataStatement) {
-            return new LoadDataStatementContext((LoadDataStatement) sqlStatement);
+            return new LoadDataStatementContext(databaseType, (LoadDataStatement) sqlStatement);
         }
         if (sqlStatement instanceof LoadXMLStatement) {
-            return new LoadXMLStatementContext((LoadXMLStatement) sqlStatement);
+            return new LoadXMLStatementContext(databaseType, (LoadXMLStatement) sqlStatement);
         }
         if (sqlStatement instanceof CallStatement || sqlStatement instanceof DoStatement || sqlStatement instanceof MergeStatement) {
-            return new UnknownSQLStatementContext(sqlStatement);
+            return new UnknownSQLStatementContext(databaseType, sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
+                                                              final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
-            return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
+            return new CreateSchemaStatementContext(databaseType, (CreateSchemaStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateTableStatement) {
-            return new CreateTableStatementContext((CreateTableStatement) sqlStatement);
+            return new CreateTableStatementContext(databaseType, (CreateTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof AlterTableStatement) {
-            return new AlterTableStatementContext((AlterTableStatement) sqlStatement);
+            return new AlterTableStatementContext(databaseType, (AlterTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof RenameTableStatement) {
-            return new RenameTableStatementContext((RenameTableStatement) sqlStatement);
+            return new RenameTableStatementContext(databaseType, (RenameTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropTableStatement) {
-            return new DropTableStatementContext((DropTableStatement) sqlStatement);
+            return new DropTableStatementContext(databaseType, (DropTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateIndexStatement) {
-            return new CreateIndexStatementContext((CreateIndexStatement) sqlStatement);
+            return new CreateIndexStatementContext(databaseType, (CreateIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AlterIndexStatement) {
-            return new AlterIndexStatementContext((AlterIndexStatement) sqlStatement);
+            return new AlterIndexStatementContext(databaseType, (AlterIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof DropIndexStatement) {
-            return new DropIndexStatementContext((DropIndexStatement) sqlStatement);
+            return new DropIndexStatementContext(databaseType, (DropIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof TruncateStatement) {
-            return new TruncateStatementContext((TruncateStatement) sqlStatement);
+            return new TruncateStatementContext(databaseType, (TruncateStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateFunctionStatement) {
-            return new CreateFunctionStatementContext((CreateFunctionStatement) sqlStatement);
+            return new CreateFunctionStatementContext(databaseType, (CreateFunctionStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateProcedureStatement) {
-            return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
+            return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return new CreateViewStatementContext(metaData, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
+            return new CreateViewStatementContext(metaData, databaseType, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterViewStatement) {
-            return new AlterViewStatementContext(metaData, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
+            return new AlterViewStatementContext(metaData, databaseType, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropViewStatement) {
-            return new DropViewStatementContext((DropViewStatement) sqlStatement);
+            return new DropViewStatementContext(databaseType, (DropViewStatement) sqlStatement);
         }
         if (sqlStatement instanceof PrepareStatement) {
-            return new PrepareStatementContext((PrepareStatement) sqlStatement);
+            return new PrepareStatementContext(databaseType, (PrepareStatement) sqlStatement);
         }
         if (sqlStatement instanceof CommentStatement) {
-            return new CommentStatementContext((CommentStatement) sqlStatement);
+            return new CommentStatementContext(databaseType, (CommentStatement) sqlStatement);
         }
         if (sqlStatement instanceof CursorStatement) {
-            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, currentDatabaseName);
+            return new CursorStatementContext(metaData, databaseType, params, (CursorStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
-            return new CloseStatementContext((CloseStatement) sqlStatement);
+            return new CloseStatementContext(databaseType, (CloseStatement) sqlStatement);
         }
         if (sqlStatement instanceof MoveStatement) {
-            return new MoveStatementContext((MoveStatement) sqlStatement);
+            return new MoveStatementContext(databaseType, (MoveStatement) sqlStatement);
         }
         if (sqlStatement instanceof FetchStatement) {
-            return new FetchStatementContext((FetchStatement) sqlStatement);
+            return new FetchStatementContext(databaseType, (FetchStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext(sqlStatement);
+        return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
     
-    private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
+    private static SQLStatementContext getDCLStatementContext(final DatabaseType databaseType, final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement) {
-            return new GrantStatementContext((GrantStatement) sqlStatement);
+            return new GrantStatementContext(databaseType, (GrantStatement) sqlStatement);
         }
         if (sqlStatement instanceof RevokeStatement) {
-            return new RevokeStatementContext((RevokeStatement) sqlStatement);
+            return new RevokeStatementContext(databaseType, (RevokeStatement) sqlStatement);
         }
         if (sqlStatement instanceof DenyUserStatement) {
-            return new DenyUserStatementContext((DenyUserStatement) sqlStatement);
+            return new DenyUserStatementContext(databaseType, (DenyUserStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext(sqlStatement);
+        return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
     
-    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
+                                                              final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
-            return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, params, currentDatabaseName);
+            return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableStatementContext((ShowCreateTableStatement) sqlStatement);
+            return new ShowCreateTableStatementContext(databaseType, (ShowCreateTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowColumnsStatement) {
-            return new ShowColumnsStatementContext((ShowColumnsStatement) sqlStatement);
+            return new ShowColumnsStatementContext(databaseType, (ShowColumnsStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowTablesStatement) {
-            return new ShowTablesStatementContext((ShowTablesStatement) sqlStatement);
+            return new ShowTablesStatementContext(databaseType, (ShowTablesStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusStatementContext((ShowTableStatusStatement) sqlStatement);
+            return new ShowTableStatusStatementContext(databaseType, (ShowTableStatusStatement) sqlStatement);
         }
         if (sqlStatement instanceof ShowIndexStatement) {
-            return new ShowIndexStatementContext((ShowIndexStatement) sqlStatement);
+            return new ShowIndexStatementContext(databaseType, (ShowIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new AnalyzeTableStatementContext((AnalyzeTableStatement) sqlStatement);
+            return new AnalyzeTableStatementContext(databaseType, (AnalyzeTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof FlushStatement) {
-            return new FlushStatementContext((FlushStatement) sqlStatement);
+            return new FlushStatementContext(databaseType, (FlushStatement) sqlStatement);
         }
         if (sqlStatement instanceof OptimizeTableStatement) {
-            return new OptimizeTableStatementContext((OptimizeTableStatement) sqlStatement);
+            return new OptimizeTableStatementContext(databaseType, (OptimizeTableStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext(sqlStatement);
+        return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
 }

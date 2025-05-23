@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -38,8 +39,8 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     
     private final TablesContext tablesContext;
     
-    public DropIndexStatementContext(final DropIndexStatement sqlStatement) {
-        super(sqlStatement);
+    public DropIndexStatementContext(final DatabaseType databaseType, final DropIndexStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
         tablesContext = new TablesContext(simpleTableSegment);
     }

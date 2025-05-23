@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
@@ -42,8 +43,8 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public CreateTableStatementContext(final CreateTableStatement sqlStatement) {
-        super(sqlStatement);
+    public CreateTableStatementContext(final DatabaseType databaseType, final CreateTableStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(getTables(sqlStatement));
     }
     

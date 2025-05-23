@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -51,8 +52,8 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
-    public UpdateStatementContext(final UpdateStatement sqlStatement) {
-        super(sqlStatement);
+    public UpdateStatementContext(final DatabaseType databaseType, final UpdateStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);

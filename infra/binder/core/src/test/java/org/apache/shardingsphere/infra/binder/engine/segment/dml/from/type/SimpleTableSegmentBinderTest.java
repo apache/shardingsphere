@@ -52,10 +52,8 @@ class SimpleTableSegmentBinderTest {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_not_exists")));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        assertThrows(TableNotFoundException.class,
-                () -> SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts));
+        assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(
+                simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts));
     }
     
     private ShardingSphereMetaData createMetaData() {

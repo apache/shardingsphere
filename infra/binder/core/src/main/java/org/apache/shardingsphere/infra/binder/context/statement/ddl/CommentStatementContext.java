@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
 
 import java.util.Collections;
@@ -33,8 +34,8 @@ public final class CommentStatementContext extends CommonSQLStatementContext imp
     
     private final TablesContext tablesContext;
     
-    public CommentStatementContext(final CommentStatement sqlStatement) {
-        super(sqlStatement);
+    public CommentStatementContext(final DatabaseType databaseType, final CommentStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(null == sqlStatement.getTable() ? Collections.emptyList() : Collections.singletonList(sqlStatement.getTable()));
     }
     
