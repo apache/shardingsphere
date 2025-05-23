@@ -119,7 +119,7 @@ public final class PipelineJobDataSourcePreparer {
                 List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager);
                 for (String sql : createTargetTableSQL) {
                     ShardingSphereMetaData metaData = ((ShardingSphereConnection) targetConnection).getContextManager().getMetaDataContexts().getMetaData();
-                    Optional<String> decoratedSQL = decorateTargetTableSQL(each, param.getSqlParserEngine(), param.getParserDatabaseType(), metaData, param.getTargetDatabaseName(), sql);
+                    Optional<String> decoratedSQL = decorateTargetTableSQL(each, param.getSqlParserEngine(), databaseType, metaData, param.getTargetDatabaseName(), sql);
                     if (decoratedSQL.isPresent()) {
                         executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(decoratedSQL.get()));
                     }
