@@ -279,6 +279,6 @@ class ProxySQLExecutorTest {
         when(sqlStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new InsertStatementContext(createShardingSphereMetaData(database), databaseType, Collections.emptyList(), sqlStatement, "foo_db");
+        return new InsertStatementContext(databaseType, sqlStatement, Collections.emptyList(), createShardingSphereMetaData(database), "foo_db");
     }
 }

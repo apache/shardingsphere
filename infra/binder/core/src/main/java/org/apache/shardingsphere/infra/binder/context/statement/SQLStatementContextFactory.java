@@ -157,7 +157,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext(databaseType, (DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(metaData, databaseType, params, (InsertStatement) sqlStatement, currentDatabaseName);
+            return new InsertStatementContext(databaseType, (InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
         }
         if (sqlStatement instanceof CopyStatement) {
             return new CopyStatementContext(databaseType, (CopyStatement) sqlStatement);

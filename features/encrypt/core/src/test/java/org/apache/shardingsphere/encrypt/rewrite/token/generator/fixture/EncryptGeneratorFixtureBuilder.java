@@ -117,7 +117,7 @@ public final class EncryptGeneratorFixtureBuilder {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, DATABASE_TYPE, params, createInsertStatement(), "foo_db");
+        return new InsertStatementContext(DATABASE_TYPE, createInsertStatement(), params, metaData, "foo_db");
     }
     
     private static InsertStatement createInsertStatement() {
@@ -222,6 +222,6 @@ public final class EncryptGeneratorFixtureBuilder {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, DATABASE_TYPE, params, createInsertSelectStatement(containsInsertColumns), "foo_db");
+        return new InsertStatementContext(DATABASE_TYPE, createInsertSelectStatement(containsInsertColumns), params, metaData, "foo_db");
     }
 }
