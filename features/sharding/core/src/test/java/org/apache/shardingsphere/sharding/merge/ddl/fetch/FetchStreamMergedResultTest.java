@@ -102,7 +102,6 @@ class FetchStreamMergedResultTest {
         if (containsAllDirectionType) {
             when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL)));
         }
-        when(result.getDatabaseType()).thenReturn(DATABASE_TYPE);
         return result;
     }
     

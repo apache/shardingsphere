@@ -126,7 +126,6 @@ class ShardingInsertSupportedCheckerTest {
     
     private InsertStatement createInsertStatement() {
         InsertStatement result = mock(InsertStatement.class);
-        when(result.getDatabaseType()).thenReturn(databaseType);
         when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user")))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);
