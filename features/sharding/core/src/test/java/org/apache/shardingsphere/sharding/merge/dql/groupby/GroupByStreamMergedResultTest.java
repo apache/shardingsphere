@@ -176,7 +176,7 @@ class GroupByStreamMergedResultTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
         return new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereDatabase createDatabase() {

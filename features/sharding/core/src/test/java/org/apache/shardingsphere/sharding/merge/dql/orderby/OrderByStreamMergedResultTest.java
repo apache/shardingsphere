@@ -76,7 +76,7 @@ class OrderByStreamMergedResultTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {

@@ -58,6 +58,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadDataStat
 import org.apache.shardingsphere.infra.binder.context.statement.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -121,17 +122,19 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param metaData metadata
+     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param params SQL parameters
      * @param currentDatabaseName current database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
+                                                  final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, (DMLStatement) sqlStatement, params, currentDatabaseName);
+            return getDMLStatementContext(metaData, databaseType, (DMLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, (DDLStatement) sqlStatement, params, currentDatabaseName);
+            return getDDLStatementContext(metaData, databaseType, (DDLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLStatementContext((DCLStatement) sqlStatement);
@@ -142,9 +145,10 @@ public final class SQLStatementContextFactory {
         return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
+                                                              final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
+            return new SelectStatementContext(metaData, databaseType, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext((UpdateStatement) sqlStatement);
@@ -153,7 +157,7 @@ public final class SQLStatementContextFactory {
             return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(metaData, params, (InsertStatement) sqlStatement, currentDatabaseName);
+            return new InsertStatementContext(metaData, databaseType, params, (InsertStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CopyStatement) {
             return new CopyStatementContext((CopyStatement) sqlStatement);
@@ -170,7 +174,8 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
+                                                              final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
@@ -205,10 +210,10 @@ public final class SQLStatementContextFactory {
             return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return new CreateViewStatementContext(metaData, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
+            return new CreateViewStatementContext(metaData, databaseType, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterViewStatement) {
-            return new AlterViewStatementContext(metaData, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
+            return new AlterViewStatementContext(metaData, databaseType, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropViewStatement) {
             return new DropViewStatementContext((DropViewStatement) sqlStatement);
@@ -220,7 +225,7 @@ public final class SQLStatementContextFactory {
             return new CommentStatementContext((CommentStatement) sqlStatement);
         }
         if (sqlStatement instanceof CursorStatement) {
-            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, currentDatabaseName);
+            return new CursorStatementContext(metaData, databaseType, params, (CursorStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);

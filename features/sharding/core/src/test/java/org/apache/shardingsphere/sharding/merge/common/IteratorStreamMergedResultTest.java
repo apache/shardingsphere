@@ -54,13 +54,15 @@ import static org.mockito.Mockito.when;
 
 class IteratorStreamMergedResultTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQL92");
+    
     private SelectStatementContext selectStatementContext;
     
     @BeforeEach
     void setUp() {
         SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
@@ -72,7 +74,7 @@ class IteratorStreamMergedResultTest {
     @Test
     void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
@@ -85,7 +87,7 @@ class IteratorStreamMergedResultTest {
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
         }
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
@@ -100,7 +102,7 @@ class IteratorStreamMergedResultTest {
     void assertNextForNotEmpty(final String name, final int index) throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(index).next()).thenReturn(true, false);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));
@@ -115,7 +117,7 @@ class IteratorStreamMergedResultTest {
         when(queryResults.get(1).next()).thenReturn(true, false);
         when(queryResults.get(3).next()).thenReturn(true, false);
         when(queryResults.get(5).next()).thenReturn(true, false);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, database, mock(ConnectionContext.class));

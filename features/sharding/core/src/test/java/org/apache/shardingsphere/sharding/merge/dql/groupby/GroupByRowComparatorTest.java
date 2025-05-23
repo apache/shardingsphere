@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
@@ -48,6 +50,8 @@ import static org.mockito.Mockito.when;
 
 class GroupByRowComparatorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private final List<Boolean> caseSensitives = Arrays.asList(false, false, false);
     
     @Test
@@ -62,7 +66,7 @@ class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), databaseType, Collections.emptyList(),
                 selectStatement, "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -82,7 +86,7 @@ class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), databaseType, Collections.emptyList(),
                 selectStatement, "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -102,7 +106,7 @@ class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST),
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), databaseType, Collections.emptyList(),
                 selectStatement, "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -120,7 +124,7 @@ class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), databaseType, Collections.emptyList(),
                 selectStatement, "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
@@ -139,7 +143,7 @@ class GroupByRowComparatorTest {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                createShardingSphereMetaData(database), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));
         MemoryQueryResultRow o2 = new MemoryQueryResultRow(mockQueryResult("3", "4"));
@@ -160,7 +164,7 @@ class GroupByRowComparatorTest {
                 new IndexOrderByItemSegment(0, 0, 2, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(),
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), databaseType, Collections.emptyList(),
                 selectStatement, "foo_db", Collections.emptyList());
         GroupByRowComparator groupByRowComparator = new GroupByRowComparator(selectStatementContext, caseSensitives);
         MemoryQueryResultRow o1 = new MemoryQueryResultRow(mockQueryResult("1", "2"));

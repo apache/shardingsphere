@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine
 import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,8 +56,20 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
+        return bind(sqlStatement.getDatabaseType(), sqlStatement, params);
+    }
+    
+    /**
+     * Bind SQL statement.
+     *
+     * @param databaseType database type
+     * @param sqlStatement SQL statement
+     * @param params parameters
+     * @return SQL statement context
+     */
+    public SQLStatementContext bind(final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params) {
         SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(sqlStatement) : sqlStatement;
-        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, params, currentDatabaseName);
+        return SQLStatementContextFactory.newInstance(metaData, databaseType, boundSQLStatement, params, currentDatabaseName);
     }
     
     private boolean isNeedBind() {
