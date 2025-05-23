@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.sql.operator.logical;
+package org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical;
 
 import lombok.Getter;
 import org.apache.calcite.rel.RelNode;

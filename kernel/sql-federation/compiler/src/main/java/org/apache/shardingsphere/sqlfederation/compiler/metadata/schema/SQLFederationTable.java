@@ -49,7 +49,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementor;
 import org.apache.shardingsphere.sqlfederation.compiler.implementor.ScanImplementorContext;
 import org.apache.shardingsphere.sqlfederation.compiler.implementor.enumerator.EmptyDataRowEnumerator;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeBuilder;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -62,7 +62,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class SQLFederationTable extends AbstractTable implements ModifiableTable, TranslatableTable {
     
-    private static final TransmittableThreadLocal<ScanImplementor> SCAN_EXECUTOR_HOLDER = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<ScanImplementor> SCAN_IMPLEMENTOR_HOLDER = new TransmittableThreadLocal<>();
     
     private final ShardingSphereTable table;
     
@@ -101,11 +101,12 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
      * @param paramIndexes param indexes
      * @return enumerable result
      */
+    @SuppressWarnings("unused")
     public Enumerable<Object> implement(final DataContext root, final String sql, final int[] paramIndexes) {
-        if (null == SCAN_EXECUTOR_HOLDER.get()) {
+        if (null == SCAN_IMPLEMENTOR_HOLDER.get()) {
             return createEmptyEnumerable();
         }
-        return SCAN_EXECUTOR_HOLDER.get().implement(table, new ScanImplementorContext(root, sql, paramIndexes));
+        return SCAN_IMPLEMENTOR_HOLDER.get().implement(table, new ScanImplementorContext(root, sql, paramIndexes));
     }
     
     private AbstractEnumerable<Object> createEmptyEnumerable() {
@@ -136,18 +137,18 @@ public final class SQLFederationTable extends AbstractTable implements Modifiabl
     }
     
     /**
-     * Set scan executor.
+     * Set scan implementor.
      *
-     * @param scanImplementor scan executor
+     * @param scanImplementor scan implementor
      */
-    public void setScanExecutor(final ScanImplementor scanImplementor) {
-        SCAN_EXECUTOR_HOLDER.set(scanImplementor);
+    public void setScanImplementor(final ScanImplementor scanImplementor) {
+        SCAN_IMPLEMENTOR_HOLDER.set(scanImplementor);
     }
     
     /**
-     * Clear scan executor.
+     * Clear scan implementor.
      */
-    public void clearScanExecutor() {
-        SCAN_EXECUTOR_HOLDER.remove();
+    public void clearScanImplementor() {
+        SCAN_IMPLEMENTOR_HOLDER.remove();
     }
 }

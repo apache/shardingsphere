@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

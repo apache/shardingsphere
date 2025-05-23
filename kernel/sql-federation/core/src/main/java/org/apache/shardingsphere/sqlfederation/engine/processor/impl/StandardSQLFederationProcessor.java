@@ -84,7 +84,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         }
         executorContext =
                 new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
-        EnumerableScanImplementor scanExecutor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
+        EnumerableScanImplementor scanImplementor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()
@@ -92,7 +92,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         for (SimpleTableSegment each : simpleTables) {
             Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, sqlStatementContext.getDatabaseType(), federationContext.getQueryContext().getSql());
             if (table instanceof SQLFederationTable) {
-                ((SQLFederationTable) table).setScanExecutor(scanExecutor);
+                ((SQLFederationTable) table).setScanImplementor(scanImplementor);
             }
         }
     }
@@ -126,7 +126,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         for (SimpleTableSegment each : simpleTables) {
             Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, queryContext.getSqlStatementContext().getDatabaseType(), queryContext.getSql());
             if (table instanceof SQLFederationTable) {
-                ((SQLFederationTable) table).clearScanExecutor();
+                ((SQLFederationTable) table).clearScanImplementor();
             }
         }
     }

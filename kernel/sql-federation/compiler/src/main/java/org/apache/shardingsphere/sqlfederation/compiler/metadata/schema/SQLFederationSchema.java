@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.schema.Table;
@@ -29,7 +29,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeBuilder;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 
 import java.util.Collections;
 import java.util.Map;
@@ -44,16 +45,16 @@ public final class SQLFederationSchema extends AbstractSchema {
     
     private final Map<String, Table> tableMap;
     
-    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
+    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType) {
         name = schemaName;
-        tableMap = createTableMap(schema, protocolType, javaTypeFactory);
+        tableMap = createTableMap(schema, protocolType);
     }
     
-    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
+    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType) {
         Map<String, Table> result = new CaseInsensitiveMap<>(schema.getAllTables().size(), 1F);
         for (ShardingSphereTable each : schema.getAllTables()) {
             if (schema.containsView(each.getName())) {
-                result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
+                result.put(each.getName(), getViewTable(schema, each, protocolType));
             } else {
                 result.put(each.getName(), new SQLFederationTable(each, protocolType));
             }
@@ -61,9 +62,9 @@ public final class SQLFederationSchema extends AbstractSchema {
         return result;
     }
     
-    private ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
-        RelDataType relDataType = SQLFederationDataTypeBuilder.build(table, protocolType, javaTypeFactory);
+    private ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType) {
+        RelDataType relDataType = SQLFederationDataTypeBuilder.build(table, protocolType, SQLFederationDataTypeFactory.getInstance());
         ShardingSphereView view = schema.getView(table.getName());
-        return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
+        return new ViewTable(new JavaTypeFactoryImpl().getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
     }
 }

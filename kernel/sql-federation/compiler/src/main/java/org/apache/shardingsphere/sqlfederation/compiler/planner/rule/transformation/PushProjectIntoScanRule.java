@@ -24,7 +24,7 @@ import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.logical.LogicalScan;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
 import java.util.Arrays;
