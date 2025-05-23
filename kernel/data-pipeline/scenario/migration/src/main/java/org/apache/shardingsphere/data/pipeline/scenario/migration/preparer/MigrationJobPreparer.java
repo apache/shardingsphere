@@ -145,7 +145,8 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         }
         if (null == jobItemContext.getInitProgress()) {
             PipelineDataSource targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-            new PipelineDataSourceCheckEngine(jobItemContext.getJobConfig().getTargetDatabaseType()).checkTargetDataSources(Collections.singleton(targetDataSource), jobItemContext.getTaskConfig().getImporterConfig());
+            new PipelineDataSourceCheckEngine(jobItemContext.getJobConfig().getTargetDatabaseType()).checkTargetDataSources(Collections.singleton(targetDataSource),
+                    jobItemContext.getTaskConfig().getImporterConfig());
         }
     }
     
