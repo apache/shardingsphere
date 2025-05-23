@@ -126,7 +126,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         subqueryContexts = createSubqueryContexts(metaData, databaseType, params, currentDatabaseName, tableSegments);
         tablesContext = new TablesContext(tableSegments, subqueryContexts);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
-        orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
+        orderByContext = new OrderByContextEngine(databaseType).createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(databaseType).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine(databaseType).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
         containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), currentDatabaseName);

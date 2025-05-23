@@ -110,7 +110,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         List<String> insertColumnNames = getInsertColumnNames();
-        ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
+        ShardingSphereSchema schema = getSchema(metaData, databaseType, currentDatabaseName);
         columnNames = containsInsertColumns()
                 ? insertColumnNames
                 : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
@@ -190,12 +190,12 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         return tableExtractor.getRewriteTables();
     }
     
-    private ShardingSphereSchema getSchema(final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+    private ShardingSphereSchema getSchema(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final String currentDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(currentDatabaseName);
         ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        String defaultSchema = new DatabaseTypeRegistry(getDatabaseType()).getDefaultSchemaName(databaseName);
+        String defaultSchema = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
     }
     
@@ -320,7 +320,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
         insertSelectContext = getInsertSelectContext(metaData, databaseType, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
-        ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
+        ShardingSphereSchema schema = getSchema(metaData, databaseType, currentDatabaseName);
         generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
     
