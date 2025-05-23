@@ -29,10 +29,9 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationDatabase;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.SQLFederationFunctionRegister;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -62,11 +61,11 @@ public final class CalciteSchemaBuilder {
     }
     
     private static AbstractSchema buildDatabase(final ShardingSphereDatabase database) {
-        return new SQLFederationDatabase(database, database.getProtocolType(), SQLFederationDataTypeFactory.getInstance());
+        return new SQLFederationDatabase(database, database.getProtocolType());
     }
     
     private static AbstractSchema buildSchema(final ShardingSphereSchema schema, final DatabaseType protocolType) {
-        return new SQLFederationSchema(schema.getName(), schema, protocolType, SQLFederationDataTypeFactory.getInstance());
+        return new SQLFederationSchema(schema.getName(), schema, protocolType);
     }
     
     private static void registerFunction(final Collection<ShardingSphereDatabase> databases, final CalciteSchema calciteSchema) {

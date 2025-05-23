@@ -25,7 +25,7 @@ import org.apache.calcite.rel.convert.ConverterRule;
 import org.apache.calcite.rel.core.TableModify;
 import org.apache.calcite.rel.logical.LogicalTableModify;
 import org.apache.calcite.schema.ModifiableTable;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.physical.EnumerableModify;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.physical.EnumerableModify;
 
 /**
  * Enumerable modify converter rule.

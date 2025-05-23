@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.core.TableScan;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.logical.LogicalScan;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical.LogicalScan;
 
 /**
  * Logical scan rel rewriter.

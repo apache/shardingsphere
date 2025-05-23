@@ -31,7 +31,6 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,8 +78,7 @@ class SQLStatementCompilerIT {
         tables.add(createMultiTypesSecondTableMetaData());
         CalciteSchema calciteSchema = CalciteSchema.createRootSchema(true);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        calciteSchema.add(SCHEMA_NAME,
-                new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", tables, Collections.emptyList()), databaseType, SQLFederationDataTypeFactory.getInstance()));
+        calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", tables, Collections.emptyList()), databaseType));
         sqlStatementCompiler = new SQLStatementCompiler(new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties())),
                 Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
     }

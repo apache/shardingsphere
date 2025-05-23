@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -38,15 +37,15 @@ public final class SQLFederationDatabase extends AbstractSchema {
     
     private final Map<String, Schema> subSchemaMap;
     
-    public SQLFederationDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
+    public SQLFederationDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType) {
         name = database.getName();
-        subSchemaMap = createSubSchemaMap(database, protocolType, javaTypeFactory);
+        subSchemaMap = createSubSchemaMap(database, protocolType);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
+    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType) {
         Map<String, Schema> result = new CaseInsensitiveMap<>(database.getAllSchemas().size(), 1F);
         for (ShardingSphereSchema each : database.getAllSchemas()) {
-            result.put(each.getName(), new SQLFederationSchema(each.getName(), each, protocolType, javaTypeFactory));
+            result.put(each.getName(), new SQLFederationSchema(each.getName(), each, protocolType));
         }
         return result;
     }

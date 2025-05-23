@@ -21,8 +21,8 @@ import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.convert.ConverterRule;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.logical.LogicalScan;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.operator.physical.EnumerableScan;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical.LogicalScan;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.physical.EnumerableScan;
 
 /**
  * Enumerable scan converter rule.

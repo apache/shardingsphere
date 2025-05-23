@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype;
+package org.apache.shardingsphere.sqlfederation.compiler.sql.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
+import org.apache.calcite.rel.type.RelDataTypeFactory;
 
 /**
  * SQL federation data type factory.
@@ -28,14 +28,14 @@ import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLFederationDataTypeFactory {
     
-    private static final JavaTypeFactory DATA_TYPE_FACTORY = new JavaTypeFactoryImpl();
+    private static final RelDataTypeFactory DATA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     /**
      * Get instance.
      *
      * @return instance
      */
-    public static JavaTypeFactory getInstance() {
+    public static RelDataTypeFactory getInstance() {
         return DATA_TYPE_FACTORY;
     }
 }

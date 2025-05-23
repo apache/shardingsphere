@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.rel.converter;
 
-import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptCluster;
@@ -43,10 +42,10 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.catalog.SQLFederationCatalogReader;
-import org.apache.shardingsphere.sqlfederation.compiler.metadata.datatype.SQLFederationDataTypeFactory;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,7 +70,7 @@ public final class SQLFederationRelConverter {
     private final SqlToRelConverter sqlToRelConverter;
     
     public SQLFederationRelConverter(final CompilerContext compilerContext, final List<String> schemaPath, final DatabaseType databaseType, final Convention convention) {
-        JavaTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
+        RelDataTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
         CalciteConnectionConfig connectionConfig = compilerContext.getConnectionConfig();
         CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
         SqlValidator validator = createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig);
@@ -79,12 +78,12 @@ public final class SQLFederationRelConverter {
         sqlToRelConverter = createSqlToRelConverter(catalogReader, validator, relOptCluster, compilerContext.getSqlParserRule(), databaseType, true);
     }
     
-    private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final DatabaseType databaseType,
+    private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory typeFactory, final DatabaseType databaseType,
                                             final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT.withLenientOperatorLookup(connectionConfig.lenientOperatorLookup()).withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation()).withIdentifierExpansion(true);
         SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(catalogReader, databaseType.getTrunkDatabaseType().orElse(databaseType));
-        return SqlValidatorUtil.newValidator(sqlOperatorTable, catalogReader, relDataTypeFactory, validatorConfig);
+        return SqlValidatorUtil.newValidator(sqlOperatorTable, catalogReader, typeFactory, validatorConfig);
     }
     
     private static SqlOperatorTable getSQLOperatorTable(final CalciteCatalogReader catalogReader, final DatabaseType databaseType) {
@@ -103,9 +102,9 @@ public final class SQLFederationRelConverter {
         return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, converterConfig);
     }
     
-    private RelOptCluster createRelOptCluster(final RelDataTypeFactory relDataTypeFactory, final Convention convention) {
+    private RelOptCluster createRelOptCluster(final RelDataTypeFactory typeFactory, final Convention convention) {
         RelOptPlanner volcanoPlanner = SQLFederationPlannerBuilder.buildVolcanoPlanner(convention);
-        return RelOptCluster.create(volcanoPlanner, new RexBuilder(relDataTypeFactory));
+        return RelOptCluster.create(volcanoPlanner, new RexBuilder(typeFactory));
     }
     
     /**
