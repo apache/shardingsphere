@@ -31,12 +31,12 @@ public final class StatisticsCollectContextManagerLifecycleListener implements C
     @Override
     public void onInitialized(final ContextManager contextManager) {
         if (InstanceType.PROXY == contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType()) {
-            new StatisticsCollectJobWorker(contextManager).initialize();
+            new StatisticsCollectJobWorker().initialize(contextManager);
         }
     }
     
     @Override
     public void onDestroyed(final ContextManager contextManager) {
-        new StatisticsCollectJobWorker(contextManager).destroy();
+        new StatisticsCollectJobWorker().destroy();
     }
 }
