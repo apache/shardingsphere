@@ -12,6 +12,8 @@
 ### API Changes
 
 1. Remove SQL formatting feature [#35390](https://github.com/apache/shardingsphere/pull/35390)
+1. Remove logging rule feature [#35458](https://github.com/apache/shardingsphere/pull/35458)
+1. Remove configuration property key `system-log-level` [#35493](https://github.com/apache/shardingsphere/pull/35493)
 
 ### New Features
 
