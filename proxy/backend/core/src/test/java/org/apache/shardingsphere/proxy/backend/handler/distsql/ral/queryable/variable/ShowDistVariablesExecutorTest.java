@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.va
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
@@ -46,24 +45,19 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecute() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
-                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("agent-plugins-enabled", "false"))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDistVariablesStatement.class), contextManager);
-        assertThat(actual.size(), is(22));
+        assertThat(actual.size(), is(21));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("agent_plugins_enabled"));
-        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(2), is("false"));
     }
     
     @Test
     void assertExecuteWithLike() {
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system-log-level", "INFO"))));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
-                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.variable;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -33,7 +30,6 @@ import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueExcepti
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -68,7 +64,6 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterProperties(props);
-        refreshRootLogger(props);
     }
     
     private Object getValue(final TypedPropertyKey propertyKey, final String value) {
@@ -81,16 +76,6 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         } catch (final TypedPropertyValueException ignored) {
             throw new InvalidVariableValueException(value);
         }
-    }
-    
-    private void refreshRootLogger(final Properties props) {
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        Logger rootLogger = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
-        renewRootLoggerLevel(rootLogger, props);
-    }
-    
-    private void renewRootLoggerLevel(final Logger rootLogger, final Properties props) {
-        rootLogger.setLevel(Level.valueOf(props.getOrDefault(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getDefaultValue()).toString()));
     }
     
     @Override
