@@ -119,7 +119,7 @@ public final class PipelineJobDataSourcePreparer {
                 List<String> createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager);
                 for (String sql : createTargetTableSQL) {
                     ShardingSphereMetaData metaData = ((ShardingSphereConnection) targetConnection).getContextManager().getMetaDataContexts().getMetaData();
-                    Optional<String> decoratedSQL = decorateTargetTableSQL(each, param.getSqlParserEngine(), databaseType, metaData, param.getTargetDatabaseName(), sql);
+                    Optional<String> decoratedSQL = decorateTargetTableSQL(each, param.getSqlParserEngine(), metaData, param.getTargetDatabaseName(), sql);
                     if (decoratedSQL.isPresent()) {
                         executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(decoratedSQL.get()));
                     }
@@ -139,10 +139,10 @@ public final class PipelineJobDataSourcePreparer {
     }
     
     private Optional<String> decorateTargetTableSQL(final CreateTableConfiguration createTableConfig, final SQLParserEngine sqlParserEngine,
-                                                    final DatabaseType parserDatabaseType, final ShardingSphereMetaData metaData, final String targetDatabaseName, final String sql) {
+                                                    final ShardingSphereMetaData metaData, final String targetDatabaseName, final String sql) {
         String schemaName = createTableConfig.getSourceName().getSchemaName();
         String targetTableName = createTableConfig.getTargetName().getTableName();
-        Optional<String> decoratedSQL = new PipelineDDLDecorator(metaData).decorate(databaseType, targetDatabaseName, schemaName, targetTableName, sqlParserEngine, parserDatabaseType, sql);
+        Optional<String> decoratedSQL = new PipelineDDLDecorator(metaData).decorate(databaseType, targetDatabaseName, schemaName, targetTableName, sqlParserEngine, sql);
         return decoratedSQL.map(String::trim).filter(trimmedSql -> !Strings.isNullOrEmpty(trimmedSql));
     }
     
