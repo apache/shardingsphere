@@ -37,7 +37,7 @@ class DropViewStatementContextTest {
     void assertNewInstance() {
         DropViewStatement dropViewStatement = mock(DropViewStatement.class);
         when(dropViewStatement.getViews()).thenReturn(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
-        DropViewStatementContext actual = new DropViewStatementContext(dropViewStatement);
+        DropViewStatementContext actual = new DropViewStatementContext(mock(), dropViewStatement);
         assertThat(actual.getSqlStatement(), is(dropViewStatement));
     }
     

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 
@@ -36,8 +37,8 @@ public final class ShowColumnsStatementContext extends CommonSQLStatementContext
     
     private final TablesContext tablesContext;
     
-    public ShowColumnsStatementContext(final ShowColumnsStatement sqlStatement) {
-        super(sqlStatement);
+    public ShowColumnsStatementContext(final DatabaseType databaseType, final ShowColumnsStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
     }
     

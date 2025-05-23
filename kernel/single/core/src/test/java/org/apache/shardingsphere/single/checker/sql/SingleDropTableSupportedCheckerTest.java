@@ -67,6 +67,6 @@ class SingleDropTableSupportedCheckerTest {
         DropTableStatement dropSchemaStatement = mock(DropTableStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
-        return new DropTableStatementContext(dropSchemaStatement);
+        return new DropTableStatementContext(mock(), dropSchemaStatement);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.dal;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 
@@ -32,8 +33,8 @@ import java.util.LinkedList;
 @Getter
 public final class ShowTablesStatementContext extends CommonSQLStatementContext implements RemoveAvailable {
     
-    public ShowTablesStatementContext(final ShowTablesStatement sqlStatement) {
-        super(sqlStatement);
+    public ShowTablesStatementContext(final DatabaseType databaseType, final ShowTablesStatement sqlStatement) {
+        super(databaseType, sqlStatement);
     }
     
     @Override

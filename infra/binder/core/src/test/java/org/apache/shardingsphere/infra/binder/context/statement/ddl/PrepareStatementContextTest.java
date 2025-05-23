@@ -55,7 +55,7 @@ class PrepareStatementContextTest {
         when(sqlStatement.getInsert()).thenReturn(Optional.of(getInsert(table)));
         when(sqlStatement.getUpdate()).thenReturn(Optional.of(getUpdate(table)));
         when(sqlStatement.getDelete()).thenReturn(Optional.of(getDelete(table)));
-        PrepareStatementContext actual = new PrepareStatementContext(sqlStatement);
+        PrepareStatementContext actual = new PrepareStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("foo_tbl", "foo_tbl", "foo_tbl", "foo_tbl")));

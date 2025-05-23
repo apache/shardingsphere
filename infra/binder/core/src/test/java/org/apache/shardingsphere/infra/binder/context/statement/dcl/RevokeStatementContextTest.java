@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 class RevokeStatementContextTest {
     
@@ -37,7 +38,7 @@ class RevokeStatementContextTest {
     void assertNewInstance() {
         RevokeStatement revokeStatement = new SQL92RevokeStatement();
         revokeStatement.getTables().addAll(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
-        RevokeStatementContext actual = new RevokeStatementContext(revokeStatement);
+        RevokeStatementContext actual = new RevokeStatementContext(mock(), revokeStatement);
         assertThat(actual.getSqlStatement(), is(revokeStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));

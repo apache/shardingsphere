@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStateme
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -44,8 +45,8 @@ public final class FetchStatementContext extends CommonSQLStatementContext imple
     
     private TablesContext tablesContext;
     
-    public FetchStatementContext(final FetchStatement sqlStatement) {
-        super(sqlStatement);
+    public FetchStatementContext(final DatabaseType databaseType, final FetchStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList());
     }
     

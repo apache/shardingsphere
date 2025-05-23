@@ -55,7 +55,7 @@ class ShardingUpdateSupportedCheckerTest {
     void assertCheckWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(mock(), updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.isAllShardingTables(tableNames)).thenReturn(true);
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
@@ -69,7 +69,7 @@ class ShardingUpdateSupportedCheckerTest {
         joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTable(joinTableSegment);
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(mock(), updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));

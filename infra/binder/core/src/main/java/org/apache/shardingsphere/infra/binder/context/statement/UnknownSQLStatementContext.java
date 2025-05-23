@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
@@ -24,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public final class UnknownSQLStatementContext extends CommonSQLStatementContext {
     
-    public UnknownSQLStatementContext(final SQLStatement sqlStatement) {
-        super(sqlStatement);
+    public UnknownSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        super(databaseType, sqlStatement);
     }
 }

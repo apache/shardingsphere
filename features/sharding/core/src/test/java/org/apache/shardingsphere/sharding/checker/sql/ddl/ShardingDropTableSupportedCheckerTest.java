@@ -65,7 +65,7 @@ class ShardingDropTableSupportedCheckerTest {
     void assertCheck() {
         DropTableStatement sqlStatement = new SQL92DropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        DropTableStatementContext sqlStatementContext = new DropTableStatementContext(sqlStatement);
+        DropTableStatementContext sqlStatementContext = new DropTableStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order_item")).thenReturn(true);

@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 
 /**
@@ -31,8 +32,8 @@ public final class LoadDataStatementContext extends CommonSQLStatementContext im
     
     private final TablesContext tablesContext;
     
-    public LoadDataStatementContext(final LoadDataStatement sqlStatement) {
-        super(sqlStatement);
+    public LoadDataStatementContext(final DatabaseType databaseType, final LoadDataStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTableSegment());
     }
     

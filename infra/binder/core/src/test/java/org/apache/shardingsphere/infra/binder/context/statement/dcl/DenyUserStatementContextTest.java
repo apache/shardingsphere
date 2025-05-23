@@ -41,7 +41,7 @@ class DenyUserStatementContextTest {
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         SimpleTableSegment table = new SimpleTableSegment(tableNameSegment);
         when(sqlStatement.getTable()).thenReturn(table);
-        DenyUserStatementContext actual = new DenyUserStatementContext(sqlStatement);
+        DenyUserStatementContext actual = new DenyUserStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("foo_tbl")));

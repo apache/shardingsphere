@@ -58,7 +58,7 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     
     public CursorStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                   final List<Object> params, final CursorStatement sqlStatement, final String currentDatabaseName) {
-        super(sqlStatement);
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments());
         selectStatementContext = new SelectStatementContext(metaData, databaseType, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
         whereSegments.addAll(selectStatementContext.getWhereSegments());

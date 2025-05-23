@@ -118,7 +118,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     public SelectStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params, final SelectStatement sqlStatement,
                                   final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
-        super(sqlStatement);
+        super(databaseType, sqlStatement);
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);

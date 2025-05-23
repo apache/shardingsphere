@@ -71,7 +71,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(mock(ShowStatement.class));
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, mock(ShowStatement.class));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
@@ -95,7 +95,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(mock(FetchStatement.class));
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, mock(FetchStatement.class));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }
 }

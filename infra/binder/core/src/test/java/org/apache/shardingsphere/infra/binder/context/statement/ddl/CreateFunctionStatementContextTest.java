@@ -29,7 +29,7 @@ class CreateFunctionStatementContextTest {
     @Test
     void assertMySQLNewInstance() {
         CreateFunctionStatement sqlStatement = mock(CreateFunctionStatement.class);
-        CreateFunctionStatementContext actual = new CreateFunctionStatementContext(sqlStatement);
+        CreateFunctionStatementContext actual = new CreateFunctionStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
     }
 }

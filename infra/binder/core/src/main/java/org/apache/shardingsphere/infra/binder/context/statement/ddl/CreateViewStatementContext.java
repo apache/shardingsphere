@@ -48,7 +48,7 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     
     public CreateViewStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
                                       final CreateViewStatement sqlStatement, final String currentDatabaseName) {
-        super(sqlStatement);
+        super(databaseType, sqlStatement);
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables());

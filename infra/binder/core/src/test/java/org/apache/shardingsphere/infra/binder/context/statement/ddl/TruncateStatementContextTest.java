@@ -38,7 +38,7 @@ class TruncateStatementContextTest {
     void assertNewInstance() {
         TruncateStatement truncateStatement = mock(TruncateStatement.class);
         when(truncateStatement.getTables()).thenReturn(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
-        TruncateStatementContext actual = new TruncateStatementContext(truncateStatement);
+        TruncateStatementContext actual = new TruncateStatementContext(mock(), truncateStatement);
         assertThat(actual.getSqlStatement(), is(truncateStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));

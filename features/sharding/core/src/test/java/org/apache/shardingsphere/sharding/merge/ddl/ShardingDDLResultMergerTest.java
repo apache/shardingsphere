@@ -77,7 +77,7 @@ class ShardingDDLResultMergerTest {
     }
     
     private FetchStatementContext createFetchStatementContext(final ShardingSphereDatabase database) {
-        FetchStatementContext result = new FetchStatementContext(mockFetchStatement());
+        FetchStatementContext result = new FetchStatementContext(databaseType, mockFetchStatement());
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }
@@ -121,7 +121,6 @@ class ShardingDDLResultMergerTest {
         FetchStatement result = mock(FetchStatement.class);
         when(result.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")));
         when(result.getDirection()).thenReturn(Optional.empty());
-        when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }
 }

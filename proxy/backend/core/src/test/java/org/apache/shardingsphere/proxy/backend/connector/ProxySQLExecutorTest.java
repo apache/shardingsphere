@@ -252,14 +252,14 @@ class ProxySQLExecutorTest {
         CreateTableStatement sqlStatement = mock(CreateTableStatement.class);
         when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(sqlStatement);
+        return new CreateTableStatementContext(databaseType, sqlStatement);
     }
     
     private TruncateStatementContext createTruncateStatementContext(final DatabaseType databaseType) {
         TruncateStatement sqlStatement = mock(TruncateStatement.class);
         when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatement.getTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        return new TruncateStatementContext(sqlStatement);
+        return new TruncateStatementContext(databaseType, sqlStatement);
     }
     
     private CursorStatementContext mockCursorStatementContext() {

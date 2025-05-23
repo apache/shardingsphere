@@ -52,7 +52,7 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     
     public AlterViewStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
                                      final AlterViewStatement sqlStatement, final String currentDatabaseName) {
-        super(sqlStatement);
+        super(databaseType, sqlStatement);
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
         Optional<SelectStatement> selectStatement = sqlStatement.getSelect();

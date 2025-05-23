@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -42,8 +43,8 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     
     private final boolean generatedIndex;
     
-    public CreateIndexStatementContext(final CreateIndexStatement sqlStatement) {
-        super(sqlStatement);
+    public CreateIndexStatementContext(final DatabaseType databaseType, final CreateIndexStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable());
         generatedIndex = null == sqlStatement.getIndex();
     }

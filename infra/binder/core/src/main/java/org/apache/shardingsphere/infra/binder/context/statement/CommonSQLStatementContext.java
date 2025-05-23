@@ -18,21 +18,23 @@
 package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Common SQL statement context.
  */
+@RequiredArgsConstructor
 @Getter
 public abstract class CommonSQLStatementContext implements SQLStatementContext {
     
-    private final SQLStatement sqlStatement;
-    
     private final DatabaseType databaseType;
     
+    private final SQLStatement sqlStatement;
+    
     protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
         databaseType = sqlStatement.getDatabaseType();
+        this.sqlStatement = sqlStatement;
     }
 }

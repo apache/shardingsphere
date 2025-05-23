@@ -99,7 +99,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     public InsertStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
                                   final InsertStatement sqlStatement, final String currentDatabaseName) {
-        super(sqlStatement);
+        super(databaseType, sqlStatement);
         this.metaData = metaData;
         this.databaseType = databaseType;
         this.currentDatabaseName = currentDatabaseName;

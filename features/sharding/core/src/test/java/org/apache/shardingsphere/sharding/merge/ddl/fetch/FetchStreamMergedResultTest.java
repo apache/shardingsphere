@@ -91,7 +91,7 @@ class FetchStreamMergedResultTest {
     }
     
     private static FetchStatementContext createFetchStatementContext(final boolean containsAllDirectionType) {
-        FetchStatementContext result = new FetchStatementContext(createFetchStatement(containsAllDirectionType));
+        FetchStatementContext result = new FetchStatementContext(DATABASE_TYPE, createFetchStatement(containsAllDirectionType));
         result.setCursorStatementContext(mockCursorStatementContext());
         return result;
     }

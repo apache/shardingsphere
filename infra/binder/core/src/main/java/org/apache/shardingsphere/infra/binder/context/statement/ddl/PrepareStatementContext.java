@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
@@ -36,8 +37,8 @@ public final class PrepareStatementContext extends CommonSQLStatementContext imp
     
     private final TablesContext tablesContext;
     
-    public PrepareStatementContext(final PrepareStatement sqlStatement) {
-        super(sqlStatement);
+    public PrepareStatementContext(final DatabaseType databaseType, final PrepareStatement sqlStatement) {
+        super(databaseType, sqlStatement);
         tablesContext = new TablesContext(extractTablesFromPreparedStatement(sqlStatement));
     }
     

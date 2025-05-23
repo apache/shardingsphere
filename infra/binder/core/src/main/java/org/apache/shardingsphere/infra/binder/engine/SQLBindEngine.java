@@ -68,7 +68,7 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(sqlStatement) : sqlStatement;
+        SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(databaseType, sqlStatement) : sqlStatement;
         return SQLStatementContextFactory.newInstance(metaData, databaseType, boundSQLStatement, params, currentDatabaseName);
     }
     
@@ -76,9 +76,9 @@ public final class SQLBindEngine {
         return !hintValueContext.findHintDataSourceName().isPresent() && !HintManager.getDataSourceName().isPresent();
     }
     
-    private SQLStatement bindSQLStatement(final SQLStatement statement) {
+    private SQLStatement bindSQLStatement(final DatabaseType databaseType, final SQLStatement statement) {
         if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DMLStatement) statement);
+            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind(databaseType, (DMLStatement) statement);
         }
         if (statement instanceof DDLStatement) {
             return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DDLStatement) statement);

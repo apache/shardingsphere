@@ -38,7 +38,7 @@ class OptimizeTableStatementContextTest {
     void assertNewInstance() {
         OptimizeTableStatement sqlStatement = mock(OptimizeTableStatement.class);
         when(sqlStatement.getTables()).thenReturn(Collections.singleton(new SimpleTableSegment(createTableNameSegment())));
-        OptimizeTableStatementContext actual = new OptimizeTableStatementContext(sqlStatement);
+        OptimizeTableStatementContext actual = new OptimizeTableStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_tbl")));

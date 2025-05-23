@@ -39,7 +39,7 @@ class AlterIndexStatementContextTest {
         AlterIndexStatement alterIndexStatement = mock(AlterIndexStatement.class);
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("index_1")));
         when(alterIndexStatement.getIndex()).thenReturn(Optional.of(indexSegment));
-        AlterIndexStatementContext actual = new AlterIndexStatementContext(alterIndexStatement);
+        AlterIndexStatementContext actual = new AlterIndexStatementContext(mock(), alterIndexStatement);
         assertThat(actual.getSqlStatement(), is(alterIndexStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.emptyList()));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("index_1")));

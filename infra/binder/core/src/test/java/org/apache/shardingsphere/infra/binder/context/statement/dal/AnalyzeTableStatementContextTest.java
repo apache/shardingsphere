@@ -37,7 +37,7 @@ class AnalyzeTableStatementContextTest {
     @Test
     void assertNewInstance() {
         AnalyzeTableStatement analyzeTableStatement = mockAnalyzeTableStatement();
-        AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(analyzeTableStatement);
+        AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(mock(), analyzeTableStatement);
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));

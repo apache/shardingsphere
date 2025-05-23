@@ -63,6 +63,6 @@ class ShardingRenameTableSupportedCheckerTest {
         renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName))));
         renameTableDefinitionSegment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(newTableName))));
         when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
-        return new RenameTableStatementContext(sqlStatement);
+        return new RenameTableStatementContext(mock(), sqlStatement);
     }
 }
