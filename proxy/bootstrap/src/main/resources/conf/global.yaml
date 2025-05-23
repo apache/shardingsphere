@@ -55,14 +55,6 @@
 #    initialCapacity: 128
 #    maximumSize: 1024
 #
-#logging:
-#  loggers:
-#  - loggerName: ShardingSphere-SQL
-#    additivity: true
-#    level: INFO
-#    props:
-#      enable: false
-#
 #sqlFederation:
 #  sqlFederationEnabled: false
 #  executionPlanCache:

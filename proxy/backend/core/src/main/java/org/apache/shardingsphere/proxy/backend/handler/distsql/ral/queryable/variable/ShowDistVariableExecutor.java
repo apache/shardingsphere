@@ -29,17 +29,12 @@ import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariab
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Show dist variable executor.
@@ -72,25 +67,6 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private String getConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
-        return LoggingConstants.SQL_SHOW_VARIABLE_NAME.equalsIgnoreCase(variableName) || LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.equalsIgnoreCase(variableName)
-                ? getLoggingPropsValue(metaData, variableName)
-                : getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
-    }
-    
-    private String getLoggingPropsValue(final ShardingSphereMetaData metaData, final String variableName) {
-        Optional<ShardingSphereLogger> sqlLogger = metaData.getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger);
-        if (sqlLogger.isPresent()) {
-            Properties props = sqlLogger.get().getProps();
-            switch (variableName) {
-                case LoggingConstants.SQL_SHOW_VARIABLE_NAME:
-                    return props.getOrDefault(LoggingConstants.SQL_LOG_ENABLE,
-                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString()).toString();
-                case LoggingConstants.SQL_SIMPLE_VARIABLE_NAME:
-                    return props.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE,
-                            metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)).toString()).toString();
-                default:
-            }
-        }
         return getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(variableName)));
     }
     

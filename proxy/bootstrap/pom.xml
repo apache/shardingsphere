@@ -38,11 +38,6 @@
             <artifactId>shardingsphere-standalone-mode-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-logging-type-logback</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
