@@ -107,10 +107,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlSer
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableOptionsContext;
-import org.apache.shardingsphere.sql.parser.segment.oracle.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;

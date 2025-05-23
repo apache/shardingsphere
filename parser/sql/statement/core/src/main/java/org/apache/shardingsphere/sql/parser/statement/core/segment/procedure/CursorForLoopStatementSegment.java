@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.segment.oracle;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.procedure;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

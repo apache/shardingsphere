@@ -19,13 +19,9 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
-import org.apache.shardingsphere.sql.parser.segment.oracle.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.SQLStatementSegment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
-    
-    private final List<SQLStatementSegment> sqlStatements;
-    
-    private final List<ProcedureCallNameSegment> procedureCallNames;
-    
-    private final List<ProcedureBodyEndNameSegment> procedureBodyEndNameSegments;
-    
-    private final List<ExpressionSegment> dynamicSqlStatementExpressions;
     
     private final List<CursorForLoopStatementSegment> cursorForLoopStatements = new ArrayList<>();
 }

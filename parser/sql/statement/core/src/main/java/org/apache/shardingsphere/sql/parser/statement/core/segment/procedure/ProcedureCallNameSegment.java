@@ -15,23 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.segment.oracle;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.procedure;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.packages.PackageSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
- * SQL statement segment.
+ * PL/SQL procedure call name segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLStatementSegment implements SQLSegment {
+@Setter
+public final class ProcedureCallNameSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final SQLStatement sqlStatement;
+    private final IdentifierValue identifier;
+    
+    private PackageSegment packageSegment;
+    
+    public Optional<PackageSegment> getPackageSegment() {
+        return Optional.ofNullable(packageSegment);
+    }
+    
+    @Override
+    public String toString() {
+        return getPackageSegment().map(optional -> optional.getIdentifier().getValueWithQuoteCharacters() + ".").orElse("") + identifier.getValueWithQuoteCharacters();
+    }
 }

@@ -351,10 +351,10 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSwitchSta
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSystemActionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleTruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.segment.oracle.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.segment.oracle.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1094,8 +1094,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getSqlStatementsInPlsql(), getProcedureCallNames(), getDynamicSqlStatementExpressions());
+        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getSqlStatementsInPlsql(), getProcedureCallNames());
         result.setFunctionName(visitFunctionName(ctx.plsqlFunctionSource()));
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         return result;
     }
     
@@ -1358,9 +1359,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement(getSqlStatementsInPlsql(), getProcedureCallNames(), getProcedureBodyEndNameSegments(),
-                getDynamicSqlStatementExpressions());
+        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement();
+        result.getProcedureCallNames().addAll(getProcedureCallNames());
+        result.getProcedureBodyEndNameSegments().addAll(getProcedureBodyEndNameSegments());
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         result.setProcedureName(visitProcedureName(ctx.plsqlProcedureSource()));
+        result.getSqlStatements().addAll(getSqlStatementsInPlsql());
         result.getVariableNames().addAll(getVariableNames());
         getSqlStatementsInPlsql().forEach(each -> each.getSqlStatement().getVariableNames().addAll(getVariableNames()));
         result.getCursorForLoopStatements().addAll(getCursorForLoopStatementSegments());

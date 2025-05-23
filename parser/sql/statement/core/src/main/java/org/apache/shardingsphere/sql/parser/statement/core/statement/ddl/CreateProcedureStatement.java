@@ -21,8 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,6 +39,14 @@ import java.util.Optional;
 public abstract class CreateProcedureStatement extends AbstractSQLStatement implements DDLStatement {
     
     private FunctionNameSegment procedureName;
+    
+    private final List<SQLStatementSegment> sqlStatements = new ArrayList<>();
+    
+    private final List<ProcedureCallNameSegment> procedureCallNames = new ArrayList<>();
+    
+    private final List<ProcedureBodyEndNameSegment> procedureBodyEndNameSegments = new ArrayList<>();
+    
+    private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
     
     /**
      * Get procedure name segment.

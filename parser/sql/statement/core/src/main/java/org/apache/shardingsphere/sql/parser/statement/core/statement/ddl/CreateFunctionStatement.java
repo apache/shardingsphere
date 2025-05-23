@@ -21,8 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,6 +36,8 @@ import java.util.Optional;
 public abstract class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
     
     private FunctionNameSegment functionName;
+    
+    private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
     
     /**
      * Get function name segment.
