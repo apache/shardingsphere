@@ -52,7 +52,7 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables());
-        selectStatementContext = new SelectStatementContext(metaData, databaseType, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(databaseType, sqlStatement.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
         selectStatementContext.setSubqueryType(SubqueryType.VIEW_DEFINITION);
     }
     

@@ -60,7 +60,7 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
                                   final List<Object> params, final CursorStatement sqlStatement, final String currentDatabaseName) {
         super(databaseType, sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments());
-        selectStatementContext = new SelectStatementContext(metaData, databaseType, params, sqlStatement.getSelect(), currentDatabaseName, Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(databaseType, sqlStatement.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
         whereSegments.addAll(selectStatementContext.getWhereSegments());
         columnSegments.addAll(selectStatementContext.getColumnSegments());
         joinConditions.addAll(selectStatementContext.getJoinConditions());

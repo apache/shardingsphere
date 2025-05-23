@@ -64,7 +64,7 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     
     private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
                                                                 final SelectStatement selectStatement, final String currentDatabaseName) {
-        SelectStatementContext result = new SelectStatementContext(metaData, databaseType, params, selectStatement, currentDatabaseName, Collections.emptyList());
+        SelectStatementContext result = new SelectStatementContext(databaseType, selectStatement, params, metaData, currentDatabaseName, Collections.emptyList());
         result.setSubqueryType(SubqueryType.VIEW_DEFINITION);
         return result;
     }

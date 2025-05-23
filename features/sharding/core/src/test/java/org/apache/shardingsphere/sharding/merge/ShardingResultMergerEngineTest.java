@@ -62,8 +62,8 @@ class ShardingResultMergerEngineTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()),
-                databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(
+                databaseType, selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, new ConfigurationProperties(new Properties()), sqlStatementContext),
                 instanceOf(ShardingDQLResultMerger.class));
     }
