@@ -48,7 +48,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ColumnSegmentBinderTest {
     
@@ -68,9 +67,7 @@ class ColumnSegmentBinderTest {
         tableBinderContexts.put(new CaseInsensitiveString("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         assertNotNull(actual.getColumnBoundInfo());
         assertNull(actual.getOtherUsingColumnBoundInfo());
@@ -93,9 +90,7 @@ class ColumnSegmentBinderTest {
                 new IdentifierValue("t_order_item"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
         outerTableBinderContexts.put(new CaseInsensitiveString("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemStatusColumn)), TableSourceType.PHYSICAL_TABLE));
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), outerTableBinderContexts);
         assertNotNull(actual.getColumnBoundInfo());
@@ -119,9 +114,7 @@ class ColumnSegmentBinderTest {
                 new IdentifierValue("t_order_item"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
         tableBinderContexts.put(new CaseInsensitiveString("temp"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemColumn)), TableSourceType.PHYSICAL_TABLE));
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("temp")));
         assertThrows(AmbiguousColumnException.class, () -> ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
@@ -140,9 +133,7 @@ class ColumnSegmentBinderTest {
                 new IdentifierValue("t_order_item"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
         tableBinderContexts.put(new CaseInsensitiveString("temp"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemColumn)), TableSourceType.PHYSICAL_TABLE));
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("temp")));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, LinkedHashMultimap.create());
@@ -169,9 +160,7 @@ class ColumnSegmentBinderTest {
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class));
         ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.JOIN_ON, binderContext, tableBinderContexts, LinkedHashMultimap.create());
         assertTrue(actual.getOwner().isPresent());
         assertTrue(actual.getOwner().get().getTableBoundInfo().isPresent());

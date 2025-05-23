@@ -64,7 +64,6 @@ class SubqueryTableSegmentBinderTest {
     @Test
     void assertBindWithSubqueryTableAlias() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
@@ -73,9 +72,8 @@ class SubqueryTableSegmentBinderTest {
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SubqueryTableSegment actual =
-                SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts,
-                        LinkedHashMultimap.create(), false);
+        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
         assertTrue(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
@@ -97,7 +95,6 @@ class SubqueryTableSegmentBinderTest {
     @Test
     void assertBindWithSubqueryProjectionAlias() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
@@ -108,9 +105,8 @@ class SubqueryTableSegmentBinderTest {
         subqueryTableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SubqueryTableSegment actual =
-                SubqueryTableSegmentBinder.bind(subqueryTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts,
-                        LinkedHashMultimap.create(), false);
+        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
         assertTrue(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
@@ -124,7 +120,6 @@ class SubqueryTableSegmentBinderTest {
     @Test
     void assertBindWithoutSubqueryTableAlias() {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
@@ -132,8 +127,8 @@ class SubqueryTableSegmentBinderTest {
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, ""));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(
-                subqueryTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
+        SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
         assertFalse(actual.getAlias().isPresent());
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("")));
     }

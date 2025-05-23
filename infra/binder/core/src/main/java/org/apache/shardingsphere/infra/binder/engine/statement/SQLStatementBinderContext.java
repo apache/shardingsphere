@@ -24,6 +24,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -45,6 +46,8 @@ public final class SQLStatementBinderContext {
     
     private final HintValueContext hintValueContext;
     
+    private final DatabaseType databaseType;
+    
     private final SQLStatement sqlStatement;
     
     private final Collection<String> commonTableExpressionsSegmentsUniqueAliases = new CaseInsensitiveSet<>();
@@ -56,4 +59,8 @@ public final class SQLStatementBinderContext {
     private final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts = LinkedHashMultimap.create();
     
     private final Collection<String> pivotColumnNames = new CaseInsensitiveSet<>();
+    
+    public SQLStatementBinderContext(final ShardingSphereMetaData metaData, final String currentDatabaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement) {
+        this(metaData, currentDatabaseName, hintValueContext, sqlStatement.getDatabaseType(), sqlStatement);
+    }
 }
