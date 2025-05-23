@@ -106,11 +106,11 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         valueExpressions = getAllValueExpressions(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaData, databaseType, params, parametersOffset, currentDatabaseName).orElse(null);
+        insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         List<String> insertColumnNames = getInsertColumnNames();
-        ShardingSphereSchema schema = getSchema(metaData, databaseType, currentDatabaseName);
+        ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns()
                 ? insertColumnNames
                 : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
@@ -140,7 +140,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         return result;
     }
     
-    private Optional<InsertSelectContext> getInsertSelectContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
+    private Optional<InsertSelectContext> getInsertSelectContext(final ShardingSphereMetaData metaData, final List<Object> params,
                                                                  final AtomicInteger paramsOffset, final String currentDatabaseName) {
         if (!getSqlStatement().getInsertSelect().isPresent()) {
             return Optional.empty();
@@ -190,7 +190,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         return tableExtractor.getRewriteTables();
     }
     
-    private ShardingSphereSchema getSchema(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final String currentDatabaseName) {
+    private ShardingSphereSchema getSchema(final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(currentDatabaseName);
         ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
@@ -318,9 +318,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     public void setUpParameters(final List<Object> params) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(metaData, databaseType, params, parametersOffset, currentDatabaseName).orElse(null);
+        insertSelectContext = getInsertSelectContext(metaData, params, parametersOffset, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
-        ShardingSphereSchema schema = getSchema(metaData, databaseType, currentDatabaseName);
+        ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
         generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
     
