@@ -64,24 +64,25 @@ public final class PipelineDDLDecorator {
      * @param schemaName schema name
      * @param targetTableName target table name
      * @param parserEngine parser engine
+     * @param parserDatabaseType parser database type
      * @param sql SQL
      * @return decorated SQL
      */
     public Optional<String> decorate(final DatabaseType databaseType, final String targetDatabaseName, final String schemaName, final String targetTableName,
-                                     final SQLParserEngine parserEngine, final String sql) {
+                                     final SQLParserEngine parserEngine, final DatabaseType parserDatabaseType, final String sql) {
         if (Strings.isNullOrEmpty(sql)) {
             return Optional.empty();
         }
-        String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, sql.trim());
+        String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, parserDatabaseType, sql.trim());
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
-            return decorateOpenGauss(targetDatabaseName, schemaName, result, parserEngine);
+            return decorateOpenGauss(targetDatabaseName, schemaName, result, parserEngine, parserDatabaseType);
         }
         return Optional.of(result);
     }
     
-    private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final String sql) {
-        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
+    private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final DatabaseType parserDatabaseType, final String sql) {
+        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, parserDatabaseType, sql);
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
@@ -101,8 +102,8 @@ public final class PipelineDDLDecorator {
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private SQLStatementContext parseSQL(final String currentDatabaseName, final SQLParserEngine parserEngine, final String sql) {
-        return new SQLBindEngine(metaData, currentDatabaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
+    private SQLStatementContext parseSQL(final String currentDatabaseName, final SQLParserEngine parserEngine, final DatabaseType parserDatabaseType, final String sql) {
+        return new SQLBindEngine(metaData, currentDatabaseName, new HintValueContext()).bind(parserDatabaseType, parserEngine.parse(sql, true), Collections.emptyList());
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
@@ -150,15 +151,15 @@ public final class PipelineDDLDecorator {
     
     // TODO remove it after set search_path is supported.
     private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String queryContext,
-                                               final SQLParserEngine parserEngine) {
+                                               final SQLParserEngine parserEngine, final DatabaseType parserDatabaseType) {
         if (queryContext.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, databaseName, parserEngine));
+        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, databaseName, parserEngine, parserDatabaseType));
     }
     
-    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine) {
-        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
+    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine, final DatabaseType parserDatabaseType) {
+        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, parserDatabaseType, sql);
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
             if (((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
