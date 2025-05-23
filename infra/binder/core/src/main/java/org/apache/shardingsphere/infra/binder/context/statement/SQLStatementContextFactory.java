@@ -148,7 +148,7 @@ public final class SQLStatementContextFactory {
     private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                                               final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(metaData, databaseType, params, (SelectStatement) sqlStatement, currentDatabaseName, Collections.emptyList());
+            return new SelectStatementContext(databaseType, (SelectStatement) sqlStatement, params, metaData, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
             return new UpdateStatementContext(databaseType, (UpdateStatement) sqlStatement);

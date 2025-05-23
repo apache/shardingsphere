@@ -62,7 +62,7 @@ class IteratorStreamMergedResultTest {
     void setUp() {
         SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(), databaseType, Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(databaseType, selectStatement, Collections.emptyList(), createShardingSphereMetaData(), "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
