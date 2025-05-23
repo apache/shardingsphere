@@ -82,6 +82,8 @@ import static org.mockito.Mockito.when;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptGeneratorFixtureBuilder {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     /**
      * Create encrypt rule.
      *
@@ -115,7 +117,7 @@ public final class EncryptGeneratorFixtureBuilder {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), params, createInsertStatement(), "foo_db");
+        return new InsertStatementContext(metaData, DATABASE_TYPE, params, createInsertStatement(), "foo_db");
     }
     
     private static InsertStatement createInsertStatement() {
@@ -168,7 +170,7 @@ public final class EncryptGeneratorFixtureBuilder {
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         updateStatement.setWhere(createWhereSegment());
         updateStatement.setSetAssignment(createSetAssignmentSegment());
-        return new UpdateStatementContext(mock(), updateStatement);
+        return new UpdateStatementContext(DATABASE_TYPE, updateStatement);
     }
     
     private static WhereSegment createWhereSegment() {
@@ -220,6 +222,6 @@ public final class EncryptGeneratorFixtureBuilder {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(metaData, TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), params, createInsertSelectStatement(containsInsertColumns), "foo_db");
+        return new InsertStatementContext(metaData, DATABASE_TYPE, params, createInsertSelectStatement(containsInsertColumns), "foo_db");
     }
 }
