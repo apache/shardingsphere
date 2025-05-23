@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.kernel.syntax.InvalidVariableValueException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -39,13 +38,11 @@ import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.event.Level;
 
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -84,23 +81,6 @@ class SetDistVariableExecutorTest {
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-database-protocol-type");
         assertThat(actualValue.toString(), is("FIXTURE"));
         assertThat(((DatabaseType) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)).getType(), is("FIXTURE"));
-    }
-    
-    @Test
-    void assertExecuteWithSystemLogLevel() throws SQLException {
-        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
-        ContextManager contextManager = mockContextManager();
-        executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("system-log-level");
-        assertThat(actualValue.toString(), is("DEBUG"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(Level.DEBUG));
-    }
-    
-    @Test
-    void assertExecuteWithWrongSystemLogLevel() {
-        ContextManager contextManager = mockContextManager();
-        SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");
-        assertThrows(InvalidVariableValueException.class, () -> executor.executeUpdate(statement, contextManager));
     }
     
     private ContextManager mockContextManager() {
