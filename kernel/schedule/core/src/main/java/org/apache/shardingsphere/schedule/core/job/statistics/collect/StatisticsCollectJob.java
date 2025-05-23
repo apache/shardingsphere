@@ -41,7 +41,7 @@ public final class StatisticsCollectJob implements SimpleJob {
                 new StatisticsRefreshEngine(contextManager).refresh();
             }
         } finally {
-            log.debug("Finished statistics collect job");   
+            log.debug("Finished statistics collect job");
         }
     }
 }
