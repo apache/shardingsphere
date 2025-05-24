@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStat
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
@@ -59,6 +60,8 @@ public final class DDLStatementBindEngine {
     
     private final HintValueContext hintValueContext;
     
+    private final DatabaseType databaseType;
+    
     /**
      * Bind DDL statement.
      *
@@ -66,7 +69,7 @@ public final class DDLStatementBindEngine {
      * @return bound DDL statement
      */
     public DDLStatement bind(final DDLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
         if (statement instanceof CursorStatement) {
             return new CursorStatementBinder().bind((CursorStatement) statement, binderContext);
         }
