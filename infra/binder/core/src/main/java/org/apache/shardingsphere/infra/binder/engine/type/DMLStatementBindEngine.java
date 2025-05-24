@@ -50,14 +50,15 @@ public final class DMLStatementBindEngine {
     
     private final HintValueContext hintValueContext;
     
+    private final DatabaseType databaseType;
+    
     /**
      * Bind DML statement.
      *
-     * @param databaseType database type
      * @param statement to be bound DML statement
      * @return bound DML statement
      */
-    public DMLStatement bind(final DatabaseType databaseType, final DMLStatement statement) {
+    public DMLStatement bind(final DMLStatement statement) {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
         if (statement instanceof SelectStatement) {
             return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.dal.OptimizeTable
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowColumnsStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowCreateTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowIndexStatementBinder;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
@@ -45,6 +46,8 @@ public final class DALStatementBindEngine {
     
     private final HintValueContext hintValueContext;
     
+    private final DatabaseType databaseType;
+    
     /**
      * Bind DAL statement.
      *
@@ -52,7 +55,7 @@ public final class DALStatementBindEngine {
      * @return bound DAL statement
      */
     public DALStatement bind(final DALStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
         if (statement instanceof OptimizeTableStatement) {
             return new OptimizeTableStatementBinder().bind((OptimizeTableStatement) statement, binderContext);
         }

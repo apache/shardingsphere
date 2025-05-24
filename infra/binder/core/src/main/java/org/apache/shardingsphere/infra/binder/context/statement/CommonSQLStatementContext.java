@@ -32,9 +32,4 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
     private final DatabaseType databaseType;
     
     private final SQLStatement sqlStatement;
-    
-    protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
-        databaseType = sqlStatement.getDatabaseType();
-        this.sqlStatement = sqlStatement;
-    }
 }

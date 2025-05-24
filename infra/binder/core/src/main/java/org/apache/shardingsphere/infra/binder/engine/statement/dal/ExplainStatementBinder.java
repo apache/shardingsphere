@@ -45,7 +45,7 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
         ExplainStatement result = copy(sqlStatement);
         SQLStatement explainSQLStatement = sqlStatement.getSqlStatement();
         SQLStatement boundSQLStatement = explainSQLStatement instanceof DMLStatement
-                ? new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind(binderContext.getDatabaseType(), (DMLStatement) explainSQLStatement)
+                ? new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, binderContext.getDatabaseType()).bind((DMLStatement) explainSQLStatement)
                 : explainSQLStatement;
         result.setSqlStatement(boundSQLStatement);
         return result;

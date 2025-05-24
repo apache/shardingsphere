@@ -78,16 +78,16 @@ public final class SQLBindEngine {
     
     private SQLStatement bindSQLStatement(final DatabaseType databaseType, final SQLStatement statement) {
         if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind(databaseType, (DMLStatement) statement);
+            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DMLStatement) statement);
         }
         if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DDLStatement) statement);
+            return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DDLStatement) statement);
         }
         if (statement instanceof DALStatement) {
-            return new DALStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DALStatement) statement);
+            return new DALStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DALStatement) statement);
         }
         if (statement instanceof DCLStatement) {
-            return new DCLStatementBindEngine(metaData, currentDatabaseName, hintValueContext).bind((DCLStatement) statement);
+            return new DCLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DCLStatement) statement);
         }
         return statement;
     }
