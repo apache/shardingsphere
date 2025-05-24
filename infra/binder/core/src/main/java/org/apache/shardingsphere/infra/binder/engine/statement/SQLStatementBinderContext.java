@@ -59,8 +59,4 @@ public final class SQLStatementBinderContext {
     private final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts = LinkedHashMultimap.create();
     
     private final Collection<String> pivotColumnNames = new CaseInsensitiveSet<>();
-    
-    public SQLStatementBinderContext(final ShardingSphereMetaData metaData, final String currentDatabaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement) {
-        this(metaData, currentDatabaseName, hintValueContext, sqlStatement.getDatabaseType(), sqlStatement);
-    }
 }
