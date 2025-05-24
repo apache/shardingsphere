@@ -27,7 +27,7 @@ ShardingSphere 定义了，
 
 1. GraalVM CE 22.0.2，或与 GraalVM CE 22.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
 2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
-3. 可运行 Linux Containers 的 Docker Engine，或与 testcontainer-java 兼容的 Container Runtime。以 https://java.testcontainers.org/supported_docker_environment/ 为准。
+3. 可运行 Linux Containers 的 Docker Engine，或与 testcontainers-java 兼容的 Container Runtime。以 https://java.testcontainers.org/supported_docker_environment/ 为准。
 
 本文不讨论 `LLVM Backend for Native Image`。下文分别讨论在 Ubuntu，Windows 与 Windows Server 下可能的所需操作。
 

@@ -443,6 +443,21 @@
   "allPublicMethods": true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction",
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"javax.security.auth.login.Configuration"},
   "name":"sun.security.provider.ConfigFile",
   "methods":[{"name":"<init>","parameterTypes":[] }]
