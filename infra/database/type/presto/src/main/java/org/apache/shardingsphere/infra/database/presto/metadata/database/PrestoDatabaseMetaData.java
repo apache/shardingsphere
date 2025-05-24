@@ -21,8 +21,10 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Nul
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.infra.database.presto.metadata.database.option.PrestoDataTypeOption;
 
 /**
  * Database meta data of Presto.
@@ -47,6 +49,11 @@ public final class PrestoDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectSchemaOption getSchemaOption() {
         return new DefaultSchemaOption(false, "default");
+    }
+    
+    @Override
+    public DialectDataTypeOption getDataTypeOption() {
+        return new PrestoDataTypeOption();
     }
     
     @Override

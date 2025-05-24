@@ -329,6 +329,3 @@ ShardingSphere 的单元测试仅使用 Maven 模块 `io.github.linghengqian:hiv
 
 9. 由于 https://github.com/apache/doris/issues/9426 的影响，当通过 Shardinghere JDBC 连接至 Apache Doris FE，
 用户需自行提供 `apache/doris` 集成模块相关的 GraalVM Reachability Metadata。
-
-10. 由于 https://github.com/prestodb/presto/issues/23226 的影响，当通过 Shardinghere JDBC 连接至 Presto Server，
-用户需自行提供 `com.facebook.presto:presto-jdbc` 和 `prestodb/presto` 集成模块相关的 GraalVM Reachability Metadata。
