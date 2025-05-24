@@ -10217,4 +10217,12 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_system_table_firebird">
+        <projections start-index="7" stop-index="18">
+            <column-projection owner="" name="RDB$MAP_NAME" start-index="7" stop-index="18"/>
+        </projections>
+        <from>
+            <simple-table name="RDB$AUTH_MAPPING" start-index="25" stop-index="40"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
