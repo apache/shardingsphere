@@ -41,19 +41,19 @@ class StatisticsCollectJobWorkerTest {
     
     @BeforeEach
     void setUp() {
-        jobWorker = new StatisticsCollectJobWorker(contextManager);
+        jobWorker = new StatisticsCollectJobWorker();
     }
     
     @Test
     void assertInitializeTwice() {
-        jobWorker.initialize();
-        jobWorker.initialize();
+        jobWorker.initialize(contextManager);
+        jobWorker.initialize(contextManager);
         verify(contextManager.getComputeNodeInstanceContext()).getModeConfiguration();
     }
     
     @Test
     void assertInitializeWithNotZooKeeperRepository() {
-        jobWorker.initialize();
+        jobWorker.initialize(contextManager);
         assertNull(getScheduleJobBootstrap());
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.variable;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueExcepti
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.quartz.CronExpression;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -69,12 +71,19 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     private Object getValue(final TypedPropertyKey propertyKey, final String value) {
         try {
             Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
+            checkProxyMetaDataCollectorCron(propertyKey, value);
             if (Enum.class.isAssignableFrom(propertyKey.getType())) {
                 return propertyValue.toString();
             }
             return TypedSPI.class.isAssignableFrom(propertyKey.getType()) ? ((TypedSPI) propertyValue).getType().toString() : propertyValue;
         } catch (final TypedPropertyValueException ignored) {
             throw new InvalidVariableValueException(value);
+        }
+    }
+    
+    private void checkProxyMetaDataCollectorCron(final TypedPropertyKey propertyKey, final String value) {
+        if (TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON == propertyKey) {
+            ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(value) && CronExpression.isValidExpression(value), () -> new InvalidVariableValueException(value));
         }
     }
     
