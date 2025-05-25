@@ -90,9 +90,9 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         String sql = "SET " + concatenatedGlobalVariables;
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+                connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(databaseType, sqlStatement, Collections.emptyList());
         DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance().newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaDataContexts.getMetaData()),
                 connectionSession.getDatabaseConnectionManager(), false);
