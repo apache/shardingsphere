@@ -76,8 +76,9 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class OpenGaussComBatchBindExecutorTest {
     
-    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(
-            TypedSPILoader.getService(DatabaseType.class, "openGauss"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
+    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Test
     void assertExecute() throws SQLException {
@@ -85,6 +86,7 @@ class OpenGaussComBatchBindExecutorTest {
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(),
@@ -148,7 +150,7 @@ class OpenGaussComBatchBindExecutorTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("foo_ds"));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "openGauss"));
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(result.containsSchema("public")).thenReturn(true);
