@@ -88,8 +88,9 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final int BATCH_SIZE = 10;
     
-    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(
-            TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Test
     void assertExecute() throws SQLException {
@@ -109,6 +110,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     private ConnectionSession mockConnectionSession() throws SQLException {
         ConnectionSession result = mock(ConnectionSession.class);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(parserEngine.parse(SQL, false));
         when(result.getCurrentDatabaseName()).thenReturn("foo_db");
         when(result.getUsedDatabaseName()).thenReturn("foo_db");
@@ -158,7 +160,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(database.containsSchema("public")).thenReturn(true);

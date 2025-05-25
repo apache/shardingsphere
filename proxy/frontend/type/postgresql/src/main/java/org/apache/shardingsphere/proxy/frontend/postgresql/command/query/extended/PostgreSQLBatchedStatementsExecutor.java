@@ -107,8 +107,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext createSQLStatementContext(final List<Object> params, final HintValueContext hintValueContext) {
-        return new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(),
-                params);
+        return new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(
+                preparedStatement.getSqlStatementContext().getDatabaseType(), preparedStatement.getSqlStatementContext().getSqlStatement(), params);
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
