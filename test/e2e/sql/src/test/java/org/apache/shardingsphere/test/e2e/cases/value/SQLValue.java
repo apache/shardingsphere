@@ -69,14 +69,16 @@ public final class SQLValue {
                 return Short.parseShort(value);
             case "smallint unsigned":
             case "mediumint":
+            case "mediumint unsigned":
             case "year":
             case "int":
                 return Integer.parseInt(value);
             case "int unsigned":
-            case "bigint unsigned":
             case "bigint":
             case "long":
                 return Long.parseLong(value);
+            case "bigint unsigned":
+                return new BigDecimal(value);
             case "float":
                 return Float.parseFloat(value);
             case "float unsigned":
