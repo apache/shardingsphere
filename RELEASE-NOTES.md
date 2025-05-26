@@ -53,6 +53,7 @@
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
 1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use sql federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
 1. DistSQL: Fix duplicate result when show rules used storage unit with readwrite-splitting rule - [#35129](https://github.com/apache/shardingsphere/pull/35129)
+1. DistSQL: Fix missing comma in `ALTER SQL_FEDERATION RULE` - [#35523](https://github.com/apache/shardingsphere/pull/35523)
 1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
 1. JDBC: Fix wrong jdbc database metadata pass through logic - [#34959](https://github.com/apache/shardingsphere/pull/34959)
 1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
