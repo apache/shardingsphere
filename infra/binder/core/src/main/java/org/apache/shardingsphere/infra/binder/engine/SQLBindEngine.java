@@ -51,17 +51,6 @@ public final class SQLBindEngine {
     /**
      * Bind SQL statement.
      *
-     * @param sqlStatement SQL statement
-     * @param params parameters
-     * @return SQL statement context
-     */
-    public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
-        return bind(sqlStatement.getDatabaseType(), sqlStatement, params);
-    }
-    
-    /**
-     * Bind SQL statement.
-     *
      * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param params parameters
