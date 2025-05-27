@@ -80,14 +80,15 @@ public final class SQLValue {
             case "bigint unsigned":
                 return new BigDecimal(value);
             case "float":
+            case "real":
                 return Float.parseFloat(value);
             case "float unsigned":
             case "double":
+            case "double unsigned":
                 return Double.parseDouble(value);
             case "numeric":
-                return value.contains(".") ? Double.parseDouble(value) : Long.parseLong(value);
-            case "double unsigned":
             case "decimal":
+            case "numeric unsigned":
             case "decimal unsigned":
                 return new BigDecimal(value);
             case "boolean":
