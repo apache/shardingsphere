@@ -56,11 +56,14 @@ public final class SQLValue {
             case "String":
             case "varchar":
             case "char":
+            case "tinytext":
             case "text":
             case "longtext":
             case "mediumtext":
             case "json":
             case "clob":
+            case "enum":
+            case "set":
                 return value;
             case "tinyint":
                 return Byte.parseByte(value);
@@ -117,6 +120,7 @@ public final class SQLValue {
                     return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
                 }
                 return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisFormatter()));
+            case "tinyblob":
             case "blob":
             case "longblob":
             case "mediumblob":
