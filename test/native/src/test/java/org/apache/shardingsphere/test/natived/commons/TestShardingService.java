@@ -129,8 +129,8 @@ public final class TestShardingService {
     
     /**
      * Process success in Presto Iceberg Connector.
-     * TODO ShardingSphere's Presto integration has a bug in transaction support.
-     *  Can't execute {@code orderItemRepository.assertRollbackWithTransactions();} here.
+     * There are bugs with Presto's transaction support, see <a href="https://github.com/prestodb/presto/issues/25204">prestodb/presto#25204</a> .
+     * Can't execute {@code orderItemRepository.assertRollbackWithTransactions();} here.
      *
      * @throws SQLException SQL exception
      */

@@ -176,8 +176,7 @@ ShardingSphere JDBC DataSource does not yet support the execution of Presto's `c
 ### Transaction Limitations
 
 Presto does not support local transactions, XA transactions, or Seata's AT mode transactions at the ShardingSphere integration level.
-
-There are known issues on the ShardingSphere side for Presto's local transactions at the ShardingSphere integration level.
+There are bugs with Presto's own transaction support, see https://github.com/prestodb/presto/issues/25204 .
 
 ### Connector Limitations
 

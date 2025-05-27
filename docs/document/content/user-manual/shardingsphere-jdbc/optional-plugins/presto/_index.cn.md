@@ -175,7 +175,7 @@ ShardingSphere JDBC DataSource 尚不支持执行 Presto 的 `create table` 和 
 ### 事务限制
 
 Presto 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 Seata 的 AT 模式事务。
-对于 Presto 在 ShardingSphere 集成级别的本地事务，在 ShardingSphere 一侧存在已知问题。
+Presto 自身的事务支持存在问题，参考 https://github.com/prestodb/presto/issues/25204 。
 
 ### 连接器限制
 
