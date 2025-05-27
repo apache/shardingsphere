@@ -94,15 +94,28 @@ public final class SQLValue {
             case "boolean":
                 return Boolean.parseBoolean(value);
             case "Date":
+            case "date":
                 return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
             case "datetime":
+                if (26 == value.length()) {
+                    return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getFullMillisFormatter()));
+                }
                 if (10 == value.length()) {
                     return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
                 }
                 return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
             case "time":
+                if (value.length() > 8) {
+                    return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getFullTimeFormatter()));
+                }
                 return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getTimeFormatter()));
             case "timestamp":
+                if (26 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getFullMillisFormatter()));
+                }
+                if (19 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
+                }
                 return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisFormatter()));
             case "blob":
             case "longblob":
