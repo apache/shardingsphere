@@ -142,6 +142,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.BinlogStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CheckTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ChecksumTableStatement;
@@ -158,6 +159,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillSta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RepairTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RestartStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
@@ -190,6 +192,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowPlu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowPrivilegesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcedureCodeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcedureStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProfilesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowRelayLogEventsStatement;
@@ -211,10 +214,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBinlogStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisResetPersistStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcessListStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -344,7 +344,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitResetPersist(final ResetPersistContext ctx) {
-        return new DorisResetPersistStatement(null != ctx.ifExists(), null == ctx.identifier() ? null : new IdentifierValue(ctx.identifier().getText()));
+        return new ResetPersistStatement(null != ctx.ifExists(), null == ctx.identifier() ? null : new IdentifierValue(ctx.identifier().getText()));
     }
     
     @Override
@@ -803,7 +803,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitBinlog(final BinlogContext ctx) {
-        return new DorisBinlogStatement(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
+        return new BinlogStatement(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
     }
     
     @Override
@@ -893,7 +893,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcesslist(final ShowProcesslistContext ctx) {
-        return new DorisShowProcessListStatement(null != ctx.FULL());
+        return new ShowProcessListStatement(null != ctx.FULL());
     }
     
     @Override
