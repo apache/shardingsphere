@@ -148,47 +148,47 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterInstanceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterInstanceStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDeallocateStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisExecuteStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisTruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisSelectStatement;
@@ -207,7 +207,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        DorisCreateViewStatement result = new DorisCreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement();
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
@@ -235,7 +235,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        DorisCreateDatabaseStatement result = new DorisCreateDatabaseStatement();
+        CreateDatabaseStatement result = new CreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
         result.setIfNotExists(null != ctx.ifNotExists());
         return result;
@@ -243,12 +243,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new DorisAlterDatabaseStatement();
+        return new AlterDatabaseStatement();
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        DorisDropDatabaseStatement result = new DorisDropDatabaseStatement();
+        DropDatabaseStatement result = new DropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
         result.setIfExists(null != ctx.ifExists());
         return result;
@@ -519,7 +519,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRenameTable(final RenameTableContext ctx) {
-        DorisRenameTableStatement result = new DorisRenameTableStatement();
+        RenameTableStatement result = new RenameTableStatement();
         for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
             TableNameContext tableName = ctx.tableName(i);
             TableNameContext renameTableName = ctx.tableName(i + 1);
@@ -676,7 +676,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        DorisTruncateStatement result = new DorisTruncateStatement();
+        TruncateStatement result = new TruncateStatement();
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
@@ -755,12 +755,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new DorisAlterProcedureStatement();
+        return new AlterProcedureStatement();
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new DorisDropProcedureStatement();
+        return new DropProcedureStatement();
     }
     
     @Override
@@ -829,7 +829,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         } else if (null != ctx.dropTable()) {
             sqlStatement = (DorisDropTableStatement) visit(ctx.dropTable());
         } else if (null != ctx.truncateTable()) {
-            sqlStatement = (DorisTruncateStatement) visit(ctx.truncateTable());
+            sqlStatement = (TruncateStatement) visit(ctx.truncateTable());
         } else if (null != ctx.insert()) {
             sqlStatement = (DorisInsertStatement) visit(ctx.insert());
         } else if (null != ctx.replace()) {
@@ -919,77 +919,77 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new DorisAlterFunctionStatement();
+        return new AlterFunctionStatement();
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DorisDropFunctionStatement();
+        return new DropFunctionStatement();
     }
     
     @Override
     public ASTNode visitCreateEvent(final CreateEventContext ctx) {
-        return new DorisCreateEventStatement();
+        return new CreateEventStatement();
     }
     
     @Override
     public ASTNode visitAlterEvent(final AlterEventContext ctx) {
-        return new DorisAlterEventStatement();
+        return new AlterEventStatement();
     }
     
     @Override
     public ASTNode visitDropEvent(final DropEventContext ctx) {
-        return new DorisDropEventStatement();
+        return new DropEventStatement();
     }
     
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
-        return new DorisAlterInstanceStatement();
+        return new AlterInstanceStatement();
     }
     
     @Override
     public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
-        return new DorisCreateLogfileGroupStatement();
+        return new CreateLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
-        return new DorisAlterLogfileGroupStatement();
+        return new AlterLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
-        return new DorisDropLogfileGroupStatement();
+        return new DropLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitCreateServer(final CreateServerContext ctx) {
-        return new DorisCreateServerStatement();
+        return new CreateServerStatement();
     }
     
     @Override
     public ASTNode visitAlterServer(final AlterServerContext ctx) {
-        return new DorisAlterServerStatement();
+        return new AlterServerStatement();
     }
     
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
-        return new DorisDropServerStatement();
+        return new DropServerStatement();
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new DorisCreateTriggerStatement();
+        return new CreateTriggerStatement();
     }
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new DorisDropTriggerStatement();
+        return new DropTriggerStatement();
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new DorisCreateTablespaceStatement();
+        return new CreateTablespaceStatement();
     }
     
     @Override
@@ -1003,7 +1003,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
-        DorisAlterTablespaceStatement result = new DorisAlterTablespaceStatement();
+        AlterTablespaceStatement result = new AlterTablespaceStatement();
         if (null != ctx.tablespace) {
             result.setTablespaceSegment(createTablespaceSegment(ctx.tablespace));
         }
@@ -1015,7 +1015,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
-        DorisAlterTablespaceStatement result = new DorisAlterTablespaceStatement();
+        AlterTablespaceStatement result = new AlterTablespaceStatement();
         if (null != ctx.tablespace) {
             result.setTablespaceSegment(createTablespaceSegment(ctx.tablespace));
         }
@@ -1031,26 +1031,26 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
-        return new DorisDropTablespaceStatement();
+        return new DropTablespaceStatement();
     }
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new DorisPrepareStatement();
+        return new PrepareStatement();
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new DorisExecuteStatement();
+        return new ExecuteStatement();
     }
     
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
-        return new DorisDeallocateStatement();
+        return new DeallocateStatement();
     }
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new DorisCreateMaterializedViewStatement();
+        return new CreateMaterializedViewStatement();
     }
 }

@@ -28,7 +28,7 @@ import java.util.Optional;
  * Show triggers status statement.
  */
 @Setter
-public abstract class ShowTriggersStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowTriggersStatement extends AbstractSQLStatement implements DALStatement {
     
     private FromDatabaseSegment fromDatabase;
     

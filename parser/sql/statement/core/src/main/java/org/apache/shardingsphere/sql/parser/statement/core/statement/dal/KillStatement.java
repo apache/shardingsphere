@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class KillStatement extends AbstractSQLStatement implements DALStatement {
+public class KillStatement extends AbstractSQLStatement implements DALStatement {
     
     private String processId;
     

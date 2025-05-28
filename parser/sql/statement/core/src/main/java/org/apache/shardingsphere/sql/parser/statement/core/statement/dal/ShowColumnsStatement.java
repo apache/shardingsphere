@@ -30,7 +30,7 @@ import java.util.Optional;
  * Show columns statement.
  */
 @Setter
-public abstract class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement {
     
     @Getter
     private SimpleTableSegment table;

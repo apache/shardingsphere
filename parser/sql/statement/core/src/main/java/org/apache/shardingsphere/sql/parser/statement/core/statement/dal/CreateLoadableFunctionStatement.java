@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create loadable function statement.
  */
-public abstract class CreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement {
+public class CreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement {
 }

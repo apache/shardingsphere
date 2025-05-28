@@ -28,7 +28,7 @@ import java.util.Optional;
  * Show table status statement.
  */
 @Setter
-public abstract class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement {
     
     private FromDatabaseSegment fromDatabase;
     

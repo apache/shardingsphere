@@ -27,7 +27,7 @@ import java.util.LinkedList;
  * Drop user statement.
  */
 @Getter
-public abstract class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
+public class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
     
     private final Collection<String> users = new LinkedList<>();
 }

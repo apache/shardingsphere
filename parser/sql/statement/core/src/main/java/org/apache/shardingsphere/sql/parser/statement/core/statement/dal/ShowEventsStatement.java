@@ -28,7 +28,7 @@ import java.util.Optional;
  * Show events statement.
  */
 @Setter
-public abstract class ShowEventsStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowEventsStatement extends AbstractSQLStatement implements DALStatement {
     
     private FromDatabaseSegment fromDatabase;
     

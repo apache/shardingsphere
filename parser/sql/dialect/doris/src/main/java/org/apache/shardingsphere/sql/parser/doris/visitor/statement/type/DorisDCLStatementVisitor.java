@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateU
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantIdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelGlobalContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelDatabaseGlobalContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelGlobalContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantLevelTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantProxyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.GrantRoleOrPrivilegeOnToContext;
@@ -97,20 +97,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOption
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisDropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisRevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisSetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisSetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisSetRoleStatement;
 
 import java.util.stream.Collectors;
 
@@ -705,43 +705,43 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        DorisDropUserStatement result = new DorisDropUserStatement();
+        DropUserStatement result = new DropUserStatement();
         result.getUsers().addAll(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
         return result;
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new DorisAlterUserStatement();
+        return new AlterUserStatement();
     }
     
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new DorisRenameUserStatement();
+        return new RenameUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new DorisCreateRoleStatement();
+        return new CreateRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DorisDropRoleStatement();
+        return new DropRoleStatement();
     }
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new DorisSetDefaultRoleStatement();
+        return new SetDefaultRoleStatement();
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new DorisSetRoleStatement();
+        return new SetRoleStatement();
     }
     
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new DorisSetPasswordStatement();
+        return new SetPasswordStatement();
     }
 }

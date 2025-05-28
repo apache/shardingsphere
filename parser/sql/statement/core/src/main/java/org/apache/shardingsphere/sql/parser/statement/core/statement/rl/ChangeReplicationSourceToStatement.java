@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Change replication source statement.
  */
-public abstract class ChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement {
+public class ChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement {
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class ShowCreateEventStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowCreateEventStatement extends AbstractSQLStatement implements DALStatement {
     
     private String eventName;
 }

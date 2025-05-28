@@ -41,13 +41,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.HandlerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.ImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCallStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisDoStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisHandlerStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadXMLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -61,7 +61,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        DorisCallStatement result = new DorisCallStatement();
+        CallStatement result = new CallStatement();
         String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
         result.setProcedureName(procedureName);
         List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
@@ -71,19 +71,19 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        DorisDoStatement result = new DorisDoStatement();
+        DoStatement result = new DoStatement();
         result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
         return result;
     }
     
     @Override
     public ASTNode visitHandlerStatement(final HandlerStatementContext ctx) {
-        return new DorisHandlerStatement();
+        return new HandlerStatement();
     }
     
     @Override
     public ASTNode visitImportStatement(final ImportStatementContext ctx) {
-        return new DorisImportStatement();
+        return new ImportStatement();
     }
     
     @Override
@@ -93,14 +93,14 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        DorisLoadDataStatement result = new DorisLoadDataStatement();
+        LoadDataStatement result = new LoadDataStatement();
         result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        DorisLoadXMLStatement result = new DorisLoadXMLStatement();
+        LoadXMLStatement result = new LoadXMLStatement();
         result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }

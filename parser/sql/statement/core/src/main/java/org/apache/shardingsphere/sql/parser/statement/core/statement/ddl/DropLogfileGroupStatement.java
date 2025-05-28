@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop logfile group statement.
  */
-public abstract class DropLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

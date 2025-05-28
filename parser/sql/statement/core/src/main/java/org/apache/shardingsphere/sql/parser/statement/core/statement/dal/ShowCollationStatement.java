@@ -27,7 +27,7 @@ import java.util.Optional;
  * Show collation statement.
  */
 @Setter
-public abstract class ShowCollationStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowCollationStatement extends AbstractSQLStatement implements DALStatement {
     
     private ShowFilterSegment filter;
     

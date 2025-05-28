@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show privileges statement.
  */
-public abstract class ShowPrivilegesStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowPrivilegesStatement extends AbstractSQLStatement implements DALStatement {
 }

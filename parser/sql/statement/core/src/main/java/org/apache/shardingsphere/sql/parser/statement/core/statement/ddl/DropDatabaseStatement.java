@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class DropDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
     
     private boolean ifExists;
     

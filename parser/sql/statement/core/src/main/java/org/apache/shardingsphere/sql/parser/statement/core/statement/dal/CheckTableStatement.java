@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public abstract class CheckTableStatement extends AbstractSQLStatement implements DALStatement {
+public class CheckTableStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

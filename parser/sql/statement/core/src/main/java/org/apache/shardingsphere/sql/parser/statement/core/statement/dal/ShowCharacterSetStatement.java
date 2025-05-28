@@ -27,7 +27,7 @@ import java.util.Optional;
  * Show character set statement.
  */
 @Setter
-public abstract class ShowCharacterSetStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowCharacterSetStatement extends AbstractSQLStatement implements DALStatement {
     
     private ShowFilterSegment filter;
     

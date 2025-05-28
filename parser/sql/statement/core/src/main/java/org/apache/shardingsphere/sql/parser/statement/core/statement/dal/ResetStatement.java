@@ -28,7 +28,7 @@ import java.util.List;
  * Reset statement.
  */
 @Getter
-public abstract class ResetStatement extends AbstractSQLStatement implements DALStatement {
+public class ResetStatement extends AbstractSQLStatement implements DALStatement {
     
     private final List<ResetOptionSegment> options = new LinkedList<>();
 }

@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Load index info statement.
  */
 @Getter
-public abstract class LoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
+public class LoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
 }

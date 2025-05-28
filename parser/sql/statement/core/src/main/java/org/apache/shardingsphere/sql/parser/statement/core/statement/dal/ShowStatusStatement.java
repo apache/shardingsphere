@@ -27,7 +27,7 @@ import java.util.Optional;
  * Show status statement.
  */
 @Setter
-public abstract class ShowStatusStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowStatusStatement extends AbstractSQLStatement implements DALStatement {
     
     private ShowFilterSegment filter;
     
