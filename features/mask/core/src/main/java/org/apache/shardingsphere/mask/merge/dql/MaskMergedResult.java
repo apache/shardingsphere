@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.mask.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mask.rule.MaskTable;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -37,7 +38,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class MaskMergedResult implements MergedResult {
     
-    private final MaskRule maskRule;
+    private final ShardingSphereDatabase database;
+    
+    private final ShardingSphereMetaData metaData;
     
     private final SelectStatementContext selectStatementContext;
     
@@ -51,15 +54,20 @@ public final class MaskMergedResult implements MergedResult {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        Optional<ColumnProjection> columnProjection = selectStatementContext.getProjectionsContext().findColumnProjection(columnIndex);
-        if (!columnProjection.isPresent()) {
+        Optional<ColumnSegmentBoundInfo> columnSegmentBoundInfo = selectStatementContext.findColumnBoundInfo(columnIndex);
+        if (!columnSegmentBoundInfo.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<MaskTable> maskTable = maskRule.findMaskTable(columnProjection.get().getOriginalTable().getValue());
-        if (!maskTable.isPresent()) {
+        String originalTableName = columnSegmentBoundInfo.get().getOriginalTable().getValue();
+        String originalColumnName = columnSegmentBoundInfo.get().getOriginalColumn().getValue();
+        ShardingSphereDatabase database = metaData.containsDatabase(columnSegmentBoundInfo.get().getOriginalDatabase().getValue())
+                ? metaData.getDatabase(columnSegmentBoundInfo.get().getOriginalDatabase().getValue())
+                : this.database;
+        Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
+        if (!rule.isPresent() || !rule.get().findMaskTable(originalTableName).map(optional -> optional.findAlgorithm(originalColumnName).isPresent()).orElse(false)) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<MaskAlgorithm> maskAlgorithm = maskTable.get().findAlgorithm(columnProjection.get().getName().getValue());
+        Optional<MaskAlgorithm> maskAlgorithm = rule.get().findMaskTable(originalTableName).flatMap(optional -> optional.findAlgorithm(originalColumnName));
         if (!maskAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
