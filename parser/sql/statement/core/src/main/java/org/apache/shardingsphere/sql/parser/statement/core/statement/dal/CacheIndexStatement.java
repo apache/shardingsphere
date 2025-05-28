@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * Cache index statement.
  */
 @Getter
-public abstract class CacheIndexStatement extends AbstractSQLStatement implements DALStatement {
+public class CacheIndexStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<CacheTableIndexSegment> tableIndexes = new LinkedList<>();
     

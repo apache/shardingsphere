@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create logfile group statement.
  */
-public abstract class CreateLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

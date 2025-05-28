@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Lock statement.
  */
 @Getter
-public abstract class LockStatement extends AbstractSQLStatement implements TCLStatement {
+public class LockStatement extends AbstractSQLStatement implements TCLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

@@ -28,7 +28,7 @@ import java.util.Optional;
  * Show open tables statement.
  */
 @Setter
-public abstract class ShowOpenTablesStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowOpenTablesStatement extends AbstractSQLStatement implements DALStatement {
     
     private FromDatabaseSegment fromDatabase;
     

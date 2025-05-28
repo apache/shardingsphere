@@ -28,7 +28,7 @@ import java.util.List;
  * Do statement.
  */
 @Getter
-public abstract class DoStatement extends AbstractSQLStatement implements DMLStatement {
+public class DoStatement extends AbstractSQLStatement implements DMLStatement {
     
     private final List<ExpressionSegment> parameters = new ArrayList<>();
 }

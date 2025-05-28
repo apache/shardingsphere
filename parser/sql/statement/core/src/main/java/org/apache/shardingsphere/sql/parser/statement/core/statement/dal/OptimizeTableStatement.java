@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Optimize table statement.
  */
 @Getter
-public abstract class OptimizeTableStatement extends AbstractSQLStatement implements DALStatement {
+public class OptimizeTableStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

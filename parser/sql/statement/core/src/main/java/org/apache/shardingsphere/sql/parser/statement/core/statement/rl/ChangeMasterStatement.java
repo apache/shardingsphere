@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Change master statement.
  */
-public abstract class ChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
+public class ChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
 }

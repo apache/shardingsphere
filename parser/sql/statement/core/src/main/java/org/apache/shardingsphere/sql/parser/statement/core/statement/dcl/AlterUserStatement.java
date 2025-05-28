@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter user statement.
  */
-public abstract class AlterUserStatement extends AbstractSQLStatement implements DCLStatement {
+public class AlterUserStatement extends AbstractSQLStatement implements DCLStatement {
 }

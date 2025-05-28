@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Start slave statement.
  */
-public abstract class StartSlaveStatement extends AbstractSQLStatement implements RLStatement {
+public class StartSlaveStatement extends AbstractSQLStatement implements RLStatement {
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter procedure statement.
  */
-public abstract class AlterProcedureStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterProcedureStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public abstract class CallStatement extends AbstractSQLStatement implements DMLStatement {
+public class CallStatement extends AbstractSQLStatement implements DMLStatement {
     
     private String procedureName;
     

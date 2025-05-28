@@ -27,7 +27,7 @@ import java.util.List;
  * Install component statement.
  */
 @Getter
-public abstract class InstallComponentStatement extends AbstractSQLStatement implements DALStatement {
+public class InstallComponentStatement extends AbstractSQLStatement implements DALStatement {
     
     private final List<String> components = new LinkedList<>();
 }

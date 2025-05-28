@@ -27,7 +27,7 @@ import java.util.Optional;
  * Show variables statement.
  */
 @Setter
-public abstract class ShowVariablesStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowVariablesStatement extends AbstractSQLStatement implements DALStatement {
     
     private ShowFilterSegment filter;
     

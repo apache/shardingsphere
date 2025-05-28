@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class PrepareStatement extends AbstractSQLStatement implements DDLStatement {
+public class PrepareStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SelectStatement select;
     

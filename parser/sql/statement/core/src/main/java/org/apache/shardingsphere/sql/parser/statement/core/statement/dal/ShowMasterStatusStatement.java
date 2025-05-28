@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show master status statement.
  */
-public abstract class ShowMasterStatusStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowMasterStatusStatement extends AbstractSQLStatement implements DALStatement {
 }

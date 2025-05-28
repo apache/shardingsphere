@@ -27,7 +27,7 @@ import java.util.Optional;
  * Show databases statement.
  */
 @Setter
-public abstract class ShowDatabasesStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowDatabasesStatement extends AbstractSQLStatement implements DALStatement {
     
     private ShowFilterSegment filter;
     

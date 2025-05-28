@@ -27,7 +27,7 @@ import java.util.List;
  * Uninstall component statement.
  */
 @Getter
-public abstract class UninstallComponentStatement extends AbstractSQLStatement implements DALStatement {
+public class UninstallComponentStatement extends AbstractSQLStatement implements DALStatement {
     
     private final List<String> components = new LinkedList<>();
 }
