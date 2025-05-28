@@ -39,7 +39,7 @@ public final class LiteralExpressionConverter {
     
     private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1F);
     
-    private static final Collection<String> TIME_UNIT_NAMES = new HashSet<>(6, 1F);
+    private static final Collection<String> TIME_UNIT_NAMES = new HashSet<>(7, 1F);
     
     static {
         TRIM_FUNCTION_FLAGS.add("BOTH");
@@ -47,6 +47,7 @@ public final class LiteralExpressionConverter {
         TRIM_FUNCTION_FLAGS.add("TRAILING");
         TIME_UNIT_NAMES.add("YEAR");
         TIME_UNIT_NAMES.add("MONTH");
+        TIME_UNIT_NAMES.add("WEEK");
         TIME_UNIT_NAMES.add("DAY");
         TIME_UNIT_NAMES.add("HOUR");
         TIME_UNIT_NAMES.add("MINUTE");

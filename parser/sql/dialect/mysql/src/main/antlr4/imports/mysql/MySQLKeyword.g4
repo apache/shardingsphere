@@ -3206,6 +3206,10 @@ ZONE
     : Z O N E
     ;
 
+TIMESTAMPADD
+    : T I M E S T A M P A D D
+    ;
+
 TIMESTAMPDIFF
     : T I M E S T A M P D I F F
     ;
