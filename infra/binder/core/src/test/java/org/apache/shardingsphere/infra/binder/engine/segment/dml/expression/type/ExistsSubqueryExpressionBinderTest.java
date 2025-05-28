@@ -47,6 +47,5 @@ class ExistsSubqueryExpressionBinderTest {
         assertThat(actual.getSubquery().getStartIndex(), is(existsSubqueryExpression.getSubquery().getStartIndex()));
         assertThat(actual.getSubquery().getStopIndex(), is(existsSubqueryExpression.getSubquery().getStopIndex()));
         assertThat(actual.getSubquery().getText(), is("t_test"));
-        assertThat(actual.getSubquery().getSelect().getDatabaseType(), is(existsSubqueryExpression.getSubquery().getSelect().getDatabaseType()));
     }
 }

@@ -133,13 +133,13 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this(connection, sql, resultSetType, resultSetConcurrency, resultSetHoldability, false, null);
     }
     
-    private ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql, final int resultSetType, final int resultSetConcurrency,
+    private ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String originSQL, final int resultSetType, final int resultSetConcurrency,
                                             final int resultSetHoldability, final boolean returnGeneratedKeys, final String[] columns) throws SQLException {
-        ShardingSpherePreconditions.checkNotEmpty(sql, () -> new EmptySQLException().toSQLException());
+        ShardingSpherePreconditions.checkNotEmpty(originSQL, () -> new EmptySQLException().toSQLException());
         this.connection = connection;
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
-        this.sql = SQLHintUtils.removeHint(sql);
-        hintValueContext = SQLHintUtils.extractHint(sql);
+        sql = SQLHintUtils.removeHint(originSQL);
+        hintValueContext = SQLHintUtils.extractHint(originSQL);
         DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
         SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType).parse(sql, true);
         sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
