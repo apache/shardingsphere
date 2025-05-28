@@ -137,6 +137,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TimeStampAddFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TimeStampDiffFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TrimFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
@@ -1050,6 +1051,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.timeStampDiffFunction()) {
             return visit(ctx.timeStampDiffFunction());
         }
+        if (null != ctx.timeStampAddFunction()) {
+            return visit(ctx.timeStampAddFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
     }
     
@@ -1207,8 +1211,17 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     }
     
     @Override
+    public ASTNode visitTimeStampAddFunction(final TimeStampAddFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TIMESTAMPADD().getText(), getOriginalText(ctx));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.intervalUnit().getStart().getStartIndex(), ctx.intervalUnit().getStop().getStopIndex(), ctx.intervalUnit().getText()));
+        result.getParameters().addAll(getExpressions(ctx.expr()));
+        return result;
+    }
+    
+    @Override
     public ASTNode visitTimeStampDiffFunction(final TimeStampDiffFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TIMESTAMPDIFF().getText(), getOriginalText(ctx));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.intervalUnit().getStart().getStartIndex(), ctx.intervalUnit().getStop().getStopIndex(), ctx.intervalUnit().getText()));
         result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
