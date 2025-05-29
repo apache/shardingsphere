@@ -27,7 +27,7 @@ import java.util.Optional;
  * Create schema statement.
  */
 @Setter
-public abstract class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IdentifierValue schemaName;
     

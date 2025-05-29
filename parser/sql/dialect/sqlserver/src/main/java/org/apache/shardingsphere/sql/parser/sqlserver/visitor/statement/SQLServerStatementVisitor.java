@@ -218,6 +218,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.UpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -231,7 +232,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerMergeStatement;
@@ -1685,7 +1685,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdateStatistics(final UpdateStatisticsContext ctx) {
-        SQLServerUpdateStatisticsStatement result = new SQLServerUpdateStatisticsStatement();
+        UpdateStatisticsStatement result = new UpdateStatisticsStatement();
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }
