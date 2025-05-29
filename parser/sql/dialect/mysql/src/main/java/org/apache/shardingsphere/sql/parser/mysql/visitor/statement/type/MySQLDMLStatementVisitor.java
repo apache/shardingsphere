@@ -47,13 +47,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.HandlerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.ImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLCallStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDoStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -67,7 +67,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        MySQLCallStatement result = new MySQLCallStatement();
+        CallStatement result = new CallStatement();
         String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
         result.setProcedureName(procedureName);
         List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
@@ -77,19 +77,19 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        MySQLDoStatement result = new MySQLDoStatement();
+        DoStatement result = new DoStatement();
         result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
         return result;
     }
     
     @Override
     public ASTNode visitHandlerStatement(final HandlerStatementContext ctx) {
-        return new MySQLHandlerStatement();
+        return new HandlerStatement();
     }
     
     @Override
     public ASTNode visitImportStatement(final ImportStatementContext ctx) {
-        return new MySQLImportStatement();
+        return new ImportStatement();
     }
     
     @Override
@@ -99,14 +99,14 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        MySQLLoadDataStatement result = new MySQLLoadDataStatement();
+        LoadDataStatement result = new LoadDataStatement();
         result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        MySQLLoadXMLStatement result = new MySQLLoadXMLStatement();
+        LoadXMLStatement result = new LoadXMLStatement();
         result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }

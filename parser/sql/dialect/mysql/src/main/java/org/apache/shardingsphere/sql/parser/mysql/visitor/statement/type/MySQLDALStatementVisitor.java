@@ -140,81 +140,81 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.BinlogStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CheckTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CloneStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateLoadableFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DelimiterStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.HelpStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallComponentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadIndexInfoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RepairTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetPersistStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RestartStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinaryLogsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinlogEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCharacterSetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCollationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowEngineStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowErrorsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowFunctionCodeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowGrantsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowMasterStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowOpenTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowOtherStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowPluginsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowPrivilegesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcedureCodeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowProfilesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowRelayLogEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowReplicaStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowReplicasStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowSlaveHostsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowSlaveStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTriggersStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowVariablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowWarningsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShutdownStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UninstallComponentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UninstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLAlterResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLAnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCacheIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCheckTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChecksumTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLHelpStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLInstallComponentStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLInstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLLoadIndexInfoStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRepairTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRestartStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowBinaryLogsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowBinlogEventsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCharacterSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCollationStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowEngineStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowErrorsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowEventsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowFunctionCodeStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowFunctionStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowGrantsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowMasterStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowOpenTablesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowOtherStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowPluginsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowPrivilegesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcedureCodeStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcedureStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProfilesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowRelayLogEventsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowReplicaStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowReplicasStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowSlaveHostsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowSlaveStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTriggersStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowVariablesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowWarningsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShutdownStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallComponentStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -227,26 +227,26 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
-        MySQLUninstallPluginStatement result = new MySQLUninstallPluginStatement();
+        UninstallPluginStatement result = new UninstallPluginStatement();
         result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
-        MySQLShowCreateDatabaseStatement result = new MySQLShowCreateDatabaseStatement();
+        ShowCreateDatabaseStatement result = new ShowCreateDatabaseStatement();
         result.setDatabaseName(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
     
     @Override
     public ASTNode visitShowBinaryLogs(final ShowBinaryLogsContext ctx) {
-        return new MySQLShowBinaryLogsStatement();
+        return new ShowBinaryLogsStatement();
     }
     
     @Override
     public ASTNode visitShowStatus(final ShowStatusContext ctx) {
-        MySQLShowStatusStatement result = new MySQLShowStatusStatement();
+        ShowStatusStatement result = new ShowStatusStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -256,50 +256,50 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
-        return new MySQLShowCreateViewStatement();
+        return new ShowCreateViewStatement();
     }
     
     @Override
     public ASTNode visitShowEngines(final ShowEnginesContext ctx) {
-        return new MySQLShowOtherStatement();
+        return new ShowOtherStatement();
     }
     
     @Override
     public ASTNode visitShowEngine(final ShowEngineContext ctx) {
-        MySQLShowEngineStatement result = new MySQLShowEngineStatement();
+        ShowEngineStatement result = new ShowEngineStatement();
         result.setEngineName(ctx.engineRef().getText());
         return result;
     }
     
     @Override
     public ASTNode visitShowCharset(final ShowCharsetContext ctx) {
-        return new MySQLShowOtherStatement();
+        return new ShowOtherStatement();
     }
     
     @Override
     public ASTNode visitShowCreateEvent(final ShowCreateEventContext ctx) {
-        MySQLShowCreateEventStatement result = new MySQLShowCreateEventStatement();
+        ShowCreateEventStatement result = new ShowCreateEventStatement();
         result.setEventName(((IdentifierValue) visit(ctx.eventName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
-        MySQLShowCreateFunctionStatement result = new MySQLShowCreateFunctionStatement();
+        ShowCreateFunctionStatement result = new ShowCreateFunctionStatement();
         result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
         return result;
     }
     
     @Override
     public ASTNode visitShowCreateProcedure(final ShowCreateProcedureContext ctx) {
-        MySQLShowCreateProcedureStatement result = new MySQLShowCreateProcedureStatement();
+        ShowCreateProcedureStatement result = new ShowCreateProcedureStatement();
         result.setProcedureName(((IdentifierValue) visit(ctx.procedureName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitShowBinlogEvents(final ShowBinlogEventsContext ctx) {
-        MySQLShowBinlogEventsStatement result = new MySQLShowBinlogEventsStatement();
+        ShowBinlogEventsStatement result = new ShowBinlogEventsStatement();
         if (null != ctx.logName()) {
             result.setLogName(ctx.logName().getText());
         }
@@ -311,7 +311,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
-        MySQLShowErrorsStatement result = new MySQLShowErrorsStatement();
+        ShowErrorsStatement result = new ShowErrorsStatement();
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
@@ -320,7 +320,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowWarnings(final ShowWarningsContext ctx) {
-        MySQLShowWarningsStatement result = new MySQLShowWarningsStatement();
+        ShowWarningsStatement result = new ShowWarningsStatement();
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
@@ -333,7 +333,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != persistContext) {
             return visit(persistContext);
         }
-        MySQLResetStatement result = new MySQLResetStatement();
+        ResetStatement result = new ResetStatement();
         for (ResetOptionContext each : ctx.resetOption()) {
             if (null != each.MASTER() || null != each.SLAVE()) {
                 result.getOptions().add((ResetOptionSegment) visit(each));
@@ -382,13 +382,13 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowReplicas(final ShowReplicasContext ctx) {
-        return new MySQLShowReplicasStatement();
+        return new ShowReplicasStatement();
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRepairTable(final RepairTableContext ctx) {
-        MySQLRepairTableStatement result = new MySQLRepairTableStatement();
+        RepairTableStatement result = new RepairTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
@@ -396,14 +396,14 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        MySQLAnalyzeTableStatement result = new MySQLAnalyzeTableStatement();
+        AnalyzeTableStatement result = new AnalyzeTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
-        MySQLCacheIndexStatement result = new MySQLCacheIndexStatement();
+        CacheIndexStatement result = new CacheIndexStatement();
         if (null != ctx.cacheTableIndexList()) {
             for (CacheTableIndexListContext each : ctx.cacheTableIndexList()) {
                 result.getTableIndexes().add((CacheTableIndexSegment) visit(each));
@@ -448,7 +448,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
-        MySQLChecksumTableStatement result = new MySQLChecksumTableStatement();
+        ChecksumTableStatement result = new ChecksumTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
@@ -458,12 +458,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.tablesOption()) {
             return visit(ctx.tablesOption());
         }
-        return new MySQLFlushStatement();
+        return new FlushStatement();
     }
     
     @Override
     public ASTNode visitTablesOption(final TablesOptionContext ctx) {
-        MySQLFlushStatement result = new MySQLFlushStatement();
+        FlushStatement result = new FlushStatement();
         result.setFlushTable(true);
         for (TableNameContext each : ctx.tableName()) {
             result.getTables().add((SimpleTableSegment) visit(each));
@@ -473,7 +473,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        MySQLKillStatement result = new MySQLKillStatement();
+        KillStatement result = new KillStatement();
         if (null != ctx.AT_()) {
             result.setProcessId(ctx.AT_().getText() + ctx.IDENTIFIER_().getText());
         } else {
@@ -490,7 +490,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadIndexInfo(final LoadIndexInfoContext ctx) {
-        MySQLLoadIndexInfoStatement result = new MySQLLoadIndexInfoStatement();
+        LoadIndexInfoStatement result = new LoadIndexInfoStatement();
         for (LoadTableIndexListContext each : ctx.loadTableIndexList()) {
             result.getTableIndexes().add((LoadTableIndexSegment) visit(each));
         }
@@ -513,14 +513,14 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        MySQLInstallPluginStatement result = new MySQLInstallPluginStatement();
+        InstallPluginStatement result = new InstallPluginStatement();
         result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
-        MySQLCloneStatement result = new MySQLCloneStatement();
+        CloneStatement result = new CloneStatement();
         result.setCloneActionSegment((CloneActionSegment) visit(ctx.cloneAction()));
         return result;
     }
@@ -549,14 +549,14 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
-        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement();
+        OptimizeTableStatement result = new OptimizeTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        MySQLUseStatement result = new MySQLUseStatement();
+        UseStatement result = new UseStatement();
         result.setDatabase(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
         return result;
     }
@@ -604,14 +604,14 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
-        MySQLShowProcedureCodeStatement result = new MySQLShowProcedureCodeStatement();
+        ShowProcedureCodeStatement result = new ShowProcedureCodeStatement();
         result.setFunction((FunctionSegment) visit(ctx.functionName()));
         return result;
     }
     
     @Override
     public ASTNode visitShowProfile(final ShowProfileContext ctx) {
-        MySQLShowProfileStatement result = new MySQLShowProfileStatement();
+        ShowProfileStatement result = new ShowProfileStatement();
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
@@ -620,12 +620,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowProfiles(final ShowProfilesContext ctx) {
-        return new MySQLShowProfilesStatement();
+        return new ShowProfilesStatement();
     }
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement();
+        ShowDatabasesStatement result = new ShowDatabasesStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -635,7 +635,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
-        MySQLShowEventsStatement result = new MySQLShowEventsStatement();
+        ShowEventsStatement result = new ShowEventsStatement();
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
@@ -648,7 +648,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
-        MySQLShowTablesStatement result = new MySQLShowTablesStatement();
+        ShowTablesStatement result = new ShowTablesStatement();
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
@@ -662,7 +662,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
-        MySQLShowTriggersStatement result = new MySQLShowTriggersStatement();
+        ShowTriggersStatement result = new ShowTriggersStatement();
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
@@ -680,7 +680,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        MySQLShowTableStatusStatement result = new MySQLShowTableStatusStatement();
+        ShowTableStatusStatement result = new ShowTableStatusStatement();
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
@@ -693,7 +693,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
-        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement();
+        ShowColumnsStatement result = new ShowColumnsStatement();
         if (null != ctx.fromTable()) {
             result.setTable(((FromTableSegment) visit(ctx.fromTable())).getTable());
         }
@@ -721,7 +721,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
-        MySQLShowIndexStatement result = new MySQLShowIndexStatement();
+        ShowIndexStatement result = new ShowIndexStatement();
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
@@ -733,21 +733,21 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
-        MySQLShowCreateTableStatement result = new MySQLShowCreateTableStatement();
+        ShowCreateTableStatement result = new ShowCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
-        MySQLShowCreateTriggerStatement result = new MySQLShowCreateTriggerStatement();
+        ShowCreateTriggerStatement result = new ShowCreateTriggerStatement();
         result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
-        MySQLShowRelayLogEventsStatement result = new MySQLShowRelayLogEventsStatement();
+        ShowRelayLogEventsStatement result = new ShowRelayLogEventsStatement();
         if (null != ctx.logName()) {
             result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals())).getValue());
         }
@@ -762,29 +762,29 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowFunctionCode(final ShowFunctionCodeContext ctx) {
-        MySQLShowFunctionCodeStatement result = new MySQLShowFunctionCodeStatement();
+        ShowFunctionCodeStatement result = new ShowFunctionCodeStatement();
         result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
         return result;
     }
     
     @Override
     public ASTNode visitShowGrants(final ShowGrantsContext ctx) {
-        return new MySQLShowGrantsStatement();
+        return new ShowGrantsStatement();
     }
     
     @Override
     public ASTNode visitShowMasterStatus(final ShowMasterStatusContext ctx) {
-        return new MySQLShowMasterStatusStatement();
+        return new ShowMasterStatusStatement();
     }
     
     @Override
     public ASTNode visitShowSlaveHosts(final ShowSlaveHostsContext ctx) {
-        return new MySQLShowSlaveHostsStatement();
+        return new ShowSlaveHostsStatement();
     }
     
     @Override
     public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
-        MySQLShowReplicaStatusStatement result = new MySQLShowReplicaStatusStatement();
+        ShowReplicaStatusStatement result = new ShowReplicaStatusStatement();
         if (null != ctx.channelName()) {
             result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
         }
@@ -793,7 +793,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowSlaveStatus(final ShowSlaveStatusContext ctx) {
-        MySQLShowSlaveStatusStatement result = new MySQLShowSlaveStatusStatement();
+        ShowSlaveStatusStatement result = new ShowSlaveStatusStatement();
         if (null != ctx.channelName()) {
             result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
         }
@@ -802,7 +802,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
-        MySQLCreateResourceGroupStatement result = new MySQLCreateResourceGroupStatement();
+        CreateResourceGroupStatement result = new CreateResourceGroupStatement();
         result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
@@ -821,7 +821,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
-        MySQLShowVariablesStatement result = new MySQLShowVariablesStatement();
+        ShowVariablesStatement result = new ShowVariablesStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -831,7 +831,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
-        MySQLShowCharacterSetStatement result = new MySQLShowCharacterSetStatement();
+        ShowCharacterSetStatement result = new ShowCharacterSetStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -841,7 +841,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCollation(final ShowCollationContext ctx) {
-        MySQLShowCollationStatement result = new MySQLShowCollationStatement();
+        ShowCollationStatement result = new ShowCollationStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -851,7 +851,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowFunctionStatus(final ShowFunctionStatusContext ctx) {
-        MySQLShowFunctionStatusStatement result = new MySQLShowFunctionStatusStatement();
+        ShowFunctionStatusStatement result = new ShowFunctionStatusStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -861,7 +861,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcedureStatus(final ShowProcedureStatusContext ctx) {
-        MySQLShowProcedureStatusStatement result = new MySQLShowProcedureStatusStatement();
+        ShowProcedureStatusStatement result = new ShowProcedureStatusStatement();
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
@@ -871,7 +871,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
-        MySQLShowOpenTablesStatement result = new MySQLShowOpenTablesStatement();
+        ShowOpenTablesStatement result = new ShowOpenTablesStatement();
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
         }
@@ -884,17 +884,17 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowPlugins(final ShowPluginsContext ctx) {
-        return new MySQLShowPluginsStatement();
+        return new ShowPluginsStatement();
     }
     
     @Override
     public ASTNode visitShowPrivileges(final ShowPrivilegesContext ctx) {
-        return new MySQLShowPrivilegesStatement();
+        return new ShowPrivilegesStatement();
     }
     
     @Override
     public ASTNode visitShutdown(final ShutdownContext ctx) {
-        return new MySQLShutdownStatement();
+        return new ShutdownStatement();
     }
     
     @Override
@@ -904,14 +904,14 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
-        MySQLShowCreateUserStatement result = new MySQLShowCreateUserStatement();
+        ShowCreateUserStatement result = new ShowCreateUserStatement();
         result.setName(((IdentifierValue) visit(ctx.username())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        MySQLSetStatement result = new MySQLSetStatement();
+        SetStatement result = new SetStatement();
         Collection<VariableAssignSegment> variableAssigns = getVariableAssigns(ctx.optionValueList());
         result.getVariableAssigns().addAll(variableAssigns);
         return result;
@@ -988,7 +988,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
         String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
         VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
-        MySQLSetStatement result = new MySQLSetStatement();
+        SetStatement result = new SetStatement();
         result.getVariableAssigns().add(characterSet);
         return result;
     }
@@ -1006,12 +1006,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateLoadableFunction(final CreateLoadableFunctionContext ctx) {
-        return new MySQLCreateLoadableFunctionStatement();
+        return new CreateLoadableFunctionStatement();
     }
     
     @Override
     public ASTNode visitInstallComponent(final InstallComponentContext ctx) {
-        MySQLInstallComponentStatement result = new MySQLInstallComponentStatement();
+        InstallComponentStatement result = new InstallComponentStatement();
         List<String> components = new LinkedList<>();
         for (ComponentNameContext each : ctx.componentName()) {
             components.add(((StringLiteralValue) visit(each.string_())).getValue());
@@ -1022,7 +1022,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitUninstallComponent(final UninstallComponentContext ctx) {
-        MySQLUninstallComponentStatement result = new MySQLUninstallComponentStatement();
+        UninstallComponentStatement result = new UninstallComponentStatement();
         List<String> components = new LinkedList<>();
         for (ComponentNameContext each : ctx.componentName()) {
             components.add(((StringLiteralValue) visit(each.string_())).getValue());
@@ -1033,47 +1033,47 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitRestart(final RestartContext ctx) {
-        return new MySQLRestartStatement();
+        return new RestartStatement();
     }
     
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
-        MySQLSetResourceGroupStatement result = new MySQLSetResourceGroupStatement();
+        SetResourceGroupStatement result = new SetResourceGroupStatement();
         result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCheckTable(final CheckTableContext ctx) {
-        MySQLCheckTableStatement result = new MySQLCheckTableStatement();
+        CheckTableStatement result = new CheckTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitDropResourceGroup(final DropResourceGroupContext ctx) {
-        MySQLDropResourceGroupStatement result = new MySQLDropResourceGroupStatement();
+        DropResourceGroupStatement result = new DropResourceGroupStatement();
         result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
-        MySQLAlterResourceGroupStatement result = new MySQLAlterResourceGroupStatement();
+        AlterResourceGroupStatement result = new AlterResourceGroupStatement();
         result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitDelimiter(final DelimiterContext ctx) {
-        MySQLDelimiterStatement result = new MySQLDelimiterStatement();
+        DelimiterStatement result = new DelimiterStatement();
         result.setDelimiterName(ctx.delimiterName().getText());
         return result;
     }
     
     @Override
     public ASTNode visitHelp(final HelpContext ctx) {
-        MySQLHelpStatement result = new MySQLHelpStatement();
+        HelpStatement result = new HelpStatement();
         result.setSearchString(ctx.textOrIdentifier().getText());
         return result;
     }

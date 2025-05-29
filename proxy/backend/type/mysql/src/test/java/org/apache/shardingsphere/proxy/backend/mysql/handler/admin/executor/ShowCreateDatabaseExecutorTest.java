@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateDatabaseStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class ShowCreateDatabaseExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        MySQLShowCreateDatabaseStatement statement = new MySQLShowCreateDatabaseStatement();
+        ShowCreateDatabaseStatement statement = new ShowCreateDatabaseStatement();
         statement.setDatabaseName("db_0");
         ShowCreateDatabaseExecutor executor = new ShowCreateDatabaseExecutor(statement);
         ContextManager contextManager = mockContextManager();

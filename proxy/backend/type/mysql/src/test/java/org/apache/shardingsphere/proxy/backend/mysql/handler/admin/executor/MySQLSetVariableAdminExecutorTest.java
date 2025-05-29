@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -91,7 +90,7 @@ class MySQLSetVariableAdminExecutorTest {
         VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment(0, 0, maxConnectionVariableSegment, "151");
         VariableSegment characterSetClientSegment = new VariableSegment(0, 0, "character_set_client");
         VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment(0, 0, characterSetClientSegment, "'utf8mb4'");
-        SetStatement result = new MySQLSetStatement();
+        SetStatement result = new SetStatement();
         result.getVariableAssigns().add(setGlobalMaxConnectionAssignSegment);
         result.getVariableAssigns().add(setCharacterSetClientVariableSegment);
         return result;
@@ -107,7 +106,7 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertSetUnknownSystemVariable() {
-        SetStatement setStatement = new MySQLSetStatement();
+        SetStatement setStatement = new SetStatement();
         setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), ""));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
@@ -115,7 +114,7 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertSetVariableWithIncorrectScope() {
-        SetStatement setStatement = new MySQLSetStatement();
+        SetStatement setStatement = new SetStatement();
         setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), ""));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
