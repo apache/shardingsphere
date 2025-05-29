@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Rollbac
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleLockStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleRollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetTransactionStatement;
