@@ -35,7 +35,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class CreateIndexStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IndexSegment index;
     

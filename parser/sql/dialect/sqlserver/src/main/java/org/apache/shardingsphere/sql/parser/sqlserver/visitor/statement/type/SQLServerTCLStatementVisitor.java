@@ -29,15 +29,15 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rol
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetImplicitTransactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginDistributedTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 
 /**
  * TCL statement visitor for SQLServer.
@@ -46,7 +46,7 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        SQLServerSetTransactionStatement result = new SQLServerSetTransactionStatement();
+        SetTransactionStatement result = new SetTransactionStatement();
         result.setIsolationLevel(getTransactionIsolationLevel(ctx.isolationLevel()));
         return result;
     }
@@ -69,43 +69,43 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetImplicitTransactions(final SetImplicitTransactionsContext ctx) {
-        SQLServerSetAutoCommitStatement result = new SQLServerSetAutoCommitStatement();
+        SetAutoCommitStatement result = new SetAutoCommitStatement();
         result.setAutoCommit("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
         return result;
     }
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new SQLServerBeginTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
-        return new SQLServerBeginDistributedTransactionStatement();
+        return new BeginDistributedTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new SQLServerCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitCommitWork(final CommitWorkContext ctx) {
-        return new SQLServerCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new SQLServerRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitRollbackWork(final RollbackWorkContext ctx) {
-        return new SQLServerRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SQLServerSavepointStatement();
+        return new SavepointStatement();
     }
 }

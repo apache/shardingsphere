@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class ExplainStatement extends AbstractSQLStatement implements DALStatement {
+public class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
     private SQLStatement sqlStatement;
     

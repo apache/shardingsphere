@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class AlterSchemaStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IdentifierValue schemaName;
     

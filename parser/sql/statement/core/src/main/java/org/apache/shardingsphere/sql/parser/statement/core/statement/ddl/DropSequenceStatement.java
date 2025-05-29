@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @Getter
 @Setter
-public abstract class DropSequenceStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropSequenceStatement extends AbstractSQLStatement implements DDLStatement {
     
     private Collection<String> sequenceNames;
 }

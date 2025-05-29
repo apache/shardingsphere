@@ -21,9 +21,9 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainableStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dal.SQLServerExplainStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 
 /**
  * DAL statement visitor for SQLServer.
@@ -32,7 +32,7 @@ public final class SQLServerDALStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        SQLServerExplainStatement result = new SQLServerExplainStatement();
+        ExplainStatement result = new ExplainStatement();
         result.setSqlStatement((SQLStatement) visit(ctx.explainableStatement()));
         return result;
     }

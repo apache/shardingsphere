@@ -31,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public abstract class DenyUserStatement extends AbstractSQLStatement implements DCLStatement {
+public class DenyUserStatement extends AbstractSQLStatement implements DCLStatement {
     
     private SimpleTableSegment table;
     

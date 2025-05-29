@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class CreateLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public class CreateLoginStatement extends AbstractSQLStatement implements DCLStatement {
     
     private LoginSegment loginSegment;
 }

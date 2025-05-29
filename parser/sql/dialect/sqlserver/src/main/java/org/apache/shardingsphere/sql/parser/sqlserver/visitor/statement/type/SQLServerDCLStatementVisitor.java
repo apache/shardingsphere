@@ -43,30 +43,30 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rev
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SecurableContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UserNameContext;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDropLoginStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerRevertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerRevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 
 import java.util.Optional;
 
@@ -121,7 +121,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        SQLServerCreateUserStatement result = new SQLServerCreateUserStatement();
+        CreateUserStatement result = new CreateUserStatement();
         if (null != ctx.createUserLoginClause()) {
             result.getUsers().add((UserSegment) visit(ctx.createUserLoginClause().userName()));
         } else if (null != ctx.createUserWindowsPrincipalClause()) {
@@ -181,7 +181,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
-        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
+        DenyUserStatement result = new DenyUserStatement();
         if (null != ctx.denyClassPrivilegesClause()) {
             findTableSegment(ctx.denyClassPrivilegesClause().onClassClause(), ctx.denyClassPrivilegesClause().classPrivileges()).ifPresent(result::setTable);
             if (null != ctx.denyClassPrivilegesClause().classPrivileges().columnNames()) {
@@ -213,29 +213,29 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        SQLServerDropUserStatement result = new SQLServerDropUserStatement();
+        DropUserStatement result = new DropUserStatement();
         result.getUsers().add(((UserSegment) visit(ctx.userName())).getUser());
         return result;
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new SQLServerCreateRoleStatement();
+        return new CreateRoleStatement();
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new SQLServerAlterRoleStatement();
+        return new AlterRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new SQLServerDropRoleStatement();
+        return new DropRoleStatement();
     }
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        SQLServerCreateLoginStatement result = new SQLServerCreateLoginStatement();
+        CreateLoginStatement result = new CreateLoginStatement();
         if (null != ctx.ignoredNameIdentifier()) {
             LoginSegment loginSegment = new LoginSegment(
                     ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
@@ -246,7 +246,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
-        SQLServerAlterLoginStatement result = new SQLServerAlterLoginStatement();
+        AlterLoginStatement result = new AlterLoginStatement();
         if (null != ctx.ignoredNameIdentifier()) {
             LoginSegment loginSegment = new LoginSegment(
                     ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
@@ -257,7 +257,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
-        SQLServerDropLoginStatement result = new SQLServerDropLoginStatement();
+        DropLoginStatement result = new DropLoginStatement();
         LoginSegment loginSegment = new LoginSegment(
                 ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
         result.setLoginSegment(loginSegment);
@@ -266,7 +266,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetUser(final SetUserContext ctx) {
-        SQLServerSetUserStatement result = new SQLServerSetUserStatement();
+        SetUserStatement result = new SetUserStatement();
         if (null != ctx.stringLiterals()) {
             UserSegment userSegment = new UserSegment();
             userSegment.setUser(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
@@ -279,6 +279,6 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitRevert(final RevertContext ctx) {
-        return new SQLServerRevertStatement();
+        return new RevertStatement();
     }
 }
