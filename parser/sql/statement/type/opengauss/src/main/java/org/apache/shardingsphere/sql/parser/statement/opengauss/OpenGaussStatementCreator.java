@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.opengauss;
 
 import org.apache.shardingsphere.sql.parser.statement.core.DialectSQLStatementCreator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackStatement;
 
 /**
  * Statement creator for openGauss.
@@ -28,6 +27,6 @@ public final class OpenGaussStatementCreator implements DialectSQLStatementCreat
     
     @Override
     public RollbackStatement createRollbackStatement() {
-        return new OpenGaussRollbackStatement();
+        return new RollbackStatement();
     }
 }

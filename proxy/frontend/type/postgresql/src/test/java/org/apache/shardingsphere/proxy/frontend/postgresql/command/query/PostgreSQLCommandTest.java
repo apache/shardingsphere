@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoState
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
@@ -69,7 +70,6 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLU
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 import org.junit.jupiter.api.Test;
@@ -318,7 +318,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfRollbackStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLRollbackStatement.class).orElse(null), is(PostgreSQLCommand.ROLLBACK));
+        assertThat(PostgreSQLCommand.valueOf(RollbackStatement.class).orElse(null), is(PostgreSQLCommand.ROLLBACK));
         assertThat(PostgreSQLCommand.ROLLBACK.getTag(), is("ROLLBACK"));
     }
     

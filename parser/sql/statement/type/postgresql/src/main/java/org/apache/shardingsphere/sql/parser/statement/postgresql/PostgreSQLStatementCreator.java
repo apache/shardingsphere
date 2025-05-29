@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.postgresql;
 
 import org.apache.shardingsphere.sql.parser.statement.core.DialectSQLStatementCreator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 
 /**
  * Statement creator for PostgreSQL.
@@ -28,6 +27,6 @@ public final class PostgreSQLStatementCreator implements DialectSQLStatementCrea
     
     @Override
     public RollbackStatement createRollbackStatement() {
-        return new PostgreSQLRollbackStatement();
+        return new RollbackStatement();
     }
 }
