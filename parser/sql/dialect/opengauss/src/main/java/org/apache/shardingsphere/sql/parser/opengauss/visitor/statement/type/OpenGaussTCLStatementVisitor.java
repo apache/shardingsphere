@@ -34,13 +34,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Set
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussSetTransactionStatement;
@@ -68,12 +68,12 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new OpenGaussRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitAbort(final AbortContext ctx) {
-        return new OpenGaussRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
@@ -86,7 +86,7 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        OpenGaussRollbackStatement result = new OpenGaussRollbackStatement();
+        RollbackStatement result = new RollbackStatement();
         result.setSavepointName(ctx.colId().getText());
         return result;
     }

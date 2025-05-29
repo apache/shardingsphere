@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.Postgre
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLL
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
@@ -117,12 +117,12 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new PostgreSQLRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitAbort(final AbortContext ctx) {
-        return new PostgreSQLRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
@@ -135,7 +135,7 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        PostgreSQLRollbackStatement result = new PostgreSQLRollbackStatement();
+        RollbackStatement result = new RollbackStatement();
         result.setSavepointName(ctx.colId().getText());
         return result;
     }
