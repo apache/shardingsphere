@@ -59,6 +59,7 @@
 1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
 1. JDBC: Support set datasource properties type with java.time.Duration - [#35241](https://github.com/apache/shardingsphere/pull/35241)
 1. Proxy: Fix `show processlist` not wait for all nodes - [#35348](https://github.com/apache/shardingsphere/pull/35348)
+1. Proxy: Fix NoSuchElementException exception when execute MySQL SHOW VARIABLES without current database - [#35550](https://github.com/apache/shardingsphere/pull/35550)
 
 ### Change Logs
 
