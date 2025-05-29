@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter domain statement.
  */
-public abstract class AlterDomainStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterDomainStatement extends AbstractSQLStatement implements DDLStatement {
 }

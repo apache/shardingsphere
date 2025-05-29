@@ -31,7 +31,7 @@ import java.util.LinkedList;
  * SQL statement abstract class.
  */
 @Getter
-public abstract class AbstractSQLStatement implements SQLStatement {
+public class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedHashSet<>();
     

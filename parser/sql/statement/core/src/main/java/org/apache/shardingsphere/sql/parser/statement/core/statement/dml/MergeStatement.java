@@ -37,7 +37,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class MergeStatement extends AbstractSQLStatement implements DMLStatement {
+public class MergeStatement extends AbstractSQLStatement implements DMLStatement {
     
     private TableSegment target;
     
