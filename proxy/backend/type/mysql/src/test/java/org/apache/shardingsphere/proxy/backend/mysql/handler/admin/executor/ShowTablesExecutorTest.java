@@ -39,8 +39,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -74,7 +74,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithoutFilter() throws SQLException {
-        ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(), databaseType);
+        ShowTablesExecutor executor = new ShowTablesExecutor(new ShowTablesStatement(), databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -93,7 +93,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithFull() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = mock(MySQLShowTablesStatement.class);
+        ShowTablesStatement showTablesStatement = mock(ShowTablesStatement.class);
         when(showTablesStatement.isContainsFull()).thenReturn(true);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
@@ -105,7 +105,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithLikeFilter() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
         showTablesStatement.setFilter(showFilterSegment);
@@ -126,7 +126,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithSpecificTable() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
         showTablesStatement.setFilter(showFilterSegment);
@@ -143,7 +143,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithUpperCase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
         showTablesStatement.setFilter(showFilterSegment);
@@ -160,7 +160,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithLowerCase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
         showTablesStatement.setFilter(showFilterSegment);
@@ -177,7 +177,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTableFromUncompletedDatabase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement();
         showTablesStatement.setFromDatabase(new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))));
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         ContextManager contextManager = mockContextManager(mockDatabases());

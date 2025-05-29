@@ -149,45 +149,45 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterInstanceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterInstanceStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDeallocateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLExecuteStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLPrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLRenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
@@ -206,7 +206,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        MySQLCreateViewStatement result = new MySQLCreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement();
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
@@ -234,7 +234,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
+        CreateDatabaseStatement result = new CreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
         result.setIfNotExists(null != ctx.ifNotExists());
         return result;
@@ -242,12 +242,12 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new MySQLAlterDatabaseStatement();
+        return new AlterDatabaseStatement();
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
+        DropDatabaseStatement result = new DropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
         result.setIfExists(null != ctx.ifExists());
         return result;
@@ -519,7 +519,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitRenameTable(final RenameTableContext ctx) {
-        MySQLRenameTableStatement result = new MySQLRenameTableStatement();
+        RenameTableStatement result = new RenameTableStatement();
         for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
             TableNameContext tableName = ctx.tableName(i);
             TableNameContext renameTableName = ctx.tableName(i + 1);
@@ -681,7 +681,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        MySQLTruncateStatement result = new MySQLTruncateStatement();
+        TruncateStatement result = new TruncateStatement();
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
@@ -760,12 +760,12 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new MySQLAlterProcedureStatement();
+        return new AlterProcedureStatement();
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new MySQLDropProcedureStatement();
+        return new DropProcedureStatement();
     }
     
     @Override
@@ -834,7 +834,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         } else if (null != ctx.dropTable()) {
             sqlStatement = (MySQLDropTableStatement) visit(ctx.dropTable());
         } else if (null != ctx.truncateTable()) {
-            sqlStatement = (MySQLTruncateStatement) visit(ctx.truncateTable());
+            sqlStatement = (TruncateStatement) visit(ctx.truncateTable());
         } else if (null != ctx.insert()) {
             sqlStatement = (MySQLInsertStatement) visit(ctx.insert());
         } else if (null != ctx.replace()) {
@@ -924,77 +924,77 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new MySQLAlterFunctionStatement();
+        return new AlterFunctionStatement();
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new MySQLDropFunctionStatement();
+        return new DropFunctionStatement();
     }
     
     @Override
     public ASTNode visitCreateEvent(final CreateEventContext ctx) {
-        return new MySQLCreateEventStatement();
+        return new CreateEventStatement();
     }
     
     @Override
     public ASTNode visitAlterEvent(final AlterEventContext ctx) {
-        return new MySQLAlterEventStatement();
+        return new AlterEventStatement();
     }
     
     @Override
     public ASTNode visitDropEvent(final DropEventContext ctx) {
-        return new MySQLDropEventStatement();
+        return new DropEventStatement();
     }
     
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
-        return new MySQLAlterInstanceStatement();
+        return new AlterInstanceStatement();
     }
     
     @Override
     public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
-        return new MySQLCreateLogfileGroupStatement();
+        return new CreateLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
-        return new MySQLAlterLogfileGroupStatement();
+        return new AlterLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
-        return new MySQLDropLogfileGroupStatement();
+        return new DropLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitCreateServer(final CreateServerContext ctx) {
-        return new MySQLCreateServerStatement();
+        return new CreateServerStatement();
     }
     
     @Override
     public ASTNode visitAlterServer(final AlterServerContext ctx) {
-        return new MySQLAlterServerStatement();
+        return new AlterServerStatement();
     }
     
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
-        return new MySQLDropServerStatement();
+        return new DropServerStatement();
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new MySQLCreateTriggerStatement();
+        return new CreateTriggerStatement();
     }
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new MySQLDropTriggerStatement();
+        return new DropTriggerStatement();
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new MySQLCreateTablespaceStatement();
+        return new CreateTablespaceStatement();
     }
     
     @Override
@@ -1008,7 +1008,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
-        MySQLAlterTablespaceStatement result = new MySQLAlterTablespaceStatement();
+        AlterTablespaceStatement result = new AlterTablespaceStatement();
         if (null != ctx.tablespace) {
             result.setTablespaceSegment(createTablespaceSegment(ctx.tablespace));
         }
@@ -1020,7 +1020,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
-        MySQLAlterTablespaceStatement result = new MySQLAlterTablespaceStatement();
+        AlterTablespaceStatement result = new AlterTablespaceStatement();
         if (null != ctx.tablespace) {
             result.setTablespaceSegment(createTablespaceSegment(ctx.tablespace));
         }
@@ -1036,21 +1036,21 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
-        return new MySQLDropTablespaceStatement();
+        return new DropTablespaceStatement();
     }
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new MySQLPrepareStatement();
+        return new PrepareStatement();
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new MySQLExecuteStatement();
+        return new ExecuteStatement();
     }
     
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
-        return new MySQLDeallocateStatement();
+        return new DeallocateStatement();
     }
 }

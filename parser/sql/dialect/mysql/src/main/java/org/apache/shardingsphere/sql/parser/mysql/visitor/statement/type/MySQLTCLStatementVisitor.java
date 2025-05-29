@@ -43,6 +43,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsol
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.UnlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAEndStatement;
@@ -50,15 +59,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAPr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARecoveryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLLockStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLUnlockStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -71,7 +71,7 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
+        SetTransactionStatement result = new SetTransactionStatement();
         if (null != ctx.optionType()) {
             OperationScope scope = null;
             if (null != ctx.optionType().SESSION()) {
@@ -108,7 +108,7 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
-        MySQLSetAutoCommitStatement result = new MySQLSetAutoCommitStatement();
+        SetAutoCommitStatement result = new SetAutoCommitStatement();
         result.setAutoCommit(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
         return result;
     }
@@ -120,17 +120,17 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new MySQLBeginTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new MySQLCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        MySQLRollbackStatement result = new MySQLRollbackStatement();
+        RollbackStatement result = new RollbackStatement();
         if (null != ctx.identifier()) {
             result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         }
@@ -139,14 +139,14 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        MySQLSavepointStatement result = new MySQLSavepointStatement();
+        SavepointStatement result = new SavepointStatement();
         result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        MySQLReleaseSavepointStatement result = new MySQLReleaseSavepointStatement();
+        ReleaseSavepointStatement result = new ReleaseSavepointStatement();
         result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         return result;
     }
@@ -183,7 +183,7 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        MySQLLockStatement result = new MySQLLockStatement();
+        LockStatement result = new LockStatement();
         if (null != ctx.tableLock()) {
             result.getTables().addAll(getLockTables(ctx.tableLock()));
         }
@@ -204,6 +204,6 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitUnlock(final UnlockContext ctx) {
-        return new MySQLUnlockStatement();
+        return new UnlockStatement();
     }
 }
