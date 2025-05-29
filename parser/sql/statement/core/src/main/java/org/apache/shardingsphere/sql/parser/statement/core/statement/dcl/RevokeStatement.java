@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Revoke statement.
  */
 @Getter
-public abstract class RevokeStatement extends AbstractSQLStatement implements DCLStatement {
+public class RevokeStatement extends AbstractSQLStatement implements DCLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

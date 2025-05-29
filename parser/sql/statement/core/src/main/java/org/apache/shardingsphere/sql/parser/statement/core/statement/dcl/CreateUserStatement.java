@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Create user statement.
  */
 @Getter
-public abstract class CreateUserStatement extends AbstractSQLStatement implements DCLStatement {
+public class CreateUserStatement extends AbstractSQLStatement implements DCLStatement {
     
     private final Collection<UserSegment> users = new LinkedList<>();
 }

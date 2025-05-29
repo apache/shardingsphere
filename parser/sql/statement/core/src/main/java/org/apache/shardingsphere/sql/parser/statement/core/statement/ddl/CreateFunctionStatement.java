@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
     
     private FunctionNameSegment functionName;
     

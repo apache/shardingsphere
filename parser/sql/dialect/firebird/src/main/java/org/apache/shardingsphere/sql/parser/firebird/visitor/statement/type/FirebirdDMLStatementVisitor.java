@@ -87,12 +87,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdMergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdUpdateStatement;
 
@@ -498,7 +498,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        FirebirdMergeStatement result = new FirebirdMergeStatement();
+        MergeStatement result = new MergeStatement();
         result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         // add mergeWhenNotMatched and mergeWhenMatched part
