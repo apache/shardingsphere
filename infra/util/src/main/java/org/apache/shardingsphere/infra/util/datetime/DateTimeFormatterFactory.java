@@ -38,6 +38,8 @@ public final class DateTimeFormatterFactory {
     
     private static final DateTimeFormatter SHORT_MILLIS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
+    private static final DateTimeFormatter DOUBLE_MILLIS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+    
     private static final DateTimeFormatter LONG_MILLIS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
     private static final DateTimeFormatter FULL_MILLIS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
@@ -85,6 +87,15 @@ public final class DateTimeFormatterFactory {
      */
     public static DateTimeFormatter getShortMillisFormatter() {
         return SHORT_MILLIS;
+    }
+    
+    /**
+     * Get double millis date time formatter.
+     *
+     * @return double millis date time formatter
+     */
+    public static DateTimeFormatter getDoubleMillisFormatter() {
+        return DOUBLE_MILLIS;
     }
     
     /**
