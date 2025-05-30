@@ -129,6 +129,7 @@ public final class SQLValue {
                     return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getLongMillisFormatter()));
                 }
                 return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
+            case "tinyblob":
             case "blob":
             case "longblob":
             case "mediumblob":
