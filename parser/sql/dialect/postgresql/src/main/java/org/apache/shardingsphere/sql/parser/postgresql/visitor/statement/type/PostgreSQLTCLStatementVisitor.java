@@ -54,13 +54,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Savepoi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
