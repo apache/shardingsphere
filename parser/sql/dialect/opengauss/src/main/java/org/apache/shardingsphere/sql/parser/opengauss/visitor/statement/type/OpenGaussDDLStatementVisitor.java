@@ -247,9 +247,6 @@ import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDro
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussMoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussPrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
