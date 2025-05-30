@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop foreign data wrapper statement.
  */
-public abstract class DropForeignDataWrapperStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropForeignDataWrapperStatement extends AbstractSQLStatement implements DDLStatement {
 }

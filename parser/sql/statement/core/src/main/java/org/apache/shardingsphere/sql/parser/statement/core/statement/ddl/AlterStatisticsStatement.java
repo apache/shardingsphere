@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter statistics statement.
  */
-public abstract class AlterStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
 }

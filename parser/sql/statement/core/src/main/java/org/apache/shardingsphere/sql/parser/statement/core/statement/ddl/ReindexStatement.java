@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Reindex statement.
  */
-public abstract class ReindexStatement extends AbstractSQLStatement implements DDLStatement {
+public class ReindexStatement extends AbstractSQLStatement implements DDLStatement {
 }

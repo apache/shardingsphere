@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop Owned statement.
  */
-public abstract class DropOwnedStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropOwnedStatement extends AbstractSQLStatement implements DDLStatement {
 }
