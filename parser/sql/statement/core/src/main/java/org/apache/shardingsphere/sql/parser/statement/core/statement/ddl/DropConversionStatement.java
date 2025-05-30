@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop conversion statement.
  */
-public abstract class DropConversionStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropConversionStatement extends AbstractSQLStatement implements DDLStatement {
 }

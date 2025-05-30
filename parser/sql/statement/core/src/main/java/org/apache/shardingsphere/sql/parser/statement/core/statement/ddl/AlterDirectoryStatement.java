@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter directory statement.
  */
-public abstract class AlterDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
 }

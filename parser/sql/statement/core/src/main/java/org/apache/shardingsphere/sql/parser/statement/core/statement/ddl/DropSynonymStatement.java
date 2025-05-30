@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop synonym statement.
  */
-public abstract class DropSynonymStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropSynonymStatement extends AbstractSQLStatement implements DDLStatement {
 }

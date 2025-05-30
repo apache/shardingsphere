@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create type statement.
  */
-public abstract class CreateTypeStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

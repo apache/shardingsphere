@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create text search statement.
  */
-public abstract class CreateTextSearchStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateTextSearchStatement extends AbstractSQLStatement implements DDLStatement {
 }

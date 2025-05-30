@@ -167,6 +167,69 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterAggregateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDefaultPrivilegesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterForeignTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterPackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTextSearchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateAggregateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateCastStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreatePublicationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTextSearchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropCastStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropPublicationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -174,79 +237,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateS
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterAggregateStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterConversionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterDefaultPrivilegesStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterExtensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterForeignTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterLanguageStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterPackageStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterSynonymStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterTextSearchStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateAggregateStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateCastStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateConversionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateExtensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateLanguageStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreatePublicationStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateTextSearchStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDeallocateStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropCastStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropConversionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropExtensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropLanguageStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropPublicationStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropServerStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussMoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussPrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -297,7 +297,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        OpenGaussAlterTableStatement result = new OpenGaussAlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -327,12 +327,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterAggregate(final AlterAggregateContext ctx) {
-        return new OpenGaussAlterAggregateStatement();
+        return new AlterAggregateStatement();
     }
     
     @Override
     public ASTNode visitAlterDefaultPrivileges(final AlterDefaultPrivilegesContext ctx) {
-        return new OpenGaussAlterDefaultPrivilegesStatement();
+        return new AlterDefaultPrivilegesStatement();
     }
     
     @Override
@@ -379,22 +379,22 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterForeignTable(final AlterForeignTableContext ctx) {
-        return new OpenGaussAlterForeignTableStatement();
+        return new AlterForeignTableStatement();
     }
     
     @Override
     public ASTNode visitAlterGroup(final AlterGroupContext ctx) {
-        return new OpenGaussAlterGroupStatement();
+        return new AlterGroupStatement();
     }
     
     @Override
     public ASTNode visitAlterPackage(final AlterPackageContext ctx) {
-        return new OpenGaussAlterPackageStatement();
+        return new AlterPackageStatement();
     }
     
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
-        return new OpenGaussAlterMaterializedViewStatement();
+        return new AlterMaterializedViewStatement();
     }
     
     @Override
@@ -419,7 +419,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterDomain(final AlterDomainContext ctx) {
-        return new OpenGaussAlterDomainStatement();
+        return new AlterDomainStatement();
     }
     
     @Override
@@ -522,7 +522,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        OpenGaussTruncateStatement result = new OpenGaussTruncateStatement();
+        TruncateStatement result = new TruncateStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
         return result;
     }
@@ -639,27 +639,27 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new OpenGaussAlterFunctionStatement();
+        return new AlterFunctionStatement();
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new OpenGaussAlterProcedureStatement();
+        return new AlterProcedureStatement();
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new OpenGaussCreateFunctionStatement();
+        return new CreateFunctionStatement();
     }
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        return new OpenGaussCreateProcedureStatement();
+        return new CreateProcedureStatement();
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new OpenGaussDropFunctionStatement();
+        return new DropFunctionStatement();
     }
     
     @SuppressWarnings("unchecked")
@@ -673,7 +673,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        OpenGaussCreateViewStatement result = new OpenGaussCreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement();
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
@@ -695,7 +695,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        OpenGaussDropDatabaseStatement result = new OpenGaussDropDatabaseStatement();
+        DropDatabaseStatement result = new DropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         result.setIfExists(null != ctx.ifExists());
         return result;
@@ -703,46 +703,46 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
-        return new OpenGaussDropServerStatement();
+        return new DropServerStatement();
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new OpenGaussDropProcedureStatement();
+        return new DropProcedureStatement();
     }
     
     @Override
     public ASTNode visitDropPublication(final DropPublicationContext ctx) {
-        return new OpenGaussDropPublicationStatement();
+        return new DropPublicationStatement();
     }
     
     @Override
     public ASTNode visitDropCast(final DropCastContext ctx) {
-        return new OpenGaussDropCastStatement();
+        return new DropCastStatement();
     }
     
     @Override
     public ASTNode visitDropRule(final DropRuleContext ctx) {
-        return new OpenGaussDropRuleStatement();
+        return new DropRuleStatement();
     }
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        OpenGaussCreateDatabaseStatement result = new OpenGaussCreateDatabaseStatement();
+        CreateDatabaseStatement result = new CreateDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        OpenGaussCreateSequenceStatement result = new OpenGaussCreateSequenceStatement();
+        CreateSequenceStatement result = new CreateSequenceStatement();
         result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        OpenGaussAlterSequenceStatement result = new OpenGaussAlterSequenceStatement();
+        AlterSequenceStatement result = new AlterSequenceStatement();
         result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
         return result;
     }
@@ -750,29 +750,29 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        OpenGaussDropSequenceStatement result = new OpenGaussDropSequenceStatement();
+        DropSequenceStatement result = new DropSequenceStatement();
         result.setSequenceNames(((CollectionValue) visit(ctx.qualifiedNameList())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitDropSynonym(final DropSynonymContext ctx) {
-        return new OpenGaussDropSynonymStatement();
+        return new DropSynonymStatement();
     }
     
     @Override
     public ASTNode visitDropType(final DropTypeContext ctx) {
-        return new OpenGaussDropTypeStatement();
+        return new DropTypeStatement();
     }
     
     @Override
     public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
-        return new OpenGaussDropDirectoryStatement();
+        return new DropDirectoryStatement();
     }
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        OpenGaussPrepareStatement result = new OpenGaussPrepareStatement();
+        PrepareStatement result = new PrepareStatement();
         if (null != ctx.preparableStmt().select()) {
             result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
         }
@@ -790,62 +790,62 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
-        return new OpenGaussDeallocateStatement();
+        return new DeallocateStatement();
     }
     
     @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
-        return new OpenGaussCreateSynonymStatement();
+        return new CreateSynonymStatement();
     }
     
     @Override
     public ASTNode visitCreateAggregate(final CreateAggregateContext ctx) {
-        return new OpenGaussCreateAggregateStatement();
+        return new CreateAggregateStatement();
     }
     
     @Override
     public ASTNode visitCreatePublication(final CreatePublicationContext ctx) {
-        return new OpenGaussCreatePublicationStatement();
+        return new CreatePublicationStatement();
     }
     
     @Override
     public ASTNode visitCreateDirectory(final CreateDirectoryContext ctx) {
-        return new OpenGaussCreateDirectoryStatement();
+        return new CreateDirectoryStatement();
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new OpenGaussCreateTablespaceStatement();
+        return new CreateTablespaceStatement();
     }
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new OpenGaussAlterTablespaceStatement();
+        return new AlterTablespaceStatement();
     }
     
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
-        return new OpenGaussDropTablespaceStatement();
+        return new DropTablespaceStatement();
     }
     
     @Override
     public ASTNode visitDropDomain(final DropDomainContext ctx) {
-        return new OpenGaussDropDomainStatement();
+        return new DropDomainStatement();
     }
     
     @Override
     public ASTNode visitCreateDomain(final CreateDomainContext ctx) {
-        return new OpenGaussCreateDomainStatement();
+        return new CreateDomainStatement();
     }
     
     @Override
     public ASTNode visitCreateRule(final CreateRuleContext ctx) {
-        return new OpenGaussCreateRuleStatement();
+        return new CreateRuleStatement();
     }
     
     @Override
     public ASTNode visitCreateLanguage(final CreateLanguageContext ctx) {
-        return new OpenGaussCreateLanguageStatement();
+        return new CreateLanguageStatement();
     }
     
     @Override
@@ -894,97 +894,97 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterLanguage(final AlterLanguageContext ctx) {
-        return new OpenGaussAlterLanguageStatement();
+        return new AlterLanguageStatement();
     }
     
     @Override
     public ASTNode visitAlterSynonym(final AlterSynonymContext ctx) {
-        return new OpenGaussAlterSynonymStatement();
+        return new AlterSynonymStatement();
     }
     
     @Override
     public ASTNode visitAlterDirectory(final AlterDirectoryContext ctx) {
-        return new OpenGaussAlterDirectoryStatement();
+        return new AlterDirectoryStatement();
     }
     
     @Override
     public ASTNode visitAlterRule(final AlterRuleContext ctx) {
-        return new OpenGaussAlterRuleStatement();
+        return new AlterRuleStatement();
     }
     
     @Override
     public ASTNode visitAlterType(final AlterTypeContext ctx) {
-        return new OpenGaussAlterTypeStatement();
+        return new AlterTypeStatement();
     }
     
     @Override
     public ASTNode visitDropLanguage(final DropLanguageContext ctx) {
-        return new OpenGaussDropLanguageStatement();
+        return new DropLanguageStatement();
     }
     
     @Override
     public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
-        return new OpenGaussCreateConversionStatement();
+        return new CreateConversionStatement();
     }
     
     @Override
     public ASTNode visitCreateCast(final CreateCastContext ctx) {
-        return new OpenGaussCreateCastStatement();
+        return new CreateCastStatement();
     }
     
     @Override
     public ASTNode visitCreateType(final CreateTypeContext ctx) {
-        return new OpenGaussCreateTypeStatement();
+        return new CreateTypeStatement();
     }
     
     @Override
     public ASTNode visitDropConversion(final DropConversionContext ctx) {
-        return new OpenGaussDropConversionStatement();
+        return new DropConversionStatement();
     }
     
     @Override
     public ASTNode visitAlterConversion(final AlterConversionContext ctx) {
-        return new OpenGaussAlterConversionStatement();
+        return new AlterConversionStatement();
     }
     
     @Override
     public ASTNode visitCreateTextSearch(final CreateTextSearchContext ctx) {
-        return new OpenGaussCreateTextSearchStatement();
+        return new CreateTextSearchStatement();
     }
     
     @Override
     public ASTNode visitAlterTextSearchDictionary(final AlterTextSearchDictionaryContext ctx) {
-        return new OpenGaussAlterTextSearchStatement();
+        return new AlterTextSearchStatement();
     }
     
     @Override
     public ASTNode visitAlterTextSearchTemplate(final AlterTextSearchTemplateContext ctx) {
-        return new OpenGaussAlterTextSearchStatement();
+        return new AlterTextSearchStatement();
     }
     
     @Override
     public ASTNode visitAlterTextSearchParser(final AlterTextSearchParserContext ctx) {
-        return new OpenGaussAlterTextSearchStatement();
+        return new AlterTextSearchStatement();
     }
     
     @Override
     public ASTNode visitCreateExtension(final CreateExtensionContext ctx) {
-        return new OpenGaussCreateExtensionStatement();
+        return new CreateExtensionStatement();
     }
     
     @Override
     public ASTNode visitAlterExtension(final AlterExtensionContext ctx) {
-        return new OpenGaussAlterExtensionStatement();
+        return new AlterExtensionStatement();
     }
     
     @Override
     public ASTNode visitDropExtension(final DropExtensionContext ctx) {
-        return new OpenGaussDropExtensionStatement();
+        return new DropExtensionStatement();
     }
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        OpenGaussDeclareStatement result = new OpenGaussDeclareStatement();
+        DeclareStatement result = new DeclareStatement();
         result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
@@ -998,12 +998,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
         }
-        return new OpenGaussCommentStatement();
+        return new CommentStatement();
     }
     
     @SuppressWarnings("unchecked")
-    private OpenGaussCommentStatement commentOnColumn(final CommentContext ctx) {
-        OpenGaussCommentStatement result = new OpenGaussCommentStatement();
+    private CommentStatement commentOnColumn(final CommentContext ctx) {
+        CommentStatement result = new CommentStatement();
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
@@ -1013,15 +1013,15 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     }
     
     @SuppressWarnings("unchecked")
-    private OpenGaussCommentStatement commentOnTable(final CommentContext ctx) {
-        OpenGaussCommentStatement result = new OpenGaussCommentStatement();
+    private CommentStatement commentOnTable(final CommentContext ctx) {
+        CommentStatement result = new CommentStatement();
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         setTableSegment(result, nameSegmentIterator);
         return result;
     }
     
-    private void setTableSegment(final OpenGaussCommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
+    private void setTableSegment(final CommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
         Optional<NameSegment> tableName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         tableName.ifPresent(optional -> statement.setTable(new SimpleTableSegment(new TableNameSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
         Optional<NameSegment> schemaName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
@@ -1033,7 +1033,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCursor(final CursorContext ctx) {
-        OpenGaussCursorStatement result = new OpenGaussCursorStatement();
+        CursorStatement result = new CursorStatement();
         result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
@@ -1046,7 +1046,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitClose(final CloseContext ctx) {
-        OpenGaussCloseStatement result = new OpenGaussCloseStatement();
+        CloseStatement result = new CloseStatement();
         if (null != ctx.cursorName()) {
             result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         }
@@ -1056,7 +1056,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitMove(final MoveContext ctx) {
-        OpenGaussMoveStatement result = new OpenGaussMoveStatement();
+        MoveStatement result = new MoveStatement();
         result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         if (null != ctx.direction()) {
             result.setDirection((DirectionSegment) visit(ctx.direction()));
@@ -1066,7 +1066,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitFetch(final FetchContext ctx) {
-        OpenGaussFetchStatement result = new OpenGaussFetchStatement();
+        FetchStatement result = new FetchStatement();
         result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         if (null != ctx.direction()) {
             result.setDirection((DirectionSegment) visit(ctx.direction()));

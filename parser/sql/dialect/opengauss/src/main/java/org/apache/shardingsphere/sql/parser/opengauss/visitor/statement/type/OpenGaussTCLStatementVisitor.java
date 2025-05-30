@@ -34,17 +34,17 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Set
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.StartTransactionContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CheckpointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCheckpointStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussStartTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 
 /**
  * TCL statement visitor for openGauss.
@@ -53,17 +53,17 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new OpenGaussSetTransactionStatement();
+        return new SetTransactionStatement();
     }
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new OpenGaussBeginTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new OpenGaussCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
@@ -79,7 +79,7 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         String savepointName = ctx.colId().getText();
-        OpenGaussSavepointStatement result = new OpenGaussSavepointStatement();
+        SavepointStatement result = new SavepointStatement();
         result.setSavepointName(savepointName);
         return result;
     }
@@ -94,38 +94,38 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
         String savepointName = ctx.colId().getText();
-        OpenGaussReleaseSavepointStatement result = new OpenGaussReleaseSavepointStatement();
+        ReleaseSavepointStatement result = new ReleaseSavepointStatement();
         result.setSavepointName(savepointName);
         return result;
     }
     
     @Override
     public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
-        return new OpenGaussStartTransactionStatement();
+        return new StartTransactionStatement();
     }
     
     @Override
     public ASTNode visitEnd(final EndContext ctx) {
-        return new OpenGaussCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new OpenGaussSetConstraintsStatement();
+        return new SetConstraintsStatement();
     }
     
     @Override
     public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new OpenGaussCommitPreparedStatement();
+        return new CommitPreparedStatement();
     }
     
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new OpenGaussRollbackPreparedStatement();
+        return new RollbackPreparedStatement();
     }
     
     @Override
     public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new OpenGaussCheckpointStatement();
+        return new CheckpointStatement();
     }
 }

@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaus
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCallStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCopyStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 
 /**
  * DML statement visitor for openGauss.
@@ -38,17 +38,17 @@ public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new OpenGaussCallStatement();
+        return new CallStatement();
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new OpenGaussDoStatement();
+        return new DoStatement();
     }
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
-        OpenGaussCopyStatement result = new OpenGaussCopyStatement();
+        CopyStatement result = new CopyStatement();
         if (null != ctx.qualifiedName()) {
             result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
         }
