@@ -48,7 +48,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussVacuumStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
