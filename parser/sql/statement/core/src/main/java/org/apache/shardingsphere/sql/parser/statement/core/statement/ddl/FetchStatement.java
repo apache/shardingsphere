@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class FetchStatement extends AbstractSQLStatement implements DDLStatement {
+public class FetchStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;
     

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter rule statement.
  */
-public abstract class AlterRuleStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterRuleStatement extends AbstractSQLStatement implements DDLStatement {
 }

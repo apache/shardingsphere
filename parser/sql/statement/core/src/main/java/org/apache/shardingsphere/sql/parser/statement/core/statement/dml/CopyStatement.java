@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class CopyStatement extends AbstractSQLStatement implements DMLStatement {
+public class CopyStatement extends AbstractSQLStatement implements DMLStatement {
     
     private SimpleTableSegment table;
     

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create publication statement.
  */
-public abstract class CreatePublicationStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreatePublicationStatement extends AbstractSQLStatement implements DDLStatement {
 }

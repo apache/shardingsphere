@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Rollback prepared statement.
  */
-public abstract class RollbackPreparedStatement extends AbstractSQLStatement implements TCLStatement {
+public class RollbackPreparedStatement extends AbstractSQLStatement implements TCLStatement {
 }

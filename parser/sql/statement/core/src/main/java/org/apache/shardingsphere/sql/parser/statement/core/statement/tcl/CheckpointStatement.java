@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Checkpoint statement.
  */
-public abstract class CheckpointStatement extends AbstractSQLStatement implements TCLStatement {
+public class CheckpointStatement extends AbstractSQLStatement implements TCLStatement {
 }

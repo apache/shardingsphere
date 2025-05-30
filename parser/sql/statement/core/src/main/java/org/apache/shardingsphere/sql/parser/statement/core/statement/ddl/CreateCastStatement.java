@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create cast statement.
  */
-public abstract class CreateCastStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateCastStatement extends AbstractSQLStatement implements DDLStatement {
 }
