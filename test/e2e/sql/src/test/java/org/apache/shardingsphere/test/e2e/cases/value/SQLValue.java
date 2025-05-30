@@ -41,7 +41,7 @@ public final class SQLValue {
     private final int index;
     
     public SQLValue(final String value, final String type, final int index) {
-        this.value = null == type ? value : getValue(value, type);
+        this.value = null == type ? value : getValue(value, type.toLowerCase());
         this.index = index;
     }
     
@@ -53,7 +53,7 @@ public final class SQLValue {
             return null;
         }
         switch (type) {
-            case "String":
+            case "string":
             case "varchar":
             case "char":
             case "tinytext":
@@ -75,6 +75,7 @@ public final class SQLValue {
             case "mediumint unsigned":
             case "year":
             case "int":
+            case "integer":
                 return Integer.parseInt(value);
             case "int unsigned":
             case "bigint":
@@ -96,7 +97,6 @@ public final class SQLValue {
                 return new BigDecimal(value);
             case "boolean":
                 return Boolean.parseBoolean(value);
-            case "Date":
             case "date":
                 return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
             case "datetime":
@@ -119,8 +119,16 @@ public final class SQLValue {
                 if (19 == value.length()) {
                     return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
                 }
-                return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisFormatter()));
-            case "tinyblob":
+                if (21 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisFormatter()));
+                }
+                if (22 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDoubleMillisFormatter()));
+                }
+                if (23 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getLongMillisFormatter()));
+                }
+                return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
             case "blob":
             case "longblob":
             case "mediumblob":
@@ -151,7 +159,7 @@ public final class SQLValue {
             return formatString(DateTimeFormatterFactory.getTimeFormatter().format(((Time) value).toLocalTime()));
         }
         if (value instanceof Timestamp) {
-            return formatString(DateTimeFormatterFactory.getShortMillisFormatter().format(((Timestamp) value).toLocalDateTime()));
+            return formatString(DateTimeFormatterFactory.getLongMillisFormatter().format(((Timestamp) value).toLocalDateTime()));
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
