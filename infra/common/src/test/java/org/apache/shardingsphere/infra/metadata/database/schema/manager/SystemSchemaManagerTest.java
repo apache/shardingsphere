@@ -81,7 +81,6 @@ class SystemSchemaManagerTest {
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
         assertFalse(SystemSchemaManager.isSystemTable("sharding_db", "t_order"));
         assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "cluster_information"));
-        assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "sharding_table_statistics"));
         assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "nonexistent"));
     }
 }

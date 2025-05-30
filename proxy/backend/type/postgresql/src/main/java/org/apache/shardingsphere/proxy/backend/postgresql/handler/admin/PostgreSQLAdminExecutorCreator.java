@@ -42,8 +42,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +58,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
     
     static {
-        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Collections.singletonList("cluster_information")));
     }
     
     @Override
