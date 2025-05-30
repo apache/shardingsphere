@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Notify statement.
  */
-public abstract class NotifyStmtStatement extends AbstractSQLStatement implements DDLStatement {
+public class NotifyStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

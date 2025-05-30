@@ -53,8 +53,8 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLEmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -143,7 +143,7 @@ class PortalTest {
     @Test
     void assertGetName() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("",
-                new UnknownSQLStatementContext(databaseType, new PostgreSQLEmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         assertThat(portal.getName(), is(""));
     }
@@ -232,7 +232,7 @@ class PortalTest {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("",
-                new UnknownSQLStatementContext(databaseType, new PostgreSQLEmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
@@ -245,7 +245,7 @@ class PortalTest {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         String sql = "set client_encoding = utf8";
-        PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
+        SetStatement setStatement = new SetStatement();
         setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), null));
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 sql, new UnknownSQLStatementContext(databaseType, setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
@@ -267,7 +267,7 @@ class PortalTest {
     @Test
     void assertClose() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("",
-                new UnknownSQLStatementContext(databaseType, new PostgreSQLEmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager).close();
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();

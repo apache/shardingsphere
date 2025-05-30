@@ -30,11 +30,11 @@ import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.jupiter.api.Test;
@@ -148,7 +148,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSetStatement() {
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, new PostgreSQLSetStatement());
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, new SetStatement());
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
@@ -164,7 +164,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new PostgreSQLDeleteStatement());
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new DeleteStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

@@ -22,9 +22,12 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Regist
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
@@ -32,7 +35,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
@@ -40,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
@@ -51,27 +58,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoState
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLUpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -108,7 +105,6 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfDeleteStatement() {
         assertThat(PostgreSQLCommand.valueOf(DeleteStatement.class).orElse(null), is(PostgreSQLCommand.DELETE));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDeleteStatement.class).orElse(null), is(PostgreSQLCommand.DELETE));
         assertThat(PostgreSQLCommand.DELETE.getTag(), is("DELETE"));
     }
     
@@ -132,7 +128,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfVacuumStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLVacuumStatement.class).orElse(null), is(PostgreSQLCommand.VACUUM));
+        assertThat(PostgreSQLCommand.valueOf(VacuumStatement.class).orElse(null), is(PostgreSQLCommand.VACUUM));
         assertThat(PostgreSQLCommand.VACUUM.getTag(), is("VACUUM"));
     }
     
@@ -156,7 +152,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfAlterSequenceStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLAlterSequenceStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_SEQUENCE));
+        assertThat(PostgreSQLCommand.valueOf(AlterSequenceStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_SEQUENCE));
         assertThat(PostgreSQLCommand.ALTER_SEQUENCE.getTag(), is("ALTER SEQUENCE"));
     }
     
@@ -189,7 +185,6 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfCreateDatabaseStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_DATABASE));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_DATABASE));
         assertThat(PostgreSQLCommand.CREATE_DATABASE.getTag(), is("CREATE DATABASE"));
     }
     
@@ -207,19 +202,19 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfCreateProcedureStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateProcedureStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_PROCEDURE));
+        assertThat(PostgreSQLCommand.valueOf(CreateProcedureStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_PROCEDURE));
         assertThat(PostgreSQLCommand.CREATE_PROCEDURE.getTag(), is("CREATE PROCEDURE"));
     }
     
     @Test
     void assertValueOfCreateSequenceStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateSequenceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_SEQUENCE));
+        assertThat(PostgreSQLCommand.valueOf(CreateSequenceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_SEQUENCE));
         assertThat(PostgreSQLCommand.CREATE_SEQUENCE.getTag(), is("CREATE SEQUENCE"));
     }
     
     @Test
     void assertValueOfCreateTablespaceStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateTablespaceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLESPACE));
+        assertThat(PostgreSQLCommand.valueOf(CreateTablespaceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLESPACE));
         assertThat(PostgreSQLCommand.CREATE_TABLESPACE.getTag(), is("CREATE TABLESPACE"));
     }
     
@@ -239,7 +234,6 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfDropDatabaseStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP_DATABASE));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP_DATABASE));
         assertThat(PostgreSQLCommand.DROP_DATABASE.getTag(), is("DROP DATABASE"));
     }
     
@@ -263,7 +257,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfDropSequenceStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropSequenceStatement.class).orElse(null), is(PostgreSQLCommand.DROP_SEQUENCE));
+        assertThat(PostgreSQLCommand.valueOf(DropSequenceStatement.class).orElse(null), is(PostgreSQLCommand.DROP_SEQUENCE));
         assertThat(PostgreSQLCommand.DROP_SEQUENCE.getTag(), is("DROP SEQUENCE"));
     }
     
@@ -294,25 +288,25 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfBeginStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLBeginTransactionStatement.class).orElse(null), is(PostgreSQLCommand.BEGIN));
+        assertThat(PostgreSQLCommand.valueOf(BeginTransactionStatement.class).orElse(null), is(PostgreSQLCommand.BEGIN));
         assertThat(PostgreSQLCommand.BEGIN.getTag(), is("BEGIN"));
     }
     
     @Test
     void assertValueOfStartTransactionStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLStartTransactionStatement.class).orElse(null), is(PostgreSQLCommand.START_TRANSACTION));
+        assertThat(PostgreSQLCommand.valueOf(StartTransactionStatement.class).orElse(null), is(PostgreSQLCommand.START_TRANSACTION));
         assertThat(PostgreSQLCommand.START_TRANSACTION.getTag(), is("START TRANSACTION"));
     }
     
     @Test
     void assertValueOfCommitStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCommitStatement.class).orElse(null), is(PostgreSQLCommand.COMMIT));
+        assertThat(PostgreSQLCommand.valueOf(CommitStatement.class).orElse(null), is(PostgreSQLCommand.COMMIT));
         assertThat(PostgreSQLCommand.COMMIT.getTag(), is("COMMIT"));
     }
     
     @Test
     void assertValueOfSavepointStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLSavepointStatement.class).orElse(null), is(PostgreSQLCommand.SAVEPOINT));
+        assertThat(PostgreSQLCommand.valueOf(SavepointStatement.class).orElse(null), is(PostgreSQLCommand.SAVEPOINT));
         assertThat(PostgreSQLCommand.SAVEPOINT.getTag(), is("SAVEPOINT"));
     }
     
@@ -324,13 +318,13 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfReleaseSavepointStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLReleaseSavepointStatement.class).orElse(null), is(PostgreSQLCommand.RELEASE));
+        assertThat(PostgreSQLCommand.valueOf(ReleaseSavepointStatement.class).orElse(null), is(PostgreSQLCommand.RELEASE));
         assertThat(PostgreSQLCommand.RELEASE.getTag(), is("RELEASE"));
     }
     
     @Test
     void assertValueOfSetStatement() {
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLSetStatement.class).orElse(null), is(PostgreSQLCommand.SET));
+        assertThat(PostgreSQLCommand.valueOf(SetStatement.class).orElse(null), is(PostgreSQLCommand.SET));
         assertThat(PostgreSQLCommand.SET.getTag(), is("SET"));
     }
     

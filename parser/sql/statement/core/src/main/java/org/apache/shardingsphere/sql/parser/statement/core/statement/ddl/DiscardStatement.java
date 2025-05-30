@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Discard statement.
  */
-public abstract class DiscardStatement extends AbstractSQLStatement implements DDLStatement {
+public class DiscardStatement extends AbstractSQLStatement implements DDLStatement {
 }

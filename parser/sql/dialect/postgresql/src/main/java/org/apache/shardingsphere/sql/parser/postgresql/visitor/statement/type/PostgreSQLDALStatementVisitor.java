@@ -38,16 +38,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLAnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLEmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -76,7 +76,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitSet(final SetContext ctx) {
-        PostgreSQLSetStatement result = new PostgreSQLSetStatement();
+        SetStatement result = new SetStatement();
         Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
         if (null != ctx.configurationParameterClause()) {
             VariableAssignSegment variableAssignSegment = (VariableAssignSegment) visit(ctx.configurationParameterClause());
@@ -118,7 +118,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        PostgreSQLAnalyzeTableStatement result = new PostgreSQLAnalyzeTableStatement();
+        AnalyzeTableStatement result = new AnalyzeTableStatement();
         if (null != ctx.vacuumRelationList()) {
             result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
         }
@@ -138,17 +138,17 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitLoad(final LoadContext ctx) {
-        return new PostgreSQLLoadStatement();
+        return new LoadStatement();
     }
     
     @Override
     public ASTNode visitVacuum(final VacuumContext ctx) {
-        return new PostgreSQLVacuumStatement();
+        return new VacuumStatement();
     }
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        PostgreSQLExplainStatement result = new PostgreSQLExplainStatement();
+        ExplainStatement result = new ExplainStatement();
         result.setSqlStatement((SQLStatement) visit(ctx.explainableStmt()));
         return result;
     }
@@ -183,6 +183,6 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitEmptyStatement(final EmptyStatementContext ctx) {
-        return new PostgreSQLEmptyStatement();
+        return new EmptyStatement();
     }
 }

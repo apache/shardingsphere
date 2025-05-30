@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create operator statement.
  */
-public abstract class CreateOperatorStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateOperatorStatement extends AbstractSQLStatement implements DDLStatement {
 }

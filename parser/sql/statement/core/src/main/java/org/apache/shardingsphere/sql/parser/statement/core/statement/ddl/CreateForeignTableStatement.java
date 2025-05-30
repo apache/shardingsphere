@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create foreign table statement.
  */
-public abstract class CreateForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
 }
