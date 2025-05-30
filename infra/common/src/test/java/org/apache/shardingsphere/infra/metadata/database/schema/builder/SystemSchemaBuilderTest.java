@@ -64,7 +64,7 @@ class SystemSchemaBuilderTest {
         assertTrue(actual.containsKey("shardingsphere"));
         assertThat(actual.get("information_schema").getAllTables().size(), is(69));
         assertThat(actual.get("pg_catalog").getAllTables().size(), is(134));
-        assertThat(actual.get("shardingsphere").getAllTables().size(), is(2));
+        assertThat(actual.get("shardingsphere").getAllTables().size(), is(1));
     }
     
     @Test
@@ -76,6 +76,6 @@ class SystemSchemaBuilderTest {
         assertTrue(actual.containsKey("shardingsphere"));
         assertThat(actual.get("information_schema").getAllTables().size(), is(66));
         assertThat(actual.get("pg_catalog").getAllTables().size(), is(240));
-        assertThat(actual.get("shardingsphere").getAllTables().size(), is(2));
+        assertThat(actual.get("shardingsphere").getAllTables().size(), is(1));
     }
 }
