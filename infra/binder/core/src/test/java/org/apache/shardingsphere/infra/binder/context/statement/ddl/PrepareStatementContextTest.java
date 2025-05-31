@@ -29,10 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92UpdateStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -74,13 +71,13 @@ class PrepareStatementContextTest {
     }
     
     private InsertStatement getInsert(final SimpleTableSegment table) {
-        InsertStatement result = new SQL92InsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setTable(table);
         return result;
     }
     
     private UpdateStatement getUpdate(final SimpleTableSegment table) {
-        UpdateStatement result = new SQL92UpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setTable(table);
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("foo_col"));
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(column), column)));
@@ -89,7 +86,7 @@ class PrepareStatementContextTest {
     }
     
     private DeleteStatement getDelete(final SimpleTableSegment table) {
-        DeleteStatement result = new SQL92DeleteStatement();
+        DeleteStatement result = new DeleteStatement();
         result.setTable(table);
         return result;
     }

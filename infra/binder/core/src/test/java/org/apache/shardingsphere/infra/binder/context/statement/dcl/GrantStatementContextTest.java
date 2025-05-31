@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92GrantStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,7 +35,7 @@ class GrantStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        GrantStatement sqlStatement = new SQL92GrantStatement();
+        GrantStatement sqlStatement = new GrantStatement();
         sqlStatement.getTables().addAll(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
         GrantStatementContext actual = new GrantStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));

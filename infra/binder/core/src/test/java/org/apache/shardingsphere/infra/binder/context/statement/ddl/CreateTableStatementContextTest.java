@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -44,7 +43,7 @@ class CreateTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement();
         CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         sqlStatement.setTable(table);

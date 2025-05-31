@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92RevokeStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -36,7 +35,7 @@ class RevokeStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        RevokeStatement revokeStatement = new SQL92RevokeStatement();
+        RevokeStatement revokeStatement = new RevokeStatement();
         revokeStatement.getTables().addAll(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
         RevokeStatementContext actual = new RevokeStatementContext(mock(), revokeStatement);
         assertThat(actual.getSqlStatement(), is(revokeStatement));

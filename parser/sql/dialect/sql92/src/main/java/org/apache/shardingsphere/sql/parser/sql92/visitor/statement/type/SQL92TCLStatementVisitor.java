@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitC
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.tcl.SQL92CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.tcl.SQL92SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 
 /**
  * TCL statement visitor for SQL92.
@@ -34,12 +34,12 @@ public final class SQL92TCLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SQL92SetTransactionStatement();
+        return new SetTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new SQL92CommitStatement();
+        return new CommitStatement();
     }
     
     @Override

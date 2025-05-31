@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +76,7 @@ class ShardingResultMergerEngineTest {
     
     @Test
     void assertNewInstanceWithOtherStatement() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         insertStatement.setInsertColumns(insertColumnsSegment);

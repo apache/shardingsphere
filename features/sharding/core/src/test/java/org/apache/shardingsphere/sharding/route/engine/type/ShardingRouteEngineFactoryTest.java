@@ -50,7 +50,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92GrantStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -131,7 +130,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDCLForSingleTable() {
-        GrantStatement grantStatement = new SQL92GrantStatement();
+        GrantStatement grantStatement = new GrantStatement();
         grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         GrantStatementContext sqlStatementContext = new GrantStatementContext(mock(), grantStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));

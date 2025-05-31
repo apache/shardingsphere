@@ -20,9 +20,8 @@ package org.apache.shardingsphere.transaction.util;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
@@ -42,10 +41,10 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForDDLOrDMLStatement() {
-        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement();
         sqlStatement.setIfNotExists(true);
         assertTrue(AutoCommitUtils.needOpenTransaction(sqlStatement));
-        assertTrue(AutoCommitUtils.needOpenTransaction(new SQL92InsertStatement()));
+        assertTrue(AutoCommitUtils.needOpenTransaction(new InsertStatement()));
     }
     
     @Test
