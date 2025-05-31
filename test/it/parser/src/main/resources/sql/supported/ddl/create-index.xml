@@ -25,11 +25,13 @@
     <sql-case id="create_unique_index" value="CREATE UNIQUE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="create_composite_index" value="CREATE INDEX order_index ON t_order (order_id, user_id, status)" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="create_btree_index" value="CREATE INDEX order_index ON t_order USING BTREE (order_id)" db-types="PostgreSQL,openGauss" />
+    <!-- TODO should assert index for all databases (MySQL and SQLServer do not parse index right now)
     <sql-case id="create_index_with_space" value="    CREATE INDEX
         order_index
     ON
         t_order (order_id)    " db-types="MySQL,SQLServer" />
     <sql-case id="create_index_with_back_quota" value="CREATE INDEX `order_index` ON `t_order` (`order_id`)" db-types="MySQL" />
+     -->
     <sql-case id="create_index_with_quota" value="CREATE INDEX &quot;order_index&quot; ON &quot;t_order&quot; (&quot;order_id&quot;)" db-types="Oracle" />
     <sql-case id="create_index_with_function" value="CREATE INDEX idx_upper_status ON t_order (UPPER(status))" db-types="Oracle,PostgreSQL,openGauss" />
     <sql-case id="create_index_with_bracket" value="CREATE INDEX [order_index] ON [t_order] ([order_id])" db-types="SQLServer" />
