@@ -160,8 +160,4 @@
     <test-case sql="SELECT * FROM t_user ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
-    
-    <test-case sql="select * from shardingsphere.sharding_table_statistics order by id;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db" delay-assertion-seconds="40">
-        <assertion expected-data-file="select_sharding_table_statistics.xml" />
-    </test-case>
 </e2e-test-cases>

@@ -68,7 +68,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.gs_password_notifytime()");
         SCHEMA_TABLES.put("pg_catalog", new CaseInsensitiveSet<>(Arrays.asList("pg_class", "pg_namespace", "pg_database", "pg_tables", "pg_roles")));
-        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Collections.singletonList("cluster_information")));
     }
     
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
