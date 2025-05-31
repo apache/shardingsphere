@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * System action statement.
  */
-public abstract class SystemActionStatement extends AbstractSQLStatement implements DDLStatement {
+public class SystemActionStatement extends AbstractSQLStatement implements DDLStatement {
 }

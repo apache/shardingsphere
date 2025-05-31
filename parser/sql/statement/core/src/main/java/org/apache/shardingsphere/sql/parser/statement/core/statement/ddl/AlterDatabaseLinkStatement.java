@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter database link statement.
  */
-public abstract class AlterDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement {
 }

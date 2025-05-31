@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class AuditStatement extends AbstractSQLStatement implements DDLStatement {
+public class AuditStatement extends AbstractSQLStatement implements DDLStatement {
 }

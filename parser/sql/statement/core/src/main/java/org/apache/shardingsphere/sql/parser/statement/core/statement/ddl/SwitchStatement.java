@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Switch statement.
  */
-public abstract class SwitchStatement extends AbstractSQLStatement implements DDLStatement {
+public class SwitchStatement extends AbstractSQLStatement implements DDLStatement {
 }

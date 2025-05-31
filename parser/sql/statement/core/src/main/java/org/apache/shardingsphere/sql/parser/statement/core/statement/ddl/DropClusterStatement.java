@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop cluster statement.
  */
-public abstract class DropClusterStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }

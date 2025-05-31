@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -61,8 +60,7 @@ public final class AlterIndexStatementAssert {
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
-        // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
-        if (actual instanceof OracleAlterIndexStatement && actual.getIndex().isPresent()) {
+        if (actual.getIndex().isPresent()) {
             IndexAssert.assertIs(assertContext, actual.getIndex().get(), expected.getIndex());
         }
     }

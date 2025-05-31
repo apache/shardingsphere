@@ -176,15 +176,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleDeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleUpdateStatement;
 
@@ -399,7 +399,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        OracleDeleteStatement result = new OracleDeleteStatement();
+        DeleteStatement result = new DeleteStatement();
         result.setTable((TableSegment) visit(ctx.deleteSpecification()));
         if (null != ctx.alias()) {
             result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
@@ -1299,7 +1299,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        OracleMergeStatement result = new OracleMergeStatement();
+        MergeStatement result = new MergeStatement();
         result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.usingClause().expr().start.getStartIndex(), ctx.usingClause().expr().stop.getStopIndex(),

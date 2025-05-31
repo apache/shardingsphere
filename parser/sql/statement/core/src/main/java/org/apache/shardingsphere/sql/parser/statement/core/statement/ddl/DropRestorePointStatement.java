@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop restore point statement.
  */
-public abstract class DropRestorePointStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropRestorePointStatement extends AbstractSQLStatement implements DDLStatement {
 }

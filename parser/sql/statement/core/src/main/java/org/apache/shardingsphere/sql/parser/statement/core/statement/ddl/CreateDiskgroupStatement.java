@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create diskgroup statement.
  */
-public abstract class CreateDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class AnalyzeStatement extends AbstractSQLStatement implements DDLStatement {
+public class AnalyzeStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IndexSegment index;
     

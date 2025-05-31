@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter flashback archive statement.
  */
-public abstract class AlterFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter audit policy statement.
  */
-public abstract class AlterAuditPolicyStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterAuditPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

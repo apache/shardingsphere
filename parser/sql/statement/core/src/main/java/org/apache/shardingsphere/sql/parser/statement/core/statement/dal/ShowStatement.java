@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Show statement.
  */
-public abstract class ShowStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowStatement extends AbstractSQLStatement implements DALStatement {
     
     /**
      * Get name.

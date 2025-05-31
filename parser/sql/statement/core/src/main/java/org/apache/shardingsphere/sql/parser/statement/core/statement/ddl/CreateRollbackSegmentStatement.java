@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create rollback segment statement.
  */
-public abstract class CreateRollbackSegmentStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateRollbackSegmentStatement extends AbstractSQLStatement implements DDLStatement {
 }

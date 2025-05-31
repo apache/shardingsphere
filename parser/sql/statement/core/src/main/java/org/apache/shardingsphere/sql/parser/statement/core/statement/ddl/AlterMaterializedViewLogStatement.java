@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter materialized view log statement.
  */
-public abstract class AlterMaterializedViewLogStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterMaterializedViewLogStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop in memory join group statement.
  */
-public abstract class DropInMemoryJoinGroupStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropInMemoryJoinGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

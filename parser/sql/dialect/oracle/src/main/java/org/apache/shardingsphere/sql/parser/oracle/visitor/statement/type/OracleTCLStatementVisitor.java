@@ -26,13 +26,13 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Savepo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleLockStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetTransactionStatement;
 
 /**
  * TCL statement visitor for Oracle.
@@ -41,12 +41,12 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new OracleSetTransactionStatement();
+        return new SetTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new OracleCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
@@ -60,18 +60,18 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        OracleSavepointStatement result = new OracleSavepointStatement();
+        SavepointStatement result = new SavepointStatement();
         result.setSavepointName(((IdentifierValue) visit(ctx.savepointName())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new OracleSetConstraintsStatement();
+        return new SetConstraintsStatement();
     }
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new OracleLockStatement();
+        return new LockStatement();
     }
 }

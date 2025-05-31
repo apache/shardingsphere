@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -66,13 +65,10 @@ public final class DropIndexStatementAssert {
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
-        // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
-        if (actual instanceof OracleDropIndexStatement) {
-            int count = 0;
-            for (IndexSegment each : actual.getIndexes()) {
-                IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
-                count++;
-            }
+        int count = 0;
+        for (IndexSegment each : actual.getIndexes()) {
+            IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));
+            count++;
         }
     }
     
