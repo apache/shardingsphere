@@ -478,6 +478,16 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"javax.security.auth.login.Configuration"},
   "name":"sun.security.provider.ConfigFile",
   "methods":[{"name":"<init>","parameterTypes":[] }]

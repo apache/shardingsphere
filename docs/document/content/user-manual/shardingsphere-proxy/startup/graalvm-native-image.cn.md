@@ -111,7 +111,7 @@ cd ./shardingsphere/
 ./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep -DskipTests clean package
 ```
 
-3. 通过命令行启动 Native Image, 需要带上 4 个参数，
+3. 通过命令行启动 Native Image, 需要带上 3 个参数，
    第 1 个参数为 ShardingSphere Proxy Native 使用的端口，
    第 2 个参数为用户编写的包含 `global.yaml` 配置文件的文件夹，
    第 3 个参数为要侦听的主机，如果为 `0.0.0.0` 则允许任意数据库客户端均可访问 ShardingSphere Proxy Native。
@@ -126,7 +126,7 @@ cd ./shardingsphere/
 ```bash
 cd ./shardingsphere/
 cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-shardingsphere-proxy-native-bin/
-./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0" "false"
+./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0"
 ```
 
 4. 如果需要构建 Docker Image, 在添加存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令，

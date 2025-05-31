@@ -100,10 +100,6 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.opengauss.metadata.data.loader.OpenGaussMetaDataLoader"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
@@ -125,6 +121,10 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer"},
+  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -172,7 +172,7 @@
   "name":"[Ljava.sql.Statement;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"},
   "name":"[Ljava.sql.Statement;"
 },
 {
@@ -1271,7 +1271,7 @@
   "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"},
   "name":"org.apache.shardingsphere.driver.ShardingSphereDriver"
 },
 {
@@ -1615,6 +1615,10 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"},
   "name":"org.apache.shardingsphere.infra.database.firebird.metadata.database.FirebirdDatabaseMetaData"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"},
+  "name":"org.apache.shardingsphere.infra.database.firebird.metadata.database.system.FirebirdSystemDatabase"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"},
@@ -3768,13 +3772,23 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseInsertStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -3805,11 +3819,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
   "name":"org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLTruncateStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -3865,16 +3874,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
   "name":"org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLTruncateStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

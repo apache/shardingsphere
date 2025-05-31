@@ -50,7 +50,7 @@ public final class ProxyTestingServer {
         proxyPort = InstanceSpec.getRandomPort();
         completableFuture = CompletableFuture.runAsync(() -> {
             try {
-                Bootstrap.main(new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0", "false"});
+                Bootstrap.main(new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0"});
             } catch (final IOException | SQLException ex) {
                 throw new RuntimeException(ex);
             }

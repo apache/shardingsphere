@@ -113,11 +113,10 @@ cd ./shardingsphere/
 ./mvnw -am -pl distribution/proxy-native -T1C -Prelease.native,default-dep -DskipTests clean package
 ```
 
-3. To start Native Image through the command line, you need to bring 4 parameters.
+3. To start Native Image through the command line, you need to bring 3 parameters.
    The first parameter is the port used by ShardingSphere Proxy Native.
    The second parameter is the folder containing the `global.yaml` configuration file written by the user.
    The third parameter is the host to listen to. If it is `0.0.0.0`, any database client is allowed to access ShardingSphere Proxy Native.
-   The fourth parameter is Force Start. If it is `true`, it ensures that ShardingSphere Proxy Native can start normally regardless of whether it can be connected.
 
 Only command line parameters can be set for binaries of built GraalVM Native Images. This means that:
 
@@ -129,7 +128,7 @@ Assuming the folder `/customAbsolutePath/conf` already exists, the example is.
 ```bash
 cd ./shardingsphere/
 cd ./distribution/proxy-native/target/apache-shardingsphere-5.5.2-shardingsphere-proxy-native-bin/
-./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0" "false"
+./proxy-native "3307" "/customAbsolutePath/conf" "0.0.0.0"
 ```
 
 4. If you need to build a Docker Image, after adding the dependencies that have SPI implementation or third-party dependencies,
