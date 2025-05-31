@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter index type statement.
  */
-public abstract class AlterIndexTypeStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterIndexTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

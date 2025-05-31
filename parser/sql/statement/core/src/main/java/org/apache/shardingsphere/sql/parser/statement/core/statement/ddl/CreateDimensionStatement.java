@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create dimension statement.
  */
-public abstract class CreateDimensionStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateDimensionStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create control file statement.
  */
-public abstract class CreateControlFileStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateControlFileStatement extends AbstractSQLStatement implements DDLStatement {
 }

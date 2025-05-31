@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop materialized zone map statement.
  */
-public abstract class DropMaterializedZoneMapStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropMaterializedZoneMapStatement extends AbstractSQLStatement implements DDLStatement {
 }

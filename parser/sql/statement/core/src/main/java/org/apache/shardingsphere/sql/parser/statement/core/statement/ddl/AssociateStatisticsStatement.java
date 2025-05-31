@@ -36,7 +36,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public abstract class AssociateStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
+public class AssociateStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
     
     private List<IndexSegment> indexes = new LinkedList<>();
     
