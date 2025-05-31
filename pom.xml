@@ -120,7 +120,7 @@
         <logback.version>1.2.13</logback.version>
         <commons-logging.version>1.2</commons-logging.version>
         
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
         <immutables.version>2.9.3</immutables.version>
         
         <postgresql.version>42.7.5</postgresql.version>
