@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -45,7 +44,7 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
         assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
@@ -60,7 +59,7 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheckIfNotExists() {
-        CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement();
         sqlStatement.setIfNotExists(true);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
         assertCheckIfNotExists(sqlStatement);

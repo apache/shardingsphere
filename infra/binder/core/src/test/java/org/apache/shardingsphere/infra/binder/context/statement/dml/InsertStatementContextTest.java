@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
@@ -132,7 +131,7 @@ class InsertStatementContextTest {
     
     @Test
     void assertInsertSelect() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         SelectStatement selectStatement = new SQL92SelectStatement();
         selectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -198,7 +197,7 @@ class InsertStatementContextTest {
     
     @Test
     void assertContainsInsertColumns() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
@@ -210,7 +209,7 @@ class InsertStatementContextTest {
     
     @Test
     void assertNotContainsInsertColumns() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         insertStatement.setTable(new SimpleTableSegment(tableNameSegment));
@@ -231,7 +230,7 @@ class InsertStatementContextTest {
     
     @Test
     void assertGetValueListCountWithValues() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2))));
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
@@ -257,7 +256,7 @@ class InsertStatementContextTest {
     
     @Test
     void assertGetInsertColumnNamesForInsertColumns() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));

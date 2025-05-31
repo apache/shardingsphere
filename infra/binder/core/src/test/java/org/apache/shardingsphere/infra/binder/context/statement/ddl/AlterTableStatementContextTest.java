@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92AlterTableStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -51,7 +50,7 @@ class AlterTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        AlterTableStatement alterTableStatement = new SQL92AlterTableStatement();
+        AlterTableStatement alterTableStatement = new AlterTableStatement();
         SimpleTableSegment table = new SimpleTableSegment(createTableNameSegment("foo_tbl"));
         alterTableStatement.setTable(table);
         alterTableStatement.setRenameTable(new SimpleTableSegment(createTableNameSegment("rename_foo_tbl")));

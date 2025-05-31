@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92DropTableStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +31,7 @@ class DropTableStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        DropTableStatement dropTableStatement = new SQL92DropTableStatement();
+        DropTableStatement dropTableStatement = new DropTableStatement();
         DropTableStatementContext actual = new DropTableStatementContext(mock(), dropTableStatement);
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         dropTableStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));

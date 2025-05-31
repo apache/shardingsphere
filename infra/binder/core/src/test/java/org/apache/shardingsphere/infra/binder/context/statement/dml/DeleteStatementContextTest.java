@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92DeleteStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -42,7 +41,7 @@ class DeleteStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        DeleteStatement deleteStatement = new SQL92DeleteStatement();
+        DeleteStatement deleteStatement = new DeleteStatement();
         WhereSegment whereSegment = mock(WhereSegment.class);
         when(whereSegment.getExpr()).thenReturn(mock(ExpressionSegment.class));
         deleteStatement.setWhere(whereSegment);

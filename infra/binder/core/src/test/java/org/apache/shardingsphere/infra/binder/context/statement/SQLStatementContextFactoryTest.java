@@ -44,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveSta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
@@ -72,7 +71,7 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, insertStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));

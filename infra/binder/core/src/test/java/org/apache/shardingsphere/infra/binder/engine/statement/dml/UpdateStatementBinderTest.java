@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92UpdateStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -53,7 +52,7 @@ class UpdateStatementBinderTest {
     
     @Test
     void assertBind() {
-        UpdateStatement updateStatement = new SQL92UpdateStatement();
+        UpdateStatement updateStatement = new UpdateStatement();
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         updateStatement.setTable(simpleTableSegment);
         updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),

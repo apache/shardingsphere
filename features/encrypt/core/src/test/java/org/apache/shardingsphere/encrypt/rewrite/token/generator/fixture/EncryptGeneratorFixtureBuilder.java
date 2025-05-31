@@ -60,9 +60,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92UpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,7 +119,7 @@ public final class EncryptGeneratorFixtureBuilder {
     }
     
     private static InsertStatement createInsertStatement() {
-        InsertStatement result = new SQL92InsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")),
@@ -132,7 +130,7 @@ public final class EncryptGeneratorFixtureBuilder {
     }
     
     private static InsertStatement createInsertSelectStatement(final boolean containsInsertColumns) {
-        InsertStatement result = new SQL92InsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         ColumnSegment userIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         userIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"),
@@ -166,7 +164,7 @@ public final class EncryptGeneratorFixtureBuilder {
      * @return created update statement context
      */
     public static UpdateStatementContext createUpdateStatementContext() {
-        UpdateStatement updateStatement = new SQL92UpdateStatement();
+        UpdateStatement updateStatement = new UpdateStatement();
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         updateStatement.setWhere(createWhereSegment());
         updateStatement.setSetAssignment(createSetAssignmentSegment());
