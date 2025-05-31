@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter cluster statement.
  */
-public abstract class AlterClusterStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }

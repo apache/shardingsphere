@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop pluggable database statement.
  */
-public abstract class DropPluggableDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropPluggableDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
 }

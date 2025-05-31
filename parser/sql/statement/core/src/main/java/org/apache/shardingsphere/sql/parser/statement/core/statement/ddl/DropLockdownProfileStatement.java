@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop lockdown profile statement.
  */
-public abstract class DropLockdownProfileStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropLockdownProfileStatement extends AbstractSQLStatement implements DDLStatement {
 }

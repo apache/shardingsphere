@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop materialized view log statement.
  */
-public abstract class DropMaterializedViewLogStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropMaterializedViewLogStatement extends AbstractSQLStatement implements DDLStatement {
 }

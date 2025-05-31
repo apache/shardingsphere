@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class PurgeStatement extends AbstractSQLStatement implements DDLStatement {
+public class PurgeStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IndexSegment index;
     

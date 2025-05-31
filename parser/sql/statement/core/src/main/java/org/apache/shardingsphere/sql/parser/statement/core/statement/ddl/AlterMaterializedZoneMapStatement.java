@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter materialized zone map statement.
  */
-public abstract class AlterMaterializedZoneMapStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterMaterializedZoneMapStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter pluggable database statement.
  */
-public abstract class AlterPluggableDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterPluggableDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
 }

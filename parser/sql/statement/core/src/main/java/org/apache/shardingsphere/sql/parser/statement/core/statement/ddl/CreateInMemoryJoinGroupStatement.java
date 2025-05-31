@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create in memory join group statement.
  */
-public abstract class CreateInMemoryJoinGroupStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateInMemoryJoinGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

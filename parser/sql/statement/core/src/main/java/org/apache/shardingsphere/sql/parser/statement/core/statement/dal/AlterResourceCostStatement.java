@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class AlterResourceCostStatement extends AbstractSQLStatement implements DALStatement {
+public class AlterResourceCostStatement extends AbstractSQLStatement implements DALStatement {
 }

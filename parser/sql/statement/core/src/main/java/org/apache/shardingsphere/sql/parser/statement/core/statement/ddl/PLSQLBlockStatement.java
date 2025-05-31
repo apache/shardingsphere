@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * PLSQL block statement.
  */
-public abstract class PLSQLBlockStatement extends AbstractSQLStatement implements DDLStatement {
+public class PLSQLBlockStatement extends AbstractSQLStatement implements DDLStatement {
     
     @Override
     public int getParameterCount() {
