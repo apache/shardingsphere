@@ -76,7 +76,8 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new SetTransactionStatement(getOperationScope(ctx.optionType()),
-                getTransactionIsolationLevel(ctx.transactionCharacteristics().isolationLevel().isolationTypes()), getTransactionAccessType(ctx.transactionCharacteristics().transactionAccessMode()));
+                getTransactionIsolationLevel(null == ctx.transactionCharacteristics().isolationLevel() ? null : ctx.transactionCharacteristics().isolationLevel().isolationTypes()),
+                getTransactionAccessType(ctx.transactionCharacteristics().transactionAccessMode()));
     }
     
     private OperationScope getOperationScope(final OptionTypeContext ctx) {
