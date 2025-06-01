@@ -80,6 +80,9 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     }
     
     private OperationScope getOperationScope(final OptionTypeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
         if (null != ctx.SESSION()) {
             return OperationScope.SESSION;
         }
@@ -90,6 +93,9 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     }
     
     private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationTypesContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
         if (null != ctx.SERIALIZABLE()) {
             return TransactionIsolationLevel.SERIALIZABLE;
         }
@@ -106,6 +112,9 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     }
     
     private TransactionAccessType getTransactionAccessType(final TransactionAccessModeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
         if (null != ctx.ONLY()) {
             return TransactionAccessType.READ_ONLY;
         }

@@ -96,6 +96,9 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     }
     
     private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
         if (null != ctx.ONLY()) {
             return TransactionAccessType.READ_ONLY;
         }
