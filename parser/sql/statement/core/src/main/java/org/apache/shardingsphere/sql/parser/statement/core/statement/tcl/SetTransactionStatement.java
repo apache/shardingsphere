@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
     
     private TransactionIsolationLevel isolationLevel;
     

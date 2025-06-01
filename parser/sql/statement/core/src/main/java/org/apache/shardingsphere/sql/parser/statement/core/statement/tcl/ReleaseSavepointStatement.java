@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public class ReleaseSavepointStatement extends AbstractSQLStatement implements TCLStatement {
+public final class ReleaseSavepointStatement extends AbstractSQLStatement implements TCLStatement {
     
     private String savepointName;
 }

@@ -28,7 +28,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
+public final class RollbackStatement extends AbstractSQLStatement implements TCLStatement {
     
     private String savepointName;
     
