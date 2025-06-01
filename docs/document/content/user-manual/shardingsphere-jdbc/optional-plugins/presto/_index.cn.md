@@ -59,9 +59,9 @@ hive.metastore=file
 hive.metastore.catalog.dir=file:/home/iceberg_data
 ```
 
-### 创建业务相关的 schema，库和表
+### 创建业务相关的 schema 和表
 
-通过第三方工具在 Presto 内创建业务相关的 schema，库和表。
+通过第三方工具在 Presto 内创建业务相关的 schema 和表。
 以 DBeaver Community 为例，若使用 Ubuntu 22.04.5，可通过 Snapcraft 快速安装，
 
 ```shell

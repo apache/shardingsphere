@@ -17,7 +17,7 @@
 
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>shardingsphere-proxy-native-bin</id>
+    <id>shardingsphere-proxy-bin</id>
     <formats>
         <format>dir</format>
         <format>tar.gz</format>
@@ -28,10 +28,14 @@
         <fileSet>
             <directory>${project.build.directory}</directory>
             <includes>
-                <include>${proxy.native.image.name}</include>
+                <!--dynamic linked, mostly static linked, or fully static linked GraalVM Native Image compiled by Linux-->
+                <include>${proxy.native.image.filename}</include>
                 <include>*.so</include>
+                <!--dynamic linked GraalVM Native Image compiled by Windows-->
+                <include>${proxy.native.image.filename}.exe</include>
+                <include>*.dll</include>
             </includes>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>

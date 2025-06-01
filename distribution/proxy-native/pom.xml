@@ -28,10 +28,12 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <proxy.native.image.name>proxy-native</proxy.native.image.name>
-        <proxy.native.image.platform>linux/amd64,linux/arm64</proxy.native.image.platform>
+        <proxy.native.image.filename>shardingsphere-proxy-native</proxy.native.image.filename>
+        <proxy.native.folder.prefix>apache-shardingsphere-${project.version}</proxy.native.folder.prefix>
+        <proxy.native.dockerfile>Dockerfile-linux-dynamic</proxy.native.dockerfile>
         <proxy.native.image.repository>apache/shardingsphere-proxy-native</proxy.native.image.repository>
         <proxy.native.image.tag>${project.version}</proxy.native.image.tag>
+        <proxy.native.image.platform>linux/amd64,linux/arm64/v8</proxy.native.image.platform>
     </properties>
     
     <dependencies>
@@ -68,7 +70,7 @@
         <profile>
             <id>release.native</id>
             <build>
-                <finalName>apache-shardingsphere-${project.version}</finalName>
+                <finalName>${proxy.native.folder.prefix}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
@@ -77,7 +79,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
-                            <imageName>${proxy.native.image.name}</imageName>
+                            <imageName>${proxy.native.image.filename}</imageName>
                             <buildArgs>
                                 <buildArg>-H:+AddAllCharsets</buildArg>
                             </buildArgs>
@@ -90,20 +92,13 @@
                                 </goals>
                                 <phase>package</phase>
                             </execution>
-                            <execution>
-                                <id>test-native</id>
-                                <goals>
-                                    <goal>test</goal>
-                                </goals>
-                                <phase>test</phase>
-                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/shardingsphere-proxy-native-binary-distribution.xml</descriptor>
+                                <descriptor>src/assembly/shardingsphere-proxy-native-binary-distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <executions>
@@ -124,8 +119,9 @@
             </build>
         </profile>
         <profile>
-            <id>docker.native</id>
+            <id>docker.build.native.linux</id>
             <build>
+                <finalName>${proxy.native.folder.prefix}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -137,18 +133,21 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>validate</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
+                                        <argument>buildx</argument>
                                         <argument>build</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>OUTPUT_DIRECTORY_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
-                                        <argument>.</argument>
+                                        <argument>PROJECT_VERSION=${project.version}</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.native.image.repository}:${proxy.native.image.tag}</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.native.image.repository}:latest</argument>
+                                        <argument>--file</argument>
+                                        <argument>${proxy.native.dockerfile}</argument>
+                                        <argument>../../</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -158,8 +157,9 @@
             </build>
         </profile>
         <profile>
-            <id>docker.buildx.push.native</id>
+            <id>docker.push.native.linux</id>
             <build>
+                <finalName>${proxy.native.folder.prefix}</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
@@ -167,22 +167,21 @@
                         <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>create builder</id>
+                                <id>create and use builder</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>validate</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>buildx</argument>
                                         <argument>create</argument>
+                                        <argument>--use</argument>
                                         <argument>--driver</argument>
                                         <argument>docker-container</argument>
                                         <argument>--name</argument>
                                         <argument>shardingsphere-builder</argument>
-                                        <argument>--platform</argument>
-                                        <argument>${proxy.native.image.platform}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -191,24 +190,24 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>validate</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>
                                         <argument>buildx</argument>
                                         <argument>build</argument>
                                         <argument>--push</argument>
-                                        <argument>--builder</argument>
-                                        <argument>shardingsphere-builder</argument>
                                         <argument>--platform</argument>
                                         <argument>${proxy.native.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>OUTPUT_DIRECTORY_NAME=${project.build.finalName}-shardingsphere-proxy-native-bin</argument>
-                                        <argument>.</argument>
+                                        <argument>PROJECT_VERSION=${project.version}</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.native.image.repository}:${proxy.native.image.tag}</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.native.image.repository}:latest</argument>
+                                        <argument>--file</argument>
+                                        <argument>${proxy.native.dockerfile}</argument>
+                                        <argument>../../</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -217,7 +216,7 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>validate</phase>
                                 <configuration>
                                     <executable>docker</executable>
                                     <arguments>

@@ -133,8 +133,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/proxy-native -Prelease.native,default-dep,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} clean package
-  
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} clean validate
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.platform=linux/amd64" clean validate
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.platform=linux/amd64" clean validate
+
   build-agent-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build Agent Image
