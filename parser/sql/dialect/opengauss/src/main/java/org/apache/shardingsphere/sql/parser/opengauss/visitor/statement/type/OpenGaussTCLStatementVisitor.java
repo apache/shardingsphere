@@ -78,25 +78,17 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        SavepointStatement result = new SavepointStatement();
-        result.setSavepointName(savepointName);
-        return result;
+        return new SavepointStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        RollbackStatement result = new RollbackStatement();
-        result.setSavepointName(ctx.colId().getText());
-        return result;
+        return new RollbackStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        ReleaseSavepointStatement result = new ReleaseSavepointStatement();
-        result.setSavepointName(savepointName);
-        return result;
+        return new ReleaseSavepointStatement(ctx.colId().getText());
     }
     
     @Override

@@ -51,6 +51,6 @@ public final class FirebirdTCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement();
+        return new SavepointStatement(null);
     }
 }

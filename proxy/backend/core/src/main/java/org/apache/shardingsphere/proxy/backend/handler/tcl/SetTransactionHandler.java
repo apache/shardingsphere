@@ -45,19 +45,16 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
     
     @Override
     public ResponseHeader execute() {
-        ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
+        ShardingSpherePreconditions.checkState(sqlStatement.containsScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
         setReadOnly();
         setTransactionIsolationLevel();
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private void setReadOnly() {
-        if (!sqlStatement.getAccessMode().isPresent()) {
-            return;
-        }
-        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode().get()) {
+        if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_ONLY)) {
             connectionSession.setReadOnly(true);
-        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode().get()) {
+        } else if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_WRITE)) {
             connectionSession.setReadOnly(false);
         }
     }

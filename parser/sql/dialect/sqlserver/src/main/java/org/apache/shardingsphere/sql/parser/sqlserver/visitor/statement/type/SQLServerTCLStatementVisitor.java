@@ -46,32 +46,28 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        SetTransactionStatement result = new SetTransactionStatement();
-        result.setIsolationLevel(getTransactionIsolationLevel(ctx.isolationLevel()));
-        return result;
+        return new SetTransactionStatement(null, getTransactionIsolationLevel(ctx.isolationLevel()), null);
     }
     
     private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationLevelContext ctx) {
-        TransactionIsolationLevel result;
         if (null != ctx.UNCOMMITTED()) {
-            result = TransactionIsolationLevel.READ_UNCOMMITTED;
-        } else if (null != ctx.COMMITTED()) {
-            result = TransactionIsolationLevel.READ_COMMITTED;
-        } else if (null != ctx.REPEATABLE()) {
-            result = TransactionIsolationLevel.REPEATABLE_READ;
-        } else if (null != ctx.SNAPSHOT()) {
-            result = TransactionIsolationLevel.SNAPSHOT;
-        } else {
-            result = TransactionIsolationLevel.SERIALIZABLE;
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
         }
-        return result;
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != ctx.REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        if (null != ctx.SNAPSHOT()) {
+            return TransactionIsolationLevel.SNAPSHOT;
+        }
+        return TransactionIsolationLevel.SERIALIZABLE;
     }
     
     @Override
     public ASTNode visitSetImplicitTransactions(final SetImplicitTransactionsContext ctx) {
-        SetAutoCommitStatement result = new SetAutoCommitStatement();
-        result.setAutoCommit("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
-        return result;
+        return new SetAutoCommitStatement("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
     }
     
     @Override
@@ -106,6 +102,6 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement();
+        return new SavepointStatement(null);
     }
 }
