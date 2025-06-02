@@ -110,7 +110,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 
 import java.util.stream.Collectors;
 
@@ -164,7 +164,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
         }
     }
     
-    private void fillRoleOrPrivileges(final DorisRevokeStatement statement, final RoleOrPrivilegesContext ctx) {
+    private void fillRoleOrPrivileges(final MySQLRevokeStatement statement, final RoleOrPrivilegesContext ctx) {
         for (RoleOrPrivilegeContext each : ctx.roleOrPrivilege()) {
             statement.getRoleOrPrivileges().add((RoleOrPrivilegeSegment) visit(each));
         }
@@ -415,7 +415,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeFrom(final RevokeFromContext ctx) {
-        DorisRevokeStatement result = new DorisRevokeStatement();
+        MySQLRevokeStatement result = new MySQLRevokeStatement();
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -429,7 +429,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeOnFrom(final RevokeOnFromContext ctx) {
-        DorisRevokeStatement result = new DorisRevokeStatement();
+        MySQLRevokeStatement result = new MySQLRevokeStatement();
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
