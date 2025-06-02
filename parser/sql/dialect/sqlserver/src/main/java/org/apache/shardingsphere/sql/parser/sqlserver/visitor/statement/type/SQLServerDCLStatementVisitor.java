@@ -52,7 +52,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
@@ -60,14 +59,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLog
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerGrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -174,9 +175,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        SQLServerAlterUserStatement result = new SQLServerAlterUserStatement();
-        result.setUser((UserSegment) visit(ctx.userName()));
-        return result;
+        return new SQLServerAlterUserStatement((UserSegment) visit(ctx.userName()));
     }
     
     @Override
@@ -213,9 +212,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        DropUserStatement result = new DropUserStatement();
-        result.getUsers().add(((UserSegment) visit(ctx.userName())).getUser());
-        return result;
+        return new DropUserStatement(Collections.singleton(((UserSegment) visit(ctx.userName())).getUser()));
     }
     
     @Override
@@ -235,24 +232,17 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        CreateLoginStatement result = new CreateLoginStatement();
-        if (null != ctx.ignoredNameIdentifier()) {
-            LoginSegment loginSegment = new LoginSegment(
-                    ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
-            result.setLoginSegment(loginSegment);
-        }
-        return result;
+        return new SQLServerCreateLoginStatement(null == ctx.ignoredNameIdentifier() ? null
+                : new LoginSegment(
+                        ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
     }
     
     @Override
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
-        AlterLoginStatement result = new AlterLoginStatement();
-        if (null != ctx.ignoredNameIdentifier()) {
-            LoginSegment loginSegment = new LoginSegment(
-                    ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
-            result.setLoginSegment(loginSegment);
-        }
-        return result;
+        return new AlterLoginStatement(null == ctx.ignoredNameIdentifier()
+                ? null
+                : new LoginSegment(
+                        ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
     }
     
     @Override
@@ -266,14 +256,14 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetUser(final SetUserContext ctx) {
-        SetUserStatement result = new SetUserStatement();
-        if (null != ctx.stringLiterals()) {
-            UserSegment userSegment = new UserSegment();
-            userSegment.setUser(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
-            userSegment.setStartIndex(ctx.stringLiterals().start.getStartIndex());
-            userSegment.setStopIndex(ctx.stringLiterals().stop.getStopIndex());
-            result.setUser(userSegment);
-        }
+        return new SQLServerSetUserStatement(null == ctx.stringLiterals() ? null : getUserSegment(ctx));
+    }
+    
+    private UserSegment getUserSegment(final SetUserContext ctx) {
+        UserSegment result = new UserSegment();
+        result.setUser(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
+        result.setStartIndex(ctx.stringLiterals().start.getStartIndex());
+        result.setStopIndex(ctx.stringLiterals().stop.getStopIndex());
         return result;
     }
     

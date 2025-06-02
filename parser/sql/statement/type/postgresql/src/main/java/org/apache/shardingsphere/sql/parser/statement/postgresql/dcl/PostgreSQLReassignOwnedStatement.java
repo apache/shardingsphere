@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Reassign owned statement.
+ * PostgreSQL reassign owned statement.
  */
-public class ReassignOwnedStatement extends AbstractSQLStatement implements DCLStatement {
+public final class PostgreSQLReassignOwnedStatement extends AbstractSQLStatement implements PostgreSQLStatement, DCLStatement {
 }

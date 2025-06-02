@@ -40,11 +40,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateU
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.ReassignOwnedStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * DCL statement visitor for PostgreSQL.
@@ -85,7 +86,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+        return new DropUserStatement(Collections.emptyList());
     }
     
     @Override
@@ -110,7 +111,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitReassignOwned(final ReassignOwnedContext ctx) {
-        return new ReassignOwnedStatement();
+        return new PostgreSQLReassignOwnedStatement();
     }
     
     @Override

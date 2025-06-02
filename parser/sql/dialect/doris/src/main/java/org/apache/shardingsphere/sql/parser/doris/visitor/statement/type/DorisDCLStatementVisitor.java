@@ -108,9 +108,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRole
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 
 import java.util.stream.Collectors;
 
@@ -121,7 +121,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeTo(final GrantRoleOrPrivilegeToContext ctx) {
-        DorisGrantStatement result = new DorisGrantStatement();
+        MySQLGrantStatement result = new MySQLGrantStatement();
         fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
@@ -131,7 +131,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeOnTo(final GrantRoleOrPrivilegeOnToContext ctx) {
-        DorisGrantStatement result = new DorisGrantStatement();
+        MySQLGrantStatement result = new MySQLGrantStatement();
         if (null == ctx.roleOrPrivileges()) {
             result.setAllPrivileges(true);
         } else {
@@ -149,7 +149,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitGrantProxy(final GrantProxyContext ctx) {
-        DorisGrantStatement result = new DorisGrantStatement();
+        MySQLGrantStatement result = new MySQLGrantStatement();
         PrivilegeSegment privilege = new PrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), "GRANT");
         result.getRoleOrPrivileges().add(new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
         for (UsernameContext each : ctx.userList().username()) {
@@ -158,13 +158,13 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
         return result;
     }
     
-    private void fillRoleOrPrivileges(final DorisGrantStatement statement, final RoleOrPrivilegesContext ctx) {
+    private void fillRoleOrPrivileges(final MySQLGrantStatement statement, final RoleOrPrivilegesContext ctx) {
         for (RoleOrPrivilegeContext each : ctx.roleOrPrivilege()) {
             statement.getRoleOrPrivileges().add((RoleOrPrivilegeSegment) visit(each));
         }
     }
     
-    private void fillRoleOrPrivileges(final DorisRevokeStatement statement, final RoleOrPrivilegesContext ctx) {
+    private void fillRoleOrPrivileges(final MySQLRevokeStatement statement, final RoleOrPrivilegesContext ctx) {
         for (RoleOrPrivilegeContext each : ctx.roleOrPrivilege()) {
             statement.getRoleOrPrivileges().add((RoleOrPrivilegeSegment) visit(each));
         }
@@ -415,7 +415,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeFrom(final RevokeFromContext ctx) {
-        DorisRevokeStatement result = new DorisRevokeStatement();
+        MySQLRevokeStatement result = new MySQLRevokeStatement();
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -429,7 +429,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeOnFrom(final RevokeOnFromContext ctx) {
-        DorisRevokeStatement result = new DorisRevokeStatement();
+        MySQLRevokeStatement result = new MySQLRevokeStatement();
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -450,7 +450,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        DorisCreateUserStatement result = new DorisCreateUserStatement();
+        MySQLCreateUserStatement result = new MySQLCreateUserStatement();
         for (CreateUserEntryContext each : ctx.createUserList().createUserEntry()) {
             result.getUsers().add((UserSegment) visit(each));
         }
@@ -705,9 +705,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        DropUserStatement result = new DropUserStatement();
-        result.getUsers().addAll(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
-        return result;
+        return new DropUserStatement(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
     }
     
     @Override

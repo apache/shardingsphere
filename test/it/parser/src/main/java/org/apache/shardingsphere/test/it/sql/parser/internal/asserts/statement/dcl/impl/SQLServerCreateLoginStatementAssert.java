@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateLoginStatementTestCase;
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
- * Create login statement assert.
+ * SQLServer create login statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateLoginStatementAssert {
+public final class SQLServerCreateLoginStatementAssert {
     
     /**
      * Assert create login statement is correct with expected parser result.
@@ -42,7 +42,7 @@ public final class CreateLoginStatementAssert {
      * @param actual actual create login statement
      * @param expected expected create login statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateLoginStatement actual, final CreateLoginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerCreateLoginStatement actual, final CreateLoginStatementTestCase expected) {
         if (null == expected.getLogin()) {
             assertNull(actual.getLoginSegment(), assertContext.getText("Actual login should not exist."));
         } else {

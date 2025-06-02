@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**
- * Set user statement.
+ * SQLServer set user statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class SetUserStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SQLServerSetUserStatement extends AbstractSQLStatement implements SQLServerStatement, DCLStatement {
     
-    private UserSegment user;
+    private final UserSegment user;
 }
