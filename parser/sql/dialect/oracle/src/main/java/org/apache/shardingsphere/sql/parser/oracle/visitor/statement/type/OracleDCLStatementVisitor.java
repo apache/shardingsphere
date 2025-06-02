@@ -40,6 +40,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRoleStatement;
 
+import java.util.Collections;
+
 /**
  * DCL statement visitor for Oracle.
  */
@@ -70,7 +72,7 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+        return new DropUserStatement(Collections.emptyList());
     }
     
     @Override

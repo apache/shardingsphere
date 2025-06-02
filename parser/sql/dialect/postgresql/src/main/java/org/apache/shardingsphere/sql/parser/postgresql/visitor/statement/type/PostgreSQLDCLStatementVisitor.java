@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeS
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * DCL statement visitor for PostgreSQL.
@@ -85,7 +86,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement();
+        return new DropUserStatement(Collections.emptyList());
     }
     
     @Override
