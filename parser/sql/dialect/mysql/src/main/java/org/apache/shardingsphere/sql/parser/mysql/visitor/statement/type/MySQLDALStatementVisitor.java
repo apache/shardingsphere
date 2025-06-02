@@ -520,9 +520,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        UseStatement result = new UseStatement();
-        result.setDatabase(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
-        return result;
+        return new UseStatement(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
     }
     
     @Override
