@@ -60,9 +60,9 @@ hive.metastore=file
 hive.metastore.catalog.dir=file:/home/iceberg_data
 ```
 
-### Create business-related schemas, databases, and tables
+### Create business-related schemas and tables
 
-Use third-party tools to create business-related schemas, databases, and tables in Presto.
+Use third-party tools to create business-related schemas and tables in Presto.
 Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly install it through Snapcraft.
 
 ```shell
