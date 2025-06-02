@@ -253,7 +253,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
-        return new ShowCreateViewStatement();
+        return new ShowCreateViewStatement(null);
     }
     
     @Override

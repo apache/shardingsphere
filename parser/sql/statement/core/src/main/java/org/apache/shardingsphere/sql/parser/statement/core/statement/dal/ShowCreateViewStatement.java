@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Show create view statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ShowCreateViewStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowCreateViewStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String viewName;
+    private final String viewName;
 }
