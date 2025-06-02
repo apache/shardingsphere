@@ -61,7 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLog
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
@@ -255,7 +255,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetUser(final SetUserContext ctx) {
-        return new SetUserStatement(null == ctx.stringLiterals() ? null : getUserSegment(ctx));
+        return new SQLServerSetUserStatement(null == ctx.stringLiterals() ? null : getUserSegment(ctx));
     }
     
     private UserSegment getUserSegment(final SetUserContext ctx) {

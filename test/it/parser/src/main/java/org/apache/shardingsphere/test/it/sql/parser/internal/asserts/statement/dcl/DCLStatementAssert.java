@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterLoginStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterRoleStatementAssert;
@@ -123,8 +123,8 @@ public final class DCLStatementAssert {
             SetDefaultRoleStatementAssert.assertIs(assertContext, (SetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
         } else if (actual instanceof SetPasswordStatement) {
             SetPasswordStatementAssert.assertIs(assertContext, (SetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
-        } else if (actual instanceof SetUserStatement) {
-            SQLServerSetUserStatementAssert.assertIs(assertContext, (SetUserStatement) actual, (SetUserStatementTestCase) expected);
+        } else if (actual instanceof SQLServerSetUserStatement) {
+            SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SetUserStatementTestCase) expected);
         } else if (actual instanceof ReassignOwnedStatement) {
             ReassignOwnedStatementAssert.assertIs(assertContext, (ReassignOwnedStatement) actual, (ReassignOwnedStatementTestCase) expected);
         }
