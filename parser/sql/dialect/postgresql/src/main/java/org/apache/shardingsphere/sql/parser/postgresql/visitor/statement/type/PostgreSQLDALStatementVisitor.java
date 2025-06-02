@@ -49,8 +49,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * DAL statement visitor for PostgreSQL.
@@ -76,8 +76,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitSet(final SetContext ctx) {
-        SetStatement result = new SetStatement();
-        Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
+        List<VariableAssignSegment> variableAssigns = new LinkedList<>();
         if (null != ctx.configurationParameterClause()) {
             VariableAssignSegment variableAssignSegment = (VariableAssignSegment) visit(ctx.configurationParameterClause());
             if (null != ctx.runtimeScope()) {
@@ -90,8 +89,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
             VariableAssignSegment variableAssign = new VariableAssignSegment(ctx.encoding().start.getStartIndex(), ctx.encoding().stop.getStopIndex(), variable, ctx.encoding().getText());
             variableAssigns.add(variableAssign);
         }
-        result.getVariableAssigns().addAll(variableAssigns);
-        return result;
+        return new SetStatement(variableAssigns);
     }
     
     @Override

@@ -43,6 +43,7 @@ import org.mockito.MockedConstruction;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -90,10 +91,7 @@ class MySQLSetVariableAdminExecutorTest {
         VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment(0, 0, maxConnectionVariableSegment, "151");
         VariableSegment characterSetClientSegment = new VariableSegment(0, 0, "character_set_client");
         VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment(0, 0, characterSetClientSegment, "'utf8mb4'");
-        SetStatement result = new SetStatement();
-        result.getVariableAssigns().add(setGlobalMaxConnectionAssignSegment);
-        result.getVariableAssigns().add(setCharacterSetClientVariableSegment);
-        return result;
+        return new SetStatement(Arrays.asList(setGlobalMaxConnectionAssignSegment, setCharacterSetClientVariableSegment));
     }
     
     private ContextManager mockContextManager() {
@@ -106,16 +104,14 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertSetUnknownSystemVariable() {
-        SetStatement setStatement = new SetStatement();
-        setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), ""));
+        SetStatement setStatement = new SetStatement(Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
     }
     
     @Test
     void assertSetVariableWithIncorrectScope() {
-        SetStatement setStatement = new SetStatement();
-        setStatement.getVariableAssigns().add(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), ""));
+        SetStatement setStatement = new SetStatement(Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
     }

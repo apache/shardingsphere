@@ -94,7 +94,7 @@ class MySQLComStmtPrepareCheckerTest {
                 new CreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new DoStatement(), new FlushStatement(Collections.emptyList(), false),
                 new MySQLGrantStatement(), new MySQLInsertStatement(), new InstallPluginStatement(null), new KillStatement(),
                 new LoadIndexInfoStatement(), new OptimizeTableStatement(null), new RenameTableStatement(), new RepairTableStatement(Collections.emptyList()),
-                new ResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new MySQLSelectStatement(), new SetStatement(), new ShowWarningsStatement(null),
+                new ResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new MySQLSelectStatement(), new SetStatement(Collections.emptyList()), new ShowWarningsStatement(null),
                 new ShowErrorsStatement(null), new ShowBinlogEventsStatement(), new ShowCreateProcedureStatement(null), new ShowCreateFunctionStatement(null),
                 new ShowCreateEventStatement(),
                 new ShowCreateTableStatement(null), new ShowCreateViewStatement(null), new ShowBinaryLogsStatement(), new ShowStatusStatement(), new StartSlaveStatement(),

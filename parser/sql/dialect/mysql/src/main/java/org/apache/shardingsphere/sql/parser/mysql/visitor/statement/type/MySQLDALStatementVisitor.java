@@ -214,9 +214,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -813,14 +813,11 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        SetStatement result = new SetStatement();
-        Collection<VariableAssignSegment> variableAssigns = getVariableAssigns(ctx.optionValueList());
-        result.getVariableAssigns().addAll(variableAssigns);
-        return result;
+        return new SetStatement(getVariableAssigns(ctx.optionValueList()));
     }
     
-    private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
-        Collection<VariableAssignSegment> result = new LinkedList<>();
+    private List<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
+        List<VariableAssignSegment> result = new LinkedList<>();
         result.add(null == ctx.optionValueNoOptionType() ? getVariableAssignSegment(ctx) : getVariableAssignSegment(ctx.optionValueNoOptionType()));
         for (OptionValueContext each : ctx.optionValue()) {
             result.add(getVariableAssignSegment(each));
@@ -889,10 +886,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         String variableName = (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText();
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
         String assignValue = (null == ctx.DEFAULT()) ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
-        VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
-        SetStatement result = new SetStatement();
-        result.getVariableAssigns().add(characterSet);
-        return result;
+        return new SetStatement(Collections.singletonList(new VariableAssignSegment(startIndex, stopIndex, variable, assignValue)));
     }
     
     @Override

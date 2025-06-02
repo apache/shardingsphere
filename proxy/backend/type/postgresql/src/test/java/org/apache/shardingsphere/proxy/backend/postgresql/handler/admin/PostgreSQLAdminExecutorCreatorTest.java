@@ -148,7 +148,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSetStatement() {
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, new SetStatement());
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, new SetStatement(Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));

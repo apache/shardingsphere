@@ -49,8 +49,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * DAL statement visitor for openGauss.
@@ -76,17 +76,15 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitSet(final SetContext ctx) {
-        SetStatement result = new SetStatement();
-        Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
+        List<VariableAssignSegment> variableAssigns = new LinkedList<>();
         if (null != ctx.configurationParameterClause()) {
             VariableAssignSegment variableAssignSegment = (VariableAssignSegment) visit(ctx.configurationParameterClause());
             if (null != ctx.runtimeScope()) {
                 variableAssignSegment.getVariable().setScope(ctx.runtimeScope().getText());
             }
             variableAssigns.add(variableAssignSegment);
-            result.getVariableAssigns().addAll(variableAssigns);
         }
-        return result;
+        return new SetStatement(variableAssigns);
     }
     
     @Override

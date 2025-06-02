@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectState
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -82,7 +83,7 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForSetStatement() {
-        Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new SetStatement(), new SQLException(""));
+        Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new SetStatement(Collections.emptyList()), new SQLException(""));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(UpdateResult.class));
     }
