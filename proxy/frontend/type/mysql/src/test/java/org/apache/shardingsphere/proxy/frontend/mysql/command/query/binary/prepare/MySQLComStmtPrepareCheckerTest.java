@@ -77,6 +77,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -89,7 +90,7 @@ class MySQLComStmtPrepareCheckerTest {
                 new MySQLAlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(), new CacheIndexStatement(),
                 new CallStatement(), new ChangeMasterStatement(), new ChecksumTableStatement(), new CommitStatement(), new MySQLCreateIndexStatement(),
                 new MySQLDropIndexStatement(), new CreateDatabaseStatement(), new DropDatabaseStatement(), createTableStatement,
-                new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new RenameUserStatement(), new DropUserStatement(),
+                new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new RenameUserStatement(), new DropUserStatement(Collections.emptyList()),
                 new CreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new DoStatement(), new FlushStatement(),
                 new MySQLGrantStatement(), new MySQLInsertStatement(), new InstallPluginStatement(), new KillStatement(),
                 new LoadIndexInfoStatement(), new OptimizeTableStatement(), new RenameTableStatement(), new RepairTableStatement(),
