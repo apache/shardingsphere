@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
@@ -42,7 +42,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterLoginStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterRoleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterUserStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.CreateLoginStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.SQLServerCreateLoginStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.CreateRoleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.CreateUserStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.DenyUserStatementAssert;
@@ -105,8 +105,8 @@ public final class DCLStatementAssert {
             RenameUserStatementAssert.assertIs(assertContext, (RenameUserStatement) actual, (RenameUserStatementTestCase) expected);
         } else if (actual instanceof DenyUserStatement) {
             DenyUserStatementAssert.assertIs(assertContext, (DenyUserStatement) actual, (DenyUserStatementTestCase) expected);
-        } else if (actual instanceof CreateLoginStatement) {
-            CreateLoginStatementAssert.assertIs(assertContext, (CreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerCreateLoginStatement) {
+            SQLServerCreateLoginStatementAssert.assertIs(assertContext, (SQLServerCreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
         } else if (actual instanceof AlterLoginStatement) {
             AlterLoginStatementAssert.assertIs(assertContext, (AlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
         } else if (actual instanceof DropLoginStatement) {

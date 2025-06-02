@@ -53,7 +53,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
@@ -232,7 +232,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        return new CreateLoginStatement(null == ctx.ignoredNameIdentifier() ? null : new LoginSegment(
+        return new SQLServerCreateLoginStatement(null == ctx.ignoredNameIdentifier() ? null : new LoginSegment(
                 ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
     }
     
