@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Set password statement.
  */
-public class SetPasswordStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SetPasswordStatement extends AbstractSQLStatement implements DCLStatement {
 }

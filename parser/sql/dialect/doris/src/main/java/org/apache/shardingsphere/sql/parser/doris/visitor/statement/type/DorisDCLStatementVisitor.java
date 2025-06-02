@@ -705,9 +705,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        DropUserStatement result = new DropUserStatement();
-        result.getUsers().addAll(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
-        return result;
+        return new DropUserStatement(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
     }
     
     @Override

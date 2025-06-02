@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Set user statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class SetUserStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SetUserStatement extends AbstractSQLStatement implements DCLStatement {
     
-    private UserSegment user;
+    private final UserSegment user;
 }

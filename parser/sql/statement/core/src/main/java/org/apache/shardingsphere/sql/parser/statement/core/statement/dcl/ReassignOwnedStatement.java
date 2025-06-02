@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Reassign owned statement.
  */
-public class ReassignOwnedStatement extends AbstractSQLStatement implements DCLStatement {
+public final class ReassignOwnedStatement extends AbstractSQLStatement implements DCLStatement {
 }

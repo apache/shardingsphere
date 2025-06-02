@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Create login statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class CreateLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public final class CreateLoginStatement extends AbstractSQLStatement implements DCLStatement {
     
-    private LoginSegment loginSegment;
+    private final LoginSegment loginSegment;
 }
