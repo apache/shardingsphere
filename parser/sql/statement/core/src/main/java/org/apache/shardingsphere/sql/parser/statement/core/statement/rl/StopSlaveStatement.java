@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Stop slave statement.
  */
-public class StopSlaveStatement extends AbstractSQLStatement implements RLStatement {
+public final class StopSlaveStatement extends AbstractSQLStatement implements RLStatement {
 }

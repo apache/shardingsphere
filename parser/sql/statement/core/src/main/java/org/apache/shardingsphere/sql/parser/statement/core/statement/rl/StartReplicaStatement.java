@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Start replica statement.
  */
-public class StartReplicaStatement extends AbstractSQLStatement implements RLStatement {
+public final class StartReplicaStatement extends AbstractSQLStatement implements RLStatement {
 }
