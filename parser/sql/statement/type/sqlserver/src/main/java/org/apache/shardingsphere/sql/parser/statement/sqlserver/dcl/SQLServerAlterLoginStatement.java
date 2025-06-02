@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 
 /**
- * Alter login statement.
+ * SQLServer alter login statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SQLServerAlterLoginStatement extends AbstractSQLStatement implements DCLStatement {
     
     private final LoginSegment loginSegment;
 }
