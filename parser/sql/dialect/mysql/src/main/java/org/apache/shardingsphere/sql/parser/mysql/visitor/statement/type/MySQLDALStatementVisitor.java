@@ -319,7 +319,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         ResetPersistContext persistContext = ctx.resetPersist();
         return null == persistContext
                 ? new ResetStatement(
-                ctx.resetOption().stream().filter(each -> null != each.MASTER() || null != each.SLAVE()).map(each -> (ResetOptionSegment) visit(each)).collect(Collectors.toList()))
+                        ctx.resetOption().stream().filter(each -> null != each.MASTER() || null != each.SLAVE()).map(each -> (ResetOptionSegment) visit(each)).collect(Collectors.toList()))
                 : visit(persistContext);
     }
     
