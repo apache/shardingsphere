@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 
