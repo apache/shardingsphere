@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Analyze table statement.
  */
+@RequiredArgsConstructor
 @Getter
-public class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
+public final class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables;
 }

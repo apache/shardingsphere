@@ -68,10 +68,6 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSpool(final SpoolContext ctx) {
-        SpoolStatement result = new SpoolStatement();
-        if (null != ctx.spoolFileName()) {
-            result.setFileName(ctx.spoolFileName().getText());
-        }
-        return result;
+        return new SpoolStatement(null == ctx.spoolFileName() ? null : ctx.spoolFileName().getText());
     }
 }

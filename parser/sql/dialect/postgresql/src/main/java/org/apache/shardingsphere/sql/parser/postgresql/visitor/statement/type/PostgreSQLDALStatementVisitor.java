@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -116,11 +117,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        AnalyzeTableStatement result = new AnalyzeTableStatement();
-        if (null != ctx.vacuumRelationList()) {
-            result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
-        }
-        return result;
+        return new AnalyzeTableStatement(null == ctx.vacuumRelationList() ? Collections.emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
     }
     
     @Override

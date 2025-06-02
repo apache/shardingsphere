@@ -87,7 +87,7 @@ class MySQLComStmtPrepareCheckerTest {
     void assertIsStatementAllowed() {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         Collection<SQLStatement> sqlStatements = Arrays.asList(
-                new MySQLAlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(), new CacheIndexStatement(),
+                new MySQLAlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(Collections.emptyList()), new CacheIndexStatement(),
                 new CallStatement(), new ChangeMasterStatement(), new ChecksumTableStatement(Collections.emptyList()), new CommitStatement(), new MySQLCreateIndexStatement(),
                 new MySQLDropIndexStatement(), new CreateDatabaseStatement(), new DropDatabaseStatement(), createTableStatement,
                 new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new RenameUserStatement(), new DropUserStatement(Collections.emptyList()),
@@ -96,7 +96,7 @@ class MySQLComStmtPrepareCheckerTest {
                 new LoadIndexInfoStatement(), new OptimizeTableStatement(null), new RenameTableStatement(), new RepairTableStatement(Collections.emptyList()),
                 new ResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new MySQLSelectStatement(), new SetStatement(Collections.emptyList()), new ShowWarningsStatement(null),
                 new ShowErrorsStatement(null), new ShowBinlogEventsStatement(), new ShowCreateProcedureStatement(null), new ShowCreateFunctionStatement(null),
-                new ShowCreateEventStatement(),
+                new ShowCreateEventStatement(null),
                 new ShowCreateTableStatement(null), new ShowCreateViewStatement(null), new ShowBinaryLogsStatement(), new ShowStatusStatement(), new StartSlaveStatement(),
                 new StopSlaveStatement(), new TruncateStatement(), new UninstallPluginStatement(null), new MySQLUpdateStatement(),
                 new XABeginStatement("1"), new XAPrepareStatement("1"), new XACommitStatement("1"), new XARollbackStatement("1"), new XAEndStatement("1"), new XARecoveryStatement());

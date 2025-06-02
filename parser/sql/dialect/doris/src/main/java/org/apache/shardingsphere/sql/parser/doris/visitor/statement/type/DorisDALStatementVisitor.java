@@ -273,9 +273,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateEvent(final ShowCreateEventContext ctx) {
-        ShowCreateEventStatement result = new ShowCreateEventStatement();
-        result.setEventName(((IdentifierValue) visit(ctx.eventName())).getValue());
-        return result;
+        return new ShowCreateEventStatement(((IdentifierValue) visit(ctx.eventName())).getValue());
     }
     
     @Override
@@ -371,9 +369,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        AnalyzeTableStatement result = new AnalyzeTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new AnalyzeTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
@@ -673,9 +669,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowFunctionCode(final ShowFunctionCodeContext ctx) {
-        ShowFunctionCodeStatement result = new ShowFunctionCodeStatement();
-        result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
-        return result;
+        return new ShowFunctionCodeStatement(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
     }
     
     @Override

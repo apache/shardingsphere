@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Restart statement.
  */
-public class RestartStatement extends AbstractSQLStatement implements DALStatement {
+public final class RestartStatement extends AbstractSQLStatement implements DALStatement {
 }
