@@ -438,9 +438,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        KillStatement result = new KillStatement();
-        result.setProcessId(null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText());
-        return result;
+        return new KillStatement(null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), null);
     }
     
     @Override

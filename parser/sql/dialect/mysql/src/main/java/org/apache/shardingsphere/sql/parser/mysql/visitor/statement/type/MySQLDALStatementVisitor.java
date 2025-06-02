@@ -441,19 +441,17 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        KillStatement result = new KillStatement();
-        if (null != ctx.AT_()) {
-            result.setProcessId(ctx.AT_().getText() + ctx.IDENTIFIER_().getText());
-        } else {
-            result.setProcessId(ctx.IDENTIFIER_().getText());
-        }
+        return new KillStatement(null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), getScope(ctx));
+    }
+    
+    private String getScope(final KillContext ctx) {
         if (null != ctx.QUERY()) {
-            result.setScope(ctx.QUERY().getText());
+            return ctx.QUERY().getText();
         }
         if (null != ctx.CONNECTION()) {
-            result.setScope(ctx.CONNECTION().getText());
+            return ctx.CONNECTION().getText();
         }
-        return result;
+        return null;
     }
     
     @Override
