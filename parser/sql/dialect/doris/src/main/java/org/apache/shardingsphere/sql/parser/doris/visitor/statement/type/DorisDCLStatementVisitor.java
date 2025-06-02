@@ -108,7 +108,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRole
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dcl.DorisCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 
@@ -450,7 +450,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        DorisCreateUserStatement result = new DorisCreateUserStatement();
+        MySQLCreateUserStatement result = new MySQLCreateUserStatement();
         for (CreateUserEntryContext each : ctx.createUserList().createUserEntry()) {
             result.getUsers().add((UserSegment) visit(each));
         }
