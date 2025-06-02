@@ -29,7 +29,7 @@ import java.util.Optional;
  * Show tables statement.
  */
 @Setter
-public class ShowTablesStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowTablesStatement extends AbstractSQLStatement implements DALStatement {
     
     private FromDatabaseSegment fromDatabase;
     

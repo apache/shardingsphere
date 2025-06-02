@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Vacuum statement.
  */
-public class VacuumStatement extends AbstractSQLStatement implements DALStatement {
+public final class VacuumStatement extends AbstractSQLStatement implements DALStatement {
 }
