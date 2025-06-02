@@ -55,7 +55,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRo
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevertStatement;
@@ -247,11 +247,8 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
-        DropLoginStatement result = new DropLoginStatement();
-        LoginSegment loginSegment = new LoginSegment(
-                ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier()));
-        result.setLoginSegment(loginSegment);
-        return result;
+        return new SQLServerDropLoginStatement(new LoginSegment(
+                ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
     }
     
     @Override
