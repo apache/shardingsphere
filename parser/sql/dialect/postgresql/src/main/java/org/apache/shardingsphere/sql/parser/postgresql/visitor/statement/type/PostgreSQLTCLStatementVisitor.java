@@ -47,7 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Checkpo
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.PrepareTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
@@ -179,7 +179,7 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
-        return new PrepareTransactionStatement();
+        return new PostgreSQLPrepareTransactionStatement();
     }
     
     @Override

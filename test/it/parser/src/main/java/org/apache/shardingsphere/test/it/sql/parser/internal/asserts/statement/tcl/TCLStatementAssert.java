@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.PrepareTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
@@ -85,8 +85,8 @@ public final class TCLStatementAssert {
             UnlockStatementAssert.assertIs(assertContext, (UnlockStatement) actual, (UnlockStatementTestCase) expected);
         } else if (actual instanceof LockStatement) {
             LockStatementAssert.assertIs(assertContext, (LockStatement) actual, (LockStatementTestCase) expected);
-        } else if (actual instanceof PrepareTransactionStatement) {
-            PrepareTransactionStatementAssert.assertIs(assertContext, (PrepareTransactionStatement) actual, (PrepareTransactionTestCase) expected);
+        } else if (actual instanceof PostgreSQLPrepareTransactionStatement) {
+            PrepareTransactionStatementAssert.assertIs(assertContext, (PostgreSQLPrepareTransactionStatement) actual, (PrepareTransactionTestCase) expected);
         }
     }
 }

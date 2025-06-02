@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
 /**
- * Begin distributed transaction statement.
+ * SQLServer begin distributed transaction statement.
  */
-public final class BeginDistributedTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SQLServerBeginDistributedTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 }

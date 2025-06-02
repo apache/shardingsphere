@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Set
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginDistributedTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
@@ -77,7 +77,7 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
-        return new BeginDistributedTransactionStatement();
+        return new SQLServerBeginDistributedTransactionStatement();
     }
     
     @Override
