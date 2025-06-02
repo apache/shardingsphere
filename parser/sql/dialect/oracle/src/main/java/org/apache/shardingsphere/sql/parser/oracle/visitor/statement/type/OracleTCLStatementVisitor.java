@@ -34,6 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetCons
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collections;
+
 /**
  * TCL statement visitor for Oracle.
  */
@@ -51,18 +53,12 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        RollbackStatement result = new RollbackStatement();
-        if (null != ctx.savepointClause().savepointName()) {
-            result.setSavepointName(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
-        }
-        return result;
+        return null == ctx.savepointClause().savepointName() ? new RollbackStatement() : new RollbackStatement(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        SavepointStatement result = new SavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.savepointName())).getValue());
-        return result;
+        return new SavepointStatement(((IdentifierValue) visit(ctx.savepointName())).getValue());
     }
     
     @Override
@@ -72,6 +68,6 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement();
+        return new LockStatement(Collections.emptyList());
     }
 }

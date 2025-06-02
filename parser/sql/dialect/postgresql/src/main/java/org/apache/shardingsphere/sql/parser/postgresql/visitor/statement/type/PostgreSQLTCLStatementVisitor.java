@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ch
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IsoLevelContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
@@ -56,8 +57,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTran
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * TCL statement visitor for PostgreSQL.
@@ -68,39 +69,41 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         SetTransactionStatement result = new SetTransactionStatement();
         if (null != ctx.transactionModeList()) {
-            ctx.transactionModeList().transactionModeItem().forEach(each -> {
-                result.setAccessMode(getTransactionAccessType(each));
-                result.setIsolationLevel(getTransactionIsolationLevel(each));
-            });
+            for (TransactionModeItemContext each : ctx.transactionModeList().transactionModeItem()) {
+                result = new SetTransactionStatement(null, getTransactionIsolationLevel(each.isoLevel()), getTransactionAccessType(each));
+            }
         }
         return result;
     }
     
-    private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext modeItemContext) {
-        if (null != modeItemContext.ONLY()) {
-            return TransactionAccessType.READ_ONLY;
+    private TransactionIsolationLevel getTransactionIsolationLevel(final IsoLevelContext ctx) {
+        if (null == ctx) {
+            return null;
         }
-        if (null != modeItemContext.WRITE()) {
-            return TransactionAccessType.READ_WRITE;
+        if (null != ctx.UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != ctx.REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        if (null != ctx.SERIALIZABLE()) {
+            return TransactionIsolationLevel.SERIALIZABLE;
         }
         return null;
     }
     
-    private TransactionIsolationLevel getTransactionIsolationLevel(final TransactionModeItemContext modeItemContext) {
-        if (null == modeItemContext.isoLevel()) {
+    private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext ctx) {
+        if (null == ctx) {
             return null;
         }
-        if (null != modeItemContext.isoLevel().UNCOMMITTED()) {
-            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        if (null != ctx.ONLY()) {
+            return TransactionAccessType.READ_ONLY;
         }
-        if (null != modeItemContext.isoLevel().COMMITTED()) {
-            return TransactionIsolationLevel.READ_COMMITTED;
-        }
-        if (null != modeItemContext.isoLevel().REPEATABLE()) {
-            return TransactionIsolationLevel.REPEATABLE_READ;
-        }
-        if (null != modeItemContext.isoLevel().SERIALIZABLE()) {
-            return TransactionIsolationLevel.SERIALIZABLE;
+        if (null != ctx.WRITE()) {
+            return TransactionAccessType.READ_WRITE;
         }
         return null;
     }
@@ -127,25 +130,17 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        SavepointStatement result = new SavepointStatement();
-        result.setSavepointName(savepointName);
-        return result;
+        return new SavepointStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        RollbackStatement result = new RollbackStatement();
-        result.setSavepointName(ctx.colId().getText());
-        return result;
+        return new RollbackStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        ReleaseSavepointStatement result = new ReleaseSavepointStatement();
-        result.setSavepointName(savepointName);
-        return result;
+        return new ReleaseSavepointStatement(ctx.colId().getText());
     }
     
     @Override
@@ -175,20 +170,11 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        LockStatement result = new LockStatement();
-        if (null != ctx.relationExprList()) {
-            result.getTables().addAll(getLockTables(ctx.relationExprList().relationExpr()));
-        }
-        return result;
+        return new LockStatement(null == ctx.relationExprList() ? Collections.emptyList() : getLockTables(ctx.relationExprList().relationExpr()));
     }
     
-    private Collection<SimpleTableSegment> getLockTables(final List<RelationExprContext> relationExprContexts) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (RelationExprContext each : relationExprContexts) {
-            SimpleTableSegment tableSegment = (SimpleTableSegment) visit(each.qualifiedName());
-            result.add(tableSegment);
-        }
-        return result;
+    private Collection<SimpleTableSegment> getLockTables(final Collection<RelationExprContext> relationExprContexts) {
+        return relationExprContexts.stream().map(each -> (SimpleTableSegment) visit(each.qualifiedName())).collect(Collectors.toList());
     }
     
     @Override

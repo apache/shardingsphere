@@ -22,13 +22,16 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IsolationTypesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LockContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableLockContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TransactionAccessModeContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.XaBeginContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.XaCommitContext;
@@ -61,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARo
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,46 +75,59 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        SetTransactionStatement result = new SetTransactionStatement();
-        if (null != ctx.optionType()) {
-            OperationScope scope = null;
-            if (null != ctx.optionType().SESSION()) {
-                scope = OperationScope.SESSION;
-            } else if (null != ctx.optionType().GLOBAL()) {
-                scope = OperationScope.GLOBAL;
-            }
-            result.setScope(scope);
+        return new SetTransactionStatement(getOperationScope(ctx.optionType()),
+                getTransactionIsolationLevel(null == ctx.transactionCharacteristics().isolationLevel() ? null : ctx.transactionCharacteristics().isolationLevel().isolationTypes()),
+                getTransactionAccessType(ctx.transactionCharacteristics().transactionAccessMode()));
+    }
+    
+    private OperationScope getOperationScope(final OptionTypeContext ctx) {
+        if (null == ctx) {
+            return null;
         }
-        if (null != ctx.transactionCharacteristics().isolationLevel()) {
-            TransactionIsolationLevel isolationLevel = null;
-            if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().SERIALIZABLE()) {
-                isolationLevel = TransactionIsolationLevel.SERIALIZABLE;
-            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().COMMITTED()) {
-                isolationLevel = TransactionIsolationLevel.READ_COMMITTED;
-            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().UNCOMMITTED()) {
-                isolationLevel = TransactionIsolationLevel.READ_UNCOMMITTED;
-            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().REPEATABLE()) {
-                isolationLevel = TransactionIsolationLevel.REPEATABLE_READ;
-            }
-            result.setIsolationLevel(isolationLevel);
+        if (null != ctx.SESSION()) {
+            return OperationScope.SESSION;
         }
-        if (null != ctx.transactionCharacteristics().transactionAccessMode()) {
-            TransactionAccessType accessType = null;
-            if (null != ctx.transactionCharacteristics().transactionAccessMode().ONLY()) {
-                accessType = TransactionAccessType.READ_ONLY;
-            } else if (null != ctx.transactionCharacteristics().transactionAccessMode().WRITE()) {
-                accessType = TransactionAccessType.READ_WRITE;
-            }
-            result.setAccessMode(accessType);
+        if (null != ctx.GLOBAL()) {
+            return OperationScope.GLOBAL;
         }
-        return result;
+        return null;
+    }
+    
+    private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationTypesContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        if (null != ctx.SERIALIZABLE()) {
+            return TransactionIsolationLevel.SERIALIZABLE;
+        }
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != ctx.UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != ctx.REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        return null;
+    }
+    
+    private TransactionAccessType getTransactionAccessType(final TransactionAccessModeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        if (null != ctx.ONLY()) {
+            return TransactionAccessType.READ_ONLY;
+        }
+        if (null != ctx.WRITE()) {
+            return TransactionAccessType.READ_WRITE;
+        }
+        return null;
     }
     
     @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
-        SetAutoCommitStatement result = new SetAutoCommitStatement();
-        result.setAutoCommit(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
-        return result;
+        return new SetAutoCommitStatement(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
     }
     
     private AutoCommitSegment generateAutoCommitSegment(final Token ctx) {
@@ -130,25 +147,17 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        RollbackStatement result = new RollbackStatement();
-        if (null != ctx.identifier()) {
-            result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        }
-        return result;
+        return null == ctx.identifier() ? new RollbackStatement() : new RollbackStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        SavepointStatement result = new SavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        return result;
+        return new SavepointStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        ReleaseSavepointStatement result = new ReleaseSavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        return result;
+        return new ReleaseSavepointStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
@@ -183,11 +192,7 @@ public final class DorisTCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        LockStatement result = new LockStatement();
-        if (null != ctx.tableLock()) {
-            result.getTables().addAll(getLockTables(ctx.tableLock()));
-        }
-        return result;
+        return new LockStatement(null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
     }
     
     private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {

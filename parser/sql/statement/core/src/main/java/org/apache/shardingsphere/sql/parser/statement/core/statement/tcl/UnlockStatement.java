@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Unlock statement.
  */
-public class UnlockStatement extends AbstractSQLStatement implements TCLStatement {
+public final class UnlockStatement extends AbstractSQLStatement implements TCLStatement {
 }
