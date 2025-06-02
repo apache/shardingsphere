@@ -302,11 +302,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
-        ShowErrorsStatement result = new ShowErrorsStatement();
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowErrorsStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
