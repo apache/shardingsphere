@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.tcl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
 /**
- * Prepare transaction statement.
+ * PostgreSQL prepare transaction statement.
  */
-public final class PrepareTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public final class PostgreSQLPrepareTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 }
