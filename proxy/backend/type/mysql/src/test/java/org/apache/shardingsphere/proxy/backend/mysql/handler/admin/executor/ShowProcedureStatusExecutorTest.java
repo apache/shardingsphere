@@ -55,7 +55,7 @@ class ShowProcedureStatusExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new ShowProcedureStatusStatement());
+        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new ShowProcedureStatusStatement(null));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mock(ConnectionSession.class));

@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Doris show procedure code statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ShowProcedureCodeStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowProcedureCodeStatement extends AbstractSQLStatement implements DALStatement {
     
-    private FunctionSegment function;
+    private final FunctionSegment function;
 }

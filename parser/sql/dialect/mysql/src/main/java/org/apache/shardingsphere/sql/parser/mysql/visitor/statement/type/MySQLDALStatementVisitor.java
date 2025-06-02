@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Checksu
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CloneInstanceContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ComponentNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateLoadableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DelimiterContext;
@@ -110,7 +109,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShutdownContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
@@ -217,8 +215,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.St
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DAL statement visitor for MySQL.
@@ -227,9 +226,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
-        UninstallPluginStatement result = new UninstallPluginStatement();
-        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
-        return result;
+        return new UninstallPluginStatement(((IdentifierValue) visit(ctx.pluginName())).getValue());
     }
     
     @Override
@@ -266,9 +263,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowEngine(final ShowEngineContext ctx) {
-        ShowEngineStatement result = new ShowEngineStatement();
-        result.setEngineName(ctx.engineRef().getText());
-        return result;
+        return new ShowEngineStatement(ctx.engineRef().getText());
     }
     
     @Override
@@ -285,16 +280,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
-        ShowCreateFunctionStatement result = new ShowCreateFunctionStatement();
-        result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
-        return result;
+        return new ShowCreateFunctionStatement(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
     }
     
     @Override
     public ASTNode visitShowCreateProcedure(final ShowCreateProcedureContext ctx) {
-        ShowCreateProcedureStatement result = new ShowCreateProcedureStatement();
-        result.setProcedureName(((IdentifierValue) visit(ctx.procedureName())).getValue());
-        return result;
+        return new ShowCreateProcedureStatement(((IdentifierValue) visit(ctx.procedureName())).getValue());
     }
     
     @Override
@@ -320,26 +311,16 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowWarnings(final ShowWarningsContext ctx) {
-        ShowWarningsStatement result = new ShowWarningsStatement();
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowWarningsStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitResetStatement(final ResetStatementContext ctx) {
         ResetPersistContext persistContext = ctx.resetPersist();
-        if (null != persistContext) {
-            return visit(persistContext);
-        }
-        ResetStatement result = new ResetStatement();
-        for (ResetOptionContext each : ctx.resetOption()) {
-            if (null != each.MASTER() || null != each.SLAVE()) {
-                result.getOptions().add((ResetOptionSegment) visit(each));
-            }
-        }
-        return result;
+        return null == persistContext
+                ? new ResetStatement(
+                ctx.resetOption().stream().filter(each -> null != each.MASTER() || null != each.SLAVE()).map(each -> (ResetOptionSegment) visit(each)).collect(Collectors.toList()))
+                : visit(persistContext);
     }
     
     @Override
@@ -388,9 +369,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRepairTable(final RepairTableContext ctx) {
-        RepairTableStatement result = new RepairTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new RepairTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @SuppressWarnings("unchecked")
@@ -448,9 +427,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
-        ChecksumTableStatement result = new ChecksumTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new ChecksumTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
@@ -458,17 +435,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.tablesOption()) {
             return visit(ctx.tablesOption());
         }
-        return new FlushStatement();
+        return new FlushStatement(Collections.emptyList(), false);
     }
     
     @Override
     public ASTNode visitTablesOption(final TablesOptionContext ctx) {
-        FlushStatement result = new FlushStatement();
-        result.setFlushTable(true);
-        for (TableNameContext each : ctx.tableName()) {
-            result.getTables().add((SimpleTableSegment) visit(each));
-        }
-        return result;
+        return new FlushStatement(ctx.tableName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), true);
     }
     
     @Override
@@ -513,9 +485,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        InstallPluginStatement result = new InstallPluginStatement();
-        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
-        return result;
+        return new InstallPluginStatement(((IdentifierValue) visit(ctx.pluginName())).getValue());
     }
     
     @Override
@@ -549,9 +519,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
-        OptimizeTableStatement result = new OptimizeTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new OptimizeTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
@@ -604,18 +572,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
-        ShowProcedureCodeStatement result = new ShowProcedureCodeStatement();
-        result.setFunction((FunctionSegment) visit(ctx.functionName()));
-        return result;
+        return new ShowProcedureCodeStatement((FunctionSegment) visit(ctx.functionName()));
     }
     
     @Override
     public ASTNode visitShowProfile(final ShowProfileContext ctx) {
-        ShowProfileStatement result = new ShowProfileStatement();
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowProfileStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
@@ -625,10 +587,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        ShowDatabasesStatement result = new ShowDatabasesStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowDatabasesStatement result = new ShowDatabasesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -680,29 +639,16 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        ShowTableStatusStatement result = new ShowTableStatusStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowTableStatusStatement result = new ShowTableStatusStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
-        ShowColumnsStatement result = new ShowColumnsStatement();
-        if (null != ctx.fromTable()) {
-            result.setTable(((FromTableSegment) visit(ctx.fromTable())).getTable());
-        }
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowColumnsStatement result = new ShowColumnsStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visit(ctx.fromTable())).getTable(),
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -721,21 +667,13 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
-        ShowIndexStatement result = new ShowIndexStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.fromTable()) {
-            result.setTable(((FromTableSegment) visitFromTable(ctx.fromTable())).getTable());
-        }
-        return result;
+        return new ShowIndexStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visitFromTable(ctx.fromTable())).getTable(),
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()));
     }
     
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
-        ShowCreateTableStatement result = new ShowCreateTableStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new ShowCreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
@@ -784,11 +722,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
-        ShowReplicaStatusStatement result = new ShowReplicaStatusStatement();
-        if (null != ctx.channelName()) {
-            result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
-        }
-        return result;
+        return new ShowReplicaStatusStatement(null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
@@ -802,9 +736,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
-        CreateResourceGroupStatement result = new CreateResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new CreateResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
@@ -821,63 +753,43 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
-        ShowVariablesStatement result = new ShowVariablesStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowVariablesStatement result = new ShowVariablesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
-        ShowCharacterSetStatement result = new ShowCharacterSetStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowCharacterSetStatement result = new ShowCharacterSetStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCollation(final ShowCollationContext ctx) {
-        ShowCollationStatement result = new ShowCollationStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowCollationStatement result = new ShowCollationStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowFunctionStatus(final ShowFunctionStatusContext ctx) {
-        ShowFunctionStatusStatement result = new ShowFunctionStatusStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowFunctionStatusStatement result = new ShowFunctionStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowProcedureStatus(final ShowProcedureStatusContext ctx) {
-        ShowProcedureStatusStatement result = new ShowProcedureStatusStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowProcedureStatusStatement result = new ShowProcedureStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
-        ShowOpenTablesStatement result = new ShowOpenTablesStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowOpenTablesStatement result = new ShowOpenTablesStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -1011,24 +923,12 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitInstallComponent(final InstallComponentContext ctx) {
-        InstallComponentStatement result = new InstallComponentStatement();
-        List<String> components = new LinkedList<>();
-        for (ComponentNameContext each : ctx.componentName()) {
-            components.add(((StringLiteralValue) visit(each.string_())).getValue());
-        }
-        result.getComponents().addAll(components);
-        return result;
+        return new InstallComponentStatement(ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitUninstallComponent(final UninstallComponentContext ctx) {
-        UninstallComponentStatement result = new UninstallComponentStatement();
-        List<String> components = new LinkedList<>();
-        for (ComponentNameContext each : ctx.componentName()) {
-            components.add(((StringLiteralValue) visit(each.string_())).getValue());
-        }
-        result.getComponents().addAll(components);
-        return result;
+        return new UninstallComponentStatement(ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
     }
     
     @Override
@@ -1045,36 +945,26 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCheckTable(final CheckTableContext ctx) {
-        CheckTableStatement result = new CheckTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new CheckTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitDropResourceGroup(final DropResourceGroupContext ctx) {
-        DropResourceGroupStatement result = new DropResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new DropResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
-        AlterResourceGroupStatement result = new AlterResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new AlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitDelimiter(final DelimiterContext ctx) {
-        DelimiterStatement result = new DelimiterStatement();
-        result.setDelimiterName(ctx.delimiterName().getText());
-        return result;
+        return new DelimiterStatement(ctx.delimiterName().getText());
     }
     
     @Override
     public ASTNode visitHelp(final HelpContext ctx) {
-        HelpStatement result = new HelpStatement();
-        result.setSearchString(ctx.textOrIdentifier().getText());
-        return result;
+        return new HelpStatement(ctx.textOrIdentifier().getText());
     }
 }

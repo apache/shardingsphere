@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,13 +31,12 @@ import java.util.LinkedList;
  * Cache index statement.
  */
 @Getter
-public class CacheIndexStatement extends AbstractSQLStatement implements DALStatement {
+@Setter
+public final class CacheIndexStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<CacheTableIndexSegment> tableIndexes = new LinkedList<>();
     
-    @Setter
     private PartitionDefinitionSegment partitionDefinition;
     
-    @Setter
     private IdentifierValue name;
 }

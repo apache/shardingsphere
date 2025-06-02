@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Alter resource cost statement.
  */
-@Getter
-@Setter
-public class AlterResourceCostStatement extends AbstractSQLStatement implements DALStatement {
+public final class AlterResourceCostStatement extends AbstractSQLStatement implements DALStatement {
 }

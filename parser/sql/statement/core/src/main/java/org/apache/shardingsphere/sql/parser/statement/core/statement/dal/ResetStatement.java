@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Reset statement.
  */
+@RequiredArgsConstructor
 @Getter
-public class ResetStatement extends AbstractSQLStatement implements DALStatement {
+public final class ResetStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final List<ResetOptionSegment> options = new LinkedList<>();
+    private final List<ResetOptionSegment> options;
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Shutdown statement.
  */
-public class ShutdownStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShutdownStatement extends AbstractSQLStatement implements DALStatement {
 }

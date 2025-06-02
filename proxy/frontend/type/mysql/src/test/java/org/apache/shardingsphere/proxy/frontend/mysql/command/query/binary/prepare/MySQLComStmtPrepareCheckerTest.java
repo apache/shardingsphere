@@ -88,17 +88,17 @@ class MySQLComStmtPrepareCheckerTest {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
         Collection<SQLStatement> sqlStatements = Arrays.asList(
                 new MySQLAlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(), new CacheIndexStatement(),
-                new CallStatement(), new ChangeMasterStatement(), new ChecksumTableStatement(), new CommitStatement(), new MySQLCreateIndexStatement(),
+                new CallStatement(), new ChangeMasterStatement(), new ChecksumTableStatement(Collections.emptyList()), new CommitStatement(), new MySQLCreateIndexStatement(),
                 new MySQLDropIndexStatement(), new CreateDatabaseStatement(), new DropDatabaseStatement(), createTableStatement,
                 new MySQLDropTableStatement(), new MySQLCreateUserStatement(), new RenameUserStatement(), new DropUserStatement(Collections.emptyList()),
-                new CreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new DoStatement(), new FlushStatement(),
-                new MySQLGrantStatement(), new MySQLInsertStatement(), new InstallPluginStatement(), new KillStatement(),
-                new LoadIndexInfoStatement(), new OptimizeTableStatement(), new RenameTableStatement(), new RepairTableStatement(),
-                new ResetStatement(), new MySQLRevokeStatement(), new MySQLSelectStatement(), new SetStatement(), new ShowWarningsStatement(),
-                new ShowErrorsStatement(), new ShowBinlogEventsStatement(), new ShowCreateProcedureStatement(), new ShowCreateFunctionStatement(),
+                new CreateViewStatement(), new MySQLDropViewStatement(), new MySQLDeleteStatement(), new DoStatement(), new FlushStatement(Collections.emptyList(), false),
+                new MySQLGrantStatement(), new MySQLInsertStatement(), new InstallPluginStatement(null), new KillStatement(),
+                new LoadIndexInfoStatement(), new OptimizeTableStatement(null), new RenameTableStatement(), new RepairTableStatement(Collections.emptyList()),
+                new ResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new MySQLSelectStatement(), new SetStatement(), new ShowWarningsStatement(null),
+                new ShowErrorsStatement(), new ShowBinlogEventsStatement(), new ShowCreateProcedureStatement(null), new ShowCreateFunctionStatement(null),
                 new ShowCreateEventStatement(),
                 new ShowCreateTableStatement(), new ShowCreateViewStatement(), new ShowBinaryLogsStatement(), new ShowStatusStatement(), new StartSlaveStatement(),
-                new StopSlaveStatement(), new TruncateStatement(), new UninstallPluginStatement(), new MySQLUpdateStatement(),
+                new StopSlaveStatement(), new TruncateStatement(), new UninstallPluginStatement(null), new MySQLUpdateStatement(),
                 new XABeginStatement("1"), new XAPrepareStatement("1"), new XACommitStatement("1"), new XARollbackStatement("1"), new XAEndStatement("1"), new XARecoveryStatement());
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(each));
