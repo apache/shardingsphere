@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateR
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
@@ -109,8 +109,8 @@ public final class DCLStatementAssert {
             SQLServerCreateLoginStatementAssert.assertIs(assertContext, (SQLServerCreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
         } else if (actual instanceof SQLServerAlterLoginStatement) {
             AlterLoginStatementAssert.assertIs(assertContext, (SQLServerAlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
-        } else if (actual instanceof DropLoginStatement) {
-            DropLoginStatementAssert.assertIs(assertContext, (DropLoginStatement) actual, (DropLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerDropLoginStatement) {
+            DropLoginStatementAssert.assertIs(assertContext, (SQLServerDropLoginStatement) actual, (DropLoginStatementTestCase) expected);
         } else if (actual instanceof CreateRoleStatement) {
             CreateRoleStatementAssert.assertIs(assertContext, (CreateRoleStatement) actual, (CreateRoleStatementTestCase) expected);
         } else if (actual instanceof AlterRoleStatement) {
