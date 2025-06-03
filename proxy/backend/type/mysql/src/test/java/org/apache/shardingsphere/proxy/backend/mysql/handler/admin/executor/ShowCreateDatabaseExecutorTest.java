@@ -55,8 +55,7 @@ class ShowCreateDatabaseExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowCreateDatabaseStatement statement = new ShowCreateDatabaseStatement();
-        statement.setDatabaseName("db_0");
+        ShowCreateDatabaseStatement statement = new ShowCreateDatabaseStatement("db_0");
         ShowCreateDatabaseExecutor executor = new ShowCreateDatabaseExecutor(statement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

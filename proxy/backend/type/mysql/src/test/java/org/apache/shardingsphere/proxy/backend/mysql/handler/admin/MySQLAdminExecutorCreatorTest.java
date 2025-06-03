@@ -155,7 +155,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowCreateDatabaseStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new ShowCreateDatabaseStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new ShowCreateDatabaseStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowCreateDatabaseExecutor.class));

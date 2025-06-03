@@ -231,9 +231,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
-        ShowCreateDatabaseStatement result = new ShowCreateDatabaseStatement();
-        result.setDatabaseName(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
-        return result;
+        return new ShowCreateDatabaseStatement(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
     }
     
     @Override
@@ -285,14 +283,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowBinlogEvents(final ShowBinlogEventsContext ctx) {
-        ShowBinlogEventsStatement result = new ShowBinlogEventsStatement();
-        if (null != ctx.logName()) {
-            result.setLogName(ctx.logName().getText());
-        }
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowBinlogEventsStatement(null == ctx.logName() ? null : ctx.logName().getText(), null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
@@ -449,11 +440,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadIndexInfo(final LoadIndexInfoContext ctx) {
-        LoadIndexInfoStatement result = new LoadIndexInfoStatement();
-        for (LoadTableIndexListContext each : ctx.loadTableIndexList()) {
-            result.getTableIndexes().add((LoadTableIndexSegment) visit(each));
-        }
-        return result;
+        return new LoadIndexInfoStatement(ctx.loadTableIndexList().stream().map(each -> (LoadTableIndexSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -477,9 +464,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
-        CloneStatement result = new CloneStatement();
-        result.setCloneActionSegment((CloneActionSegment) visit(ctx.cloneAction()));
-        return result;
+        return new CloneStatement((CloneActionSegment) visit(ctx.cloneAction()));
     }
     
     @Override
@@ -893,9 +878,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
-        SetResourceGroupStatement result = new SetResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new SetResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
