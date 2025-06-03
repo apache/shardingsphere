@@ -19,30 +19,30 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.ReassignOwnedStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterLoginStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterRoleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.AlterUserStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.CreateLoginStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.SQLServerCreateLoginStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.CreateRoleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.CreateUserStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.DenyUserStatementAssert;
@@ -50,7 +50,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.DropRoleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.DropUserStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.GrantStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.ReassignOwnedStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.PostgreSQLReassignOwnedStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.RenameUserStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.RevokeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.impl.SetDefaultRoleStatementAssert;
@@ -105,12 +105,12 @@ public final class DCLStatementAssert {
             RenameUserStatementAssert.assertIs(assertContext, (RenameUserStatement) actual, (RenameUserStatementTestCase) expected);
         } else if (actual instanceof DenyUserStatement) {
             DenyUserStatementAssert.assertIs(assertContext, (DenyUserStatement) actual, (DenyUserStatementTestCase) expected);
-        } else if (actual instanceof CreateLoginStatement) {
-            CreateLoginStatementAssert.assertIs(assertContext, (CreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
-        } else if (actual instanceof AlterLoginStatement) {
-            AlterLoginStatementAssert.assertIs(assertContext, (AlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
-        } else if (actual instanceof DropLoginStatement) {
-            DropLoginStatementAssert.assertIs(assertContext, (DropLoginStatement) actual, (DropLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerCreateLoginStatement) {
+            SQLServerCreateLoginStatementAssert.assertIs(assertContext, (SQLServerCreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerAlterLoginStatement) {
+            AlterLoginStatementAssert.assertIs(assertContext, (SQLServerAlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
+        } else if (actual instanceof SQLServerDropLoginStatement) {
+            DropLoginStatementAssert.assertIs(assertContext, (SQLServerDropLoginStatement) actual, (DropLoginStatementTestCase) expected);
         } else if (actual instanceof CreateRoleStatement) {
             CreateRoleStatementAssert.assertIs(assertContext, (CreateRoleStatement) actual, (CreateRoleStatementTestCase) expected);
         } else if (actual instanceof AlterRoleStatement) {
@@ -123,10 +123,10 @@ public final class DCLStatementAssert {
             SetDefaultRoleStatementAssert.assertIs(assertContext, (SetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
         } else if (actual instanceof SetPasswordStatement) {
             SetPasswordStatementAssert.assertIs(assertContext, (SetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
-        } else if (actual instanceof SetUserStatement) {
-            SQLServerSetUserStatementAssert.assertIs(assertContext, (SetUserStatement) actual, (SetUserStatementTestCase) expected);
-        } else if (actual instanceof ReassignOwnedStatement) {
-            ReassignOwnedStatementAssert.assertIs(assertContext, (ReassignOwnedStatement) actual, (ReassignOwnedStatementTestCase) expected);
+        } else if (actual instanceof SQLServerSetUserStatement) {
+            SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SetUserStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLReassignOwnedStatement) {
+            PostgreSQLReassignOwnedStatementAssert.assertIs(assertContext, (PostgreSQLReassignOwnedStatement) actual, (ReassignOwnedStatementTestCase) expected);
         }
     }
 }

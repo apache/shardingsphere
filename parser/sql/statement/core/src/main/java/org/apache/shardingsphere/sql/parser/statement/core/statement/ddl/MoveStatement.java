@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class MoveStatement extends AbstractSQLStatement implements DDLStatement {
+public class MoveStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;
     

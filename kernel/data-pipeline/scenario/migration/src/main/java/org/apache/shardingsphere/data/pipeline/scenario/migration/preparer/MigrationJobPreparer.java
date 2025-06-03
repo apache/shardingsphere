@@ -140,25 +140,25 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
     }
     
     private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext, final ContextManager contextManager) throws SQLException {
-        DatabaseType targetDatabaseType = jobItemContext.getJobConfig().getTargetDatabaseType();
         if (jobItemContext.isSourceTargetDatabaseTheSame()) {
-            prepareTarget(jobItemContext, targetDatabaseType, contextManager);
+            prepareTarget(jobItemContext, contextManager);
         }
         if (null == jobItemContext.getInitProgress()) {
             PipelineDataSource targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-            new PipelineDataSourceCheckEngine(targetDatabaseType).checkTargetDataSources(Collections.singleton(targetDataSource), jobItemContext.getTaskConfig().getImporterConfig());
+            new PipelineDataSourceCheckEngine(jobItemContext.getJobConfig().getTargetDatabaseType()).checkTargetDataSources(Collections.singleton(targetDataSource),
+                    jobItemContext.getTaskConfig().getImporterConfig());
         }
     }
     
-    private void prepareTarget(final MigrationJobItemContext jobItemContext, final DatabaseType targetDatabaseType, final ContextManager contextManager) throws SQLException {
+    private void prepareTarget(final MigrationJobItemContext jobItemContext, final ContextManager contextManager) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
+        DatabaseType targetDatabaseType = jobItemContext.getJobConfig().getTargetDatabaseType();
         Collection<CreateTableConfiguration> createTableConfigs = jobItemContext.getTaskConfig().getCreateTableConfigurations();
         PipelineDataSourceManager dataSourceManager = jobItemContext.getDataSourceManager();
         PipelineJobDataSourcePreparer preparer = new PipelineJobDataSourcePreparer(targetDatabaseType);
         preparer.prepareTargetSchemas(new PrepareTargetSchemasParameter(targetDatabaseType, createTableConfigs, dataSourceManager));
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
-        SQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)
-                .getSQLParserEngine(metaData.getDatabase(jobConfig.getTargetDatabaseName()).getProtocolType());
+        SQLParserEngine sqlParserEngine = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(targetDatabaseType);
         preparer.prepareTargetTables(new PrepareTargetTablesParameter(createTableConfigs, dataSourceManager, sqlParserEngine, jobConfig.getTargetDatabaseName()));
     }
     

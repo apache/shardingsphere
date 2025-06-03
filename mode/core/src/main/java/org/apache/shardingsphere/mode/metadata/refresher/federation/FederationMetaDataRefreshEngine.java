@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 
+import java.util.Optional;
+
 /**
  * Federation meta data refresh engine.
  */
@@ -41,8 +43,7 @@ public final class FederationMetaDataRefreshEngine {
      * @return is need refresh meta data or not
      */
     public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
-        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        return TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).isPresent();
+        return findFederationMetaDataRefresher(sqlStatementContext).isPresent();
     }
     
     /**
@@ -52,8 +53,16 @@ public final class FederationMetaDataRefreshEngine {
      */
     @SuppressWarnings("unchecked")
     public void refresh(final SQLStatementContext sqlStatementContext) {
-        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementClass).ifPresent(
-                optional -> optional.refresh(metaDataManagerPersistService, database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
+        findFederationMetaDataRefresher(sqlStatementContext).ifPresent(optional -> optional.refresh(metaDataManagerPersistService,
+                sqlStatementContext.getDatabaseType(), database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Optional<FederationMetaDataRefresher> findFederationMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
+        Optional<FederationMetaDataRefresher> refresher = TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass());
+        if (!refresher.isPresent()) {
+            refresher = TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
+        }
+        return refresher;
     }
 }

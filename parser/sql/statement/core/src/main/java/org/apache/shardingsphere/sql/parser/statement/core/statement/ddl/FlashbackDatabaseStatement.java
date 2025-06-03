@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Flashback database statement.
  */
-public abstract class FlashbackDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public class FlashbackDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -38,16 +38,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussAnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussEmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussSetStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussVacuumStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -76,7 +76,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitSet(final SetContext ctx) {
-        OpenGaussSetStatement result = new OpenGaussSetStatement();
+        SetStatement result = new SetStatement();
         Collection<VariableAssignSegment> variableAssigns = new LinkedList<>();
         if (null != ctx.configurationParameterClause()) {
             VariableAssignSegment variableAssignSegment = (VariableAssignSegment) visit(ctx.configurationParameterClause());
@@ -113,7 +113,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        OpenGaussAnalyzeTableStatement result = new OpenGaussAnalyzeTableStatement();
+        AnalyzeTableStatement result = new AnalyzeTableStatement();
         if (null != ctx.vacuumRelationList()) {
             result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
         }
@@ -133,17 +133,17 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitLoad(final LoadContext ctx) {
-        return new OpenGaussLoadStatement();
+        return new LoadStatement();
     }
     
     @Override
     public ASTNode visitVacuum(final VacuumContext ctx) {
-        return new OpenGaussVacuumStatement();
+        return new VacuumStatement();
     }
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        OpenGaussExplainStatement result = new OpenGaussExplainStatement();
+        ExplainStatement result = new ExplainStatement();
         result.setSqlStatement((SQLStatement) visit(ctx.explainableStmt()));
         return result;
     }
@@ -179,6 +179,6 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitEmptyStatement(final EmptyStatementContext ctx) {
-        return new OpenGaussEmptyStatement();
+        return new EmptyStatement();
     }
 }

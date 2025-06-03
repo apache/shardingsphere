@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Set constraints statement.
  */
-public abstract class SetConstraintsStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SetConstraintsStatement extends AbstractSQLStatement implements TCLStatement {
 }

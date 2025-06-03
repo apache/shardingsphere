@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -28,7 +27,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.S
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ExplainStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Explain statement assert.
@@ -45,28 +45,28 @@ public final class ExplainStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
         if (null != expected.getSelectClause()) {
-            assertTrue(actual.getSqlStatement().isPresent(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement().get(), expected.getSelectClause());
+            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getSelectClause());
         } else if (null != expected.getUpdateClause()) {
-            assertTrue(actual.getSqlStatement().isPresent(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement().get(), expected.getUpdateClause());
+            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getUpdateClause());
         } else if (null != expected.getInsertClause()) {
-            assertTrue(actual.getSqlStatement().isPresent(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement().get(), expected.getInsertClause());
+            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getInsertClause());
         } else if (null != expected.getDeleteClause()) {
-            assertTrue(actual.getSqlStatement().isPresent(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement().get(), expected.getDeleteClause());
+            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getDeleteClause());
         } else if (null != expected.getCreateTableAsSelectClause()) {
-            assertTrue(actual.getSqlStatement().isPresent(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement().get(), expected.getCreateTableAsSelectClause());
-        } else if (actual instanceof MySQLExplainStatement && null != expected.getTable()) {
-            mysqlExplainStatementAssert(assertContext, (MySQLExplainStatement) actual, expected);
+            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getCreateTableAsSelectClause());
+        } else if (actual.getColumnWild().isPresent() && null != expected.getTable()) {
+            assertExplainStatementColumnWild(assertContext, actual, expected);
         } else {
-            assertFalse(actual.getSqlStatement().isPresent(), assertContext.getText("Actual statement should not exist."));
+            assertNull(actual.getSqlStatement(), assertContext.getText("Actual statement should not exist."));
         }
     }
     
-    private static void mysqlExplainStatementAssert(final SQLCaseAssertContext assertContext, final MySQLExplainStatement actual, final ExplainStatementTestCase expected) {
+    private static void assertExplainStatementColumnWild(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
         if (actual.getSimpleTable().isPresent()) {
             TableAssert.assertIs(assertContext, actual.getSimpleTable().get(), expected.getTable());
             if (actual.getColumnWild().isPresent()) {

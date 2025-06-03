@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter default privileges statement.
  */
-public abstract class AlterDefaultPrivilegesStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterDefaultPrivilegesStatement extends AbstractSQLStatement implements DDLStatement {
 }

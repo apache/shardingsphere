@@ -34,7 +34,7 @@ import java.util.Optional;
  * Delete statement.
  */
 @Setter
-public abstract class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
+public class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
     
     @Getter
     private TableSegment table;

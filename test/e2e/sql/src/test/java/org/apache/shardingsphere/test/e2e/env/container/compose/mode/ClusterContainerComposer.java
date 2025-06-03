@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.test.e2e.env.container.compose.mode;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
@@ -32,7 +31,13 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
+import org.apache.shardingsphere.test.e2e.env.container.config.ProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment.Type;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -54,11 +59,19 @@ public final class ClusterContainerComposer implements ContainerComposer {
         containers = new ITContainers(scenario);
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        Type envType = E2ETestEnvironment.getInstance().getClusterEnvironment().getType();
+        if (ClusterEnvironment.Type.DOCKER == envType) {
+            storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
+        } else {
+            storageContainer = containers.registerContainer(new NativeStorageContainer(databaseType, scenario));
+        }
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, databaseType, AdapterContainerUtils.getAdapterContainerImage());
-        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig, storageContainer);
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
+        }
+        if (adapterContainer instanceof ShardingSphereProxyEmbeddedContainer) {
+            ((ShardingSphereProxyEmbeddedContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }
         this.adapterContainer = containers.registerContainer(adapterContainer);
     }

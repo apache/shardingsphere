@@ -26,11 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.ddl.SQL92CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -48,68 +43,30 @@ class ShardingCreateTableSupportedCheckerTest {
     private ShardingRule rule;
     
     @Test
-    void assertCheckForMySQL() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
-        sqlStatement.setIfNotExists(false);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
-    }
-    
-    @Test
-    void assertCheckForOracle() {
-        OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
-    }
-    
-    @Test
-    void assertCheckForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
-        sqlStatement.setIfNotExists(false);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
-    }
-    
-    @Test
-    void assertCheckForSQL92() {
-        SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
-    }
-    
-    @Test
-    void assertCheckForSQLServer() {
-        SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
+    void assertCheck() {
+        CreateTableStatement sqlStatement = new CreateTableStatement();
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
         assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
     private void assertCheck(final CreateTableStatement sqlStatement) {
-        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement);
+        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("t_order")).thenReturn(true);
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
         new ShardingCreateTableSupportedChecker().check(rule, database, schema, sqlStatementContext);
     }
     
     @Test
-    void assertCheckIfNotExistsForMySQL() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+    void assertCheckIfNotExists() {
+        CreateTableStatement sqlStatement = new CreateTableStatement();
         sqlStatement.setIfNotExists(true);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
-        assertCheckIfNotExists(sqlStatement);
-    }
-    
-    @Test
-    void assertCheckIfNotExistsForPostgreSQL() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
-        sqlStatement.setIfNotExists(true);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
+        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
         assertCheckIfNotExists(sqlStatement);
     }
     
     private void assertCheckIfNotExists(final CreateTableStatement sqlStatement) {
-        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(sqlStatement);
+        CreateTableStatementContext sqlStatementContext = new CreateTableStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         new ShardingCreateTableSupportedChecker().check(rule, database, mock(), sqlStatementContext);
     }

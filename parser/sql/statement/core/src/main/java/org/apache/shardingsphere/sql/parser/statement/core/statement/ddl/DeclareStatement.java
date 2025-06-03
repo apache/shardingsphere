@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectS
  */
 @Getter
 @Setter
-public abstract class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
+public class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;
     

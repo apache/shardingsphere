@@ -37,18 +37,19 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDoStatement;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DML statement visitor for PostgreSQL.
@@ -57,15 +58,13 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        PostgreSQLCallStatement result = new PostgreSQLCallStatement();
-        result.setProcedureName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        if (null != ctx.callArguments()) {
-            Collection<ExpressionSegment> params = new LinkedList<>();
-            for (CallArgumentContext each : ctx.callArguments().callArgument()) {
-                params.add((ExpressionSegment) visit(each));
-            }
-            result.getParameters().addAll(params);
-        }
+        CallStatement result = new CallStatement();
+        String procedureName = ((IdentifierValue) visit(ctx.identifier())).getValue();
+        result.setProcedureName(procedureName);
+        List<ExpressionSegment> params = null == ctx.callArguments()
+                ? Collections.emptyList()
+                : ctx.callArguments().callArgument().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(params);
         return result;
     }
     
@@ -80,7 +79,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new PostgreSQLDoStatement();
+        return new DoStatement();
     }
     
     @Override

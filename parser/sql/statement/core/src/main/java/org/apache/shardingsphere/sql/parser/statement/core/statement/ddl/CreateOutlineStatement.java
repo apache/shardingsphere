@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create outline statement.
  */
-public abstract class CreateOutlineStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -34,8 +34,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateU
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantIdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelGlobalContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelDatabaseGlobalContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelGlobalContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantProxyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantRoleOrPrivilegeOnToContext;
@@ -97,20 +97,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOption
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RenameUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLDropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetPasswordStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetRoleStatement;
 
 import java.util.stream.Collectors;
 
@@ -702,43 +702,41 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        MySQLDropUserStatement result = new MySQLDropUserStatement();
-        result.getUsers().addAll(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
-        return result;
+        return new DropUserStatement(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new MySQLAlterUserStatement();
+        return new AlterUserStatement();
     }
     
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new MySQLRenameUserStatement();
+        return new RenameUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new MySQLCreateRoleStatement();
+        return new CreateRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new MySQLDropRoleStatement();
+        return new DropRoleStatement();
     }
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new MySQLSetDefaultRoleStatement();
+        return new SetDefaultRoleStatement();
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new MySQLSetRoleStatement();
+        return new SetRoleStatement();
     }
     
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new MySQLSetPasswordStatement();
+        return new SetPasswordStatement();
     }
 }

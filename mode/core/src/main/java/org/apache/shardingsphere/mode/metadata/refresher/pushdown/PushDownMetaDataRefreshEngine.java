@@ -54,8 +54,7 @@ public final class PushDownMetaDataRefreshEngine {
      * @return is need refresh meta data or not
      */
     public boolean isNeedRefresh(final SQLStatementContext sqlStatementContext) {
-        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        return TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementClass).isPresent();
+        return findPushDownMetaDataRefresher(sqlStatementContext).isPresent();
     }
     
     /**
@@ -67,8 +66,7 @@ public final class PushDownMetaDataRefreshEngine {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void refresh(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Class<?> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass().getSuperclass();
-        Optional<PushDownMetaDataRefresher> refresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementClass);
+        Optional<PushDownMetaDataRefresher> refresher = findPushDownMetaDataRefresher(sqlStatementContext);
         if (!refresher.isPresent()) {
             return;
         }
@@ -78,5 +76,14 @@ public final class PushDownMetaDataRefreshEngine {
                 .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
         refresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
                 schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Optional<PushDownMetaDataRefresher> findPushDownMetaDataRefresher(final SQLStatementContext sqlStatementContext) {
+        Optional<PushDownMetaDataRefresher> refresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass());
+        if (!refresher.isPresent()) {
+            refresher = TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatementContext.getSqlStatement().getClass().getSuperclass());
+        }
+        return refresher;
     }
 }

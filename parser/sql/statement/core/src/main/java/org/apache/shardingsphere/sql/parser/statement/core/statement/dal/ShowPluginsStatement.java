@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show plugins statement.
  */
-public abstract class ShowPluginsStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowPluginsStatement extends AbstractSQLStatement implements DALStatement {
 }

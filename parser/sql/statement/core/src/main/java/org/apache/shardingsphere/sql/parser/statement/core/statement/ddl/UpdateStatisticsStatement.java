@@ -31,7 +31,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public abstract class UpdateStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
+public class UpdateStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
     
     private List<IndexSegment> indexes;
     

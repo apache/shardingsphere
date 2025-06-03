@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Deallocate statement.
  */
-public abstract class DeallocateStatement extends AbstractSQLStatement implements DDLStatement {
+public class DeallocateStatement extends AbstractSQLStatement implements DDLStatement {
 }

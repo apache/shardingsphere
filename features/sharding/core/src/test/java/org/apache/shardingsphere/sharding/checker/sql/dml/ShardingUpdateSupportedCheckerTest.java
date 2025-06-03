@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -55,7 +54,7 @@ class ShardingUpdateSupportedCheckerTest {
     void assertCheckWhenUpdateSingleTable() {
         UpdateStatement updateStatement = createUpdateStatement();
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(mock(), updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.isAllShardingTables(tableNames)).thenReturn(true);
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
@@ -69,14 +68,14 @@ class ShardingUpdateSupportedCheckerTest {
         joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order"))));
         updateStatement.setTable(joinTableSegment);
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(updateStatement);
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(mock(), updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
         assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new MySQLUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));

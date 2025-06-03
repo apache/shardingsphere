@@ -30,15 +30,17 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Revoke
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleAlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleDropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleRevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleSetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SetRoleStatement;
+
+import java.util.Collections;
 
 /**
  * DCL statement visitor for Oracle.
@@ -47,7 +49,7 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        OracleGrantStatement result = new OracleGrantStatement();
+        GrantStatement result = new GrantStatement();
         if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
@@ -56,7 +58,7 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        OracleRevokeStatement result = new OracleRevokeStatement();
+        RevokeStatement result = new RevokeStatement();
         if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
@@ -65,36 +67,36 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new OracleCreateUserStatement();
+        return new CreateUserStatement();
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new OracleDropUserStatement();
+        return new DropUserStatement(Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new OracleAlterUserStatement();
+        return new AlterUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new OracleCreateRoleStatement();
+        return new CreateRoleStatement();
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new OracleAlterRoleStatement();
+        return new AlterRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new OracleDropRoleStatement();
+        return new DropRoleStatement();
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new OracleSetRoleStatement();
+        return new SetRoleStatement();
     }
 }

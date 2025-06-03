@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
@@ -58,20 +60,22 @@ import java.util.stream.Collectors;
  * Unicast resource show executor.
  */
 @RequiredArgsConstructor
-@Getter
 public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
     private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
+    
+    private final DatabaseType databaseType;
     
     private final SelectStatement sqlStatement;
     
     private final String sql;
     
-    private MergedResult mergedResult;
-    
     private DatabaseConnector databaseConnector;
     
     private ResponseHeader responseHeader;
+    
+    @Getter
+    private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
@@ -81,12 +85,11 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
             connectionSession.setCurrentDatabaseName(databaseName);
-            SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                    connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
-            databaseConnector = databaseConnectorFactory.newInstance(
-                    new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
-                            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()),
-                    connectionSession.getDatabaseConnectionManager(), false);
+            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+            SQLStatementContext sqlStatementContext = new SQLBindEngine(
+                    metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
+            databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(
+                    sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {

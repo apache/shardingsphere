@@ -30,17 +30,18 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Pri
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussDropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussRevokeStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * DCL statement visitor for openGauss.
@@ -49,7 +50,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        OpenGaussGrantStatement result = new OpenGaussGrantStatement();
+        GrantStatement result = new GrantStatement();
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -58,7 +59,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        OpenGaussRevokeStatement result = new OpenGaussRevokeStatement();
+        RevokeStatement result = new RevokeStatement();
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -76,31 +77,31 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new OpenGaussCreateUserStatement();
+        return new CreateUserStatement();
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new OpenGaussDropUserStatement();
+        return new DropUserStatement(Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new OpenGaussAlterUserStatement();
+        return new AlterUserStatement();
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new OpenGaussCreateRoleStatement();
+        return new CreateRoleStatement();
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new OpenGaussAlterRoleStatement();
+        return new AlterRoleStatement();
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new OpenGaussDropRoleStatement();
+        return new DropRoleStatement();
     }
 }

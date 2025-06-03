@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -40,21 +41,20 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
+    private final DatabaseType databaseType;
+    
     @Override
     public ResponseHeader execute() {
-        ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
+        ShardingSpherePreconditions.checkState(sqlStatement.containsScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
         setReadOnly();
         setTransactionIsolationLevel();
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private void setReadOnly() {
-        if (!sqlStatement.getAccessMode().isPresent()) {
-            return;
-        }
-        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode().get()) {
+        if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_ONLY)) {
             connectionSession.setReadOnly(true);
-        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode().get()) {
+        } else if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_WRITE)) {
             connectionSession.setReadOnly(false);
         }
     }
@@ -63,7 +63,7 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
         if (!sqlStatement.getIsolationLevel().isPresent()) {
             return;
         }
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(transactionOption.getDefaultIsolationLevel()));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }

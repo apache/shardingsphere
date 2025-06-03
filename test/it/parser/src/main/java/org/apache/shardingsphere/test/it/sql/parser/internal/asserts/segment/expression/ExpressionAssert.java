@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.KeyValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
@@ -73,6 +74,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedInExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalDayToSecondExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalExpressionProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalYearToMonthExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedKeyValueSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
@@ -444,6 +446,16 @@ public final class ExpressionAssert {
         }
     }
     
+    private static void assertIntervalExpression(final SQLCaseAssertContext assertContext, final IntervalExpression actual, final ExpectedIntervalExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual interval expression should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual interval expression should exist"));
+            assertExpression(assertContext, actual.getValue(), expected.getValue());
+            assertThat(assertContext.getText("Actual interval unit is different with expected interval unit."), actual.getIntervalUnit(), is(expected.getIntervalUnit()));
+        }
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -451,7 +463,7 @@ public final class ExpressionAssert {
      * @param actual actual interval expression
      * @param expected expected interval expression
      */
-    private static void assertIntervalExpression(final SQLCaseAssertContext assertContext, final IntervalExpressionProjection actual, final ExpectedIntervalExpression expected) {
+    private static void assertIntervalExpression(final SQLCaseAssertContext assertContext, final IntervalExpressionProjection actual, final ExpectedIntervalExpressionProjection expected) {
         if (null == expected) {
             assertNull(actual, assertContext.getText("Actual interval expression should not exist."));
         } else {
@@ -682,7 +694,7 @@ public final class ExpressionAssert {
         } else if (actual instanceof OuterJoinExpression) {
             OuterJoinExpressionAssert.assertIs(assertContext, (OuterJoinExpression) actual, expected.getOuterJoinExpression());
         } else if (actual instanceof IntervalExpressionProjection) {
-            assertIntervalExpression(assertContext, (IntervalExpressionProjection) actual, expected.getIntervalExpression());
+            assertIntervalExpression(assertContext, (IntervalExpressionProjection) actual, expected.getIntervalExpressionProjection());
         } else if (actual instanceof MultisetExpression) {
             assertMultisetExpression(assertContext, (MultisetExpression) actual, expected.getMultisetExpression());
         } else if (actual instanceof RowExpression) {
@@ -695,6 +707,8 @@ public final class ExpressionAssert {
             assertKeyValueSegment(assertContext, (KeyValueSegment) actual, expected.getKeyValueSegment());
         } else if (actual instanceof JsonNullClauseSegment) {
             assertJsonNullClauseSegment(assertContext, (JsonNullClauseSegment) actual, expected.getJsonNullClauseSegment());
+        } else if (actual instanceof IntervalExpression) {
+            assertIntervalExpression(assertContext, (IntervalExpression) actual, expected.getIntervalExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

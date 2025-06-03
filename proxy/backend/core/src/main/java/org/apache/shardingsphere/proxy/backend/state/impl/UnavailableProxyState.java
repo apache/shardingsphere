@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,7 +41,7 @@ public final class UnavailableProxyState implements ProxyClusterState {
     
     private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENTS = Arrays.asList(
             ImportMetaDataStatement.class, ShowStatement.class, QueryableRALStatement.class,
-            RQLStatement.class, UnlockClusterStatement.class, MySQLShowDatabasesStatement.class, MySQLUseStatement.class);
+            RQLStatement.class, UnlockClusterStatement.class, ShowDatabasesStatement.class, UseStatement.class);
     
     private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENTS = Collections.singleton(SQLStatement.class);
     

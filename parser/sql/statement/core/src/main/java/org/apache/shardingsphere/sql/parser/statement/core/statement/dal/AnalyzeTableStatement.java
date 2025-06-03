@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Analyze table statement.
  */
 @Getter
-public abstract class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
+public class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

@@ -130,4 +130,5 @@
     <sql-case id="revoke_alter_execute_on_procedure_from_role" value="REVOKE IF EXISTS ALTER ROUTINE, EXECUTE ON PROCEDURE rngp_db.rngp_proc FROM rngp_role" db-types="MySQL" />
     <sql-case id="revoke_grant_option_on_procedure_from_user" value="REVOKE IF EXISTS GRANT OPTION ON PROCEDURE rngp_db.rngp_proc FROM rngp_user" db-types="MySQL" />
     <sql-case id="revoke_alter_execute_on_procedure_from_user" value="REVOKE IF EXISTS ALTER ROUTINE, EXECUTE ON PROCEDURE rngp_db.rngp_proc FROM rngp_user" db-types="MySQL" />
+    <sql-case id="revoke_grant_option_on_procedure_from_role" value="REVOKE IF EXISTS GRANT OPTION ON PROCEDURE rngp_db.rngp_proc FROM rngp_role" db-types="MySQL" />
 </sql-cases>

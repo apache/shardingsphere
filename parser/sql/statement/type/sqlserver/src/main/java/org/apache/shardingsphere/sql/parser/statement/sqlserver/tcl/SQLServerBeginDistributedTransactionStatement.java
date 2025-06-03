@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginDistributedTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 
 /**
  * SQLServer begin distributed transaction statement.
  */
-public final class SQLServerBeginDistributedTransactionStatement extends BeginDistributedTransactionStatement implements SQLServerStatement {
+public final class SQLServerBeginDistributedTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropLoginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropLoginStatementTestCase;
@@ -42,7 +42,7 @@ public final class DropLoginStatementAssert {
      * @param actual actual drop login statement
      * @param expected expected drop login statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropLoginStatement actual, final DropLoginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDropLoginStatement actual, final DropLoginStatementTestCase expected) {
         if (null == expected.getLogin()) {
             assertNull(actual.getLoginSegment(), assertContext.getText("Actual login should not exist."));
         } else {

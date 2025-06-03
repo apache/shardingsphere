@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisChangeReplicationSourceToStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisStartReplicaStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisStartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.rl.DorisStopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeReplicationSourceToStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartReplicaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StopSlaveStatement;
 
 /**
  * RL statement visitor for Doris.
@@ -38,26 +38,26 @@ public final class DorisRLStatementVisitor extends DorisStatementVisitor impleme
     
     @Override
     public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
-        return new DorisChangeMasterStatement();
+        return new ChangeMasterStatement();
     }
     
     @Override
     public ASTNode visitStartSlave(final StartSlaveContext ctx) {
-        return new DorisStartSlaveStatement();
+        return new StartSlaveStatement();
     }
     
     @Override
     public ASTNode visitStopSlave(final StopSlaveContext ctx) {
-        return new DorisStopSlaveStatement();
+        return new StopSlaveStatement();
     }
     
     @Override
     public ASTNode visitChangeReplicationSourceTo(final ChangeReplicationSourceToContext ctx) {
-        return new DorisChangeReplicationSourceToStatement();
+        return new ChangeReplicationSourceToStatement();
     }
     
     @Override
     public ASTNode visitStartReplica(final DorisStatementParser.StartReplicaContext ctx) {
-        return new DorisStartReplicaStatement();
+        return new StartReplicaStatement();
     }
 }

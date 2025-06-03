@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop outline statement.
  */
-public abstract class DropOutlineStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

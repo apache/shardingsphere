@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Repair table statement.
  */
 @Getter
-public abstract class RepairTableStatement extends AbstractSQLStatement implements DALStatement {
+public class RepairTableStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

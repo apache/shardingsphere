@@ -43,14 +43,14 @@ Write a Docker Compose file to start ClickHouse.
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.11.1.2557
+    image: clickhouse/clickhouse-server:25.4.5.24
     ports:
       - "8123:8123"
 ```
 
 ### Create business tables
 
-Use a third-party tool to create a business database and business table in ClickHouse.
+Use a third-party tool to create some business databases and business tables in ClickHouse.
 Taking DBeaver Community as an example, if you use Ubuntu 22.04.4, you can quickly install it through Snapcraft.
 
 ```shell
@@ -118,7 +118,7 @@ rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -156,7 +156,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("alter table t_order delete where order_id=1");
+            statement.execute("alter table t_order delete where user_id=1");
         }
     }
 }

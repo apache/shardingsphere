@@ -25,10 +25,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.groupby.GroupByClauseAssert;
@@ -112,15 +110,6 @@ public final class SelectStatementAssert {
         } else {
             assertTrue(actual.getFrom().isPresent(), assertContext.getText("Actual from segment should exist."));
             TableAssert.assertIs(assertContext, actual.getFrom().get(), expected.getFrom());
-        }
-        if (actual instanceof MySQLSelectStatement) {
-            if (null == expected.getSimpleTable()) {
-                assertFalse(((MySQLSelectStatement) actual).getTable().isPresent(), assertContext.getText("Actual simple-table should not exist."));
-            } else {
-                Optional<SimpleTableSegment> table = ((MySQLSelectStatement) actual).getTable();
-                assertTrue(table.isPresent(), assertContext.getText("Actual table segment should exist."));
-                TableAssert.assertIs(assertContext, table.orElse(null), expected.getSimpleTable());
-            }
         }
     }
     

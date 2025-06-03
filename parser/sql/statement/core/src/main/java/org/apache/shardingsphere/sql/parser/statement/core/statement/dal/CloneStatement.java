@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActi
  */
 @Getter
 @Setter
-public abstract class CloneStatement extends AbstractSQLStatement implements DALStatement {
+public class CloneStatement extends AbstractSQLStatement implements DALStatement {
     
     private CloneActionSegment cloneActionSegment;
 }

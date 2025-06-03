@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create event trigger statement.
  */
-public abstract class CreateEventTriggerStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateEventTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

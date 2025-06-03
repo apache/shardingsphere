@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create profile statement.
  */
-public abstract class CreateProfileStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateProfileStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create language statement.
  */
-public abstract class CreateLanguageStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }

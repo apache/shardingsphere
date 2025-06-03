@@ -17,17 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.hive;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Hive statement.
  */
 public interface HiveStatement extends SQLStatement {
-    
-    @Override
-    default DatabaseType getDatabaseType() {
-        return TypedSPILoader.getService(DatabaseType.class, "Hive");
-    }
 }

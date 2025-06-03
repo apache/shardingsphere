@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.PrepareTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.PrepareTransactionTestCase;
 
@@ -36,6 +36,6 @@ public final class PrepareTransactionStatementAssert {
      * @param actual actual prepare transaction statement
      * @param expected expected prepare transaction statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PrepareTransactionStatement actual, final PrepareTransactionTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLPrepareTransactionStatement actual, final PrepareTransactionTestCase expected) {
     }
 }

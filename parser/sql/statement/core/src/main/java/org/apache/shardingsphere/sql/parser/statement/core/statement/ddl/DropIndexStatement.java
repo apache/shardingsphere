@@ -32,7 +32,7 @@ import java.util.Optional;
  * Drop index statement.
  */
 @Getter
-public abstract class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
     

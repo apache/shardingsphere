@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter hierarchy statement.
  */
-public abstract class AlterHierarchyStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterHierarchyStatement extends AbstractSQLStatement implements DDLStatement {
 }

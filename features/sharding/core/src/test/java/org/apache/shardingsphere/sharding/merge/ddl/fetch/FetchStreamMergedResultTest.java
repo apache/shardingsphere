@@ -91,7 +91,7 @@ class FetchStreamMergedResultTest {
     }
     
     private static FetchStatementContext createFetchStatementContext(final boolean containsAllDirectionType) {
-        FetchStatementContext result = new FetchStatementContext(createFetchStatement(containsAllDirectionType));
+        FetchStatementContext result = new FetchStatementContext(DATABASE_TYPE, createFetchStatement(containsAllDirectionType));
         result.setCursorStatementContext(mockCursorStatementContext());
         return result;
     }
@@ -102,7 +102,6 @@ class FetchStreamMergedResultTest {
         if (containsAllDirectionType) {
             when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL)));
         }
-        when(result.getDatabaseType()).thenReturn(DATABASE_TYPE);
         return result;
     }
     
@@ -110,17 +109,15 @@ class FetchStreamMergedResultTest {
         CursorStatement cursorStatement = mock(CursorStatement.class);
         SelectStatement selectStatement = mockSelectStatement();
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
-        when(cursorStatement.getDatabaseType()).thenReturn(DATABASE_TYPE);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), cursorStatement, "foo_db");
+        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), DATABASE_TYPE, Collections.emptyList(), cursorStatement, "foo_db");
     }
     
     private static SelectStatement mockSelectStatement() {
         SelectStatement result = mock(SelectStatement.class);
         when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
-        when(result.getDatabaseType()).thenReturn(DATABASE_TYPE);
         return result;
     }
     

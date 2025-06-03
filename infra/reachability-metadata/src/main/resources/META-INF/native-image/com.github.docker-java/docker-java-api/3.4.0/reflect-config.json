@@ -649,28 +649,35 @@
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.PullResponseItem"},
   "name":"com.github.dockerjava.api.model.PullResponseItem",
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.ResponseItem"},
   "name":"com.github.dockerjava.api.model.ResponseItem",
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.ResponseItem"},
   "name":"com.github.dockerjava.api.model.ResponseItem$AuxDetail",
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.ResponseItem"},
   "name":"com.github.dockerjava.api.model.ResponseItem$ErrorDetail",
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.ResponseItem"},
   "name":"com.github.dockerjava.api.model.ResponseItem$ProgressDetail",
   "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.ImageOptions"},
+  "name":"com.github.dockerjava.api.model.ImageOptions",
+  "allDeclaredFields":true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors":true
 }
 ]

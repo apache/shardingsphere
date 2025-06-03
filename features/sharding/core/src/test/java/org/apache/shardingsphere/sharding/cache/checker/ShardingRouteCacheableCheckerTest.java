@@ -152,7 +152,7 @@ class ShardingRouteCacheableCheckerTest {
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(
                 new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class)),
-                DATABASE_NAME, new HintValueContext()).bind(parse(sql), params);
+                DATABASE_NAME, new HintValueContext()).bind(databaseType, parse(sql), params);
         return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
     }
     

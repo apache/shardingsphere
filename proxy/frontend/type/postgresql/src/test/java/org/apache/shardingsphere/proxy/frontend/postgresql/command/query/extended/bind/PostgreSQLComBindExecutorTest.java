@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLEmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,6 +66,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
 class PostgreSQLComBindExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Mock
     private PortalContext portalContext;
     
@@ -87,7 +89,7 @@ class PostgreSQLComBindExecutorTest {
     void assertExecuteBind() throws SQLException {
         String databaseName = "postgres";
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(database.getProtocolType()).thenReturn(databaseType);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
@@ -96,8 +98,8 @@ class PostgreSQLComBindExecutorTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId,
-                new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(
+                "", new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
@@ -115,7 +117,7 @@ class PostgreSQLComBindExecutorTest {
     void assertExecuteBindParameters() throws SQLException {
         String databaseName = "postgres";
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(database.getProtocolType()).thenReturn(databaseType);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
@@ -126,9 +128,8 @@ class PostgreSQLComBindExecutorTest {
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
-                new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), new HintValueContext(),
-                Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4),
-                Arrays.asList(1, 0));
+                new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(),
+                Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4), Arrays.asList(1, 0));
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");

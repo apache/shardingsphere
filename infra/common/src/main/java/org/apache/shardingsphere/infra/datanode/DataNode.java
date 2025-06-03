@@ -122,8 +122,7 @@ public final class DataNode {
      * @return formatted data node
      */
     public String format(final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() && null != schemaName
+        return null != schemaName && new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent()
                 ? String.join(DELIMITER, dataSourceName, schemaName, tableName)
                 : String.join(DELIMITER, dataSourceName, tableName);
     }

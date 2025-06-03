@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class OpenStatement extends AbstractSQLStatement implements DDLStatement {
+public class OpenStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;
 }

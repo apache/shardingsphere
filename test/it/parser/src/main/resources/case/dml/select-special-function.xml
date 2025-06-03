@@ -36,6 +36,25 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_group_concat_with_order_by_for_opengauss">
+        <from>
+            <simple-table name="t_order" start-index="49" stop-index="55" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <aggregation-projection type="GROUP_CONCAT" expression="GROUP_CONCAT(status ORDER BY status)" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="GROUP_CONCAT" start-index="7" stop-index="42" text="GROUP_CONCAT(status ORDER BY status)">
+                        <parameter>
+                            <column name="status" start-index="20" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <column name="status" start-index="36" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </aggregation-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_window_function">
         <from>
             <simple-table name="t_order" start-index="42" stop-index="48" />
@@ -2428,15 +2447,13 @@
                             <literal-expression value="2018-05-01" start-index="16" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <function function-name="INTERVAL" text="INTERVAL" start-index="29" stop-index="36" >
-                                <parameter>
+                            <interval-expression value="interval" text="interval" start-index="29" stop-index="36" >
+                                <value start-index="38" stop-index="38">
                                     <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
-                                    <literal-expression value="1" start-index="38" stop-index="38" />
-                                </parameter>
-                                <parameter>
-                                    <literal-expression value="DAY" start-index="40" stop-index="42" />
-                                </parameter>
-                            </function>
+                                    <literal-expression value="1" start-index="38" stop-index="38"/>
+                                </value>
+                                <interval-unit>DAY</interval-unit>
+                            </interval-expression>
                         </parameter>
                     </function>
                 </expr>
@@ -2470,15 +2487,13 @@
                             <literal-expression value="2018-05-01" start-index="16" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <function function-name="INTERVAL" text="INTERVAL" start-index="29" stop-index="36" >
-                                <parameter>
+                            <interval-expression value="interval" text="interval" start-index="29" stop-index="36" >
+                                <value start-index="38" stop-index="38">
                                     <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
-                                    <literal-expression value="1" start-index="38" stop-index="38" />
-                                </parameter>
-                                <parameter>
-                                    <literal-expression value="DAY" start-index="40" stop-index="42" />
-                                </parameter>
-                            </function>
+                                    <literal-expression value="1" start-index="38" stop-index="38"/>
+                                </value>
+                                <interval-unit>DAY</interval-unit>
+                            </interval-expression>
                         </parameter>
                     </function>
                 </expr>

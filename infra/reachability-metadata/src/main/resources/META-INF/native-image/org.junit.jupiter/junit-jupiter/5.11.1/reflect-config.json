@@ -33,5 +33,15 @@
   "condition":{"typeReachable":"org.junit.platform.commons.util.ReflectionUtils"},
   "name":"org.junit.internal.AssumptionViolatedException",
   "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.junit.platform.commons.util.AnnotationUtils"},
+  "name":"org.junit.jupiter.api.condition.DisabledOnOs",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.junit.platform.commons.util.AnnotationUtils"},
+  "name":"org.junit.jupiter.api.Disabled",
+  "allPublicMethods": true
 }
 ]

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Setter
 @Getter
-public abstract class LoadXMLStatement extends AbstractSQLStatement implements DMLStatement {
+public class LoadXMLStatement extends AbstractSQLStatement implements DMLStatement {
     
     private SimpleTableSegment tableSegment;
 }

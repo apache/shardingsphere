@@ -51,12 +51,21 @@ public final class ShowMigrationListExecutor implements DistSQLQueryExecutor<Sho
     }
     
     private LocalDataQueryResultRow getRow(final PipelineContextKey contextKey, final PipelineJobInfo jobInfo) {
-        return new LocalDataQueryResultRow(jobInfo.getJobMetaData().getJobId(), jobInfo.getTableName(), jobInfo.getJobMetaData().isActive(), jobInfo.getJobMetaData().getCreateTime(),
-                jobInfo.getJobMetaData().getStopTime(), jobInfo.getJobMetaData().getJobItemCount(), getJobShardingNodes(contextKey, jobInfo.getJobMetaData().getJobId()));
+        boolean active = jobInfo.getJobMetaData().isActive();
+        String jobShardingNodes = active ? getJobShardingNodes(contextKey, jobInfo.getJobMetaData().getJobId()) : "";
+        return new LocalDataQueryResultRow(jobInfo.getJobMetaData().getJobId(), jobInfo.getTableName(), active, jobInfo.getJobMetaData().getCreateTime(),
+                jobInfo.getJobMetaData().getStopTime(), jobInfo.getJobMetaData().getJobItemCount(), jobShardingNodes);
     }
     
     private String getJobShardingNodes(final PipelineContextKey contextKey, final String jobId) {
-        Collection<ShardingInfo> shardingInfos = pipelineJobManager.getJobShardingInfos(contextKey, jobId);
+        Collection<ShardingInfo> shardingInfos;
+        try {
+            shardingInfos = pipelineJobManager.getJobShardingInfos(contextKey, jobId);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ignored) {
+            // CHECKSTYLE:ON
+            return "";
+        }
         return shardingInfos.isEmpty() ? "" : getJobShardingNodes(shardingInfos);
     }
     

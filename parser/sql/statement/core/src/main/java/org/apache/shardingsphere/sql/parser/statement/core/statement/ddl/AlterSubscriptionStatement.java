@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter subscription statement.
  */
-public abstract class AlterSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
 }

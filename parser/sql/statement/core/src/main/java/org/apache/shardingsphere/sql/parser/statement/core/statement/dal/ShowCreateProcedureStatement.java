@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class ShowCreateProcedureStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowCreateProcedureStatement extends AbstractSQLStatement implements DALStatement {
     
     private String procedureName;
 }

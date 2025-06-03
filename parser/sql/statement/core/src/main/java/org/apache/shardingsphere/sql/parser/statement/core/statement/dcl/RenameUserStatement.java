@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Rename user statement.
  */
-public abstract class RenameUserStatement extends AbstractSQLStatement implements DCLStatement {
+public final class RenameUserStatement extends AbstractSQLStatement implements DCLStatement {
 }

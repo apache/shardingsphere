@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Revert statement.
  */
-public abstract class RevertStatement extends AbstractSQLStatement implements DCLStatement {
+public final class RevertStatement extends AbstractSQLStatement implements DCLStatement {
 }

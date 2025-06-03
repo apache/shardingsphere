@@ -38,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -72,7 +71,7 @@ class ShardingUpdateRouteContextCheckerTest {
     
     @Test
     void assertCheckWhenNotUpdateShardingColumn() {
-        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(createUpdateStatement());
+        UpdateStatementContext sqlStatementContext = new UpdateStatementContext(mock(), createUpdateStatement());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), mock(RouteContext.class)));
     }
@@ -80,14 +79,14 @@ class ShardingUpdateRouteContextCheckerTest {
     @Test
     void assertCheckWhenUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement()));
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(mock(), createUpdateStatement()));
         assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
     @Test
     void assertCheckWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
-        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement()));
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(mock(), createUpdateStatement()));
         assertThrows(UnsupportedUpdatingShardingValueException.class,
                 () -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createFullRouteContext()));
     }
@@ -123,7 +122,7 @@ class ShardingUpdateRouteContextCheckerTest {
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new MySQLUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create group statement.
  */
-public abstract class CreateGroupStatement extends AbstractSQLStatement implements DCLStatement {
+public final class CreateGroupStatement extends AbstractSQLStatement implements DCLStatement {
 }

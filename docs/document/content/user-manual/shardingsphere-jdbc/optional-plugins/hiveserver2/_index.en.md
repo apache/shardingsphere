@@ -23,11 +23,6 @@ The possible Maven dependencies are as follows.
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-database-hive</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-parser-sql-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
@@ -67,11 +62,6 @@ The following is an example of a possible configuration,
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-database-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -126,7 +116,7 @@ services:
 
 ### Create business tables
 
-Use a third-party tool to create a business database and business table in HiveServer2.
+Use a third-party tool to create some business databases and business tables in HiveServer2.
 Taking DBeaver Community as an example, if you use Ubuntu 22.04.4, you can quickly install it through Snapcraft.
 
 ```shell
@@ -187,7 +177,7 @@ rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
@@ -225,7 +215,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DELETE FROM t_order WHERE user_id=1");
         }
     }
 }
@@ -314,7 +304,7 @@ rules:
 - !SHARDING
     tables:
       t_order:
-        actualDataNodes:
+        actualDataNodes: <LITERAL>ds_0.t_order, ds_1.t_order, ds_2.t_order
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake

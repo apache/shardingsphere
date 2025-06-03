@@ -41,20 +41,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerGrantStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -134,33 +129,10 @@ class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceForDCLForSingleTableForMySQL() {
-        assertNewInstanceForDCLForSingleTable(new MySQLGrantStatement());
-    }
-    
-    @Test
-    void assertNewInstanceForDCLForSingleTableForOracle() {
-        assertNewInstanceForDCLForSingleTable(new OracleGrantStatement());
-    }
-    
-    @Test
-    void assertNewInstanceForDCLForSingleTableForPostgreSQL() {
-        assertNewInstanceForDCLForSingleTable(new PostgreSQLGrantStatement());
-    }
-    
-    @Test
-    void assertNewInstanceForDCLForSingleTableForSQLServer() {
-        assertNewInstanceForDCLForSingleTable(new SQLServerGrantStatement());
-    }
-    
-    @Test
-    void assertNewInstanceForDCLForSingleTableForSQL92() {
-        assertNewInstanceForDCLForSingleTable(new SQL92GrantStatement());
-    }
-    
-    private void assertNewInstanceForDCLForSingleTable(final GrantStatement grantStatement) {
+    void assertNewInstanceForDCLForSingleTable() {
+        GrantStatement grantStatement = new GrantStatement();
         grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        GrantStatementContext sqlStatementContext = new GrantStatementContext(grantStatement);
+        GrantStatementContext sqlStatementContext = new GrantStatementContext(mock(), grantStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.singletonList("tbl"), props);
         assertThat(actual, instanceOf(ShardingTableBroadcastRouteEngine.class));
@@ -177,7 +149,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForSelectWithoutSingleTable() {
-        SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
+        SQLStatement sqlStatement = mock(SelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual =
@@ -187,7 +159,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForSelectBroadcastTable() {
-        SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
+        SQLStatement sqlStatement = mock(SelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.emptyList(), props);
@@ -229,7 +201,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForShowCreateTableWithTableRule() {
-        DALStatement dalStatement = mock(MySQLShowCreateTableStatement.class);
+        DALStatement dalStatement = mock(ShowCreateTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
@@ -240,7 +212,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForShowColumnsWithTableRule() {
-        DALStatement dalStatement = mock(MySQLShowColumnsStatement.class);
+        DALStatement dalStatement = mock(ShowColumnsStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
@@ -266,8 +238,8 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForOptimizeTableWithShardingTable() {
-        MySQLOptimizeTableStatement optimizeTableStatement = mock(MySQLOptimizeTableStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(optimizeTableStatement);
+        OptimizeTableStatement sqlStatement = mock(OptimizeTableStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
@@ -278,7 +250,7 @@ class ShardingRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCursorStatementWithShardingTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
+        CursorStatement cursorStatement = mock(CursorStatement.class);
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
@@ -295,7 +267,7 @@ class ShardingRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCursorStatementWithSingleTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
+        CursorStatement cursorStatement = mock(CursorStatement.class);
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);

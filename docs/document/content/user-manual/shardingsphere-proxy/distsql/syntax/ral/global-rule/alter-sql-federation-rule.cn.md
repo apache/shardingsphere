@@ -16,7 +16,7 @@ AlterSQLFederationRule ::=
   'ALTER' 'SQL_FEDERATION' 'RULE' sqlFederationRuleDefinition
 
 sqlFederationRuleDefinition ::=
-  '(' sqlFederationEnabled? allQueryUseSQLFederation? (','? executionPlanCache)? ')'
+  '(' sqlFederationEnabled? (','? allQueryUseSQLFederation)? (','? executionPlanCache)? ')'
 
 sqlFederationEnabled ::=
   'SQL_FEDERATION_ENABLED' '=' boolean_
@@ -50,7 +50,11 @@ boolean_ ::=
 - 修改联邦查询配置
 
 ```sql
-ALTER SQL_FEDERATION RULE (SQL_FEDERATION_ENABLED=TRUE ALL_QUERY_USE_SQL_FEDERATION=TRUE EXECUTION_PLAN_CACHE(INITIAL_CAPACITY=1024 MAXIMUM_SIZE=65535));
+ALTER SQL_FEDERATION RULE (
+  SQL_FEDERATION_ENABLED=TRUE,
+  ALL_QUERY_USE_SQL_FEDERATION=TRUE,
+  EXECUTION_PLAN_CACHE(INITIAL_CAPACITY=1024, MAXIMUM_SIZE=65535)
+);
 ```
 
 ### 保留字

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop dimension statement.
  */
-public abstract class DropDimensionStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropDimensionStatement extends AbstractSQLStatement implements DDLStatement {
 }

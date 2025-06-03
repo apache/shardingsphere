@@ -41,7 +41,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class SelectStatement extends AbstractSQLStatement implements DMLStatement {
+public class SelectStatement extends AbstractSQLStatement implements DMLStatement {
     
     private ProjectionsSegment projections;
     

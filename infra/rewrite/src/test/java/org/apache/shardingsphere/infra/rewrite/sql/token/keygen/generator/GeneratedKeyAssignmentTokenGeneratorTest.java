@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatem
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -65,8 +65,8 @@ class GeneratedKeyAssignmentTokenGeneratorTest {
         GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("testColumnName", false);
         generatedKeyContext.getGeneratedValues().add(4);
         when(result.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
-        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 2, Collections.emptyList()));
+        InsertStatement insertStatement = mock(InsertStatement.class);
+        when(insertStatement.getSetAssignment()).thenReturn(Optional.of(new SetAssignmentSegment(0, 2, Collections.emptyList())));
         when(result.getSqlStatement()).thenReturn(insertStatement);
         return result;
     }

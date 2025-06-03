@@ -21,7 +21,9 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Nul
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.firebird.metadata.database.option.FirebirdSchemaOption;
 
 import java.sql.Connection;
 
@@ -46,8 +48,13 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     }
     
     @Override
+    public DialectSchemaOption getSchemaOption() {
+        return new FirebirdSchemaOption();
+    }
+    
+    @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED);
+        return new DialectTransactionOption(false, true, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false);
     }
     
     @Override

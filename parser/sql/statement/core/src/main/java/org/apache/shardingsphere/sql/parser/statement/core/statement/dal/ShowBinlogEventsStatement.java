@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @Getter
 @Setter
-public abstract class ShowBinlogEventsStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowBinlogEventsStatement extends AbstractSQLStatement implements DALStatement {
     
     private String logName;
     

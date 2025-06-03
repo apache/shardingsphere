@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+
+import java.util.Collection;
 
 /**
  * Lock statement.
  */
-public abstract class LockStatement extends AbstractSQLStatement implements TCLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class LockStatement extends AbstractSQLStatement implements TCLStatement {
+    
+    private final Collection<SimpleTableSegment> tables;
 }

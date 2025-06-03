@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Handler statement.
  */
-public abstract class HandlerStatement extends AbstractSQLStatement implements DMLStatement {
+public class HandlerStatement extends AbstractSQLStatement implements DMLStatement {
 }

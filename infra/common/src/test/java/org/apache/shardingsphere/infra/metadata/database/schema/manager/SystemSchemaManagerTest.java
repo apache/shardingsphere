@@ -39,7 +39,7 @@ class SystemSchemaManagerTest {
         Collection<String> actualSysSchema = SystemSchemaManager.getTables("MySQL", "sys");
         assertThat(actualSysSchema.size(), is(53));
         Collection<String> actualShardingSphereSchema = SystemSchemaManager.getTables("MySQL", "shardingsphere");
-        assertThat(actualShardingSphereSchema.size(), is(2));
+        assertThat(actualShardingSphereSchema.size(), is(1));
         Collection<String> actualPgInformationSchema = SystemSchemaManager.getTables("PostgreSQL", "information_schema");
         assertThat(actualPgInformationSchema.size(), is(69));
         Collection<String> actualPgCatalog = SystemSchemaManager.getTables("PostgreSQL", "pg_catalog");
@@ -81,7 +81,6 @@ class SystemSchemaManagerTest {
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
         assertFalse(SystemSchemaManager.isSystemTable("sharding_db", "t_order"));
         assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "cluster_information"));
-        assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "sharding_table_statistics"));
         assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "nonexistent"));
     }
 }

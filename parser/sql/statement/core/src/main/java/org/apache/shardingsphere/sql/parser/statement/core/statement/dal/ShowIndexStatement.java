@@ -29,7 +29,7 @@ import java.util.Optional;
  * Show index statement.
  */
 @Setter
-public abstract class ShowIndexStatement extends AbstractSQLStatement implements DALStatement {
+public class ShowIndexStatement extends AbstractSQLStatement implements DALStatement {
     
     @Getter
     private SimpleTableSegment table;

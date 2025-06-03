@@ -28,17 +28,13 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.util.regex.RegexUtils;
-import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -59,13 +55,11 @@ public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<Sho
     public Collection<LocalDataQueryResultRow> getRows(final ShowDistVariablesStatement sqlStatement, final ContextManager contextManager) {
         ShardingSphereMetaData metaData = contextManager.getMetaDataContexts().getMetaData();
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
-                .filter(each -> !ConfigurationPropertyKey.SQL_SHOW.name().equals(each) && !ConfigurationPropertyKey.SQL_SIMPLE.name().equals(each))
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each))))).collect(Collectors.toList());
         result.addAll(TemporaryConfigurationPropertyKey.getKeyNames().stream()
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)))))
                 .collect(Collectors.toList()));
         result.add(new LocalDataQueryResultRow(DistSQLVariable.CACHED_CONNECTIONS.name().toLowerCase(), connectionContext.getConnectionSize()));
-        addLoggingPropsRows(metaData, result);
         if (sqlStatement.getLikePattern().isPresent()) {
             String pattern = RegexUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
             result = result.stream().filter(each -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher((String) each.getCell(1)).matches()).collect(Collectors.toList());
@@ -77,21 +71,10 @@ public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<Sho
         if (null == value) {
             return "";
         }
-        return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
-    }
-    
-    private void addLoggingPropsRows(final ShardingSphereMetaData metaData, final Collection<LocalDataQueryResultRow> rows) {
-        Optional<ShardingSphereLogger> sqlLogger = metaData.getGlobalRuleMetaData().findSingleRule(LoggingRule.class).flatMap(LoggingRule::getSQLLogger);
-        if (sqlLogger.isPresent()) {
-            Properties sqlLoggerProps = sqlLogger.get().getProps();
-            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_ENABLE, Boolean.FALSE).toString()));
-            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME, sqlLoggerProps.getOrDefault(LoggingConstants.SQL_LOG_SIMPLE, Boolean.FALSE).toString()));
-        } else {
-            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SHOW_VARIABLE_NAME,
-                    metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(LoggingConstants.SQL_SHOW_VARIABLE_NAME.toUpperCase())).toString()));
-            rows.add(new LocalDataQueryResultRow(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME,
-                    metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(LoggingConstants.SQL_SIMPLE_VARIABLE_NAME.toUpperCase())).toString()));
+        if (value instanceof Float || value instanceof Double) {
+            return new BigDecimal(String.valueOf(value)).toPlainString();
         }
+        return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
     }
     
     @Override

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop index type statement.
  */
-public abstract class DropIndexTypeStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropIndexTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

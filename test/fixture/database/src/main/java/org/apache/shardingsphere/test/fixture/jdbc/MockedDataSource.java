@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,8 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
     private Integer maxPoolSize;
     
     private Integer minPoolSize;
+    
+    private Duration connectionTimeout;
     
     private List<String> connectionInitSqls;
     

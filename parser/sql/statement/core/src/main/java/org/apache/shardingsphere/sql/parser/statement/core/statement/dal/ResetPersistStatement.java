@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class ResetPersistStatement extends AbstractSQLStatement implements DALStatement {
+public final class ResetPersistStatement extends AbstractSQLStatement implements DALStatement {
     
     private final boolean ifExists;
     

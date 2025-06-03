@@ -77,7 +77,7 @@ class ShardingDDLResultMergerTest {
     }
     
     private FetchStatementContext createFetchStatementContext(final ShardingSphereDatabase database) {
-        FetchStatementContext result = new FetchStatementContext(mockFetchStatement());
+        FetchStatementContext result = new FetchStatementContext(databaseType, mockFetchStatement());
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }
@@ -87,7 +87,7 @@ class ShardingDDLResultMergerTest {
         SelectStatement selectStatement = createSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), selectStatement, "foo_db", Collections.emptyList());
+                databaseType, selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement().getSelect()).thenReturn(selectStatement);
         return result;
@@ -97,7 +97,6 @@ class ShardingDDLResultMergerTest {
         SelectStatement result = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
         when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")))));
         when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
-        when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }
     
@@ -122,7 +121,6 @@ class ShardingDDLResultMergerTest {
         FetchStatement result = mock(FetchStatement.class);
         when(result.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")));
         when(result.getDirection()).thenReturn(Optional.empty());
-        when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }
 }

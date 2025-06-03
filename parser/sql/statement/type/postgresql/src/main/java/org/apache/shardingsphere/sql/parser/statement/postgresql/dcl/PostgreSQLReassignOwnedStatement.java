@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.ReassignOwnedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL reassign owned statement.
  */
-public final class PostgreSQLReassignOwnedStatement extends ReassignOwnedStatement implements PostgreSQLStatement {
+public final class PostgreSQLReassignOwnedStatement extends AbstractSQLStatement implements PostgreSQLStatement, DCLStatement {
 }

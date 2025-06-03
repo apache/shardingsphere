@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.data.loader;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoaderConnection;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMe
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
+import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -44,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +72,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND A.TABLE_NAME IN (%s)";
     
-    private static final String INDEX_COLUMN_META_DATA_SQL = "SELECT COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND TABLE_NAME = ? AND INDEX_NAME = ?";
+    private static final String INDEX_COLUMN_META_DATA_SQL = "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN (%s)";
     
     private static final int COLLATION_START_MAJOR_VERSION = 12;
     
@@ -195,26 +198,37 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
-                    IndexMetaData indexMetaData = new IndexMetaData(indexName, loadIndexColumnNames(connection, tableName, indexName));
+                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
                     indexMetaData.setUnique(isUnique);
                     result.get(tableName).add(indexMetaData);
                 }
             }
         }
+        loadIndexColumnNames(connection, result);
         return result;
     }
     
-    private List<String> loadIndexColumnNames(final Connection connection, final String tableName, final String indexName) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(INDEX_COLUMN_META_DATA_SQL)) {
-            preparedStatement.setString(1, connection.getSchema());
-            preparedStatement.setString(2, tableName);
-            preparedStatement.setString(3, indexName);
-            List<String> result = new LinkedList<>();
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                result.add(resultSet.getString("COLUMN_NAME"));
+    private void loadIndexColumnNames(final Connection connection, final Map<String, Collection<IndexMetaData>> tableIndexMetaDataMap) throws SQLException {
+        List<String> quotedIndexNames =
+                tableIndexMetaDataMap.values().stream().flatMap(Collection::stream).map(IndexMetaData::getName).map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.toList());
+        if (!quotedIndexNames.isEmpty()) {
+            return;
+        }
+        Map<String, Collection<String>> indexColumnsMap = new HashMap<>();
+        for (List<String> each : Lists.partition(quotedIndexNames, 1000)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(String.format(INDEX_COLUMN_META_DATA_SQL, Joiner.on(",").join(each)))) {
+                preparedStatement.setString(1, connection.getSchema());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Collection<String> columns = indexColumnsMap.computeIfAbsent(resultSet.getString("INDEX_NAME"), key -> new LinkedList<>());
+                    columns.add(resultSet.getString("COLUMN_NAME"));
+                }
             }
-            return result;
+        }
+        for (Entry<String, Collection<IndexMetaData>> entry : tableIndexMetaDataMap.entrySet()) {
+            for (IndexMetaData each : entry.getValue()) {
+                Optional.ofNullable(indexColumnsMap.get(each.getName())).ifPresent(each::setColumns);
+            }
         }
     }
     

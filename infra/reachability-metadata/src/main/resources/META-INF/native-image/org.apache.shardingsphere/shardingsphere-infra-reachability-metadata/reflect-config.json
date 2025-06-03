@@ -204,6 +204,11 @@
   "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
 },
 {
+  "condition":{"typeReachable":"java.net.SocketTimeoutException"},
+  "name":"java.net.SocketTimeoutException",
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.yaml.YamlEngine"},
   "name":"org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration",
   "allPublicMethods":true
@@ -425,6 +430,61 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
   "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.function.mysql.MySQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.function.mysql.impl.MySQLBinFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.function.postgresql.PostgreSQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.function.postgresql.impl.PostgreSQLSystemFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.function.opengauss.impl.OpenGaussSystemFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.OpenGaussFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.opengauss.impl.OpenGaussSystemFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.PostgreSQLFunctionRegister"},
+  "name":"org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction",
+  "allPublicMethods": true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"},
+  "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

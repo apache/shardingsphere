@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.route.engine.tableless.type.unicast;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -33,6 +34,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Tableless datasource unicast route engine.
  */
 @RequiredArgsConstructor
+@HighFrequencyInvocation
 public final class TablelessDataSourceUnicastRouteEngine implements TablelessRouteEngine {
     
     @Override

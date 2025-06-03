@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop collation statement.
  */
-public abstract class DropCollationStatement extends AbstractSQLStatement implements DDLStatement {
+public class DropCollationStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -40,10 +40,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
@@ -55,7 +55,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        PrestoCreateViewStatement result = new PrestoCreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement();
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));

@@ -30,18 +30,17 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.Tab
 import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,7 +86,7 @@ class TablelessRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForSetResourceGroup() {
-        MySQLSetResourceGroupStatement resourceGroupStatement = mock(MySQLSetResourceGroupStatement.class);
+        SetResourceGroupStatement resourceGroupStatement = mock(SetResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, mock(ShardingSphereDatabase.class));
@@ -96,16 +95,11 @@ class TablelessRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDALShow() {
-        DALStatement dalStatement = mock(MySQLShowDatabasesStatement.class);
+        DALStatement dalStatement = mock(ShowDatabasesStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
         assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
-    }
-    
-    @Test
-    void assertNewInstanceForDALSetForPostgreSQL() {
-        assertNewInstanceForDALSet(mock(PostgreSQLSetStatement.class));
     }
     
     @Test
@@ -119,11 +113,8 @@ class TablelessRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDALSetForMySQL() {
-        assertNewInstanceForDALSet(mock(MySQLSetStatement.class));
-    }
-    
-    private void assertNewInstanceForDALSet(final DALStatement dalStatement) {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
+        SetStatement setStatement = mock(SetStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
         assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
@@ -131,7 +122,7 @@ class TablelessRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForCreateResourceGroup() {
-        MySQLCreateResourceGroupStatement resourceGroupStatement = mock(MySQLCreateResourceGroupStatement.class);
+        CreateResourceGroupStatement resourceGroupStatement = mock(CreateResourceGroupStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
@@ -141,7 +132,7 @@ class TablelessRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCloseAllStatement() {
         CloseStatementContext closeStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
-        OpenGaussCloseStatement closeStatement = mock(OpenGaussCloseStatement.class);
+        CloseStatement closeStatement = mock(CloseStatement.class);
         when(closeStatement.isCloseAll()).thenReturn(true);
         when(closeStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         when(closeStatementContext.getSqlStatement()).thenReturn(closeStatement);

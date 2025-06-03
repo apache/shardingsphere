@@ -33,11 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Rollbac
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.tcl.OpenGaussRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.sql.SQLException;
@@ -127,28 +122,16 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     }
     
     private SQLStatement getSQLStatementByCommit() {
-        SQLStatement result = tclStatement;
-        if (connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()) {
-            if (tclStatement instanceof OpenGaussCommitStatement) {
-                result = new OpenGaussRollbackStatement();
-            } else if (tclStatement instanceof PostgreSQLCommitStatement) {
-                result = new PostgreSQLRollbackStatement();
-            }
-        }
-        return result;
+        return connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && dialectDatabaseMetaData.getTransactionOption().isReturnRollbackStatementWhenCommitFailed()
+                ? new RollbackStatement()
+                : tclStatement;
     }
     
     private void handleSetAutoCommit() throws SQLException {
-        if (tclStatement instanceof MySQLSetAutoCommitStatement) {
-            handleMySQLSetAutoCommit();
-        }
-        connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
-    }
-    
-    private void handleMySQLSetAutoCommit() throws SQLException {
-        MySQLSetAutoCommitStatement statement = (MySQLSetAutoCommitStatement) tclStatement;
-        if (statement.isAutoCommit() && connectionSession.getTransactionStatus().isInTransaction()) {
+        if (dialectDatabaseMetaData.getTransactionOption().isSupportAutoCommitInNestedTransaction() && connectionSession.getTransactionStatus().isInTransaction()
+                && ((SetAutoCommitStatement) tclStatement).isAutoCommit()) {
             backendTransactionManager.commit();
         }
+        connectionSession.setAutoCommit(((SetAutoCommitStatement) tclStatement).isAutoCommit());
     }
 }

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -29,31 +28,54 @@ import java.util.Optional;
 /**
  * Set transaction statement.
  */
-@Getter
-@Setter
-public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+@RequiredArgsConstructor
+public final class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
     
-    private TransactionIsolationLevel isolationLevel;
+    private final OperationScope scope;
     
-    private OperationScope scope;
+    private final TransactionIsolationLevel isolationLevel;
     
-    private TransactionAccessType accessMode;
+    private final TransactionAccessType accessMode;
+    
+    public SetTransactionStatement() {
+        this(null, null, null);
+    }
     
     /**
-     * Get isolation level.
+     *  Whether to contain transaction scope.
      *
-     * @return isolation level
+     * @return contains transaction scope or not
+     */
+    public boolean containsScope() {
+        return null != scope;
+    }
+    
+    /**
+     * Whether is desired transaction scope.
+     *
+     * @param scope desired transaction scope
+     * @return is desired transaction scope or not
+     */
+    public boolean isDesiredScope(final OperationScope scope) {
+        return this.scope == scope;
+    }
+    
+    /**
+     * Get transaction isolation level.
+     *
+     * @return transaction isolation level
      */
     public Optional<TransactionIsolationLevel> getIsolationLevel() {
         return Optional.ofNullable(isolationLevel);
     }
     
     /**
-     * Get access mode.
+     * Whether is desired transaction access mode.
      *
-     * @return access mode 
+     * @param accessMode desired transaction access mode
+     * @return is desired transaction access mode or not
      */
-    public Optional<TransactionAccessType> getAccessMode() {
-        return Optional.ofNullable(accessMode);
+    public boolean isDesiredAccessMode(final TransactionAccessType accessMode) {
+        return this.accessMode == accessMode;
     }
 }

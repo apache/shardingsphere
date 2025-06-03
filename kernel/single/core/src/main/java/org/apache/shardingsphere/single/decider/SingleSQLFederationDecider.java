@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.single.decider;
 
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -40,8 +44,20 @@ import java.util.List;
 public final class SingleSQLFederationDecider implements SQLFederationDecider<SingleRule> {
     
     @Override
-    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters,
+    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
                           final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return decide0((SelectStatementContext) sqlStatementContext, database, rule, includedDataNodes);
+        } else if (sqlStatementContext instanceof ExplainStatementContext) {
+            ExplainStatementContext explainStatementContext = (ExplainStatementContext) sqlStatementContext;
+            ShardingSpherePreconditions.checkState(explainStatementContext.getSqlStatementContext() instanceof SelectStatementContext,
+                    () -> new UnsupportedSQLOperationException(String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getSqlStatement())));
+            return decide0((SelectStatementContext) explainStatementContext.getSqlStatementContext(), database, rule, includedDataNodes);
+        }
+        throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement()));
+    }
+    
+    private boolean decide0(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
         Collection<QualifiedTable> singleTables = getSingleTables(selectStatementContext, database, rule);
         if (singleTables.isEmpty()) {
             return false;
@@ -61,9 +77,8 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         if (!selectStatement.getFrom().isPresent() || !(selectStatement.getFrom().get() instanceof JoinTableSegment)) {
             return true;
         }
-        return selectStatement.getFrom().isPresent() && selectStatement.getFrom().get() instanceof JoinTableSegment
-                && (JoinType.INNER.name().equalsIgnoreCase(((JoinTableSegment) selectStatement.getFrom().get()).getJoinType())
-                        || JoinType.COMMA.name().equalsIgnoreCase(((JoinTableSegment) selectStatement.getFrom().get()).getJoinType()));
+        JoinTableSegment joinTableSegment = (JoinTableSegment) selectStatement.getFrom().get();
+        return JoinType.INNER.name().equalsIgnoreCase(joinTableSegment.getJoinType()) || JoinType.COMMA.name().equalsIgnoreCase(joinTableSegment.getJoinType());
     }
     
     private Collection<QualifiedTable> getSingleTables(final SelectStatementContext selectStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {

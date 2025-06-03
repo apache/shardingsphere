@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class ShowProcessListStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowProcessListStatement extends AbstractSQLStatement implements DALStatement {
     
     private final boolean full;
 }

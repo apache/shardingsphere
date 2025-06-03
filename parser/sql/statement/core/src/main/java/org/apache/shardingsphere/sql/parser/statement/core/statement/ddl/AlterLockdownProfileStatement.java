@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter lockdown profile statement.
  */
-public abstract class AlterLockdownProfileStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterLockdownProfileStatement extends AbstractSQLStatement implements DDLStatement {
 }

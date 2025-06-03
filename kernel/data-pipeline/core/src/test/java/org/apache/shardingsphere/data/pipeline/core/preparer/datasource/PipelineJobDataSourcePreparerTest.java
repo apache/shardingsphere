@@ -57,9 +57,7 @@ class PipelineJobDataSourcePreparerTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(pipelineDataSourceManager.getDataSource(any()).getConnection()).thenReturn(connection);
         when(connection.getContextManager().getMetaDataContexts().getMetaData()).thenReturn(mock(ShardingSphereMetaData.class));
-        PrepareTargetTablesParameter parameter = new PrepareTargetTablesParameter(
-                Collections.singleton(createTableConfig), pipelineDataSourceManager,
-                mock(SQLParserEngine.class), "foo_db");
+        PrepareTargetTablesParameter parameter = new PrepareTargetTablesParameter(Collections.singleton(createTableConfig), pipelineDataSourceManager, mock(SQLParserEngine.class), "foo_db");
         assertDoesNotThrow(() -> new PipelineJobDataSourcePreparer(databaseType).prepareTargetTables(parameter));
     }
 }

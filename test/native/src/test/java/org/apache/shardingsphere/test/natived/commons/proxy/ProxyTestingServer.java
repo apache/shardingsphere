@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
  * It is necessary to avoid creating multiple ShardingSphere Proxy instances in parallel in Junit5 unit tests.
  * Currently, Junit5 unit tests are all executed serially.
  */
-@Getter
 public final class ProxyTestingServer {
     
+    @Getter
     private final int proxyPort;
     
     private final CompletableFuture<Void> completableFuture;
@@ -50,7 +50,7 @@ public final class ProxyTestingServer {
         proxyPort = InstanceSpec.getRandomPort();
         completableFuture = CompletableFuture.runAsync(() -> {
             try {
-                Bootstrap.main(new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0", "false"});
+                Bootstrap.main(new String[]{String.valueOf(proxyPort), configAbsolutePath, "0.0.0.0"});
             } catch (final IOException | SQLException ex) {
                 throw new RuntimeException(ex);
             }

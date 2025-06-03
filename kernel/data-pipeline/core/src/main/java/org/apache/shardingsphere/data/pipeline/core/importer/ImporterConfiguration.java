@@ -77,7 +77,7 @@ public final class ImporterConfiguration {
      */
     public Optional<String> findSchemaName(final String logicTableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(dataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? Optional.of(tableAndSchemaNameMapper.getSchemaName(logicTableName)) : Optional.empty();
+        return dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? Optional.ofNullable(tableAndSchemaNameMapper.getSchemaName(logicTableName)) : Optional.empty();
     }
     
     /**

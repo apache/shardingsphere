@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Import statement.
  */
-public abstract class ImportStatement extends AbstractSQLStatement implements DMLStatement {
+public class ImportStatement extends AbstractSQLStatement implements DMLStatement {
 }

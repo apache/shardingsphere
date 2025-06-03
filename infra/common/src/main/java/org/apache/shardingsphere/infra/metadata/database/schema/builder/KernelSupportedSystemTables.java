@@ -36,14 +36,14 @@ public enum KernelSupportedSystemTables {
     
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys_config"))),
     
-    MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
+    MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Collections.singletonList("cluster_information"))),
     
     POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views"))),
     
     POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_aggregate", "pg_class", "pg_database", "pg_tables", "pg_inherits",
             "pg_tablespace", "pg_trigger", "pg_namespace", "pg_roles"))),
     
-    POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
+    POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Collections.singletonList("cluster_information"))),
     
     OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
     
@@ -75,7 +75,7 @@ public enum KernelSupportedSystemTables {
     
     OPEN_GAUSS_SQLADVISOR("openGauss", "sqladvisor", Collections.emptySet()),
     
-    OPEN_GAUSS_SHARDING_SPHERE("openGauss", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information")));
+    OPEN_GAUSS_SHARDING_SPHERE("openGauss", "shardingsphere", new HashSet<>(Collections.singletonList("cluster_information")));
     
     private static final Map<String, KernelSupportedSystemTables> SCHEMA_NAME_TO_TABLES = new HashMap<>(values().length, 1F);
     

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
-import org.slf4j.event.Level;
 
 import java.util.Properties;
 
@@ -37,7 +36,6 @@ class ConfigurationPropertiesTest {
     @Test
     void assertGetValue() {
         ConfigurationProperties actual = new ConfigurationProperties(createProperties());
-        assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(Level.DEBUG));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
@@ -55,7 +53,6 @@ class ConfigurationPropertiesTest {
     
     private Properties createProperties() {
         return PropertiesBuilder.build(
-                new Property(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL.getKey(), Level.DEBUG.toString()),
                 new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20"),
@@ -74,7 +71,6 @@ class ConfigurationPropertiesTest {
     @Test
     void assertGetDefaultValue() {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
-        assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(Level.INFO));
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));
