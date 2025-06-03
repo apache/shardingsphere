@@ -603,13 +603,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
-        ShowTriggersStatement result = new ShowTriggersStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowTriggersStatement result = new ShowTriggersStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }

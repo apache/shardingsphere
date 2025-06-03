@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -27,12 +28,13 @@ import java.util.Optional;
 /**
  * Show triggers status statement.
  */
+@RequiredArgsConstructor
 @Setter
-public class ShowTriggersStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowTriggersStatement extends AbstractSQLStatement implements DALStatement {
     
-    private FromDatabaseSegment fromDatabase;
+    private final FromDatabaseSegment fromDatabase;
     
-    private ShowFilterSegment filter;
+    private final ShowFilterSegment filter;
     
     /**
      * Get from database.
