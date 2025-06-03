@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseWhe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharsetNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CollateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNamesContext;
@@ -1124,7 +1125,25 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        if (null != ctx.castType()) {
+            result.getParameters().add((DataTypeSegment) visit(ctx.castType()));
+        } else if (null != ctx.charsetName()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.charsetName()));
+        }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCharsetName(final CharsetNameContext ctx) {
+        String charsetName = "";
+        if (null != ctx.textOrIdentifier() && null != ctx.textOrIdentifier().getText()) {
+            charsetName = ctx.textOrIdentifier().getText();
+        } else if (null != ctx.BINARY()) {
+            charsetName = ctx.BINARY().getText();
+        } else if (null != ctx.DEFAULT()) {
+            charsetName = ctx.DEFAULT().getText();
+        }
+        return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), charsetName);
     }
     
     @Override

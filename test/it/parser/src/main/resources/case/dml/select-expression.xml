@@ -52,6 +52,9 @@
                                     <parameter>
                                         <column name="VARIABLE_VALUE" start-index="122" stop-index="135" />
                                     </parameter>
+                                    <parameter start-index="138" stop-index="145">
+                                        <data-type value="UNSIGNED" start-index="138" stop-index="145"/>
+                                    </parameter>
                                 </function>
                             </left>
                             <operator>&gt;</operator>
