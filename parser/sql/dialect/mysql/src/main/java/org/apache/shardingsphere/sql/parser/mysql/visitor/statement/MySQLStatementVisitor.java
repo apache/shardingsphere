@@ -1143,7 +1143,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else if (null != ctx.DEFAULT()) {
             charsetName = ctx.DEFAULT().getText();
         }
-        return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStartIndex(), charsetName);
+        return new LiteralExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), charsetName);
     }
     
     @Override

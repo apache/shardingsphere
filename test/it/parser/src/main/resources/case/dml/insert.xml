@@ -1506,6 +1506,9 @@
                                 </parameter>
                             </function>
                         </parameter>
+                        <parameter>
+                            <literal-expression value="utf8" start-index="107" stop-index="110" literal-start-index="112" literal-stop-index="115" />
+                        </parameter>
                     </function>
                 </assignment-value>
             </assignment>
