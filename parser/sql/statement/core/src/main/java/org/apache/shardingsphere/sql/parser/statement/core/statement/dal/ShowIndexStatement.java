@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
@@ -28,13 +28,13 @@ import java.util.Optional;
 /**
  * Show index statement.
  */
-@Setter
-public class ShowIndexStatement extends AbstractSQLStatement implements DALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class ShowIndexStatement extends AbstractSQLStatement implements DALStatement {
     
-    @Getter
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private FromDatabaseSegment fromDatabase;
+    private final FromDatabaseSegment fromDatabase;
     
     /**
      * Get from database.

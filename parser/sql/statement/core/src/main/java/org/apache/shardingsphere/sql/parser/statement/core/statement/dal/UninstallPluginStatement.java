@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Uninstall plugin statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class UninstallPluginStatement extends AbstractSQLStatement implements DALStatement {
+public final class UninstallPluginStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String pluginName;
+    private final String pluginName;
 }

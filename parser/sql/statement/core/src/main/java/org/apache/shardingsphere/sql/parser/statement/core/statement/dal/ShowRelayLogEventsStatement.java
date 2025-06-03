@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Show relay log events statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ShowRelayLogEventsStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowRelayLogEventsStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String logName;
+    private final String logName;
     
-    private LimitSegment limit;
+    private final LimitSegment limit;
     
-    private String channel;
+    private final String channel;
 }

@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Help statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class HelpStatement extends AbstractSQLStatement implements DALStatement {
+public final class HelpStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String searchString;
+    private final String searchString;
 }

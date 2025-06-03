@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dcl;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -44,9 +43,8 @@ public final class DenyUserStatementBinder implements SQLStatementBinder<DenyUse
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private static DenyUserStatement copy(final DenyUserStatement sqlStatement) {
-        DenyUserStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+        DenyUserStatement result = new DenyUserStatement();
         result.setTable(sqlStatement.getTable());
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());

@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Alter resource group statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class AlterResourceGroupStatement extends AbstractSQLStatement implements DALStatement {
+public final class AlterResourceGroupStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String groupName;
+    private final String groupName;
 }

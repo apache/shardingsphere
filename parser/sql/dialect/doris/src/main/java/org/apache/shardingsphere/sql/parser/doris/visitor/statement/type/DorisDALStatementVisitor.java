@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Checksu
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CloneActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CloneContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CloneInstanceContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ComponentNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLoadableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DelimiterContext;
@@ -110,7 +109,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShutdownContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
@@ -216,9 +214,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisExplainStatement;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DAL statement visitor for Doris.
@@ -227,16 +226,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
-        UninstallPluginStatement result = new UninstallPluginStatement();
-        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
-        return result;
+        return new UninstallPluginStatement(((IdentifierValue) visit(ctx.pluginName())).getValue());
     }
     
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
-        ShowCreateDatabaseStatement result = new ShowCreateDatabaseStatement();
-        result.setDatabaseName(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
-        return result;
+        return new ShowCreateDatabaseStatement(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
     }
     
     @Override
@@ -246,17 +241,14 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowStatus(final ShowStatusContext ctx) {
-        ShowStatusStatement result = new ShowStatusStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowStatusStatement result = new ShowStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
-        return new ShowCreateViewStatement();
+        return new ShowCreateViewStatement(null);
     }
     
     @Override
@@ -266,9 +258,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowEngine(final ShowEngineContext ctx) {
-        ShowEngineStatement result = new ShowEngineStatement();
-        result.setEngineName(ctx.engineRef().getText());
-        return result;
+        return new ShowEngineStatement(ctx.engineRef().getText());
     }
     
     @Override
@@ -278,68 +268,41 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateEvent(final ShowCreateEventContext ctx) {
-        ShowCreateEventStatement result = new ShowCreateEventStatement();
-        result.setEventName(((IdentifierValue) visit(ctx.eventName())).getValue());
-        return result;
+        return new ShowCreateEventStatement(((IdentifierValue) visit(ctx.eventName())).getValue());
     }
     
     @Override
     public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
-        ShowCreateFunctionStatement result = new ShowCreateFunctionStatement();
-        result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
-        return result;
+        return new ShowCreateFunctionStatement(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
     }
     
     @Override
     public ASTNode visitShowCreateProcedure(final ShowCreateProcedureContext ctx) {
-        ShowCreateProcedureStatement result = new ShowCreateProcedureStatement();
-        result.setProcedureName(((IdentifierValue) visit(ctx.procedureName())).getValue());
-        return result;
+        return new ShowCreateProcedureStatement(((IdentifierValue) visit(ctx.procedureName())).getValue());
     }
     
     @Override
     public ASTNode visitShowBinlogEvents(final ShowBinlogEventsContext ctx) {
-        ShowBinlogEventsStatement result = new ShowBinlogEventsStatement();
-        if (null != ctx.logName()) {
-            result.setLogName(ctx.logName().getText());
-        }
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowBinlogEventsStatement(null == ctx.logName() ? null : ctx.logName().getText(), null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
-        ShowErrorsStatement result = new ShowErrorsStatement();
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowErrorsStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitShowWarnings(final ShowWarningsContext ctx) {
-        ShowWarningsStatement result = new ShowWarningsStatement();
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowWarningsStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitResetStatement(final ResetStatementContext ctx) {
         ResetPersistContext persistContext = ctx.resetPersist();
-        if (null != persistContext) {
-            return visit(persistContext);
-        }
-        ResetStatement result = new ResetStatement();
-        for (ResetOptionContext each : ctx.resetOption()) {
-            if (null != each.MASTER() || null != each.SLAVE()) {
-                result.getOptions().add((ResetOptionSegment) visit(each));
-            }
-        }
-        return result;
+        return null == persistContext
+                ? new ResetStatement(
+                        ctx.resetOption().stream().filter(each -> null != each.MASTER() || null != each.SLAVE()).map(each -> (ResetOptionSegment) visit(each)).collect(Collectors.toList()))
+                : visit(persistContext);
     }
     
     @Override
@@ -388,17 +351,13 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRepairTable(final RepairTableContext ctx) {
-        RepairTableStatement result = new RepairTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new RepairTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        AnalyzeTableStatement result = new AnalyzeTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new AnalyzeTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
@@ -448,47 +407,27 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
-        ChecksumTableStatement result = new ChecksumTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new ChecksumTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitFlush(final FlushContext ctx) {
-        if (null != ctx.tablesOption()) {
-            return visit(ctx.tablesOption());
-        }
-        return new FlushStatement();
+        return null == ctx.tablesOption() ? new FlushStatement(Collections.emptyList(), false) : visit(ctx.tablesOption());
     }
     
     @Override
     public ASTNode visitTablesOption(final TablesOptionContext ctx) {
-        FlushStatement result = new FlushStatement();
-        result.setFlushTable(true);
-        for (TableNameContext each : ctx.tableName()) {
-            result.getTables().add((SimpleTableSegment) visit(each));
-        }
-        return result;
+        return new FlushStatement(ctx.tableName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), true);
     }
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        KillStatement result = new KillStatement();
-        if (null != ctx.AT_()) {
-            result.setProcessId(ctx.AT_().getText() + ctx.IDENTIFIER_().getText());
-        } else {
-            result.setProcessId(ctx.IDENTIFIER_().getText());
-        }
-        return result;
+        return new KillStatement(null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), null);
     }
     
     @Override
     public ASTNode visitLoadIndexInfo(final LoadIndexInfoContext ctx) {
-        LoadIndexInfoStatement result = new LoadIndexInfoStatement();
-        for (LoadTableIndexListContext each : ctx.loadTableIndexList()) {
-            result.getTableIndexes().add((LoadTableIndexSegment) visit(each));
-        }
-        return result;
+        return new LoadIndexInfoStatement(ctx.loadTableIndexList().stream().map(each -> (LoadTableIndexSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -507,16 +446,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        InstallPluginStatement result = new InstallPluginStatement();
-        result.setPluginName(((IdentifierValue) visit(ctx.pluginName())).getValue());
-        return result;
+        return new InstallPluginStatement(((IdentifierValue) visit(ctx.pluginName())).getValue());
     }
     
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
-        CloneStatement result = new CloneStatement();
-        result.setCloneActionSegment((CloneActionSegment) visit(ctx.cloneAction()));
-        return result;
+        return new CloneStatement((CloneActionSegment) visit(ctx.cloneAction()));
     }
     
     @Override
@@ -543,16 +478,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
-        OptimizeTableStatement result = new OptimizeTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new OptimizeTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        UseStatement result = new UseStatement();
-        result.setDatabase(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
-        return result;
+        return new UseStatement(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
     }
     
     @Override
@@ -598,18 +529,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
-        ShowProcedureCodeStatement result = new ShowProcedureCodeStatement();
-        result.setFunction((FunctionSegment) visit(ctx.functionName()));
-        return result;
+        return new ShowProcedureCodeStatement((FunctionSegment) visit(ctx.functionName()));
     }
     
     @Override
     public ASTNode visitShowProfile(final ShowProfileContext ctx) {
-        ShowProfileStatement result = new ShowProfileStatement();
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        return result;
+        return new ShowProfileStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
@@ -619,50 +544,31 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        ShowDatabasesStatement result = new ShowDatabasesStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowDatabasesStatement result = new ShowDatabasesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
-        ShowEventsStatement result = new ShowEventsStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowEventsStatement result = new ShowEventsStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
-        ShowTablesStatement result = new ShowTablesStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
-        result.setContainsFull(null != ctx.FULL());
+        ShowTablesStatement result = new ShowTablesStatement(null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()),
+                null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()), null != ctx.FULL());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
-        ShowTriggersStatement result = new ShowTriggersStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowTriggersStatement result = new ShowTriggersStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -674,29 +580,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        ShowTableStatusStatement result = new ShowTableStatusStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowTableStatusStatement result = new ShowTableStatusStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
-        ShowColumnsStatement result = new ShowColumnsStatement();
-        if (null != ctx.fromTable()) {
-            result.setTable(((FromTableSegment) visit(ctx.fromTable())).getTable());
-        }
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowColumnsStatement result = new ShowColumnsStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visit(ctx.fromTable())).getTable(),
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -715,50 +608,29 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
-        ShowIndexStatement result = new ShowIndexStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.fromTable()) {
-            result.setTable(((FromTableSegment) visitFromTable(ctx.fromTable())).getTable());
-        }
-        return result;
+        return new ShowIndexStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visitFromTable(ctx.fromTable())).getTable(),
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()));
     }
     
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
-        ShowCreateTableStatement result = new ShowCreateTableStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new ShowCreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
-        ShowCreateTriggerStatement result = new ShowCreateTriggerStatement();
-        result.setName(((IdentifierValue) visit(ctx.triggerName())).getValue());
-        return result;
+        return new ShowCreateTriggerStatement(((IdentifierValue) visit(ctx.triggerName())).getValue());
     }
     
     @Override
     public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
-        ShowRelayLogEventsStatement result = new ShowRelayLogEventsStatement();
-        if (null != ctx.logName()) {
-            result.setLogName(((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue());
-        }
-        if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.channelName()) {
-            result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
-        }
-        return result;
+        return new ShowRelayLogEventsStatement(null == ctx.logName() ? null : ((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue(),
+                null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()), null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
     public ASTNode visitShowFunctionCode(final ShowFunctionCodeContext ctx) {
-        ShowFunctionCodeStatement result = new ShowFunctionCodeStatement();
-        result.setFunctionName(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
-        return result;
+        return new ShowFunctionCodeStatement(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
     }
     
     @Override
@@ -778,27 +650,17 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
-        ShowReplicaStatusStatement result = new ShowReplicaStatusStatement();
-        if (null != ctx.channelName()) {
-            result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
-        }
-        return result;
+        return new ShowReplicaStatusStatement(null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
     public ASTNode visitShowSlaveStatus(final ShowSlaveStatusContext ctx) {
-        ShowSlaveStatusStatement result = new ShowSlaveStatusStatement();
-        if (null != ctx.channelName()) {
-            result.setChannel(((IdentifierValue) visit(ctx.channelName())).getValue());
-        }
-        return result;
+        return new ShowSlaveStatusStatement(null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
-        CreateResourceGroupStatement result = new CreateResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new CreateResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
@@ -815,63 +677,43 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
-        ShowVariablesStatement result = new ShowVariablesStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowVariablesStatement result = new ShowVariablesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
-        ShowCharacterSetStatement result = new ShowCharacterSetStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowCharacterSetStatement result = new ShowCharacterSetStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCollation(final ShowCollationContext ctx) {
-        ShowCollationStatement result = new ShowCollationStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowCollationStatement result = new ShowCollationStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowFunctionStatus(final ShowFunctionStatusContext ctx) {
-        ShowFunctionStatusStatement result = new ShowFunctionStatusStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowFunctionStatusStatement result = new ShowFunctionStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowProcedureStatus(final ShowProcedureStatusContext ctx) {
-        ShowProcedureStatusStatement result = new ShowProcedureStatusStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowProcedureStatusStatement result = new ShowProcedureStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
-        ShowOpenTablesStatement result = new ShowOpenTablesStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowOpenTablesStatement result = new ShowOpenTablesStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -898,21 +740,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
-        ShowCreateUserStatement result = new ShowCreateUserStatement();
-        result.setName(((IdentifierValue) visit(ctx.username())).getValue());
-        return result;
+        return new ShowCreateUserStatement(((IdentifierValue) visit(ctx.username())).getValue());
     }
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        SetStatement result = new SetStatement();
-        Collection<VariableAssignSegment> variableAssigns = getVariableAssigns(ctx.optionValueList());
-        result.getVariableAssigns().addAll(variableAssigns);
-        return result;
+        return new SetStatement(getVariableAssigns(ctx.optionValueList()));
     }
     
-    private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
-        Collection<VariableAssignSegment> result = new LinkedList<>();
+    private List<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
+        List<VariableAssignSegment> result = new LinkedList<>();
         result.add(null == ctx.optionValueNoOptionType() ? getVariableAssignSegment(ctx) : getVariableAssignSegment(ctx.optionValueNoOptionType()));
         for (OptionValueContext each : ctx.optionValue()) {
             result.add(getVariableAssignSegment(each));
@@ -983,10 +820,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText());
         String assignValue = null == ctx.DEFAULT() ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
-        VariableAssignSegment characterSet = new VariableAssignSegment(startIndex, stopIndex, variable, assignValue);
-        SetStatement result = new SetStatement();
-        result.getVariableAssigns().add(characterSet);
-        return result;
+        return new SetStatement(Collections.singletonList(new VariableAssignSegment(startIndex, stopIndex, variable, assignValue)));
     }
     
     @Override
@@ -1007,24 +841,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitInstallComponent(final InstallComponentContext ctx) {
-        InstallComponentStatement result = new InstallComponentStatement();
-        List<String> components = new LinkedList<>();
-        for (ComponentNameContext each : ctx.componentName()) {
-            components.add(((StringLiteralValue) visit(each.string_())).getValue());
-        }
-        result.getComponents().addAll(components);
-        return result;
+        return new InstallComponentStatement(ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitUninstallComponent(final UninstallComponentContext ctx) {
-        UninstallComponentStatement result = new UninstallComponentStatement();
-        List<String> components = new LinkedList<>();
-        for (ComponentNameContext each : ctx.componentName()) {
-            components.add(((StringLiteralValue) visit(each.string_())).getValue());
-        }
-        result.getComponents().addAll(components);
-        return result;
+        return new UninstallComponentStatement(ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
     }
     
     @Override
@@ -1034,43 +856,31 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
-        SetResourceGroupStatement result = new SetResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new SetResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitCheckTable(final CheckTableContext ctx) {
-        CheckTableStatement result = new CheckTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new CheckTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitDropResourceGroup(final DropResourceGroupContext ctx) {
-        DropResourceGroupStatement result = new DropResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new DropResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
-        AlterResourceGroupStatement result = new AlterResourceGroupStatement();
-        result.setGroupName(((IdentifierValue) visit(ctx.groupName())).getValue());
-        return result;
+        return new AlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitDelimiter(final DelimiterContext ctx) {
-        DelimiterStatement result = new DelimiterStatement();
-        result.setDelimiterName(ctx.delimiterName().getText());
-        return result;
+        return new DelimiterStatement(ctx.delimiterName().getText());
     }
     
     @Override
     public ASTNode visitHelp(final HelpContext ctx) {
-        HelpStatement result = new HelpStatement();
-        result.setSearchString(ctx.textOrIdentifier().getText());
-        return result;
+        return new HelpStatement(ctx.textOrIdentifier().getText());
     }
 }

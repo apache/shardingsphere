@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Show engine statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ShowEngineStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowEngineStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String engineName;
+    private final String engineName;
 }

@@ -18,16 +18,17 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Install component statement.
  */
+@RequiredArgsConstructor
 @Getter
-public class InstallComponentStatement extends AbstractSQLStatement implements DALStatement {
+public final class InstallComponentStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final List<String> components = new LinkedList<>();
+    private final List<String> components;
 }

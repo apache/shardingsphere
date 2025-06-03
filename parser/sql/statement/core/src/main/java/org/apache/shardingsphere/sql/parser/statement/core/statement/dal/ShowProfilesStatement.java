@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show profiles statement.
  */
-public class ShowProfilesStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowProfilesStatement extends AbstractSQLStatement implements DALStatement {
 }

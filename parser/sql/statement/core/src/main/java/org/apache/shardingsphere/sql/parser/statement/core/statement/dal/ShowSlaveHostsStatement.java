@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show slave hosts statement.
  */
-public class ShowSlaveHostsStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowSlaveHostsStatement extends AbstractSQLStatement implements DALStatement {
 }

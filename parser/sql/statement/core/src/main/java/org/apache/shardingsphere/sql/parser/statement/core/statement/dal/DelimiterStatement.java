@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Delimiter statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class DelimiterStatement extends AbstractSQLStatement implements DALStatement {
+public final class DelimiterStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String delimiterName;
+    private final String delimiterName;
 }

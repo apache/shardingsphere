@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Show warnings statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ShowWarningsStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowWarningsStatement extends AbstractSQLStatement implements DALStatement {
     
-    private LimitSegment limit;
+    private final LimitSegment limit;
 }

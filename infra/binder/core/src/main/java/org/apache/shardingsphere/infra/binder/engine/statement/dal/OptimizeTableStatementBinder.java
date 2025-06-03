@@ -20,12 +20,13 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+
+import java.util.LinkedList;
 
 /**
  * Optimize table statement binder.
@@ -40,9 +41,8 @@ public final class OptimizeTableStatementBinder implements SQLStatementBinder<Op
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement) {
-        OptimizeTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement) {
+        OptimizeTableStatement result = new OptimizeTableStatement(new LinkedList<>());
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());

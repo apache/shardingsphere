@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Spool statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class SpoolStatement extends AbstractSQLStatement implements DALStatement {
+public final class SpoolStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String fileName;
+    private final String fileName;
 }

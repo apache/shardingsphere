@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Clone statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class CloneStatement extends AbstractSQLStatement implements DALStatement {
+public final class CloneStatement extends AbstractSQLStatement implements DALStatement {
     
-    private CloneActionSegment cloneActionSegment;
+    private final CloneActionSegment cloneActionSegment;
 }

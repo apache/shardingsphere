@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show binary logs statement.
  */
-public class ShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowBinaryLogsStatement extends AbstractSQLStatement implements DALStatement {
 }

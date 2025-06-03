@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Set statement.
  */
+@RequiredArgsConstructor
 @Getter
-public class SetStatement extends AbstractSQLStatement implements DALStatement {
+public final class SetStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final List<VariableAssignSegment> variableAssigns = new LinkedList<>();
+    private final List<VariableAssignSegment> variableAssigns;
 }

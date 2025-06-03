@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
@@ -28,15 +28,15 @@ import java.util.Optional;
 /**
  * Show tables statement.
  */
-@Setter
-public class ShowTablesStatement extends AbstractSQLStatement implements DALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class ShowTablesStatement extends AbstractSQLStatement implements DALStatement {
     
-    private FromDatabaseSegment fromDatabase;
+    private final FromDatabaseSegment fromDatabase;
     
-    private ShowFilterSegment filter;
+    private final ShowFilterSegment filter;
     
-    @Getter
-    private boolean containsFull;
+    private final boolean containsFull;
     
     /**
      * Get from database segment.

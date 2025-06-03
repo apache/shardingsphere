@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Kill statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class KillStatement extends AbstractSQLStatement implements DALStatement {
+public final class KillStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String processId;
+    private final String processId;
     
-    private String scope;
+    private final String scope;
 }

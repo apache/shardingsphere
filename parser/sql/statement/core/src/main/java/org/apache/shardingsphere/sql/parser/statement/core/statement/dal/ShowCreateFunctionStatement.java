@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Show create function statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ShowCreateFunctionStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowCreateFunctionStatement extends AbstractSQLStatement implements DALStatement {
     
-    private String functionName;
+    private final String functionName;
 }

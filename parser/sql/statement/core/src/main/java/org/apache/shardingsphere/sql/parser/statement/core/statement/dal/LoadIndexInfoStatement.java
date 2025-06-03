@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Load index info statement.
  */
+@RequiredArgsConstructor
 @Getter
-public class LoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
+public final class LoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<LoadTableIndexSegment> tableIndexes = new LinkedList<>();
+    private final Collection<LoadTableIndexSegment> tableIndexes;
 }

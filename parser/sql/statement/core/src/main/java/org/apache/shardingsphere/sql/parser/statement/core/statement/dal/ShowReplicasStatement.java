@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Show replicas statement.
  */
-public class ShowReplicasStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowReplicasStatement extends AbstractSQLStatement implements DALStatement {
 }

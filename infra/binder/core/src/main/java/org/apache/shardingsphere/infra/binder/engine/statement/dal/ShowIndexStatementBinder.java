@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
 
 /**
@@ -34,16 +34,12 @@ public final class ShowIndexStatementBinder implements SQLStatementBinder<ShowIn
     
     @Override
     public ShowIndexStatement bind(final ShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        ShowIndexStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
-        sqlStatement.getFromDatabase().ifPresent(result::setFromDatabase);
-        return result;
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static ShowIndexStatement copy(final ShowIndexStatement sqlStatement) {
-        ShowIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment table) {
+        ShowIndexStatement result = new ShowIndexStatement(table, sqlStatement.getFromDatabase().orElse(null));
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
