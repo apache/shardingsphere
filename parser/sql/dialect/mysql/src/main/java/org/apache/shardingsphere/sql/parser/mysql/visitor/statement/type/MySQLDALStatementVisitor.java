@@ -243,10 +243,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowStatus(final ShowStatusContext ctx) {
-        ShowStatusStatement result = new ShowStatusStatement();
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowStatusStatement result = new ShowStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -582,13 +579,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
-        ShowEventsStatement result = new ShowEventsStatement();
-        if (null != ctx.fromDatabase()) {
-            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
-        }
-        if (null != ctx.showFilter()) {
-            result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
-        }
+        ShowEventsStatement result = new ShowEventsStatement(
+                null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -787,9 +779,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
-        ShowCreateUserStatement result = new ShowCreateUserStatement();
-        result.setName(((IdentifierValue) visit(ctx.username())).getValue());
-        return result;
+        return new ShowCreateUserStatement(((IdentifierValue) visit(ctx.username())).getValue());
     }
     
     @Override
