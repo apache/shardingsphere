@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
@@ -26,9 +26,9 @@ import java.util.Collection;
 /**
  * Drop sequence statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class DropSequenceStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropSequenceStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private Collection<String> sequenceNames;
+    private final Collection<String> sequenceNames;
 }

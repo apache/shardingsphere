@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Create sequence statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class CreateSequenceStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateSequenceStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private String sequenceName;
+    private final String sequenceName;
 }

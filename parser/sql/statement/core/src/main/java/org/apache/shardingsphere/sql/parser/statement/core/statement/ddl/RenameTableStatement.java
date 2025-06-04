@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Rename table statement.
  */
+@RequiredArgsConstructor
 @Getter
-public class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private final Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();
+    private final Collection<RenameTableDefinitionSegment> renameTables;
 }

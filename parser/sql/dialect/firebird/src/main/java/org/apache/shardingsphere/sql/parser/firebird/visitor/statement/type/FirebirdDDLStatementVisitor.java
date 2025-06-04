@@ -270,9 +270,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        AlterSequenceStatement result = new AlterSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new AlterSequenceStatement(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
@@ -297,9 +295,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        CreateSequenceStatement result = new CreateSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new CreateSequenceStatement(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override

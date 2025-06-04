@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
@@ -27,13 +27,13 @@ import java.util.Optional;
 /**
  * Alter tablespace statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class AlterTablespaceStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterTablespaceStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private TablespaceSegment tablespaceSegment;
+    private final TablespaceSegment tablespaceSegment;
     
-    private TablespaceSegment renameTablespaceSegment;
+    private final TablespaceSegment renameTablespaceSegment;
     
     /**
      * Get rename tablespace.

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Alter session statement.
  */
-public class AlterSessionStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterSessionStatement extends AbstractSQLStatement implements DDLStatement {
 }

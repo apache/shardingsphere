@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Flashback table statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class FlashbackTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class FlashbackTableStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private SimpleTableSegment renameTable;
+    private final SimpleTableSegment renameTable;
 }

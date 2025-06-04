@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Refresh materialized view statement.
  */
-public class RefreshMatViewStmtStatement extends AbstractSQLStatement implements DDLStatement {
+public final class RefreshMatViewStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
@@ -26,7 +27,12 @@ import java.util.Optional;
 /**
  * Cluster statement.
  */
-public abstract class ClusterStatement extends AbstractSQLStatement implements DDLStatement {
+@RequiredArgsConstructor
+public final class ClusterStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    private final SimpleTableSegment simpleTable;
+    
+    private final IndexSegment index;
     
     /**
      * Get simple table.
@@ -34,7 +40,7 @@ public abstract class ClusterStatement extends AbstractSQLStatement implements D
      * @return simple table
      */
     public Optional<SimpleTableSegment> getSimpleTable() {
-        return Optional.empty();
+        return Optional.ofNullable(simpleTable);
     }
     
     /**
@@ -43,6 +49,6 @@ public abstract class ClusterStatement extends AbstractSQLStatement implements D
      * @return index segment
      */
     public Optional<IndexSegment> getIndex() {
-        return Optional.empty();
+        return Optional.ofNullable(index);
     }
 }

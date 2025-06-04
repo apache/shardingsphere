@@ -47,8 +47,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.NoAuditStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.NotifyStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.OpenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RefreshMatViewStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ReindexStatement;
@@ -178,8 +178,8 @@ public final class DDLStatementAssert {
             DisassociateStatisticsStatementAssert.assertIs(assertContext, (DisassociateStatisticsStatement) actual, (DisassociateStatisticsStatementTestCase) expected);
         } else if (actual instanceof AuditStatement) {
             AuditStatementAssert.assertIs(assertContext, (AuditStatement) actual, (AuditStatementTestCase) expected);
-        } else if (actual instanceof NoAuditStatement) {
-            NoAuditStatementAssert.assertIs(assertContext, (NoAuditStatement) actual, (NoAuditStatementTestCase) expected);
+        } else if (actual instanceof OracleNoAuditStatement) {
+            NoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (NoAuditStatementTestCase) expected);
         } else if (actual instanceof CursorStatement) {
             CursorStatementAssert.assertIs(assertContext, (CursorStatement) actual, (CursorStatementTestCase) expected);
         } else if (actual instanceof DeclareStatement) {
@@ -198,8 +198,8 @@ public final class DDLStatementAssert {
             ListenStatementAssert.assertIs(assertContext, (ListenStatement) actual, (ListenStatementTestCase) expected);
         } else if (actual instanceof UnlistenStatement) {
             UnlistenStatementAssert.assertIs(assertContext, (UnlistenStatement) actual, (UnlistenStatementTestCase) expected);
-        } else if (actual instanceof NotifyStmtStatement) {
-            NotifyStmtStatementAssert.assertIs(assertContext, (NotifyStmtStatement) actual, (NotifyStmtStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLNotifyStmtStatement) {
+            NotifyStmtStatementAssert.assertIs(assertContext, (PostgreSQLNotifyStmtStatement) actual, (NotifyStmtStatementTestCase) expected);
         } else if (actual instanceof RefreshMatViewStmtStatement) {
             RefreshMatViewStmtStatementAssert.assertIs(assertContext, (RefreshMatViewStmtStatement) actual, (RefreshMatViewStmtStatementTestCase) expected);
         } else if (actual instanceof ReindexStatement) {
