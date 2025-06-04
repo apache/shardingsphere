@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
+package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Alter diskgroup statement.
+ * Oracle drop dimension statement.
  */
-public class AlterDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OracleDropDimensionStatement extends AbstractSQLStatement implements DDLStatement {
 }
