@@ -1685,8 +1685,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdateStatistics(final UpdateStatisticsContext ctx) {
-        List<IndexSegment> indexSegments = new LinkedList<>();
+        List<IndexSegment> indexSegments = null;
         if (null != ctx.indexName() && !ctx.indexName().isEmpty()) {
+            indexSegments = new LinkedList<>();
             for (IndexNameContext indexNameContext : ctx.indexName()) {
                 indexSegments.add((IndexSegment) visit(indexNameContext));
             }

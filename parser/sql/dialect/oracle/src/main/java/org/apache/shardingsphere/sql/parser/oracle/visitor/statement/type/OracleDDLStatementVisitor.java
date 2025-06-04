@@ -564,10 +564,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
         return new AlterTablespaceStatement(
-                null == ctx.tablespaceName() ? null : new TablespaceSegment(
-                        ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())),
-                null == ctx.newTablespaceName() ? null : new TablespaceSegment(
-                        ctx.newTablespaceName().getStart().getStartIndex(), ctx.newTablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.newTablespaceName())));
+                null == ctx.tablespaceName() ? null
+                        : new TablespaceSegment(
+                                ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())),
+                null == ctx.newTablespaceName() ? null
+                        : new TablespaceSegment(
+                                ctx.newTablespaceName().getStart().getStartIndex(), ctx.newTablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.newTablespaceName())));
     }
     
     @SuppressWarnings("unchecked")
