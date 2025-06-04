@@ -474,7 +474,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitPivotClause(final PivotClauseContext ctx) {
-        ColumnSegment pivotForColumn = (ColumnSegment) visitColumnName(ctx.pivotForClause().columnName());
         Collection<ColumnSegment> pivotInColumns = new LinkedList<>();
         if (null != ctx.pivotInClause()) {
             ctx.pivotInClause().pivotInClauseExpr().forEach(each -> {
@@ -484,19 +483,18 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 pivotInColumns.add(columnSegment);
             });
         }
-        return new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), pivotForColumn, pivotInColumns);
+        return new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(), pivotInColumns);
     }
     
     @Override
     public ASTNode visitUnpivotClause(final UnpivotClauseContext ctx) {
-        ColumnSegment unpivotColumn = (ColumnSegment) visitColumnName(ctx.columnName());
-        ColumnSegment unpivotForColumn = (ColumnSegment) visitColumnName(ctx.pivotForClause().columnName());
         Collection<ColumnSegment> unpivotInColumns = new LinkedList<>();
         if (null != ctx.unpivotInClause()) {
-            ctx.unpivotInClause().unpivotInClauseExpr().forEach(each -> unpivotInColumns.add((ColumnSegment) visit(each.columnName())));
+            ctx.unpivotInClause().unpivotInClauseExpr().forEach(each -> unpivotInColumns.addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue()));
         }
-        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), unpivotForColumn, unpivotInColumns, true);
-        result.setUnpivotColumn(unpivotColumn);
+        PivotSegment result = new PivotSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((CollectionValue<ColumnSegment>) visit(ctx.pivotForClause().columnNames())).getValue(),
+                unpivotInColumns, true);
+        result.setUnpivotColumns(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
         return result;
     }
     
