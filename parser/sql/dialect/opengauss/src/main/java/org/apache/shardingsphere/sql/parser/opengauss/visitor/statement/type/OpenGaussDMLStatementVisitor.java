@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallSta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 
+import java.util.Collections;
+
 /**
  * DML statement visitor for openGauss.
  */
@@ -38,21 +40,17 @@ public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new CallStatement();
+        return new CallStatement(null, Collections.emptyList());
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement();
+        return new DoStatement(Collections.emptyList());
     }
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
-        CopyStatement result = new CopyStatement();
-        if (null != ctx.qualifiedName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
-        }
-        return result;
+        return new CopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override

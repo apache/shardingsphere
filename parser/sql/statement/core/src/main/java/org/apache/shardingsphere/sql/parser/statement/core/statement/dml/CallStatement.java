@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Call statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class CallStatement extends AbstractSQLStatement implements DMLStatement {
+public final class CallStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private String procedureName;
+    private final String procedureName;
     
-    private final List<ExpressionSegment> parameters = new ArrayList<>();
+    private final List<ExpressionSegment> parameters;
 }
