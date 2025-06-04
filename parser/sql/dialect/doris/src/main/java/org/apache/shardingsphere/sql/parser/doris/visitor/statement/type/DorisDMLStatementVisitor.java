@@ -61,19 +61,14 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        CallStatement result = new CallStatement();
         String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
-        result.setProcedureName(procedureName);
         List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(params);
-        return result;
+        return new CallStatement(procedureName, params);
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        DoStatement result = new DoStatement();
-        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
-        return result;
+        return new DoStatement(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -93,16 +88,12 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        LoadDataStatement result = new LoadDataStatement();
-        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new LoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        LoadXMLStatement result = new LoadXMLStatement();
-        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new LoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

@@ -58,14 +58,11 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        CallStatement result = new CallStatement();
         String procedureName = ((IdentifierValue) visit(ctx.identifier())).getValue();
-        result.setProcedureName(procedureName);
         List<ExpressionSegment> params = null == ctx.callArguments()
                 ? Collections.emptyList()
                 : ctx.callArguments().callArgument().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(params);
-        return result;
+        return new CallStatement(procedureName, params);
     }
     
     @Override
@@ -79,7 +76,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement();
+        return new DoStatement(Collections.emptyList());
     }
     
     @Override
