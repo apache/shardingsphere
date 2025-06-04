@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -179,7 +179,7 @@ class ProxySQLExecutorTest {
     }
     
     @Test
-    void assertCheckExecutePrerequisitesWhenExecuteDDLInPostgreSQLTransaction() {
+    void assertCheckExecutePrerequisitesWhenExecuteCreateTableInPostgreSQLTransaction() {
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         ExecutionContext executionContext = new ExecutionContext(
                 new QueryContext(createCreateTableStatementContext(postgresqlDatabaseType), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(),
@@ -254,10 +254,9 @@ class ProxySQLExecutorTest {
         return new CreateTableStatementContext(databaseType, sqlStatement);
     }
     
-    private TruncateStatementContext createTruncateStatementContext(final DatabaseType databaseType) {
+    private TableAvailableSQLStatementContext createTruncateStatementContext(final DatabaseType databaseType) {
         TruncateStatement sqlStatement = mock(TruncateStatement.class);
-        when(sqlStatement.getTables()).thenReturn(Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        return new TruncateStatementContext(databaseType, sqlStatement);
+        return new TableAvailableSQLStatementContext(databaseType, sqlStatement, Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
     }
     
     private CursorStatementContext mockCursorStatementContext() {

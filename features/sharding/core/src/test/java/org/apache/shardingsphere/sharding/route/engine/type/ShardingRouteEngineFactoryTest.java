@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dcl.GrantStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
@@ -130,9 +130,9 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDCLForSingleTable() {
-        GrantStatement grantStatement = new GrantStatement();
-        grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        GrantStatementContext sqlStatementContext = new GrantStatementContext(mock(), grantStatement);
+        GrantStatement sqlStatement = new GrantStatement();
+        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(),
+                sqlStatement, new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.singletonList("tbl"), props);
         assertThat(actual, instanceOf(ShardingTableBroadcastRouteEngine.class));

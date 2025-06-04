@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.statement.dcl;
+package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+
+import java.util.Collection;
 
 /**
- * Deny user statement context.
+ * Table available SQL statement context.
  */
 @Getter
-public final class DenyUserStatementContext extends CommonSQLStatementContext implements TableAvailable {
+public final class TableAvailableSQLStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
-    public DenyUserStatementContext(final DatabaseType databaseType, final DenyUserStatement sqlStatement) {
+    public TableAvailableSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement, final SimpleTableSegment table) {
         super(databaseType, sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTable());
+        tablesContext = new TablesContext(table);
     }
     
-    @Override
-    public DenyUserStatement getSqlStatement() {
-        return (DenyUserStatement) super.getSqlStatement();
+    public TableAvailableSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
+        super(databaseType, sqlStatement);
+        tablesContext = new TablesContext(tables);
     }
 }
