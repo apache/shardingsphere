@@ -18,24 +18,27 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Copy statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class CopyStatement extends AbstractSQLStatement implements DMLStatement {
+public final class CopyStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
+    
+    private final Collection<ColumnSegment> columns;
+    
+    private final PrepareStatementQuerySegment prepareStatementQuery;
     
     /**
      * Get table.
@@ -47,28 +50,11 @@ public class CopyStatement extends AbstractSQLStatement implements DMLStatement 
     }
     
     /**
-     * Set prepare statement query segment.
-     *
-     * @param prepareStatementQuery prepare statement query segment
-     */
-    public void setPrepareStatementQuery(final PrepareStatementQuerySegment prepareStatementQuery) {
-    }
-    
-    /**
      * Get prepare statement query segment.
      *
      * @return prepare statement query segment
      */
     public Optional<PrepareStatementQuerySegment> getPrepareStatementQuery() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get columns.
-     *
-     * @return columns
-     */
-    public Collection<ColumnSegment> getColumns() {
-        return Collections.emptyList();
+        return Optional.ofNullable(prepareStatementQuery);
     }
 }

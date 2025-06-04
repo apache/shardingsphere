@@ -50,11 +50,7 @@ public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
-        CopyStatement result = new CopyStatement();
-        if (null != ctx.qualifiedName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
-        }
-        return result;
+        return new CopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override
