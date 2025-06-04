@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Audit statement.
  */
-@Getter
-@Setter
-public class AuditStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AuditStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 /**
  * Cursor statement binder.
@@ -30,15 +30,11 @@ public final class CursorStatementBinder implements SQLStatementBinder<CursorSta
     
     @Override
     public CursorStatement bind(final CursorStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        CursorStatement result = copy(sqlStatement);
-        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext));
-        return result;
+        return copy(sqlStatement, new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static CursorStatement copy(final CursorStatement sqlStatement) {
-        CursorStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.setCursorName(sqlStatement.getCursorName());
+    private static CursorStatement copy(final CursorStatement sqlStatement, final SelectStatement boundSelectStatement) {
+        CursorStatement result = new CursorStatement(sqlStatement.getCursorName(), boundSelectStatement);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());

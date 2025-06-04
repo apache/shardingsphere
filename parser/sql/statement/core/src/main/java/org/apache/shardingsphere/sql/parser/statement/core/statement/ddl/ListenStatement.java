@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Listen statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class ListenStatement extends AbstractSQLStatement implements DDLStatement {
+public final class ListenStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private String channelName;
+    private final String channelName;
 }

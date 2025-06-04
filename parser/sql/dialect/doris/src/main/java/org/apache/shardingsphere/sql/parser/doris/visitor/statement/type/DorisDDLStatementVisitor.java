@@ -151,24 +151,24 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterInstanceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterInstanceStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
@@ -235,10 +235,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        CreateDatabaseStatement result = new CreateDatabaseStatement();
-        result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
-        result.setIfNotExists(null != ctx.ifNotExists());
-        return result;
+        return new CreateDatabaseStatement(new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
     }
     
     @Override
@@ -248,10 +245,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        DropDatabaseStatement result = new DropDatabaseStatement();
-        result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
-        result.setIfExists(null != ctx.ifExists());
-        return result;
+        return new DropDatabaseStatement(new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
     }
     
     @SuppressWarnings("unchecked")
@@ -519,13 +513,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRenameTable(final RenameTableContext ctx) {
-        RenameTableStatement result = new RenameTableStatement();
+        Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();
         for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
             TableNameContext tableName = ctx.tableName(i);
             TableNameContext renameTableName = ctx.tableName(i + 1);
-            result.getRenameTables().add(createRenameTableDefinitionSegment(tableName, renameTableName));
+            renameTables.add(createRenameTableDefinitionSegment(tableName, renameTableName));
         }
-        return result;
+        return new RenameTableStatement(renameTables);
     }
     
     private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final TableNameContext tableName, final TableNameContext renameTableName) {
@@ -929,7 +923,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateEvent(final CreateEventContext ctx) {
-        return new CreateEventStatement();
+        return new MySQLCreateEventStatement();
     }
     
     @Override
@@ -939,32 +933,32 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropEvent(final DropEventContext ctx) {
-        return new DropEventStatement();
+        return new MySQLDropEventStatement();
     }
     
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
-        return new AlterInstanceStatement();
+        return new MySQLAlterInstanceStatement();
     }
     
     @Override
     public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
-        return new CreateLogfileGroupStatement();
+        return new MySQLCreateLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
-        return new AlterLogfileGroupStatement();
+        return new MySQLAlterLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
-        return new DropLogfileGroupStatement();
+        return new MySQLDropLogfileGroupStatement();
     }
     
     @Override
     public ASTNode visitCreateServer(final CreateServerContext ctx) {
-        return new CreateServerStatement();
+        return new MySQLCreateServerStatement();
     }
     
     @Override
@@ -1003,26 +997,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
-        AlterTablespaceStatement result = new AlterTablespaceStatement();
-        if (null != ctx.tablespace) {
-            result.setTablespaceSegment(createTablespaceSegment(ctx.tablespace));
-        }
-        if (null != ctx.renameTablespace) {
-            result.setRenameTablespaceSegment(createTablespaceSegment(ctx.renameTablespace));
-        }
-        return result;
+        return new AlterTablespaceStatement(
+                null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTablespace ? null : createTablespaceSegment(ctx.renameTablespace));
     }
     
     @Override
     public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
-        AlterTablespaceStatement result = new AlterTablespaceStatement();
-        if (null != ctx.tablespace) {
-            result.setTablespaceSegment(createTablespaceSegment(ctx.tablespace));
-        }
-        if (null != ctx.renameTableSpace) {
-            result.setRenameTablespaceSegment(createTablespaceSegment(ctx.renameTableSpace));
-        }
-        return result;
+        return new AlterTablespaceStatement(
+                null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTableSpace ? null : createTablespaceSegment(ctx.renameTableSpace));
     }
     
     private TablespaceSegment createTablespaceSegment(final IdentifierContext ctx) {

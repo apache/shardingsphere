@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Drop directory statement.
  */
-public class DropDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
 }

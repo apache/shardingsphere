@@ -1685,21 +1685,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdateStatistics(final UpdateStatisticsContext ctx) {
-        UpdateStatisticsStatement result = new UpdateStatisticsStatement();
-        if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        }
+        List<IndexSegment> indexSegments = null;
         if (null != ctx.indexName() && !ctx.indexName().isEmpty()) {
-            List<IndexSegment> indexSegments = new LinkedList<>();
+            indexSegments = new LinkedList<>();
             for (IndexNameContext indexNameContext : ctx.indexName()) {
                 indexSegments.add((IndexSegment) visit(indexNameContext));
             }
-            result.setIndexes(indexSegments);
         }
-        if (null != ctx.statisticsWithClause()) {
-            result.setStrategy((StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
-        }
-        return result;
+        return new UpdateStatisticsStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                indexSegments, null == ctx.statisticsWithClause() ? null : (StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
     }
     
     @Override

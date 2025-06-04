@@ -167,65 +167,64 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterAggregateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterConversionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDefaultPrivilegesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterAggregateStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterDefaultPrivilegesStatement;
+import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterExtensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterForeignTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterForeignTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterLanguageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTextSearchStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateAggregateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateCastStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateAggregateStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateCastStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateExtensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateLanguageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreatePublicationStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreatePublicationStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTextSearchStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropCastStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropCastStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropConversionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropExtensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropLanguageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropPublicationStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
@@ -247,6 +246,7 @@ import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDro
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropPublicationStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -327,12 +327,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterAggregate(final AlterAggregateContext ctx) {
-        return new AlterAggregateStatement();
+        return new PostgreSQLAlterAggregateStatement();
     }
     
     @Override
     public ASTNode visitAlterDefaultPrivileges(final AlterDefaultPrivilegesContext ctx) {
-        return new AlterDefaultPrivilegesStatement();
+        return new PostgreSQLAlterDefaultPrivilegesStatement();
     }
     
     @Override
@@ -379,12 +379,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterForeignTable(final AlterForeignTableContext ctx) {
-        return new AlterForeignTableStatement();
+        return new PostgreSQLAlterForeignTableStatement();
     }
     
     @Override
     public ASTNode visitAlterGroup(final AlterGroupContext ctx) {
-        return new AlterGroupStatement();
+        return new PostgreSQLAlterGroupStatement();
     }
     
     @Override
@@ -695,10 +695,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        DropDatabaseStatement result = new DropDatabaseStatement();
-        result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setIfExists(null != ctx.ifExists());
-        return result;
+        return new DropDatabaseStatement(((IdentifierValue) visit(ctx.name())).getValue(), null != ctx.ifExists());
     }
     
     @Override
@@ -713,46 +710,38 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropPublication(final DropPublicationContext ctx) {
-        return new DropPublicationStatement();
+        return new PostgreSQLDropPublicationStatement();
     }
     
     @Override
     public ASTNode visitDropCast(final DropCastContext ctx) {
-        return new DropCastStatement();
+        return new PostgreSQLDropCastStatement();
     }
     
     @Override
     public ASTNode visitDropRule(final DropRuleContext ctx) {
-        return new DropRuleStatement();
+        return new PostgreSQLDropRuleStatement();
     }
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        CreateDatabaseStatement result = new CreateDatabaseStatement();
-        result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        return result;
+        return new CreateDatabaseStatement(((IdentifierValue) visit(ctx.name())).getValue(), false);
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        CreateSequenceStatement result = new CreateSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new CreateSequenceStatement(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        AlterSequenceStatement result = new AlterSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new AlterSequenceStatement(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        DropSequenceStatement result = new DropSequenceStatement();
-        result.setSequenceNames(((CollectionValue) visit(ctx.qualifiedNameList())).getValue());
-        return result;
+        return new DropSequenceStatement(((CollectionValue) visit(ctx.qualifiedNameList())).getValue());
     }
     
     @Override
@@ -762,7 +751,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropType(final DropTypeContext ctx) {
-        return new DropTypeStatement();
+        return new PostgreSQLDropTypeStatement();
     }
     
     @Override
@@ -800,12 +789,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateAggregate(final CreateAggregateContext ctx) {
-        return new CreateAggregateStatement();
+        return new PostgreSQLCreateAggregateStatement();
     }
     
     @Override
     public ASTNode visitCreatePublication(final CreatePublicationContext ctx) {
-        return new CreatePublicationStatement();
+        return new PostgreSQLCreatePublicationStatement();
     }
     
     @Override
@@ -820,7 +809,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new AlterTablespaceStatement();
+        return new AlterTablespaceStatement(null, null);
     }
     
     @Override
@@ -830,7 +819,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropDomain(final DropDomainContext ctx) {
-        return new DropDomainStatement();
+        return new PostgreSQLDropDomainStatement();
     }
     
     @Override
@@ -840,12 +829,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateRule(final CreateRuleContext ctx) {
-        return new CreateRuleStatement();
+        return new PostgreSQLCreateRuleStatement();
     }
     
     @Override
     public ASTNode visitCreateLanguage(final CreateLanguageContext ctx) {
-        return new CreateLanguageStatement();
+        return new PostgreSQLCreateLanguageStatement();
     }
     
     @Override
@@ -894,7 +883,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterLanguage(final AlterLanguageContext ctx) {
-        return new AlterLanguageStatement();
+        return new PostgreSQLAlterLanguageStatement();
     }
     
     @Override
@@ -904,12 +893,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterDirectory(final AlterDirectoryContext ctx) {
-        return new AlterDirectoryStatement();
+        return new OpenGaussAlterDirectoryStatement();
     }
     
     @Override
     public ASTNode visitAlterRule(final AlterRuleContext ctx) {
-        return new AlterRuleStatement();
+        return new PostgreSQLAlterRuleStatement();
     }
     
     @Override
@@ -919,17 +908,17 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropLanguage(final DropLanguageContext ctx) {
-        return new DropLanguageStatement();
+        return new PostgreSQLDropLanguageStatement();
     }
     
     @Override
     public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
-        return new CreateConversionStatement();
+        return new PostgreSQLCreateConversionStatement();
     }
     
     @Override
     public ASTNode visitCreateCast(final CreateCastContext ctx) {
-        return new CreateCastStatement();
+        return new PostgreSQLCreateCastStatement();
     }
     
     @Override
@@ -939,55 +928,52 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropConversion(final DropConversionContext ctx) {
-        return new DropConversionStatement();
+        return new PostgreSQLDropConversionStatement();
     }
     
     @Override
     public ASTNode visitAlterConversion(final AlterConversionContext ctx) {
-        return new AlterConversionStatement();
+        return new PostgreSQLAlterConversionStatement();
     }
     
     @Override
     public ASTNode visitCreateTextSearch(final CreateTextSearchContext ctx) {
-        return new CreateTextSearchStatement();
+        return new PostgreSQLCreateTextSearchStatement();
     }
     
     @Override
     public ASTNode visitAlterTextSearchDictionary(final AlterTextSearchDictionaryContext ctx) {
-        return new AlterTextSearchStatement();
+        return new PostgreSQLAlterTextSearchStatement();
     }
     
     @Override
     public ASTNode visitAlterTextSearchTemplate(final AlterTextSearchTemplateContext ctx) {
-        return new AlterTextSearchStatement();
+        return new PostgreSQLAlterTextSearchStatement();
     }
     
     @Override
     public ASTNode visitAlterTextSearchParser(final AlterTextSearchParserContext ctx) {
-        return new AlterTextSearchStatement();
+        return new PostgreSQLAlterTextSearchStatement();
     }
     
     @Override
     public ASTNode visitCreateExtension(final CreateExtensionContext ctx) {
-        return new CreateExtensionStatement();
+        return new PostgreSQLCreateExtensionStatement();
     }
     
     @Override
     public ASTNode visitAlterExtension(final AlterExtensionContext ctx) {
-        return new AlterExtensionStatement();
+        return new PostgreSQLAlterExtensionStatement();
     }
     
     @Override
     public ASTNode visitDropExtension(final DropExtensionContext ctx) {
-        return new DropExtensionStatement();
+        return new PostgreSQLDropExtensionStatement();
     }
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        DeclareStatement result = new DeclareStatement();
-        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-        result.setSelect((SelectStatement) visit(ctx.select()));
-        return result;
+        return new DeclareStatement((CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
     }
     
     @Override
@@ -1033,10 +1019,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCursor(final CursorContext ctx) {
-        CursorStatement result = new CursorStatement();
-        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-        result.setSelect((SelectStatement) visit(ctx.select()));
-        return result;
+        return new CursorStatement((CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
     }
     
     @Override
@@ -1046,32 +1029,17 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitClose(final CloseContext ctx) {
-        CloseStatement result = new CloseStatement();
-        if (null != ctx.cursorName()) {
-            result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-        }
-        result.setCloseAll(null != ctx.ALL());
-        return result;
+        return new CloseStatement(null == ctx.cursorName() ? null : (CursorNameSegment) visit(ctx.cursorName()), null != ctx.ALL());
     }
     
     @Override
     public ASTNode visitMove(final MoveContext ctx) {
-        MoveStatement result = new MoveStatement();
-        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-        if (null != ctx.direction()) {
-            result.setDirection((DirectionSegment) visit(ctx.direction()));
-        }
-        return result;
+        return new MoveStatement((CursorNameSegment) visit(ctx.cursorName()), null == ctx.direction() ? null : (DirectionSegment) visit(ctx.direction()));
     }
     
     @Override
     public ASTNode visitFetch(final FetchContext ctx) {
-        FetchStatement result = new FetchStatement();
-        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-        if (null != ctx.direction()) {
-            result.setDirection((DirectionSegment) visit(ctx.direction()));
-        }
-        return result;
+        return new FetchStatement((CursorNameSegment) visit(ctx.cursorName()), null == ctx.direction() ? null : (DirectionSegment) visit(ctx.direction()));
     }
     
     @Override

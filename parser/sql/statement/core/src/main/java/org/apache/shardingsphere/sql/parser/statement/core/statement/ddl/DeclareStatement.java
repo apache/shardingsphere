@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -26,11 +26,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectS
 /**
  * Declare statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private CursorNameSegment cursorName;
+    private final CursorNameSegment cursorName;
     
-    private SelectStatement select;
+    private final SelectStatement select;
 }

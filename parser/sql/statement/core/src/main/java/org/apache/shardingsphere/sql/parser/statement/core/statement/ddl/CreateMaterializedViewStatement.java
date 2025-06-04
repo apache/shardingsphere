@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 /**
  * Create materialized view statement.
  */
-public class CreateMaterializedViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateMaterializedViewStatement extends AbstractSQLStatement implements DDLStatement {
 }

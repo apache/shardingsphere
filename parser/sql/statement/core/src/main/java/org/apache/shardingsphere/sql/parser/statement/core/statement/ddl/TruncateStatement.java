@@ -28,7 +28,7 @@ import java.util.LinkedList;
  * Truncate table statement.
  */
 @Getter
-public class TruncateStatement extends AbstractSQLStatement implements DDLStatement {
+public final class TruncateStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }

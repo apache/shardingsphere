@@ -99,7 +99,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateI
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateServiceStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateServiceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
@@ -107,7 +107,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFun
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServiceStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropServiceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
@@ -371,9 +371,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        CreateDatabaseStatement result = new CreateDatabaseStatement();
-        result.setDatabaseName(ctx.databaseName().getText());
-        return result;
+        return new CreateDatabaseStatement(ctx.databaseName().getText(), false);
     }
     
     @Override
@@ -403,9 +401,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        CreateSequenceStatement result = new CreateSequenceStatement();
-        result.setSequenceName(ctx.sequenceName().name().getText());
-        return result;
+        return new CreateSequenceStatement(ctx.sequenceName().name().getText());
     }
     
     @Override
@@ -415,7 +411,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateService(final CreateServiceContext ctx) {
-        return new CreateServiceStatement();
+        return new SQLServerCreateServiceStatement();
     }
     
     @Override
@@ -435,7 +431,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropService(final DropServiceContext ctx) {
-        return new DropServiceStatement();
+        return new SQLServerDropServiceStatement();
     }
     
     @Override
@@ -445,7 +441,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        return new AlterSequenceStatement();
+        return new AlterSequenceStatement(null);
     }
     
     @Override
@@ -474,7 +470,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement();
+        return new DropDatabaseStatement(null, false);
     }
     
     @Override
@@ -504,6 +500,6 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        return new DropSequenceStatement();
+        return new DropSequenceStatement(Collections.emptyList());
     }
 }
