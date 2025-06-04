@@ -87,6 +87,7 @@ public final class BinaryOperationExpressionConverter {
         register(SQLExtensionOperatorTable.SOUNDS_LIKE);
         register(SQLExtensionOperatorTable.NULL_SAFE);
         register(SQLExtensionOperatorTable.ASSIGNMENT);
+        register(SQLExtensionOperatorTable.RLIKE);
     }
     
     private static void register(final SqlOperator sqlOperator) {
