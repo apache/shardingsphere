@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.statement.dal;
+package org.apache.shardingsphere.infra.binder.context.statement;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -30,17 +30,16 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class ShowCreateTableStatementContextTest {
+class TableAvailableSQLStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        ShowCreateTableStatement sqlStatement = mock(ShowCreateTableStatement.class);
+        SQLStatement sqlStatement = mock(SQLStatement.class);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        when(sqlStatement.getTable()).thenReturn(new SimpleTableSegment(tableNameSegment));
-        ShowCreateTableStatementContext actual = new ShowCreateTableStatementContext(mock(), sqlStatement);
+        SimpleTableSegment table = new SimpleTableSegment(tableNameSegment);
+        TableAvailableSQLStatementContext actual = new TableAvailableSQLStatementContext(mock(), sqlStatement, table);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("foo_tbl")));

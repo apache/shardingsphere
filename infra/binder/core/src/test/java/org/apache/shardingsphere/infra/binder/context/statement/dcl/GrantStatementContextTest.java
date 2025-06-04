@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.dcl;
 
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -36,8 +37,8 @@ class GrantStatementContextTest {
     @Test
     void assertNewInstance() {
         GrantStatement sqlStatement = new GrantStatement();
-        sqlStatement.getTables().addAll(Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
-        GrantStatementContext actual = new GrantStatementContext(mock(), sqlStatement);
+        TableAvailableSQLStatementContext actual = new TableAvailableSQLStatementContext(mock(),
+                sqlStatement, Arrays.asList(new SimpleTableSegment(createTableNameSegment("foo_tbl")), new SimpleTableSegment(createTableNameSegment("bar_tbl"))));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_tbl", "bar_tbl")));

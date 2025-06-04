@@ -19,18 +19,11 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.FlushStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.OptimizeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTableStatusStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowTablesStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dcl.DenyUserStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dcl.GrantStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dcl.RevokeStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
@@ -50,7 +43,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStateme
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.TruncateStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
@@ -201,7 +193,7 @@ public final class SQLStatementContextFactory {
             return new DropIndexStatementContext(databaseType, (DropIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof TruncateStatement) {
-            return new TruncateStatementContext(databaseType, (TruncateStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((TruncateStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CreateFunctionStatement) {
             return new CreateFunctionStatementContext(databaseType, (CreateFunctionStatement) sqlStatement);
@@ -241,13 +233,13 @@ public final class SQLStatementContextFactory {
     
     private static SQLStatementContext getDCLStatementContext(final DatabaseType databaseType, final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement) {
-            return new GrantStatementContext(databaseType, (GrantStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((GrantStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof RevokeStatement) {
-            return new RevokeStatementContext(databaseType, (RevokeStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((RevokeStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof DenyUserStatement) {
-            return new DenyUserStatementContext(databaseType, (DenyUserStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((DenyUserStatement) sqlStatement).getTable());
         }
         return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
@@ -258,7 +250,7 @@ public final class SQLStatementContextFactory {
             return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableStatementContext(databaseType, (ShowCreateTableStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((ShowCreateTableStatement) sqlStatement).getTable());
         }
         if (sqlStatement instanceof ShowColumnsStatement) {
             return new ShowColumnsStatementContext(databaseType, (ShowColumnsStatement) sqlStatement);
@@ -273,13 +265,13 @@ public final class SQLStatementContextFactory {
             return new ShowIndexStatementContext(databaseType, (ShowIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new AnalyzeTableStatementContext(databaseType, (AnalyzeTableStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((AnalyzeTableStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof FlushStatement) {
-            return new FlushStatementContext(databaseType, (FlushStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((FlushStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof OptimizeTableStatement) {
-            return new OptimizeTableStatementContext(databaseType, (OptimizeTableStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((OptimizeTableStatement) sqlStatement).getTables());
         }
         return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }

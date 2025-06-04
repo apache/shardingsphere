@@ -21,9 +21,9 @@ import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMerged
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ShowCreateTableStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -75,7 +75,7 @@ class EncryptDALResultDecoratorTest {
     
     @Test
     void assertMergedResultWithShowCreateTableStatement() {
-        sqlStatementContext = getShowCreateTableStatementContext();
+        sqlStatementContext = mockShowCreateTableStatementContext();
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(mock(SQLParserRule.class));
         EncryptDALResultDecorator decorator = new EncryptDALResultDecorator(ruleMetaData);
@@ -105,8 +105,8 @@ class EncryptDALResultDecoratorTest {
         return result;
     }
     
-    private SQLStatementContext getShowCreateTableStatementContext() {
-        ShowCreateTableStatementContext result = mock(ShowCreateTableStatementContext.class, RETURNS_DEEP_STUBS);
+    private SQLStatementContext mockShowCreateTableStatementContext() {
+        TableAvailableSQLStatementContext result = mock(TableAvailableSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("foo_tbl")));
         when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
