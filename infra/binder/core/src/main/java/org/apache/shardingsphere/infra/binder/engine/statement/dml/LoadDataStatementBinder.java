@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 
 /**
@@ -34,15 +35,13 @@ public final class LoadDataStatementBinder implements SQLStatementBinder<LoadDat
     
     @Override
     public LoadDataStatement bind(final LoadDataStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        LoadDataStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setTableSegment(SimpleTableSegmentBinder.bind(sqlStatement.getTableSegment(), binderContext, tableBinderContexts));
-        return result;
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTableSegment(), binderContext, tableBinderContexts));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static LoadDataStatement copy(final LoadDataStatement sqlStatement) {
-        LoadDataStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private static LoadDataStatement copy(final LoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
+        LoadDataStatement result = new LoadDataStatement(boundTableSegment);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());

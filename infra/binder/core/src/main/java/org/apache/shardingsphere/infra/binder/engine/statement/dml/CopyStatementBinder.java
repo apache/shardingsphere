@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -28,7 +27,14 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.prepare.PrepareStatementQuerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Copy statement binder.
@@ -37,17 +43,17 @@ public final class CopyStatementBinder implements SQLStatementBinder<CopyStateme
     
     @Override
     public CopyStatement bind(final CopyStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        CopyStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getTable().ifPresent(optional -> result.setTable(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
-        sqlStatement.getPrepareStatementQuery().ifPresent(optional -> result.setPrepareStatementQuery(PrepareStatementQuerySegmentBinder.bind(optional, binderContext)));
-        sqlStatement.getColumns().forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.COPY, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        return result;
+        Optional<SimpleTableSegment> boundTable = sqlStatement.getTable().map(optional -> SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts));
+        Collection<ColumnSegment> boundColumns = sqlStatement.getColumns().stream()
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.COPY, binderContext, tableBinderContexts, LinkedHashMultimap.create())).collect(Collectors.toList());
+        Optional<PrepareStatementQuerySegment> boundPrepareStatementQuery = sqlStatement.getPrepareStatementQuery().map(optional -> PrepareStatementQuerySegmentBinder.bind(optional, binderContext));
+        return copy(sqlStatement, boundTable.orElse(null), boundColumns, boundPrepareStatementQuery.orElse(null));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private CopyStatement copy(final CopyStatement sqlStatement) {
-        CopyStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private CopyStatement copy(final CopyStatement sqlStatement,
+                               final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns, final PrepareStatementQuerySegment boundPrepareStatementQuery) {
+        CopyStatement result = new CopyStatement(boundTable, boundColumns, boundPrepareStatementQuery);
         result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
         result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
