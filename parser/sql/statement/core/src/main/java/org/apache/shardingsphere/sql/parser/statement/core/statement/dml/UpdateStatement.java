@@ -45,6 +45,8 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WhereSegment where;
     
+    private ReturningSegment returningSegment;
+    
     /**
      * Get where.
      *
@@ -180,14 +182,6 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return returning segment
      */
     public Optional<ReturningSegment> getReturningSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set returning segment of update statement.
-     *
-     * @param returningSegment returning segment
-     */
-    public void setReturningSegment(final ReturningSegment returningSegment) {
+        return Optional.ofNullable(returningSegment);
     }
 }

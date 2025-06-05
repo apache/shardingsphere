@@ -56,6 +56,8 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     
     private SubquerySegment insertSelect;
     
+    private ReturningSegment returningSegment;
+    
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
@@ -221,15 +223,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return returning segment
      */
     public Optional<ReturningSegment> getReturningSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set returning segment of insert statement.
-     *
-     * @param returningSegment returning segment
-     */
-    public void setReturningSegment(final ReturningSegment returningSegment) {
+        return Optional.ofNullable(returningSegment);
     }
     
     /**
