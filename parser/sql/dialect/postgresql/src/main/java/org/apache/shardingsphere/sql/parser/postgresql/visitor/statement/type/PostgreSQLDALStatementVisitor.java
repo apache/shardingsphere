@@ -42,12 +42,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.Analyze
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,18 +61,18 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         if (null != ctx.varName()) {
-            return new PostgreSQLShowStatement(ctx.varName().getText());
+            return new ShowStatement(ctx.varName().getText());
         }
         if (null != ctx.ZONE()) {
-            return new PostgreSQLShowStatement("timezone");
+            return new ShowStatement("timezone");
         }
         if (null != ctx.ISOLATION()) {
-            return new PostgreSQLShowStatement("transaction_isolation");
+            return new ShowStatement("transaction_isolation");
         }
         if (null != ctx.AUTHORIZATION()) {
-            return new PostgreSQLShowStatement("session_authorization");
+            return new ShowStatement("session_authorization");
         }
-        return new PostgreSQLShowStatement("ALL");
+        return new ShowStatement("ALL");
     }
     
     @Override
@@ -111,7 +111,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new PostgreSQLResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
+        return new ResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")
