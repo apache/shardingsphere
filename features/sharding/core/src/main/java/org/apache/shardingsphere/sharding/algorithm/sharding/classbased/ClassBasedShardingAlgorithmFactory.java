@@ -44,7 +44,7 @@ public final class ClassBasedShardingAlgorithmFactory {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     public static <T extends ShardingAlgorithm> T newInstance(final String shardingAlgorithmClassName, final Class<T> superShardingAlgorithmClass, final Properties props) {
-        Class<?> algorithmClass = Class.forName(shardingAlgorithmClassName);
+        Class<?> algorithmClass = loadClass(shardingAlgorithmClassName);
         if (!superShardingAlgorithmClass.isAssignableFrom(algorithmClass)) {
             throw new ShardingAlgorithmClassImplementationException(shardingAlgorithmClassName, superShardingAlgorithmClass);
         }
@@ -57,5 +57,24 @@ public final class ClassBasedShardingAlgorithmFactory {
         Properties result = new Properties();
         props.forEach((key, value) -> result.setProperty(key.toString(), null == value ? null : value.toString()));
         return result;
+    }
+    
+    private static Class<?> loadClass(final String className) throws ClassNotFoundException {
+        ClassLoader[] classLoaders = new ClassLoader[]{
+                Thread.currentThread().getContextClassLoader(),
+                ClassBasedShardingAlgorithmFactory.class.getClassLoader(),
+                ClassLoader.getSystemClassLoader()
+        };
+        
+        for (ClassLoader cl : classLoaders) {
+            if (cl != null) {
+                try {
+                    return Class.forName(className, true, cl);
+                } catch (final ClassNotFoundException ex) {
+                    // Try next classloader
+                }
+            }
+        }
+        throw new ClassNotFoundException("Could not load class: " + className);
     }
 }
