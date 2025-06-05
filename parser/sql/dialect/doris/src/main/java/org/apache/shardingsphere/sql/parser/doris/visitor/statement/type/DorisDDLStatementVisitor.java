@@ -151,24 +151,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterInstanceStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
@@ -180,19 +173,26 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.Truncat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterInstanceStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -211,23 +211,23 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.setSelect((DorisSelectStatement) visit(ctx.select()));
+        result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        DorisAlterViewStatement result = new DorisAlterViewStatement();
+        MySQLAlterViewStatement result = new MySQLAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.setSelect((DorisSelectStatement) visit(ctx.select()));
+        result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DorisDropViewStatement result = new DorisDropViewStatement();
+        MySQLDropViewStatement result = new MySQLDropViewStatement();
         result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
@@ -251,7 +251,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        DorisCreateTableStatement result = new DorisCreateTableStatement();
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
@@ -313,7 +313,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        DorisAlterTableStatement result = new DorisAlterTableStatement();
+        MySQLAlterTableStatement result = new MySQLAlterTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
             return result;
@@ -324,7 +324,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         return result;
     }
     
-    private void setAlterDefinition(final DorisAlterTableStatement alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
+    private void setAlterDefinition(final MySQLAlterTableStatement alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
         if (alterDefinitionSegment instanceof AddColumnDefinitionSegment) {
             alterTableStatement.getAddColumnDefinitions().add((AddColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ModifyColumnDefinitionSegment) {
@@ -662,7 +662,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DorisDropTableStatement result = new DorisDropTableStatement();
+        MySQLDropTableStatement result = new MySQLDropTableStatement();
         result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
@@ -678,7 +678,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        DorisCreateIndexStatement result = new DorisCreateIndexStatement();
+        MySQLCreateIndexStatement result = new MySQLCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -696,7 +696,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DorisDropIndexStatement result = new DorisDropIndexStatement();
+        MySQLDropIndexStatement result = new MySQLDropIndexStatement();
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -732,7 +732,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        DorisCreateProcedureStatement result = new DorisCreateProcedureStatement();
+        MySQLCreateProcedureStatement result = new MySQLCreateProcedureStatement();
         result.setProcedureName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
@@ -759,7 +759,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement();
+        MySQLCreateFunctionStatement result = new MySQLCreateFunctionStatement();
         result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
@@ -817,23 +817,23 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         ValidStatementSegment result = new ValidStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         SQLStatement sqlStatement = null;
         if (null != ctx.createTable()) {
-            sqlStatement = (DorisCreateTableStatement) visit(ctx.createTable());
+            sqlStatement = (MySQLCreateTableStatement) visit(ctx.createTable());
         } else if (null != ctx.alterTable()) {
-            sqlStatement = (DorisAlterTableStatement) visit(ctx.alterTable());
+            sqlStatement = (MySQLAlterTableStatement) visit(ctx.alterTable());
         } else if (null != ctx.dropTable()) {
-            sqlStatement = (DorisDropTableStatement) visit(ctx.dropTable());
+            sqlStatement = (MySQLDropTableStatement) visit(ctx.dropTable());
         } else if (null != ctx.truncateTable()) {
             sqlStatement = (TruncateStatement) visit(ctx.truncateTable());
         } else if (null != ctx.insert()) {
-            sqlStatement = (DorisInsertStatement) visit(ctx.insert());
+            sqlStatement = (MySQLInsertStatement) visit(ctx.insert());
         } else if (null != ctx.replace()) {
-            sqlStatement = (DorisInsertStatement) visit(ctx.replace());
+            sqlStatement = (MySQLInsertStatement) visit(ctx.replace());
         } else if (null != ctx.update()) {
-            sqlStatement = (DorisUpdateStatement) visit(ctx.update());
+            sqlStatement = (MySQLUpdateStatement) visit(ctx.update());
         } else if (null != ctx.delete()) {
-            sqlStatement = (DorisDeleteStatement) visit(ctx.delete());
+            sqlStatement = (MySQLDeleteStatement) visit(ctx.delete());
         } else if (null != ctx.select()) {
-            sqlStatement = (DorisSelectStatement) visit(ctx.select());
+            sqlStatement = (MySQLSelectStatement) visit(ctx.select());
         }
         result.setSqlStatement(sqlStatement);
         return result;

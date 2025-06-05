@@ -28,7 +28,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>doris</module>
         <module>firebird</module>
         <module>hive</module>
         <module>mysql</module>
