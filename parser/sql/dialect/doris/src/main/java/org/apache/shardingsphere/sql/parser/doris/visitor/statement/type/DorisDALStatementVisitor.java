@@ -212,7 +212,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -488,7 +488,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        DorisExplainStatement result = new DorisExplainStatement();
+        MySQLExplainStatement result = new MySQLExplainStatement();
         if (null != ctx.tableName()) {
             result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
             if (null != ctx.columnRef()) {
