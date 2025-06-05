@@ -41,6 +41,8 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WhereSegment where;
     
+    private ReturningSegment returningSegment;
+    
     /**
      * Get where.
      *
@@ -124,6 +126,6 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
      * @return returning segment
      */
     public Optional<ReturningSegment> getReturningSegment() {
-        return Optional.empty();
+        return Optional.ofNullable(returningSegment);
     }
 }
