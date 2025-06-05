@@ -22,8 +22,10 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlNumericLiteral;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -72,6 +74,8 @@ public final class BinaryOperationExpressionConverter {
         register(SqlStdOperatorTable.ALL_GT);
         register(SqlStdOperatorTable.IS_FALSE);
         register(SqlStdOperatorTable.IS_NOT_FALSE);
+        register(SqlStdOperatorTable.IS_TRUE);
+        register(SqlStdOperatorTable.IS_NOT_TRUE);
         register(SqlStdOperatorTable.CONCAT);
         register(SqlStdOperatorTable.PATTERN_ALTER);
         register(SqlStdOperatorTable.MOD);
@@ -126,6 +130,10 @@ public final class BinaryOperationExpressionConverter {
                 operator = "IS FALSE";
             } else if ("NOT FALSE".equalsIgnoreCase(literals)) {
                 operator = "IS NOT FALSE";
+            } else if ("TRUE".equalsIgnoreCase(literals)) {
+                operator = "IS TRUE";
+            } else if ("NOT TRUE".equalsIgnoreCase(literals)) {
+                operator = "IS NOT TRUE";
             }
         }
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
@@ -136,8 +144,14 @@ public final class BinaryOperationExpressionConverter {
         SqlNode left = ExpressionConverter.convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(left);
-        if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator) && !SqlStdOperatorTable.IS_FALSE.equals(operator)
-                && !SqlStdOperatorTable.IS_NOT_FALSE.equals(operator)) {
+        if (SqlStdOperatorTable.IS_FALSE.equals(operator) || SqlStdOperatorTable.IS_NOT_FALSE.equals(operator) || SqlStdOperatorTable.IS_TRUE.equals(operator)
+                || SqlStdOperatorTable.IS_NOT_TRUE.equals(operator)) {
+            if (left instanceof SqlNumericLiteral) {
+                result.remove(0);
+                Long value = ((SqlNumericLiteral) left).getValueAs(Long.class);
+                result.add(value == null || value == 0L ? SqlLiteral.createBoolean(false, left.getParserPosition()) : SqlLiteral.createBoolean(true, left.getParserPosition()));
+            }
+        } else if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator)) {
             SqlNode right = ExpressionConverter.convert(segment.getRight()).orElseThrow(IllegalStateException::new);
             result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
         }
