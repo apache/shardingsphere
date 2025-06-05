@@ -40,13 +40,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.ddl.PrestoDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
 
 /**
  * DDL statement visitor for Presto.
@@ -59,14 +59,14 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.setSelect((PrestoSelectStatement) visit(ctx.select()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        PrestoDropViewStatement result = new PrestoDropViewStatement();
+        DropViewStatement result = new DropViewStatement();
         result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
@@ -75,7 +75,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PrestoCreateTableStatement result = new PrestoCreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
@@ -121,7 +121,7 @@ public final class PrestoDDLStatementVisitor extends PrestoStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PrestoDropTableStatement result = new PrestoDropTableStatement();
+        DropTableStatement result = new DropTableStatement();
         result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;

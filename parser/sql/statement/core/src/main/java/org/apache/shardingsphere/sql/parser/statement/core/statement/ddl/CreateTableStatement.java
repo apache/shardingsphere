@@ -44,6 +44,12 @@ public class CreateTableStatement extends AbstractSQLStatement implements DDLSta
     
     private SelectStatement selectStatement;
     
+    private boolean ifNotExists;
+    
+    private SimpleTableSegment likeTable;
+    
+    private CreateTableOptionSegment createTableOption;
+    
     private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
     
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
@@ -55,23 +61,6 @@ public class CreateTableStatement extends AbstractSQLStatement implements DDLSta
      */
     public Optional<SelectStatement> getSelectStatement() {
         return Optional.ofNullable(selectStatement);
-    }
-    
-    /**
-     * Judge whether contains if not exists or not.
-     *
-     * @return whether contains if not exists or not
-     */
-    public boolean isIfNotExists() {
-        return false;
-    }
-    
-    /**
-     * Set if not exists.
-     *
-     * @param ifNotExists if not exists
-     */
-    public void setIfNotExists(final boolean ifNotExists) {
     }
     
     /**
@@ -89,15 +78,7 @@ public class CreateTableStatement extends AbstractSQLStatement implements DDLSta
      * @return like table
      */
     public Optional<SimpleTableSegment> getLikeTable() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set like table.
-     *
-     * @param likeTable like table
-     */
-    public void setLikeTable(final SimpleTableSegment likeTable) {
+        return Optional.ofNullable(likeTable);
     }
     
     /**
@@ -106,14 +87,6 @@ public class CreateTableStatement extends AbstractSQLStatement implements DDLSta
      * @return create table option
      */
     public Optional<CreateTableOptionSegment> getCreateTableOption() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set create table option.
-     *
-     * @param createTableOption create table option
-     */
-    public void setCreateTableOption(final CreateTableOptionSegment createTableOption) {
+        return Optional.ofNullable(createTableOption);
     }
 }
