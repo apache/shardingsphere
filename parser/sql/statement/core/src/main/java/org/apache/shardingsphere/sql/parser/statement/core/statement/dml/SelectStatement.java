@@ -63,6 +63,10 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     
     private LimitSegment limit;
     
+    private LockSegment lock;
+    
+    private WindowSegment window;
+    
     /**
      * Get from.
      *
@@ -150,15 +154,7 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
      * @return lock segment
      */
     public Optional<LockSegment> getLock() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set lock segment.
-     *
-     * @param lockSegment lock segment
-     */
-    public void setLock(final LockSegment lockSegment) {
+        return Optional.ofNullable(lock);
     }
     
     /**
@@ -167,15 +163,7 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
      * @return window segment
      */
     public Optional<WindowSegment> getWindow() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set window segment.
-     *
-     * @param windowSegment window segment
-     */
-    public void setWindow(final WindowSegment windowSegment) {
+        return Optional.ofNullable(window);
     }
     
     /**
