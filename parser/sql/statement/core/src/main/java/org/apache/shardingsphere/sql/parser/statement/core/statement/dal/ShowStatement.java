@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Optional;
@@ -24,7 +25,10 @@ import java.util.Optional;
 /**
  * Show statement.
  */
-public class ShowStatement extends AbstractSQLStatement implements DALStatement {
+@RequiredArgsConstructor
+public final class ShowStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private final String name;
     
     /**
      * Get name.
@@ -32,6 +36,6 @@ public class ShowStatement extends AbstractSQLStatement implements DALStatement 
      * @return name
      */
     public Optional<String> getName() {
-        return Optional.empty();
+        return Optional.ofNullable(name);
     }
 }

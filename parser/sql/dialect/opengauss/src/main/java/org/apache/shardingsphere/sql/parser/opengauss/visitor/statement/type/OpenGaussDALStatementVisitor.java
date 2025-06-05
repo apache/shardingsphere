@@ -42,12 +42,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.Analyze
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,18 +61,18 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         if (null != ctx.varName()) {
-            return new OpenGaussShowStatement(ctx.varName().getText());
+            return new ShowStatement(ctx.varName().getText());
         }
         if (null != ctx.ZONE()) {
-            return new OpenGaussShowStatement("timezone");
+            return new ShowStatement("timezone");
         }
         if (null != ctx.ISOLATION()) {
-            return new OpenGaussShowStatement("transaction_isolation");
+            return new ShowStatement("transaction_isolation");
         }
         if (null != ctx.AUTHORIZATION()) {
-            return new OpenGaussShowStatement("session_authorization");
+            return new ShowStatement("session_authorization");
         }
-        return new OpenGaussShowStatement("ALL");
+        return new ShowStatement("ALL");
     }
     
     @Override
@@ -106,7 +106,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new OpenGaussResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
+        return new ResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")

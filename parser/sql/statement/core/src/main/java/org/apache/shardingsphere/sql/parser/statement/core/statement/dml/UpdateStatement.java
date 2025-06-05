@@ -49,6 +49,8 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     
     private LimitSegment limit;
     
+    private TableSegment from;
+    
     private ReturningSegment returningSegment;
     
     /**
@@ -153,15 +155,7 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return from segment
      */
     public Optional<TableSegment> getFrom() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set from segment.
-     *
-     * @param from from segment
-     */
-    public void setFrom(final TableSegment from) {
+        return Optional.ofNullable(from);
     }
     
     /**

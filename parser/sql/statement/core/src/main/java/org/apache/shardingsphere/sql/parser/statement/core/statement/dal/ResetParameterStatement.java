@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class ResetParameterStatement extends AbstractSQLStatement implements DALStatement {
+public final class ResetParameterStatement extends AbstractSQLStatement implements DALStatement {
     
     private final String configurationParameter;
 }

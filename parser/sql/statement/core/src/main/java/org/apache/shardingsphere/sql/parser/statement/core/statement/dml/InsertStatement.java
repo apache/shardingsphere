@@ -62,6 +62,8 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     
     private ReturningSegment returningSegment;
     
+    private WithSegment withSegment;
+    
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
@@ -126,15 +128,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return with segment
      */
     public Optional<WithSegment> getWithSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set with segment.
-     *
-     * @param withSegment with segment
-     */
-    public void setWithSegment(final WithSegment withSegment) {
+        return Optional.ofNullable(withSegment);
     }
     
     /**

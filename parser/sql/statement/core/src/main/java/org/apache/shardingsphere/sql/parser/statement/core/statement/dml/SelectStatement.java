@@ -67,6 +67,8 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WindowSegment window;
     
+    private TableSegment intoSegment;
+    
     /**
      * Get from.
      *
@@ -189,14 +191,6 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
      * @return into table segment
      */
     public Optional<TableSegment> getIntoSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set into segment.
-     *
-     * @param intoSegment table into segment
-     */
-    public void setIntoSegment(final TableSegment intoSegment) {
+        return Optional.ofNullable(intoSegment);
     }
 }
