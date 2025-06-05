@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Gro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
@@ -56,7 +55,7 @@ class GroupByRowComparatorTest {
     
     @Test
     void assertCompareToForAscWithOrderByItems() throws SQLException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
@@ -76,7 +75,7 @@ class GroupByRowComparatorTest {
     
     @Test
     void assertCompareToForDescWithOrderByItems() throws SQLException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
@@ -96,7 +95,7 @@ class GroupByRowComparatorTest {
     
     @Test
     void assertCompareToForEqualWithOrderByItems() throws SQLException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
@@ -116,7 +115,7 @@ class GroupByRowComparatorTest {
     
     @Test
     void assertCompareToForAscWithGroupByItems() throws SQLException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
@@ -134,7 +133,7 @@ class GroupByRowComparatorTest {
     
     @Test
     void assertCompareToForDescWithGroupByItems() throws SQLException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(
@@ -156,7 +155,7 @@ class GroupByRowComparatorTest {
     
     @Test
     void assertCompareToForEqualWithGroupByItems() throws SQLException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Arrays.asList(

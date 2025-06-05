@@ -36,7 +36,6 @@
         <module>oracle</module>
         <module>postgresql</module>
         <module>presto</module>
-        <module>sql92</module>
         <module>sqlserver</module>
     </modules>
 </project>

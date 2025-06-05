@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -62,7 +61,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForAsc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
@@ -96,7 +95,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForDesc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
@@ -125,7 +124,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToWhenEqual() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());

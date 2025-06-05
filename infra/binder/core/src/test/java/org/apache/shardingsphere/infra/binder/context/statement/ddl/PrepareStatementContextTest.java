@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -65,7 +64,7 @@ class PrepareStatementContextTest {
     }
     
     private SelectStatement getSelect(final SimpleTableSegment table) {
-        SelectStatement result = new SQL92SelectStatement();
+        SelectStatement result = new SelectStatement();
         result.setFrom(table);
         return result;
     }

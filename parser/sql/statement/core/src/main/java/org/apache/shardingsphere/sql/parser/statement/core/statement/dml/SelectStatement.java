@@ -61,6 +61,8 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     
     private SubqueryType subqueryType;
     
+    private LimitSegment limit;
+    
     /**
      * Get from.
      *
@@ -139,15 +141,7 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
      * @return limit segment
      */
     public Optional<LimitSegment> getLimit() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set limit segment.
-     *
-     * @param  limitSegment limit segment
-     */
-    public void setLimit(final LimitSegment limitSegment) {
+        return Optional.ofNullable(limit);
     }
     
     /**

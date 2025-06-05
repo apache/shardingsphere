@@ -58,7 +58,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -86,7 +85,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByIndexOrderBy() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(INDEX_ORDER_BY))));
         selectStatement.setProjections(createProjectionsSegment());
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
@@ -110,7 +109,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithOwner() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_OWNER))));
         selectStatement.setProjections(createProjectionsSegment());
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("table"));
@@ -127,7 +126,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithAlias() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_ALIAS))));
         selectStatement.setProjections(createProjectionsSegment());
@@ -139,7 +138,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexForItemsByColumnOrderByWithoutAlias() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS))));
         selectStatement.setProjections(createProjectionsSegment());
@@ -151,7 +150,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertIsSameGroupByAndOrderByItems() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
@@ -167,7 +166,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
@@ -175,7 +174,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
@@ -185,7 +184,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetIndexWhenAggregationProjectionsPresent() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS))));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 0, AggregationType.MAX, "MAX(id)");
@@ -201,7 +200,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertSetWhere() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         WhereSegment whereSegment = mock(WhereSegment.class, RETURNS_DEEP_STUBS);
         selectStatement.setWhere(whereSegment);
         ShardingSphereDatabase database = mockDatabase();
@@ -216,7 +215,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsSubquery() {
-        SelectStatement subSelectStatement = new SQL92SelectStatement();
+        SelectStatement subSelectStatement = new SelectStatement();
         WhereSegment whereSegment = new WhereSegment(0, 0, mock(BinaryOperationExpression.class, RETURNS_DEEP_STUBS));
         subSelectStatement.setWhere(whereSegment);
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
@@ -226,7 +225,7 @@ class SelectStatementContextTest {
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
         projectionsSegment.getProjections().add(subqueryProjectionSegment);
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mockDatabase();
         assertTrue(new SelectStatementContext(databaseType, selectStatement, Collections.emptyList(), createShardingSphereMetaData(database), "foo_db", Collections.emptyList()).isContainsSubquery());
@@ -234,7 +233,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsSubqueryWhereEmpty() {
-        SelectStatement subSelectStatement = new SQL92SelectStatement();
+        SelectStatement subSelectStatement = new SelectStatement();
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue("id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, 20);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
@@ -246,7 +245,7 @@ class SelectStatementContextTest {
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement, ""));
         SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setWhere(whereSegment);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
         when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
@@ -260,7 +259,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsDollarParameterMarker() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
         selectStatement.setProjections(projectionsSegment);
@@ -278,7 +277,7 @@ class SelectStatementContextTest {
     
     @Test
     void assertContainsPartialDistinctAggregation() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "COUNT(1)", "distinctExpression"));
