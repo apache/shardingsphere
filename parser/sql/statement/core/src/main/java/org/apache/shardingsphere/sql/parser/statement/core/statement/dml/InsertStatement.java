@@ -56,6 +56,10 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     
     private SubquerySegment insertSelect;
     
+    private SetAssignmentSegment setAssignment;
+    
+    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
+    
     private ReturningSegment returningSegment;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
@@ -104,15 +108,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return on duplicate key columns segment
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set on duplicate key columns segment.
-     *
-     * @param onDuplicateKeyColumns on duplicate key columns segment
-     */
-    public void setOnDuplicateKeyColumns(final OnDuplicateKeyColumnsSegment onDuplicateKeyColumns) {
+        return Optional.ofNullable(onDuplicateKeyColumns);
     }
     
     /**
@@ -121,15 +117,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return set assignment segment
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set set assignment segment.
-     *
-     * @param setAssignment set assignment segment
-     */
-    public void setSetAssignment(final SetAssignmentSegment setAssignment) {
+        return Optional.ofNullable(setAssignment);
     }
     
     /**

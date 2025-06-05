@@ -33,13 +33,17 @@ import java.util.Optional;
 /**
  * Delete statement.
  */
+@Getter
 @Setter
 public class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
     
-    @Getter
     private TableSegment table;
     
     private WhereSegment where;
+    
+    private OrderBySegment orderBy;
+    
+    private LimitSegment limit;
     
     private ReturningSegment returningSegment;
     
@@ -58,7 +62,7 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
      * @return order by
      */
     public Optional<OrderBySegment> getOrderBy() {
-        return Optional.empty();
+        return Optional.ofNullable(orderBy);
     }
     
     /**
@@ -67,7 +71,7 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
      * @return limit
      */
     public Optional<LimitSegment> getLimit() {
-        return Optional.empty();
+        return Optional.ofNullable(limit);
     }
     
     /**
@@ -86,22 +90,6 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
      */
     public Optional<WithSegment> getWithSegment() {
         return Optional.empty();
-    }
-    
-    /**
-     * Set order by segment.
-     *
-     * @param orderBySegment order by segment
-     */
-    public void setOrderBy(final OrderBySegment orderBySegment) {
-    }
-    
-    /**
-     * Set limit segment.
-     *
-     * @param limitSegment limit segment
-     */
-    public void setLimit(final LimitSegment limitSegment) {
     }
     
     /**

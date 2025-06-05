@@ -45,6 +45,10 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WhereSegment where;
     
+    private OrderBySegment orderBy;
+    
+    private LimitSegment limit;
+    
     private ReturningSegment returningSegment;
     
     /**
@@ -71,7 +75,7 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return order by segment
      */
     public Optional<OrderBySegment> getOrderBy() {
-        return Optional.empty();
+        return Optional.ofNullable(orderBy);
     }
     
     /**
@@ -80,7 +84,7 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return limit segment
      */
     public Optional<LimitSegment> getLimit() {
-        return Optional.empty();
+        return Optional.ofNullable(limit);
     }
     
     /**
@@ -108,22 +112,6 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      */
     public Optional<OptionHintSegment> getOptionHintSegment() {
         return Optional.empty();
-    }
-    
-    /**
-     * Set order by segment.
-     *
-     * @param orderBySegment order by segment
-     */
-    public void setOrderBy(final OrderBySegment orderBySegment) {
-    }
-    
-    /**
-     * Set limit segment.
-     *
-     * @param limitSegment limit segment
-     */
-    public void setLimit(final LimitSegment limitSegment) {
     }
     
     /**
