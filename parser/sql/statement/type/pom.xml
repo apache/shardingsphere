@@ -28,13 +28,13 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>postgresql</module>
+        <module>mysql</module>
+        <module>sqlserver</module>
+        <module>oracle</module>
+        <module>opengauss</module>
         <module>firebird</module>
         <module>hive</module>
-        <module>mysql</module>
-        <module>opengauss</module>
-        <module>oracle</module>
-        <module>postgresql</module>
         <module>presto</module>
-        <module>sqlserver</module>
     </modules>
 </project>
