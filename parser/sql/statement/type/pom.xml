@@ -33,6 +33,5 @@
         <module>sqlserver</module>
         <module>oracle</module>
         <module>opengauss</module>
-        <module>presto</module>
     </modules>
 </project>
