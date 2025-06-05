@@ -195,7 +195,7 @@ wsl --install
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-DskipTests" clean package
 ```
 
 一个可能的 Docker Compose 示例为，
@@ -217,7 +217,7 @@ services:
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" "-DskipTests" clean package
 ```
 
 一个可能的 Docker Compose 示例为，
@@ -239,7 +239,7 @@ services:
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" "-DskipTests" clean package
 ```
 
 一个可能的 Docker Compose 示例为，
@@ -262,9 +262,9 @@ services:
 
 1. GraalVM CE 22.0.2，或与 GraalVM CE 22.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
 2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
-3. 可运行 Linux Containers 的 Docker Engine
 
 在 Ubuntu 与 Windows 下可能的所需操作与[开发和测试](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image/development)一致。
+但不需要安装 Container Runtime。
 
 ##### 静态编译所需的本地工具链
 

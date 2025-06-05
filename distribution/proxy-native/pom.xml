@@ -33,7 +33,6 @@
         <proxy.native.dockerfile>Dockerfile-linux-dynamic</proxy.native.dockerfile>
         <proxy.native.image.repository>apache/shardingsphere-proxy-native</proxy.native.image.repository>
         <proxy.native.image.tag>${project.version}</proxy.native.image.tag>
-        <proxy.native.image.platform>linux/amd64,linux/arm64/v8</proxy.native.image.platform>
     </properties>
     
     <dependencies>
@@ -167,25 +166,6 @@
                         <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>create and use builder</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>validate</phase>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>buildx</argument>
-                                        <argument>create</argument>
-                                        <argument>--use</argument>
-                                        <argument>--driver</argument>
-                                        <argument>docker-container</argument>
-                                        <argument>--name</argument>
-                                        <argument>shardingsphere-builder</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>build and push docker image</id>
                                 <goals>
                                     <goal>exec</goal>
@@ -197,8 +177,6 @@
                                         <argument>buildx</argument>
                                         <argument>build</argument>
                                         <argument>--push</argument>
-                                        <argument>--platform</argument>
-                                        <argument>${proxy.native.image.platform}</argument>
                                         <argument>--build-arg</argument>
                                         <argument>PROJECT_VERSION=${project.version}</argument>
                                         <argument>-t</argument>
@@ -208,21 +186,6 @@
                                         <argument>--file</argument>
                                         <argument>${proxy.native.dockerfile}</argument>
                                         <argument>../../</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>cleanup builder</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>validate</phase>
-                                <configuration>
-                                    <executable>docker</executable>
-                                    <arguments>
-                                        <argument>buildx</argument>
-                                        <argument>rm</argument>
-                                        <argument>shardingsphere-builder</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
