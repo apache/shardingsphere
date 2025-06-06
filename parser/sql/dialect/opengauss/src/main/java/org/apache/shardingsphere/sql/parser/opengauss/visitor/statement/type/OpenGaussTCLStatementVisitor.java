@@ -36,15 +36,15 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Sta
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CheckpointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
 
 /**
  * TCL statement visitor for openGauss.
@@ -108,12 +108,12 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new CommitPreparedStatement();
+        return new XACommitStatement(ctx.xid().getText());
     }
     
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new RollbackPreparedStatement();
+        return new XARollbackStatement(ctx.xid().getText());
     }
     
     @Override
