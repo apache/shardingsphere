@@ -155,7 +155,7 @@ public final class SingleTableInventoryCalculateParameter {
      * @param queryRange query range
      */
     public void setQueryRange(final QueryRange queryRange) {
-        this.uniqueKeysValuesRange.set(queryRange);
+        uniqueKeysValuesRange.set(queryRange);
     }
     
     /**
