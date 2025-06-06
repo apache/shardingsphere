@@ -37,6 +37,8 @@ public class AlterViewStatement extends AbstractSQLStatement implements DDLState
     
     private SimpleTableSegment renameView;
     
+    private ConstraintDefinitionSegment constraintDefinition;
+    
     /**
      * Get select statement.
      *
@@ -86,14 +88,6 @@ public class AlterViewStatement extends AbstractSQLStatement implements DDLState
      * @return constraint definition
      */
     public Optional<ConstraintDefinitionSegment> getConstraintDefinition() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get constraint definition.
-     *
-     * @param constraintDefinition constraint definition
-     */
-    public void setConstraintDefinition(final ConstraintDefinitionSegment constraintDefinition) {
+        return Optional.ofNullable(constraintDefinition);
     }
 }

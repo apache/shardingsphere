@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.Mer
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
@@ -182,10 +181,10 @@ public final class MergeStatementAssert {
                 WhereClauseAssert.assertIs(assertContext, actual.getUpdate().get().getWhere().get(), expected.getUpdateClause().getWhereClause());
             }
         }
-        if (null != expected.getInsertClause() && null != expected.getInsertClause().getWhereClause() && actual.getInsert().orElse(null) instanceof OracleInsertStatement) {
+        if (null != expected.getInsertClause() && null != expected.getInsertClause().getWhereClause() && actual.getInsert().isPresent()) {
             assertTrue(actual.getInsert().isPresent(), assertContext.getText("Actual merge insert statement should exist."));
-            assertTrue(((OracleInsertStatement) actual.getInsert().get()).getWhere().isPresent(), assertContext.getText("Actual insert where segment should exist."));
-            WhereClauseAssert.assertIs(assertContext, ((OracleInsertStatement) actual.getInsert().get()).getWhere().get(), expected.getInsertClause().getWhereClause());
+            assertTrue(actual.getInsert().get().getWhere().isPresent(), assertContext.getText("Actual insert where segment should exist."));
+            WhereClauseAssert.assertIs(assertContext, actual.getInsert().get().getWhere().get(), expected.getInsertClause().getWhereClause());
         }
     }
 }

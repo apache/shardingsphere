@@ -51,6 +51,8 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     
     private TableSegment from;
     
+    private WhereSegment deleteWhere;
+    
     private ReturningSegment returningSegment;
     
     /**
@@ -99,15 +101,6 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get delete where segment.
-     *
-     * @return delete where segment
-     */
-    public Optional<WhereSegment> getDeleteWhere() {
-        return Optional.empty();
-    }
-    
-    /**
      * Get option hint segment.
      *
      * @return option hint segment
@@ -122,14 +115,6 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @param withSegment with segment
      */
     public void setWithSegment(final WithSegment withSegment) {
-    }
-    
-    /**
-     * Set delete where segment.
-     *
-     * @param deleteWhereSegment delete where segment
-     */
-    public void setDeleteWhere(final WhereSegment deleteWhereSegment) {
     }
     
     /**
@@ -156,6 +141,15 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      */
     public Optional<TableSegment> getFrom() {
         return Optional.ofNullable(from);
+    }
+    
+    /**
+     * Get delete where segment.
+     *
+     * @return delete where segment
+     */
+    public Optional<WhereSegment> getDeleteWhere() {
+        return Optional.ofNullable(deleteWhere);
     }
     
     /**

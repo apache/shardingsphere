@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OracleCreateFunctionStatement extends CreateFunctionStatement implements OracleStatement {
+public final class OracleCreateFunctionStatement extends CreateFunctionStatement {
     
     private final List<SQLStatementSegment> sqlStatements;
     

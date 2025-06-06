@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.Collection;
 
@@ -31,7 +30,7 @@ import java.util.Collection;
  */
 @Getter
 @RequiredArgsConstructor
-public final class OracleCreateSubTypeStatement extends CreateTypeStatement implements OracleStatement {
+public final class OracleCreateSubTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     
