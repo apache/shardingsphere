@@ -222,7 +222,7 @@
     </test-case>
     
     <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id WHERE i.user_id = 10 ORDER BY i.item_id, 7">
-        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableSort(sort0=[$0], dir0=[ASC])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="SELECT * FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 10 OR i.user_id = 10 ORDER BY o.order_id">
@@ -350,7 +350,7 @@
     </test-case>
     
     <test-case sql="SELECT * FROM t_product p RIGHT JOIN t_product_detail d ON d.product_id = p.product_id WHERE d.detail_id = 10 ORDER BY d.product_id, 7">
-        <assertion expected-result="EnumerableSort(sort0=[$7], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`detail_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+        <assertion expected-result="EnumerableSort(sort0=[$7], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])     EnumerableSort(sort0=[$1], sort1=[$0], dir0=[ASC], dir1=[ASC])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`detail_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
     </test-case>
     
     <test-case sql="SELECT * FROM t_product p JOIN t_product_detail d ON d.product_id = p.product_id WHERE d.detail_id = 10 OR p.category_id = 10 ORDER BY d.product_id, 7">
