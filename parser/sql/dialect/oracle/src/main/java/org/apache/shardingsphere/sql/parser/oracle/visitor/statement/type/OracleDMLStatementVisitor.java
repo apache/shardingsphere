@@ -301,7 +301,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
+        // TODO :FIXME, since there is no segment for insertValuesClause, insertStatement is created by sub rule.
         InsertStatement result = (InsertStatement) (null == ctx.insertSingleTable() ? visit(ctx.insertMultiTable()) : visit(ctx.insertSingleTable()));
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         return result;
@@ -352,17 +352,17 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         Collection<InsertStatement> result = new LinkedList<>();
         Collection<ParameterMarkerSegment> addedSegments = new HashSet<>();
         for (MultiTableElementContext each : ctx) {
-            InsertStatement InsertStatement = (InsertStatement) visit(each);
-            addParameterMarkerSegments(addedSegments, InsertStatement);
-            result.add(InsertStatement);
+            InsertStatement insertStatement = (InsertStatement) visit(each);
+            addParameterMarkerSegments(addedSegments, insertStatement);
+            result.add(insertStatement);
         }
         return result;
     }
     
-    private void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> addedSegments, final InsertStatement InsertStatement) {
+    private void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> addedSegments, final InsertStatement insertStatement) {
         for (ParameterMarkerSegment parameterMarkerSegment : popAllStatementParameterMarkerSegments()) {
             if (addedSegments.add(parameterMarkerSegment)) {
-                InsertStatement.addParameterMarkerSegments(Collections.singletonList(parameterMarkerSegment));
+                insertStatement.addParameterMarkerSegments(Collections.singletonList(parameterMarkerSegment));
             }
         }
     }
