@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeR
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeReplicationSourceToStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartReplicaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeReplicationSourceToStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartReplicaStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStopSlaveStatement;
 
 /**
  * RL statement visitor for MySQL.
@@ -38,26 +38,26 @@ public final class MySQLRLStatementVisitor extends MySQLStatementVisitor impleme
     
     @Override
     public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
-        return new ChangeMasterStatement();
+        return new MySQLChangeMasterStatement();
     }
     
     @Override
     public ASTNode visitStartSlave(final StartSlaveContext ctx) {
-        return new StartSlaveStatement();
+        return new MySQLStartSlaveStatement();
     }
     
     @Override
     public ASTNode visitStopSlave(final StopSlaveContext ctx) {
-        return new StopSlaveStatement();
+        return new MySQLStopSlaveStatement();
     }
     
     @Override
     public ASTNode visitChangeReplicationSourceTo(final ChangeReplicationSourceToContext ctx) {
-        return new ChangeReplicationSourceToStatement();
+        return new MySQLChangeReplicationSourceToStatement();
     }
     
     @Override
     public ASTNode visitStartReplica(final MySQLStatementParser.StartReplicaContext ctx) {
-        return new StartReplicaStatement();
+        return new MySQLStartReplicaStatement();
     }
 }

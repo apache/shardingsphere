@@ -62,9 +62,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoState
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
@@ -92,7 +92,7 @@ public final class MySQLComStmtPrepareChecker {
     
     static {
         ALLOWED_SQL_STATEMENTS.addAll(Arrays.asList(AlterTableStatement.class, AlterUserStatement.class, AnalyzeTableStatement.class,
-                CacheIndexStatement.class, CallStatement.class, ChangeMasterStatement.class, ChecksumTableStatement.class, CommitStatement.class,
+                CacheIndexStatement.class, CallStatement.class, MySQLChangeMasterStatement.class, ChecksumTableStatement.class, CommitStatement.class,
                 CreateIndexStatement.class, DropIndexStatement.class, CreateDatabaseStatement.class, DropDatabaseStatement.class,
                 CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, RenameUserStatement.class, DropUserStatement.class,
                 CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, FlushStatement.class,
@@ -101,7 +101,7 @@ public final class MySQLComStmtPrepareChecker {
                 MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, ShowWarningsStatement.class, ShowErrorsStatement.class,
                 ShowBinlogEventsStatement.class, ShowCreateProcedureStatement.class, ShowCreateFunctionStatement.class, ShowCreateEventStatement.class,
                 ShowCreateTableStatement.class, ShowCreateViewStatement.class, ShowBinaryLogsStatement.class, ShowStatusStatement.class,
-                StartSlaveStatement.class, StopSlaveStatement.class, TruncateStatement.class, UninstallPluginStatement.class, UpdateStatement.class,
+                MySQLStartSlaveStatement.class, MySQLStopSlaveStatement.class, TruncateStatement.class, UninstallPluginStatement.class, UpdateStatement.class,
                 XABeginStatement.class, XAPrepareStatement.class, XACommitStatement.class, XARollbackStatement.class, XAEndStatement.class, XARecoveryStatement.class));
     }
     

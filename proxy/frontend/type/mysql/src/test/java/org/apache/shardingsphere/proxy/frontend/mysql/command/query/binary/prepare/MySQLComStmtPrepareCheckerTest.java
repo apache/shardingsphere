@@ -60,9 +60,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoState
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.ChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.StopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
@@ -88,7 +88,7 @@ class MySQLComStmtPrepareCheckerTest {
         CreateTableStatement createTableStatement = new CreateTableStatement();
         Collection<SQLStatement> sqlStatements = Arrays.asList(
                 new AlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(Collections.emptyList()), new CacheIndexStatement(),
-                new CallStatement(null, Collections.emptyList()), new ChangeMasterStatement(), new ChecksumTableStatement(Collections.emptyList()), new CommitStatement(),
+                new CallStatement(null, Collections.emptyList()), new MySQLChangeMasterStatement(), new ChecksumTableStatement(Collections.emptyList()), new CommitStatement(),
                 new CreateIndexStatement(), new DropIndexStatement(), new CreateDatabaseStatement(null, false), new DropDatabaseStatement(null, false), createTableStatement,
                 new DropTableStatement(), new MySQLCreateUserStatement(), new RenameUserStatement(), new DropUserStatement(Collections.emptyList()),
                 new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(Collections.emptyList()), new FlushStatement(Collections.emptyList(), false),
@@ -98,7 +98,7 @@ class MySQLComStmtPrepareCheckerTest {
                 new ResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new SelectStatement(), new SetStatement(Collections.emptyList()), new ShowWarningsStatement(null),
                 new ShowErrorsStatement(null), new ShowBinlogEventsStatement(null, null), new ShowCreateProcedureStatement(null), new ShowCreateFunctionStatement(null),
                 new ShowCreateEventStatement(null), new ShowCreateTableStatement(null), new ShowCreateViewStatement(null), new ShowBinaryLogsStatement(), new ShowStatusStatement(null),
-                new StartSlaveStatement(), new StopSlaveStatement(), new TruncateStatement(), new UninstallPluginStatement(null), new UpdateStatement(),
+                new MySQLStartSlaveStatement(), new MySQLStopSlaveStatement(), new TruncateStatement(), new UninstallPluginStatement(null), new UpdateStatement(),
                 new XABeginStatement("1"), new XAPrepareStatement("1"), new XACommitStatement("1"), new XARollbackStatement("1"), new XAEndStatement("1"), new XARecoveryStatement());
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(each));

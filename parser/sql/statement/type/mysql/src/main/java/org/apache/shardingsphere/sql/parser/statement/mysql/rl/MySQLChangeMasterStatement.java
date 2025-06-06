@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.rl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.rl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
 
 /**
- * Stop slave statement.
+ * MySQL change master statement.
  */
-public final class StopSlaveStatement extends AbstractSQLStatement implements RLStatement {
+public final class MySQLChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
 }
