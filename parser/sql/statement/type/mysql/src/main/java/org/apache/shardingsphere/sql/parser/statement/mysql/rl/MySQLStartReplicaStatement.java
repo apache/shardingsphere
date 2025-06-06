@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.rl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.rl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
 
 /**
- * Change replication source statement.
+ * MySQL start replica statement.
  */
-public final class ChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement {
+public final class MySQLStartReplicaStatement extends AbstractSQLStatement implements RLStatement {
 }
