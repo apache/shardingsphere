@@ -159,6 +159,11 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     }
     
     @Override
+    public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
+        return new XAPrepareStatement(ctx.gid().getText());
+    }
+    
+    @Override
     public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
         return new XACommitStatement(ctx.gid().getText());
     }
@@ -175,11 +180,6 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     private Collection<SimpleTableSegment> getLockTables(final Collection<RelationExprContext> relationExprContexts) {
         return relationExprContexts.stream().map(each -> (SimpleTableSegment) visit(each.qualifiedName())).collect(Collectors.toList());
-    }
-    
-    @Override
-    public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
-        return new XAPrepareStatement(ctx.gid().getText());
     }
     
     @Override
