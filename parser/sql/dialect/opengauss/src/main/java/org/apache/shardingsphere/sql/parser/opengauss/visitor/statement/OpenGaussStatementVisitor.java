@@ -1182,11 +1182,6 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
             return new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
         }
-        if (projection instanceof ExistsSubqueryExpression) {
-            ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
-            String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-            return new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
-        }
         if (projection instanceof ExpressionSegment) {
             return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (ExpressionSegment) projection);
         }

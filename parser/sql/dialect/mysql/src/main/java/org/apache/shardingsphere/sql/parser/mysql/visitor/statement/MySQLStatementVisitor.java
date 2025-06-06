@@ -1777,13 +1777,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setAlias(alias);
             return result;
         }
-        if (exprProjection instanceof ExistsSubqueryExpression) {
-            ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) exprProjection;
-            String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-            SubqueryProjectionSegment result = new SubqueryProjectionSegment(((ExistsSubqueryExpression) exprProjection).getSubquery(), text);
-            result.setAlias(alias);
-            return result;
-        }
         return createProjection(ctx, alias, exprProjection);
     }
     
@@ -1851,7 +1844,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return projection;
         }
         if (projection instanceof CaseWhenExpression || projection instanceof VariableSegment || projection instanceof BetweenExpression || projection instanceof InExpression
-                || projection instanceof CollateExpression || projection instanceof NotExpression) {
+                || projection instanceof CollateExpression || projection instanceof NotExpression || projection instanceof ExistsSubqueryExpression) {
             return createExpressionProjectionSegment(ctx, alias, projection);
         }
         ExpressionProjectionSegment result = null == alias
