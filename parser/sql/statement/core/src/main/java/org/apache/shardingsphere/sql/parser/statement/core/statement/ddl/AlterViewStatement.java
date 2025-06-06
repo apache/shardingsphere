@@ -39,39 +39,9 @@ public class AlterViewStatement extends AbstractSQLStatement implements DDLState
     
     private ConstraintDefinitionSegment constraintDefinition;
     
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.empty();
-    }
+    private SelectStatement select;
     
-    /**
-     * Set select statement.
-     *
-     * @param select select statement
-     */
-    public void setSelect(final SelectStatement select) {
-    }
-    
-    /**
-     * Get view definition.
-     *
-     * @return view definition
-     */
-    public Optional<String> getViewDefinition() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get view definition.
-     *
-     * @param viewDefinition view definition
-     */
-    public void setViewDefinition(final String viewDefinition) {
-    }
+    private String viewDefinition;
     
     /**
      * Get rename view.
@@ -89,5 +59,23 @@ public class AlterViewStatement extends AbstractSQLStatement implements DDLState
      */
     public Optional<ConstraintDefinitionSegment> getConstraintDefinition() {
         return Optional.ofNullable(constraintDefinition);
+    }
+    
+    /**
+     * Get select statement.
+     *
+     * @return select statement
+     */
+    public Optional<SelectStatement> getSelect() {
+        return Optional.ofNullable(select);
+    }
+    
+    /**
+     * Get view definition.
+     *
+     * @return view definition
+     */
+    public Optional<String> getViewDefinition() {
+        return Optional.ofNullable(viewDefinition);
     }
 }

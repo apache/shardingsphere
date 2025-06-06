@@ -219,8 +219,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.UpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -232,11 +235,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerMergeStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerUpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -956,7 +954,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
+        SelectStatement result = (SelectStatement) visit(ctx.aggregationClause());
         result.addParameterMarkerSegments(getParameterMarkerSegments());
         return result;
     }
@@ -969,7 +967,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQLServerSelectStatement result = new SQLServerSelectStatement();
+        SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
@@ -1009,7 +1007,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
             SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
-                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (AliasSegment) visit(each.alias()), subquery);
             if (null != each.columnNames()) {
                 ColumnNamesContext columnNames = each.columnNames();
@@ -1131,15 +1129,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        SQLServerInsertStatement result;
+        InsertStatement result;
         if (null != ctx.insertDefaultValue()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
+            result = (InsertStatement) visit(ctx.insertDefaultValue());
         } else if (null != ctx.insertValuesClause()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
+            result = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertExecClause()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertExecClause());
+            result = (InsertStatement) visit(ctx.insertExecClause());
         } else {
-            result = (SQLServerInsertStatement) visit(ctx.insertSelectClause());
+            result = (InsertStatement) visit(ctx.insertSelectClause());
         }
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
@@ -1188,7 +1186,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         if (null != ctx.outputClause()) {
             result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
@@ -1198,7 +1196,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setExecSegment((ExecSegment) visit(ctx.exec()));
         return result;
@@ -1279,7 +1277,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         if (null != ctx.outputClause()) {
@@ -1298,7 +1296,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
         if (null != ctx.outputClause()) {
@@ -1318,7 +1316,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) visit(ctx.select());
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
@@ -1330,7 +1328,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        SQLServerUpdateStatement result = new SQLServerUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
@@ -1398,7 +1396,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        SQLServerDeleteStatement result = new SQLServerDeleteStatement();
+        DeleteStatement result = new DeleteStatement();
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
@@ -1591,7 +1589,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             if (null != ctx.subquery().merge()) {
                 subquerySegment.setMerge((MergeStatement) visit(ctx.subquery()));
             } else {
-                subquerySegment.setSelect((SQLServerSelectStatement) visit(ctx.subquery()));
+                subquerySegment.setSelect((SelectStatement) visit(ctx.subquery()));
             }
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {
@@ -1669,7 +1667,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
         if (null != ctx.createTableAsSelect()) {
             result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
-            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createTableAsSelect().select()));
+            result.setSelectStatement((SelectStatement) visit(ctx.createTableAsSelect().select()));
             if (null != ctx.createTableAsSelect().columnNames()) {
                 CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createTableAsSelect().columnNames());
                 for (ColumnSegment each : columnSegments.getValue()) {
@@ -1678,7 +1676,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
         } else {
             result.setTable((SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName()));
-            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
+            result.setSelectStatement((SelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
         }
         return result;
     }
@@ -1769,7 +1767,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        SQLServerMergeStatement result = new SQLServerMergeStatement();
+        MergeStatement result = new MergeStatement();
         result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
@@ -1811,13 +1809,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
         }
         if (null != ctx.mergeUpdateClause()) {
-            result.setUpdate((SQLServerUpdateStatement) visit(ctx.mergeUpdateClause()));
+            result.setUpdate((UpdateStatement) visit(ctx.mergeUpdateClause()));
             if (null != ctx.mergeUpdateClause().expr()) {
                 result.setAndExpr((ExpressionSegment) visit(ctx.mergeUpdateClause().expr()));
             }
         }
         if (null != ctx.mergeInsertClause()) {
-            result.setInsert((SQLServerInsertStatement) visit(ctx.mergeInsertClause()));
+            result.setInsert((InsertStatement) visit(ctx.mergeInsertClause()));
             if (null != ctx.mergeInsertClause().expr()) {
                 result.setAndExpr((ExpressionSegment) visit(ctx.mergeInsertClause().expr()));
             }
@@ -1827,18 +1825,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
-        SQLServerInsertStatement result;
+        InsertStatement result;
         if (null != ctx.insertDefaultValue()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
+            result = (InsertStatement) visit(ctx.insertDefaultValue());
         } else {
-            result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
+            result = (InsertStatement) visit(ctx.insertValuesClause());
         }
         return result;
     }
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        SQLServerUpdateStatement result = new SQLServerUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         return result;
     }

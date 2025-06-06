@@ -62,6 +62,8 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     
     private ReturningSegment returningSegment;
     
+    private OutputSegment outputSegment;
+    
     private WithSegment withSegment;
     
     private MultiTableInsertType multiTableInsertType;
@@ -71,6 +73,12 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     private MultiTableConditionalIntoSegment multiTableConditionalIntoSegment;
     
     private WhereSegment where;
+    
+    private ExecSegment execSegment;
+    
+    private WithTableHintSegment withTableHintSegment;
+    
+    private FunctionSegment rowSetFunctionSegment;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
@@ -145,15 +153,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return output segment
      */
     public Optional<OutputSegment> getOutputSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set output segment.
-     *
-     * @param outputSegment output segment
-     */
-    public void setOutputSegment(final OutputSegment outputSegment) {
+        return Optional.ofNullable(outputSegment);
     }
     
     /**
@@ -207,15 +207,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return execute segment
      */
     public Optional<ExecSegment> getExecSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set execute segment.
-     *
-     * @param execSegment execute segment
-     */
-    public void setExecSegment(final ExecSegment execSegment) {
+        return Optional.ofNullable(execSegment);
     }
     
     /**
@@ -224,7 +216,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return with table hint segment
      */
     public Optional<WithTableHintSegment> getWithTableHintSegment() {
-        return Optional.empty();
+        return Optional.ofNullable(withTableHintSegment);
     }
     
     /**
@@ -233,6 +225,6 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return rowSet function segment
      */
     public Optional<FunctionSegment> getRowSetFunctionSegment() {
-        return Optional.empty();
+        return Optional.ofNullable(rowSetFunctionSegment);
     }
 }

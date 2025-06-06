@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
  * SQLServer grant statement.
  */
 @Getter
-public final class SQLServerGrantStatement extends GrantStatement implements SQLServerStatement {
+public final class SQLServerGrantStatement extends GrantStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();
 }

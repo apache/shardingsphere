@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -51,7 +51,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
     void assertNextForSkipAll() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
+        SelectStatement sqlStatement = new SelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, Long.MAX_VALUE, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -67,7 +67,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
+        SelectStatement sqlStatement = new SelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, null, new NumberLiteralLimitValueSegment(0, 0, 5L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -84,7 +84,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
     void assertNextWithOffsetWithoutRowCount() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
+        SelectStatement sqlStatement = new SelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, true), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -103,7 +103,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
+        SelectStatement sqlStatement = new SelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, false), new NumberLiteralLimitValueSegment(0, 0, 4L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -120,7 +120,7 @@ class TopAndRowNumberDecoratorMergedResultTest {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SQLServerSelectStatement sqlStatement = new SQLServerSelectStatement();
+        SelectStatement sqlStatement = new SelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         sqlStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 2L, true), new NumberLiteralLimitValueSegment(0, 0, 4L)));
         SelectStatementContext selectStatementContext = new SelectStatementContext(

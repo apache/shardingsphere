@@ -34,6 +34,8 @@ public class AlterIndexStatement extends AbstractSQLStatement implements DDLStat
     
     private IndexSegment renameIndex;
     
+    private SimpleTableSegment simpleTable;
+    
     /**
      * Get index segment.
      *
@@ -44,28 +46,20 @@ public class AlterIndexStatement extends AbstractSQLStatement implements DDLStat
     }
     
     /**
-     * Get simple table segment.
-     *
-     * @return simple table segment
-     */
-    public Optional<SimpleTableSegment> getSimpleTable() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set simple table segment.
-     *
-     * @param simpleTableSegment simple table segment
-     */
-    public void setSimpleTable(final SimpleTableSegment simpleTableSegment) {
-    }
-    
-    /**
      * Get rename index segment.
      *
      * @return rename index segment
      */
     public Optional<IndexSegment> getRenameIndex() {
         return Optional.ofNullable(renameIndex);
+    }
+    
+    /**
+     * Get simple table segment.
+     *
+     * @return simple table segment
+     */
+    public Optional<SimpleTableSegment> getSimpleTable() {
+        return Optional.ofNullable(simpleTable);
     }
 }

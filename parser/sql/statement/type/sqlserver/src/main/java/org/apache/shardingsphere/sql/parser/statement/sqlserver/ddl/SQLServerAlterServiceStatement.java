@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter service statement.
  */
-public final class SQLServerAlterServiceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+public final class SQLServerAlterServiceStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -45,7 +45,11 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
     
     private LimitSegment limit;
     
+    private WithSegment withSegment;
+    
     private ReturningSegment returningSegment;
+    
+    private OutputSegment outputSegment;
     
     /**
      * Get where.
@@ -75,37 +79,12 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get output segment.
-     *
-     * @return output segment
-     */
-    public Optional<OutputSegment> getOutputSegment() {
-        return Optional.empty();
-    }
-    
-    /**
      * Get with segment.
      *
      * @return with segment
      */
     public Optional<WithSegment> getWithSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set output segment.
-     *
-     * @param outputSegment output segment
-     */
-    public void setOutputSegment(final OutputSegment outputSegment) {
-    }
-    
-    /**
-     * Set with segment.
-     *
-     * @param withSegment with segment
-     */
-    public void setWithSegment(final WithSegment withSegment) {
+        return Optional.ofNullable(withSegment);
     }
     
     /**
@@ -115,5 +94,14 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
      */
     public Optional<ReturningSegment> getReturningSegment() {
         return Optional.ofNullable(returningSegment);
+    }
+    
+    /**
+     * Get output segment.
+     *
+     * @return output segment
+     */
+    public Optional<OutputSegment> getOutputSegment() {
+        return Optional.ofNullable(outputSegment);
     }
 }

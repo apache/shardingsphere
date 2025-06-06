@@ -40,21 +40,15 @@ public class DropIndexStatement extends AbstractSQLStatement implements DDLState
     
     private boolean ifExists;
     
+    private SimpleTableSegment simpleTable;
+    
     /**
      * Get simple table.
      *
      * @return simple table
      */
     public Optional<SimpleTableSegment> getSimpleTable() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set simple table.
-     *
-     * @param simpleTableSegment simple table
-     */
-    public void setSimpleTable(final SimpleTableSegment simpleTableSegment) {
+        return Optional.ofNullable(simpleTable);
     }
     
     /**
