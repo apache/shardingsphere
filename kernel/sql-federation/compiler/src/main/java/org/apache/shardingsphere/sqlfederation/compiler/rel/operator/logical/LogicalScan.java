@@ -35,9 +35,9 @@ import java.util.Objects;
 @Getter
 public final class LogicalScan extends TableScan {
     
-    private final LogicalScanPushDownRelBuilder pushDownRelBuilder;
-    
     private final String databaseType;
+    
+    private final LogicalScanPushDownRelBuilder pushDownRelBuilder;
     
     public LogicalScan(final TableScan tableScan, final String databaseType) {
         super(tableScan.getCluster(), tableScan.getTraitSet(), Collections.emptyList(), tableScan.getTable());

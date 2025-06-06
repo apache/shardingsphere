@@ -69,7 +69,7 @@ public final class SQLStatementCompiler {
     
     private RelNode optimize(final RelNode rewritePlan, final SQLFederationRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (rewritePlan.getTraitSet().equals(converter.getCluster().traitSet().replace(convention))) {
+        if (rewritePlan.getTraitSet().contains(convention)) {
             planner.setRoot(rewritePlan);
         } else {
             planner.setRoot(planner.changeTraits(rewritePlan, converter.getCluster().traitSet().replace(convention)));

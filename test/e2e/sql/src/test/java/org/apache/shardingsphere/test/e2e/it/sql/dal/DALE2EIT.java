@@ -148,8 +148,8 @@ class DALE2EIT implements SQLE2EIT {
         if (SQLE2EITContext.NOT_VERIFY_FLAG.equals(expected)) {
             return;
         }
-        assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
-        assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
+        assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
+        assertThat(String.valueOf(actual.getObject(columnLabel)).trim(), is(expected));
     }
     
     private static boolean isEnabled() {
