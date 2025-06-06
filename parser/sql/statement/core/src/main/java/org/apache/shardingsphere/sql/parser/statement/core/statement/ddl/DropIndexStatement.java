@@ -42,6 +42,10 @@ public class DropIndexStatement extends AbstractSQLStatement implements DDLState
     
     private SimpleTableSegment simpleTable;
     
+    private AlgorithmTypeSegment algorithmType;
+    
+    private LockTableSegment lockTable;
+    
     /**
      * Get simple table.
      *
@@ -57,15 +61,7 @@ public class DropIndexStatement extends AbstractSQLStatement implements DDLState
      * @return algorithm type
      */
     public Optional<AlgorithmTypeSegment> getAlgorithmType() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set algorithm type.
-     *
-     * @param algorithmTypeSegment algorithm type
-     */
-    public void setAlgorithmType(final AlgorithmTypeSegment algorithmTypeSegment) {
+        return Optional.ofNullable(algorithmType);
     }
     
     /**
@@ -74,14 +70,6 @@ public class DropIndexStatement extends AbstractSQLStatement implements DDLState
      * @return lock table segment
      */
     public Optional<LockTableSegment> getLockTable() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set lock table segment.
-     *
-     * @param lockTableSegment lock table segment
-     */
-    public void setLockTable(final LockTableSegment lockTableSegment) {
+        return Optional.ofNullable(lockTable);
     }
 }

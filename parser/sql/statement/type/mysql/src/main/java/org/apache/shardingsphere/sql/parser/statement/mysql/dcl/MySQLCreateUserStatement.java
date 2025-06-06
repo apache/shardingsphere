@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordO
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,7 +32,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
+public final class MySQLCreateUserStatement extends CreateUserStatement {
     
     private final Collection<String> defaultRoles = new LinkedList<>();
     

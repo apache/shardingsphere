@@ -40,6 +40,8 @@ public class CreateProcedureStatement extends AbstractSQLStatement implements DD
     
     private FunctionNameSegment procedureName;
     
+    private RoutineBodySegment routineBody;
+    
     private final List<SQLStatementSegment> sqlStatements = new ArrayList<>();
     
     private final List<ProcedureCallNameSegment> procedureCallNames = new ArrayList<>();
@@ -63,6 +65,6 @@ public class CreateProcedureStatement extends AbstractSQLStatement implements DD
      * @return routine body
      */
     public Optional<RoutineBodySegment> getRoutineBody() {
-        return Optional.empty();
+        return Optional.ofNullable(routineBody);
     }
 }

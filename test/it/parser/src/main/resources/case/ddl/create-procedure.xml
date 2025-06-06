@@ -105,7 +105,7 @@
     <create-procedure sql-case-id="create_procedure_with_charset_parameters_and_insert">
         <procedure-name name="bug18293" />
         <sql-statements>
-            <sql-statement start-index="125" stop-index="172" statement-class-simple-name="MySQLInsertStatement" />
+            <sql-statement start-index="125" stop-index="172" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_create_table_and_show_create_table_schema">

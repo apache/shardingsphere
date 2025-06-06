@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPri
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,7 +32,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class MySQLGrantStatement extends GrantStatement implements MySQLStatement {
+public final class MySQLGrantStatement extends GrantStatement {
     
     private final Collection<RoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
     

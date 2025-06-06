@@ -35,21 +35,17 @@ public class ExplainStatement extends AbstractSQLStatement implements DALStateme
     
     private SQLStatement sqlStatement;
     
+    private SimpleTableSegment simpleTable;
+    
+    private ColumnSegment columnWild;
+    
     /**
      * Get simple table.
      *
      * @return simple table
      */
     public Optional<SimpleTableSegment> getSimpleTable() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set simple table.
-     *
-     * @param simpleTable simple table
-     */
-    public void setSimpleTable(final SimpleTableSegment simpleTable) {
+        return Optional.ofNullable(simpleTable);
     }
     
     /**
@@ -58,14 +54,6 @@ public class ExplainStatement extends AbstractSQLStatement implements DALStateme
      * @return column segment
      */
     public Optional<ColumnSegment> getColumnWild() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set column wild.
-     *
-     * @param columnWild column wild
-     */
-    public void setColumnWild(final ColumnSegment columnWild) {
+        return Optional.ofNullable(columnWild);
     }
 }

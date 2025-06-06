@@ -149,6 +149,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DelimiterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.HelpStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallComponentStatement;
@@ -212,7 +213,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -501,7 +501,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        MySQLExplainStatement result = new MySQLExplainStatement();
+        ExplainStatement result = new ExplainStatement();
         if (null != ctx.tableName()) {
             result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
             if (null != ctx.columnRef()) {
