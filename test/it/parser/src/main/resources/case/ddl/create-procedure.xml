@@ -33,21 +33,21 @@
     <create-procedure sql-case-id="create_procedure_with_update_statement_oracle">
         <procedure-name name="update_order" />
         <sql-statements>
-            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="OracleUpdateStatement" />
+            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="UpdateStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_prepare_commit" />
     <create-procedure sql-case-id="create_procedure_with_cursor_definition">
         <procedure-name name="my_proc" />
         <sql-statements>
-            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="OracleSelectStatement" />
-            <sql-statement start-index="143" stop-index="175" statement-class-simple-name="OracleInsertStatement" />
+            <sql-statement start-index="69" stop-index="94" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="143" stop-index="175" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_collection_type_definition">
         <procedure-name name="my_proc" />
         <sql-statements>
-            <sql-statement start-index="100" stop-index="132" statement-class-simple-name="OracleInsertStatement" />
+            <sql-statement start-index="100" stop-index="132" statement-class-simple-name="InsertStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_plsql_block" />

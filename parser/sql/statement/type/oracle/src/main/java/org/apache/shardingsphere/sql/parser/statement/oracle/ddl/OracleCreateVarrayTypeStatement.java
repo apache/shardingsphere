@@ -23,15 +23,14 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 /**
  * Oracle create varray type statement.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
-public final class OracleCreateVarrayTypeStatement extends CreateTypeStatement implements OracleStatement {
+public final class OracleCreateVarrayTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     

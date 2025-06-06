@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class OracleCreateProcedureStatement extends CreateProcedureStatement implements OracleStatement {
+public final class OracleCreateProcedureStatement extends CreateProcedureStatement {
     
     private final List<CursorForLoopStatementSegment> cursorForLoopStatements = new ArrayList<>();
 }

@@ -40,12 +40,14 @@ public class CommentStatement extends AbstractSQLStatement implements DDLStateme
     
     private IdentifierValue comment;
     
+    private IndexTypeSegment indexType;
+    
     /**
      * Get index type.
      *
      * @return index type
      */
     public Optional<IndexTypeSegment> getIndexType() {
-        return Optional.empty();
+        return Optional.ofNullable(indexType);
     }
 }

@@ -52,6 +52,8 @@ public class AlterTableStatement extends AbstractSQLStatement implements DDLStat
     
     private ConvertTableDefinitionSegment convertTableDefinition;
     
+    private ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
+    
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
@@ -93,19 +95,11 @@ public class AlterTableStatement extends AbstractSQLStatement implements DDLStat
     }
     
     /**
-     * Set modify collection retrieval.
-     *
-     * @param modifyCollectionRetrieval modify collection retrieval
-     */
-    public void setModifyCollectionRetrieval(final ModifyCollectionRetrievalSegment modifyCollectionRetrieval) {
-    }
-    
-    /**
      * Get modify collection retrieval.
      *
      * @return modify collection retrieval
      */
     public Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrieval() {
-        return Optional.empty();
+        return Optional.ofNullable(modifyCollectionRetrieval);
     }
 }

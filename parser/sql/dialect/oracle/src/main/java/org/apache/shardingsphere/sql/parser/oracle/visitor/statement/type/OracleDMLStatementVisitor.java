@@ -179,14 +179,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleUpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -203,7 +201,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        OracleUpdateStatement result = new OracleUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setTable((TableSegment) visit(ctx.updateSpecification()));
         if (null != ctx.alias()) {
             result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
@@ -258,7 +256,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (null != ctx.selectSubquery()) {
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(),
-                    (OracleSelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
+                    (SelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
             result.getColumns().add(column);
@@ -276,7 +274,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             columnSegments.add((ColumnSegment) visit(each));
         }
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(),
-                (OracleSelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
+                (SelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
         SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
         return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
@@ -293,7 +291,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             return result;
         } else {
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(),
-                    (OracleSelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
+                    (SelectStatement) visit(ctx.selectSubquery()), getOriginalText(ctx.selectSubquery()));
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
             result.getColumns().add(column);
@@ -303,20 +301,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        OracleInsertStatement result = (OracleInsertStatement) (null == ctx.insertSingleTable() ? visit(ctx.insertMultiTable()) : visit(ctx.insertSingleTable()));
+        // TODO :FIXME, since there is no segment for insertValuesClause, insertStatement is created by sub rule.
+        InsertStatement result = (InsertStatement) (null == ctx.insertSingleTable() ? visit(ctx.insertMultiTable()) : visit(ctx.insertSingleTable()));
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitInsertSingleTable(final InsertSingleTableContext ctx) {
-        OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertIntoClause());
+        InsertStatement result = (InsertStatement) visit(ctx.insertIntoClause());
         if (null != ctx.insertValuesClause()) {
             result.getValues().addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
         }
         if (null != ctx.selectSubquery()) {
-            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery,
                     getOriginalText(ctx.selectSubquery()));
             result.setInsertSelect(subquerySegment);
@@ -333,7 +331,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitInsertMultiTable(final InsertMultiTableContext ctx) {
-        OracleInsertStatement result = new OracleInsertStatement();
+        InsertStatement result = new InsertStatement();
         result.setMultiTableInsertType(null != ctx.conditionalInsertClause() && null != ctx.conditionalInsertClause().FIRST() ? MultiTableInsertType.FIRST : MultiTableInsertType.ALL);
         List<MultiTableElementContext> multiTableElementContexts = ctx.multiTableElement();
         if (null != multiTableElementContexts && !multiTableElementContexts.isEmpty()) {
@@ -344,7 +342,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         } else {
             result.setMultiTableConditionalIntoSegment((MultiTableConditionalIntoSegment) visit(ctx.conditionalInsertClause()));
         }
-        result.setInsertSelect(new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.selectSubquery()),
+        result.setInsertSelect(new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (SelectStatement) visit(ctx.selectSubquery()),
                 getOriginalText(ctx.selectSubquery())));
         result.getVariableNames().addAll(getVariableNames());
         return result;
@@ -354,24 +352,24 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         Collection<InsertStatement> result = new LinkedList<>();
         Collection<ParameterMarkerSegment> addedSegments = new HashSet<>();
         for (MultiTableElementContext each : ctx) {
-            OracleInsertStatement oracleInsertStatement = (OracleInsertStatement) visit(each);
-            addParameterMarkerSegments(addedSegments, oracleInsertStatement);
-            result.add(oracleInsertStatement);
+            InsertStatement insertStatement = (InsertStatement) visit(each);
+            addParameterMarkerSegments(addedSegments, insertStatement);
+            result.add(insertStatement);
         }
         return result;
     }
     
-    private void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> addedSegments, final OracleInsertStatement oracleInsertStatement) {
+    private void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> addedSegments, final InsertStatement insertStatement) {
         for (ParameterMarkerSegment parameterMarkerSegment : popAllStatementParameterMarkerSegments()) {
             if (addedSegments.add(parameterMarkerSegment)) {
-                oracleInsertStatement.addParameterMarkerSegments(Collections.singletonList(parameterMarkerSegment));
+                insertStatement.addParameterMarkerSegments(Collections.singletonList(parameterMarkerSegment));
             }
         }
     }
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        OracleInsertStatement result = new OracleInsertStatement();
+        InsertStatement result = new InsertStatement();
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
     }
@@ -379,7 +377,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
-        OracleInsertStatement result = new OracleInsertStatement();
+        InsertStatement result = new InsertStatement();
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause()));
         } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
@@ -426,8 +424,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     @Override
-    public OracleSelectStatement visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
-        OracleSelectStatement result = new OracleSelectStatement();
+    public SelectStatement visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
+        SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
         // TODO Visit selectIntoClause, bulkCollectIntoClause
         result.setFrom((TableSegment) visit(ctx.fromClauseList()));
@@ -453,7 +451,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMultiTableElement(final MultiTableElementContext ctx) {
-        OracleInsertStatement result = (OracleInsertStatement) visit(ctx.insertIntoClause());
+        InsertStatement result = (InsertStatement) visit(ctx.insertIntoClause());
         if (null != ctx.insertValuesClause()) {
             result.getValues().addAll(createInsertValuesSegments(ctx.insertValuesClause().assignmentValues()));
         }
@@ -463,7 +461,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        OracleSelectStatement result = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SelectStatement result = (SelectStatement) visit(ctx.selectSubquery());
         result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
         if (null != ctx.forUpdateClause()) {
@@ -515,14 +513,14 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDmlSubqueryClause(final DmlSubqueryClauseContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SelectStatement subquery = (SelectStatement) visit(ctx.selectSubquery());
         return new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery, getOriginalText(ctx.selectSubquery()));
     }
     
     @Override
     public ASTNode visitTableCollectionExpr(final TableCollectionExprContext ctx) {
         if (null != ctx.collectionExpr().selectSubquery()) {
-            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.collectionExpr().selectSubquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.collectionExpr().selectSubquery());
             return new SubquerySegment(ctx.collectionExpr().selectSubquery().start.getStartIndex(), ctx.collectionExpr().selectSubquery().stop.getStopIndex(), subquery,
                     getOriginalText(ctx.collectionExpr().selectSubquery()));
         }
@@ -582,16 +580,16 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSelectSubquery(final SelectSubqueryContext ctx) {
-        OracleSelectStatement result;
+        SelectStatement result;
         if (null != ctx.combineType()) {
-            result = new OracleSelectStatement();
-            OracleSelectStatement left = (OracleSelectStatement) visit(ctx.selectSubquery(0));
+            result = new SelectStatement();
+            SelectStatement left = (SelectStatement) visit(ctx.selectSubquery(0));
             result.setProjections(left.getProjections());
             left.getFrom().ifPresent(result::setFrom);
             left.getWithSegment().ifPresent(result::setWithSegment);
             createSelectCombineClause(ctx, result, left);
         } else {
-            result = null != ctx.queryBlock() ? (OracleSelectStatement) visit(ctx.queryBlock()) : (OracleSelectStatement) visit(ctx.parenthesisSelectSubquery());
+            result = null != ctx.queryBlock() ? (SelectStatement) visit(ctx.queryBlock()) : (SelectStatement) visit(ctx.parenthesisSelectSubquery());
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
@@ -601,7 +599,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
-    private void createSelectCombineClause(final SelectSubqueryContext ctx, final OracleSelectStatement result, final OracleSelectStatement left) {
+    private void createSelectCombineClause(final SelectSubqueryContext ctx, final SelectStatement result, final SelectStatement left) {
         CombineType combineType;
         if (null != ctx.combineType().UNION() && null != ctx.combineType().ALL()) {
             combineType = CombineType.UNION_ALL;
@@ -612,20 +610,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         } else {
             combineType = CombineType.MINUS;
         }
-        OracleSelectStatement right = (OracleSelectStatement) visit(ctx.selectSubquery(1));
+        SelectStatement right = (SelectStatement) visit(ctx.selectSubquery(1));
         result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
                 createSubquerySegment(ctx.selectSubquery(1), right)));
         result.addParameterMarkerSegments(left.getParameterMarkerSegments());
         result.addParameterMarkerSegments(right.getParameterMarkerSegments());
     }
     
-    private SubquerySegment createSubquerySegment(final SelectSubqueryContext ctx, final OracleSelectStatement selectStatement) {
+    private SubquerySegment createSubquerySegment(final SelectSubqueryContext ctx, final SelectStatement selectStatement) {
         return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), selectStatement, getOriginalText(ctx));
     }
     
     @Override
     public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
-        OracleSelectStatement result = new OracleSelectStatement();
+        SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
@@ -697,7 +695,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         Collection<SubquerySegment> result = new LinkedList<>();
         for (SingleColumnForLoopContext each : ctx) {
             if (null != each.selectSubquery()) {
-                OracleSelectStatement subquery = (OracleSelectStatement) visit(each.selectSubquery());
+                SelectStatement subquery = (SelectStatement) visit(each.selectSubquery());
                 SubquerySegment subquerySegment = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), subquery,
                         getOriginalText(each.selectSubquery()));
                 result.add(subquerySegment);
@@ -715,13 +713,13 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     }
     
     private SubquerySegment extractSelectSubqueryValueFromMultiColumnForLoop(final MultiColumnForLoopContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SelectStatement subquery = (SelectStatement) visit(ctx.selectSubquery());
         return new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery, getOriginalText(ctx.selectSubquery()));
     }
     
     @Override
     public ASTNode visitReferenceModel(final ReferenceModelContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SelectStatement subquery = (SelectStatement) visit(ctx.selectSubquery());
         return new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery, getOriginalText(ctx.selectSubquery()));
     }
     
@@ -735,7 +733,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         Collection<CommonTableExpressionSegment> commonTableExpressions = new LinkedList<>();
         if (null != ctx.subqueryFactoringClause()) {
             for (SubqueryFactoringClauseContext each : ctx.subqueryFactoringClause()) {
-                SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (OracleSelectStatement) visit(each),
+                SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (SelectStatement) visit(each),
                         getOriginalText(each));
                 CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
                         (AliasSegment) visit(each.queryName().alias()), subquery);
@@ -1099,7 +1097,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCollectionExpr(final CollectionExprContext ctx) {
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
+        SelectStatement subquery = (SelectStatement) visit(ctx.selectSubquery());
         return new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery, getOriginalText(ctx.selectSubquery()));
     }
     
@@ -1161,7 +1159,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.queryTableExprSampleClause()) {
             result = (SimpleTableSegment) visit(ctx.queryTableExprSampleClause().queryTableExprTableClause().tableName());
         } else if (null != ctx.lateralClause()) {
-            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.lateralClause().selectSubquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.lateralClause().selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery,
                     getOriginalText(ctx.lateralClause().selectSubquery()));
             result = new SubqueryTableSegment(ctx.lateralClause().LP_().getSymbol().getStartIndex(), ctx.lateralClause().RP_().getSymbol().getStopIndex(), subquerySegment);
@@ -1323,7 +1321,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
-        OracleInsertStatement result = new OracleInsertStatement();
+        InsertStatement result = new InsertStatement();
         if (null != ctx.mergeInsertColumn()) {
             result.setInsertColumns((InsertColumnsSegment) visit(ctx.mergeInsertColumn()));
         }
@@ -1375,7 +1373,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
             return result;
         }
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
+        SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
         SubqueryTableSegment result = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
         if (null != ctx.alias()) {
@@ -1400,7 +1398,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
             return result;
         }
-        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
+        SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
         subquerySegment.getSelect().getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
         SubqueryTableSegment result = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
@@ -1412,7 +1410,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        OracleUpdateStatement result = new OracleUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));

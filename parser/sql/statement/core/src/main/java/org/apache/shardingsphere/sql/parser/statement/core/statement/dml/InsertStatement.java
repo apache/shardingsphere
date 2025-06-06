@@ -64,6 +64,14 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WithSegment withSegment;
     
+    private MultiTableInsertType multiTableInsertType;
+    
+    private MultiTableInsertIntoSegment multiTableInsertIntoSegment;
+    
+    private MultiTableConditionalIntoSegment multiTableConditionalIntoSegment;
+    
+    private WhereSegment where;
+    
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
@@ -154,15 +162,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return multi table insert type
      */
     public Optional<MultiTableInsertType> getMultiTableInsertType() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set multi table insert type.
-     *
-     * @param multiTableInsertType multi table insert type
-     */
-    public void setMultiTableInsertType(final MultiTableInsertType multiTableInsertType) {
+        return Optional.ofNullable(multiTableInsertType);
     }
     
     /**
@@ -171,15 +171,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return multi table insert into segment
      */
     public Optional<MultiTableInsertIntoSegment> getMultiTableInsertIntoSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set multi table insert into segment.
-     *
-     * @param multiTableInsertIntoSegment multi table insert into segment
-     */
-    public void setMultiTableInsertIntoSegment(final MultiTableInsertIntoSegment multiTableInsertIntoSegment) {
+        return Optional.ofNullable(multiTableInsertIntoSegment);
     }
     
     /**
@@ -188,15 +180,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return multi table conditional into segment
      */
     public Optional<MultiTableConditionalIntoSegment> getMultiTableConditionalIntoSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set multi table conditional into segment.
-     *
-     * @param multiTableConditionalIntoSegment multi table conditional into segment
-     */
-    public void setMultiTableConditionalIntoSegment(final MultiTableConditionalIntoSegment multiTableConditionalIntoSegment) {
+        return Optional.ofNullable(multiTableConditionalIntoSegment);
     }
     
     /**
@@ -214,15 +198,7 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
      * @return where segment
      */
     public Optional<WhereSegment> getWhere() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set where segment.
-     *
-     * @param whereSegment where segment
-     */
-    public void setWhere(final WhereSegment whereSegment) {
+        return Optional.ofNullable(where);
     }
     
     /**
