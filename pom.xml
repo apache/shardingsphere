@@ -67,7 +67,7 @@
         <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
-        <guava.version>32.1.2-jre</guava.version>
+        <guava.version>33.4.6-jre</guava.version>
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
         <j2objc-annotations.version>1.3</j2objc-annotations.version>
@@ -121,7 +121,8 @@
         <commons-logging.version>1.2</commons-logging.version>
         
         <lombok.version>1.18.38</lombok.version>
-        <immutables.version>2.9.3</immutables.version>
+        <immutables.version>2.10.1</immutables.version>
+        <jsr305.version>3.0.2</jsr305.version>
         
         <postgresql.version>42.7.5</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
