@@ -31,13 +31,13 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Set
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 
 /**
  * TCL statement visitor for SQLServer.
@@ -76,11 +76,6 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     }
     
     @Override
-    public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
-        return new SQLServerBeginDistributedTransactionStatement();
-    }
-    
-    @Override
     public ASTNode visitCommit(final CommitContext ctx) {
         return new CommitStatement();
     }
@@ -103,5 +98,16 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         return new SavepointStatement(null);
+    }
+    
+    @Override
+    public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
+        String xid = null;
+        if (null != ctx.transactionName()) {
+            xid = ctx.transactionName().getText();
+        } else if (null != ctx.transactionVariableName()) {
+            xid = ctx.transactionVariableName().getText();
+        }
+        return new XABeginStatement(xid);
     }
 }
