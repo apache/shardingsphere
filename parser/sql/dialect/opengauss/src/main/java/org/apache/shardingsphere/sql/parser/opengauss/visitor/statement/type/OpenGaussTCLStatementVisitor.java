@@ -108,12 +108,12 @@ public final class OpenGaussTCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new XACommitStatement(ctx.xid().getText());
+        return new XACommitStatement(ctx.gid().getText());
     }
     
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new XARollbackStatement(ctx.xid().getText());
+        return new XARollbackStatement(ctx.gid().getText());
     }
     
     @Override

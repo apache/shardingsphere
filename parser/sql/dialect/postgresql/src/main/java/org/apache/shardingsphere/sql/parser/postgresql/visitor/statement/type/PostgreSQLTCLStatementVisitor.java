@@ -53,8 +53,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetCons
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAPrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -160,12 +160,12 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new XACommitStatement(ctx.xid().getText());
+        return new XACommitStatement(ctx.gid().getText());
     }
     
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new XARollbackStatement(ctx.xid().getText());
+        return new XARollbackStatement(ctx.gid().getText());
     }
     
     @Override
@@ -179,7 +179,7 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
-        return new PostgreSQLPrepareTransactionStatement();
+        return new XAPrepareStatement(ctx.gid().getText());
     }
     
     @Override
