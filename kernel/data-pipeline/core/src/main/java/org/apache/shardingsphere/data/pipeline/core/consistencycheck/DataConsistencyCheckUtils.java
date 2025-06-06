@@ -194,9 +194,6 @@ public final class DataConsistencyCheckUtils {
      * @return first unique key value
      */
     public static Object getFirstUniqueKeyValue(final Map<String, Object> rawRecord, final @Nullable String uniqueKey) {
-        if (rawRecord.isEmpty() || null == uniqueKey) {
-            return null;
-        }
-        return rawRecord.get(uniqueKey);
+        return rawRecord.isEmpty() || null == uniqueKey ? null : rawRecord.get(uniqueKey);
     }
 }
