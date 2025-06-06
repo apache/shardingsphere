@@ -103,9 +103,9 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
         String xid = null;
-        if (null == ctx.transactionName()) {
+        if (null != ctx.transactionName()) {
             xid = ctx.transactionName().getText();
-        } else if (null == ctx.transactionVariableName()) {
+        } else if (null != ctx.transactionVariableName()) {
             xid = ctx.transactionVariableName().getText();
         }
         return new XABeginStatement(xid);
