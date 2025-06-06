@@ -121,8 +121,8 @@
         <commons-logging.version>1.2</commons-logging.version>
         
         <lombok.version>1.18.38</lombok.version>
-        <immutables.version>2.10.1</immutables.version>
         <jsr305.version>3.0.2</jsr305.version>
+        <immutables.version>2.10.1</immutables.version>
         
         <postgresql.version>42.7.5</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
@@ -441,6 +441,12 @@
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+                <scope>provided</scope>
+            </dependency>
             
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -608,6 +614,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
         </dependency>
         
         <dependency>

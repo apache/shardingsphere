@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
-import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -56,12 +55,12 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
      * @return built SQL
      */
     public String buildQueryRangeOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
-                                             @Nullable final List<String> shardingColumnsNames) {
+                                             final List<String> shardingColumnsNames) {
         return dialectSQLBuilder.wrapWithPageQuery(buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, queryRange, shardingColumnsNames));
     }
     
     private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
-                                               @Nullable final List<String> shardingColumnsNames) {
+                                               final List<String> shardingColumnsNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String firstUniqueKey = uniqueKeys.get(0);
@@ -99,16 +98,15 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
      * @param shardingColumnsNames sharding columns names, nullable
      * @return built SQL
      */
-    public String buildPointQuerySQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys,
-                                     @Nullable final List<String> shardingColumnsNames) {
+    public String buildPointQuerySQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final List<String> shardingColumnsNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(qualifiedTable);
         String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
         String equalsConditions = joinColumns(uniqueKeys, shardingColumnsNames).stream().map(each -> sqlSegmentBuilder.getEscapedIdentifier(each) + "=?").collect(Collectors.joining(" AND "));
         return String.format("SELECT %s FROM %s WHERE %s", queryColumns, qualifiedTableName, equalsConditions);
     }
     
-    private List<String> joinColumns(final List<String> uniqueKeys, final @Nullable List<String> shardingColumnsNames) {
-        if (null == shardingColumnsNames || shardingColumnsNames.isEmpty()) {
+    private List<String> joinColumns(final List<String> uniqueKeys, final List<String> shardingColumnsNames) {
+        if (shardingColumnsNames.isEmpty()) {
             return uniqueKeys;
         }
         List<String> result = new ArrayList<>(uniqueKeys.size() + shardingColumnsNames.size());
