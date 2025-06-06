@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateT
 
 import java.util.Collection;
 
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class OracleCreateObjectTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;

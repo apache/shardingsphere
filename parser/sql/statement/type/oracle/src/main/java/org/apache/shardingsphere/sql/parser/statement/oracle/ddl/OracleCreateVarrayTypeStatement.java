@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateT
 /**
  * Oracle create varray type statement.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class OracleCreateVarrayTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;

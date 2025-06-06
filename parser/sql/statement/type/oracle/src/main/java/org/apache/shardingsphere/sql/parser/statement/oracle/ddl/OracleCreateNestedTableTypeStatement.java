@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
 
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;

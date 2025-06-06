@@ -28,8 +28,8 @@ import java.util.Collection;
 /**
  * Oracle create sub type statement.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class OracleCreateSubTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
