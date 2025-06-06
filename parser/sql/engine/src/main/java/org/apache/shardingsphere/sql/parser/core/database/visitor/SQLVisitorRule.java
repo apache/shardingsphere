@@ -461,6 +461,8 @@ public enum SQLVisitorRule {
     
     CHECKSUM_TABLE("ChecksumTable", SQLStatementType.DAL),
     
+    CHECKPOINT("Checkpoint", SQLStatementType.DAL),
+    
     DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
@@ -648,8 +650,6 @@ public enum SQLVisitorRule {
     CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
     
     DO("DoStatement", SQLStatementType.DML),
-    
-    CHECKPOINT("Checkpoint", SQLStatementType.TCL),
     
     PREPARE_TRANSACTION("PrepareTransaction", SQLStatementType.TCL),
     
