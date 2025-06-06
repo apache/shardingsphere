@@ -131,12 +131,12 @@ execute
     | createCast
     | dropCast
     | alterRule
-    | checkpoint
     | alterType
     | createPublication
     | dropPublication
     | createAggregate
     | alterPackage
+    | checkpoint
     | emptyStatement
     ) SEMI_? EOF
     ;
