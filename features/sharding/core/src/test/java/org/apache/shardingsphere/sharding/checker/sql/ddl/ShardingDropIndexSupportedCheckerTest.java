@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -51,7 +51,7 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexExistForPostgreSQL() {
-        PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
+        DropIndexStatement sqlStatement = new DropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -64,7 +64,7 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexNotExistForPostgreSQL() {
-        PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
+        DropIndexStatement sqlStatement = new DropIndexStatement();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         ShardingSphereTable table = mock(ShardingSphereTable.class);

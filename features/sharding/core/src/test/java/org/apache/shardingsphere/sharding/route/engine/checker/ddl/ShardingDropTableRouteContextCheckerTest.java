@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,7 +118,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        DropTableStatement sqlStatement = new DropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -134,7 +133,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        DropTableStatement sqlStatement = new DropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -148,7 +147,7 @@ class ShardingDropTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        DropTableStatement sqlStatement = new DropTableStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.getShardingTable("t_config")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();

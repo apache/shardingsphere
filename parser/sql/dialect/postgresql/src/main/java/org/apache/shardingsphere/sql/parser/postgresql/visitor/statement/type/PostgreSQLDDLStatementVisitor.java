@@ -205,22 +205,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterAggregateStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterDefaultPrivilegesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterForeignDataWrapperStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterOperatorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterRoutineStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterServerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ClusterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
@@ -228,37 +226,34 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateC
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDomainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateOperatorStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreatePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropOperatorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropRoutineStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropServerStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropSubscriptionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.OpenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RefreshMatViewStmtStatement;
@@ -273,20 +268,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateS
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterAggregateStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterCollationStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterConversionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterDefaultPrivilegesStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterExtensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterForeignDataWrapperStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterForeignTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterLanguageStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterPolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterPublicationStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterRoutineStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterRuleStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterSubscriptionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterTextSearchStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateAggregateStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateCastStatement;
@@ -295,11 +292,13 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLC
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateExtensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateForeignDataWrapperStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateForeignTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateLanguageStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreatePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreatePublicationStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDiscardStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropAggregateStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropCastStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropCollationStatement;
@@ -309,19 +308,20 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLD
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropExtensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropForeignDataWrapperStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropForeignTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropLanguageStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropOperatorClassStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropOperatorFamilyStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropOwnedStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropPolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropPublicationStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropRoutineStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropRuleStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropSubscriptionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTextSearchStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -339,7 +339,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
@@ -627,7 +627,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
-        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement();
+        DropTableStatement result = new DropTableStatement();
         result.setIfExists(null != ctx.ifExists());
         result.setContainsCascade(containsCascade);
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
@@ -670,7 +670,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        PostgreSQLCreateIndexStatement result = new PostgreSQLCreateIndexStatement();
+        CreateIndexStatement result = new CreateIndexStatement();
         result.setIfNotExists(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
@@ -721,7 +721,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        PostgreSQLAlterIndexStatement result = new PostgreSQLAlterIndexStatement();
+        AlterIndexStatement result = new AlterIndexStatement();
         result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
         if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
             result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
@@ -739,7 +739,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        PostgreSQLDropIndexStatement result = new PostgreSQLDropIndexStatement(null != ctx.ifExists());
+        DropIndexStatement result = new DropIndexStatement();
+        result.setIfExists(null != ctx.ifExists());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
         return result;
     }
@@ -810,7 +811,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        PostgreSQLDropViewStatement result = new PostgreSQLDropViewStatement();
+        DropViewStatement result = new DropViewStatement();
         result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue());
         return result;
@@ -828,7 +829,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        PostgreSQLAlterViewStatement result = new PostgreSQLAlterViewStatement();
+        AlterViewStatement result = new AlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
@@ -954,7 +955,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        PostgreSQLCreateSchemaStatement result = new PostgreSQLCreateSchemaStatement();
+        CreateSchemaStatement result = new CreateSchemaStatement();
         if (null != ctx.createSchemaClauses().colId()) {
             result.setSchemaName(new IdentifierValue(ctx.createSchemaClauses().colId().getText()));
         }
@@ -966,7 +967,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitAlterSchema(final AlterSchemaContext ctx) {
-        PostgreSQLAlterSchemaStatement result = new PostgreSQLAlterSchemaStatement();
+        AlterSchemaStatement result = new AlterSchemaStatement();
         result.setSchemaName((IdentifierValue) visit(ctx.name().get(0)));
         if (ctx.name().size() > 1) {
             result.setRenameSchema((IdentifierValue) visit(ctx.name().get(1)));
@@ -977,7 +978,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
-        PostgreSQLDropSchemaStatement result = new PostgreSQLDropSchemaStatement();
+        DropSchemaStatement result = new DropSchemaStatement();
         result.getSchemaNames().addAll(((CollectionValue<IdentifierValue>) visit(ctx.nameList())).getValue());
         result.setContainsCascade(null != ctx.dropBehavior() && null != ctx.dropBehavior().CASCADE());
         return result;

@@ -65,10 +65,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Release
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLUpdateStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -91,14 +87,12 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfInsertStatement() {
         assertThat(PostgreSQLCommand.valueOf(InsertStatement.class).orElse(null), is(PostgreSQLCommand.INSERT));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLInsertStatement.class).orElse(null), is(PostgreSQLCommand.INSERT));
         assertThat(PostgreSQLCommand.INSERT.getTag(), is("INSERT"));
     }
     
     @Test
     void assertValueOfUpdateStatement() {
         assertThat(PostgreSQLCommand.valueOf(UpdateStatement.class).orElse(null), is(PostgreSQLCommand.UPDATE));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLUpdateStatement.class).orElse(null), is(PostgreSQLCommand.UPDATE));
         assertThat(PostgreSQLCommand.UPDATE.getTag(), is("UPDATE"));
     }
     
@@ -221,7 +215,6 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfCreateTableStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateTableStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLE));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateTableStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLE));
         assertThat(PostgreSQLCommand.CREATE_TABLE.getTag(), is("CREATE TABLE"));
     }
     
@@ -270,7 +263,6 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfDropTableStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropTableStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLE));
-        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropTableStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLE));
         assertThat(PostgreSQLCommand.DROP_TABLE.getTag(), is("DROP TABLE"));
     }
     

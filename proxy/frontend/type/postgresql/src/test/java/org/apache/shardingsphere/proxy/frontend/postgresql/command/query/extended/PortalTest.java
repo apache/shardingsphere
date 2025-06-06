@@ -55,8 +55,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -160,7 +160,7 @@ class PortalTest {
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLServerPreparedStatement preparedStatement =
                 new PostgreSQLServerPreparedStatement("", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
@@ -195,7 +195,7 @@ class PortalTest {
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", selectStatementContext, new HintValueContext(), Collections.emptyList(),
                 Collections.emptyList());
@@ -216,7 +216,7 @@ class PortalTest {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement()).thenReturn(new PostgreSQLInsertStatement());
+        when(insertStatementContext.getSqlStatement()).thenReturn(new InsertStatement());
         when(insertStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", insertStatementContext, new HintValueContext(), Collections.emptyList(),
                 Collections.emptyList());
