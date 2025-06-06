@@ -33,7 +33,7 @@
     <create-procedure sql-case-id="create_procedure_with_update_statement_oracle">
         <procedure-name name="update_order" />
         <sql-statements>
-            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="OracleUpdateStatement" />
+            <sql-statement start-index="95" stop-index="154" statement-class-simple-name="UpdateStatement" />
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_with_prepare_commit" />
