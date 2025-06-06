@@ -329,22 +329,7 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseDeleteStatement",
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -378,33 +363,23 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdDeleteStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -453,13 +428,13 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
