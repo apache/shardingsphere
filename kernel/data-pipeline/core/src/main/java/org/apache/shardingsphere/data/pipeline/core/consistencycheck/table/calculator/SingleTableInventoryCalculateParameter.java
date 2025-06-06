@@ -26,9 +26,10 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
-import org.jspecify.annotations.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -163,8 +164,8 @@ public final class SingleTableInventoryCalculateParameter {
      *
      * @return sharding columns names
      */
-    public @Nullable List<String> getShardingColumnsNames() {
-        return shardingColumnsNames.get();
+    public List<String> getShardingColumnsNames() {
+        return Optional.ofNullable(shardingColumnsNames.get()).orElse(Collections.emptyList());
     }
     
     /**
@@ -181,8 +182,8 @@ public final class SingleTableInventoryCalculateParameter {
      *
      * @return sharding columns values
      */
-    public @Nullable List<Object> getShardingColumnsValues() {
-        return shardingColumnsValues.get();
+    public List<Object> getShardingColumnsValues() {
+        return Optional.ofNullable(shardingColumnsValues.get()).orElse(Collections.emptyList());
     }
     
     /**
