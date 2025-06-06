@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
@@ -70,6 +71,8 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     private TableSegment intoSegment;
     
     private ModelSegment modelSegment;
+    
+    private WithTableHintSegment withTableHintSegment;
     
     /**
      * Get from.
@@ -186,5 +189,14 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
      */
     public Optional<ModelSegment> getModelSegment() {
         return Optional.ofNullable(modelSegment);
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @return with table hint segment.
+     */
+    public Optional<WithTableHintSegment> getWithTableHintSegment() {
+        return Optional.ofNullable(withTableHintSegment);
     }
 }

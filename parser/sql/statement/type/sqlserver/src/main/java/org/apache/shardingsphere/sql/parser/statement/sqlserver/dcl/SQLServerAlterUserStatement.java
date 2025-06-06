@@ -22,14 +22,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
 
 /**
  * Alter user statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLServerAlterUserStatement extends AlterUserStatement implements SQLServerStatement, DCLStatement {
+public final class SQLServerAlterUserStatement extends AlterUserStatement implements DCLStatement {
     
     private final UserSegment user;
 }

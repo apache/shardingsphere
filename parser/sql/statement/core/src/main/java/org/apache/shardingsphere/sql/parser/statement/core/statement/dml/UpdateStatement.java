@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.OptionHintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -53,7 +54,15 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WhereSegment deleteWhere;
     
+    private WithSegment withSegment;
+    
     private ReturningSegment returningSegment;
+    
+    private WithTableHintSegment withTableHintSegment;
+    
+    private OptionHintSegment optionHintSegment;
+    
+    private OutputSegment outputSegment;
     
     /**
      * Get where.
@@ -97,7 +106,7 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return with segment
      */
     public Optional<WithSegment> getWithSegment() {
-        return Optional.empty();
+        return Optional.ofNullable(withSegment);
     }
     
     /**
@@ -106,15 +115,7 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return option hint segment
      */
     public Optional<OptionHintSegment> getOptionHintSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set with segment.
-     *
-     * @param withSegment with segment
-     */
-    public void setWithSegment(final WithSegment withSegment) {
+        return Optional.ofNullable(optionHintSegment);
     }
     
     /**
@@ -123,15 +124,7 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      * @return output segment
      */
     public Optional<OutputSegment> getOutputSegment() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set output segment.
-     *
-     * @param outputSegment output segment
-     */
-    public void setOutputSegment(final OutputSegment outputSegment) {
+        return Optional.ofNullable(outputSegment);
     }
     
     /**
@@ -159,5 +152,14 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
      */
     public Optional<ReturningSegment> getReturningSegment() {
         return Optional.ofNullable(returningSegment);
+    }
+    
+    /**
+     * Get with table hint segment.
+     *
+     * @return with table hint segment.
+     */
+    public Optional<WithTableHintSegment> getWithTableHintSegment() {
+        return Optional.ofNullable(withTableHintSegment);
     }
 }
