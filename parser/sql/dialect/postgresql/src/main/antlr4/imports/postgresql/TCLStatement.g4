@@ -65,11 +65,15 @@ rollbackToSavepoint
     ;
 
 commitPrepared
-    : COMMIT PREPARED STRING_
+    : COMMIT PREPARED xid
     ;
 
 rollbackPrepared
-    : ROLLBACK PREPARED STRING_
+    : ROLLBACK PREPARED xid
+    ;
+
+xid
+    : STRING_
     ;
 
 setConstraints
