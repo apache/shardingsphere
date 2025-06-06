@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
-import org.jspecify.annotations.NullMarked;
-
 /**
  * SQL statement cache loader.
  */
@@ -45,7 +43,6 @@ public final class SQLStatementCacheLoader implements CacheLoader<String, SQLSta
         sqlStatementParserExecutor.updateCacheOption(parseTreeCacheOption);
     }
     
-    @NullMarked
     @Override
     public SQLStatement load(final String sql) {
         return sqlStatementParserExecutor.parse(sql);
