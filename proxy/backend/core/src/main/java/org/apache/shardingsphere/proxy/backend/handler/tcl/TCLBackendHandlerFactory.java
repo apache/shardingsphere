@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Rollbac
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
@@ -57,7 +56,7 @@ public final class TCLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
-        if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
+        if (tclStatement instanceof BeginTransactionStatement) {
             return new TCLBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {

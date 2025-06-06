@@ -68,7 +68,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.Release
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -120,7 +119,7 @@ public enum PostgreSQLCommand {
     DROP_VIEW(DropViewStatement.class),
     TRUNCATE_TABLE(TruncateStatement.class),
     BEGIN(BeginTransactionStatement.class),
-    START_TRANSACTION(StartTransactionStatement.class),
+    START_TRANSACTION(BeginTransactionStatement.class),
     COMMIT(CommitStatement.class),
     SAVEPOINT(SavepointStatement.class),
     ROLLBACK(RollbackStatement.class),
@@ -163,7 +162,7 @@ public enum PostgreSQLCommand {
     }
     
     private static CachedResult compute(final Class<? extends SQLStatement> target) {
-        Optional<PostgreSQLCommand> result = Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny();
+        Optional<PostgreSQLCommand> result = Arrays.stream(values()).filter(each -> matches(target, each)).findAny();
         return result.map(CachedResult::new).orElse(CachedResult.EMPTY);
     }
     
