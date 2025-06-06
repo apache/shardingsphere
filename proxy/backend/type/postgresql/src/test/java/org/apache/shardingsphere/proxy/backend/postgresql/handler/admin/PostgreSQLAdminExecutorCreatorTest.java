@@ -34,9 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetPa
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -87,7 +86,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(databaseType, new PostgreSQLInsertStatement())), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(databaseType, new InsertStatement())), is(Optional.empty()));
     }
     
     @Test
@@ -142,7 +141,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectNonPgCatalog() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
