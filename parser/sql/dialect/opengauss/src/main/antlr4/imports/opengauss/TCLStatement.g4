@@ -88,10 +88,6 @@ constraintsSetList
     : ALL | qualifiedNameList
     ;
 
-checkpoint
-    : CHECKPOINT
-    ;
-
 lock
     : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
     ;

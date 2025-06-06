@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnalyzeTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EmptyStatementContext;
@@ -46,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetPa
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -174,6 +176,11 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
         }
         // TODO visit refresh materialized view statement
         return visit(ctx.refreshMatViewStmt());
+    }
+    
+    @Override
+    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
+        return new PostgreSQLCheckpointStatement();
     }
     
     @Override
