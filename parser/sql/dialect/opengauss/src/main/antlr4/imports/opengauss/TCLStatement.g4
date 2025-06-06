@@ -61,18 +61,18 @@ rollbackToSavepoint
     ;
 
 prepareTransaction
-    : PREPARE TRANSACTION STRING_
+    : PREPARE TRANSACTION gid
     ;
 
 commitPrepared
-    : COMMIT PREPARED xid
+    : COMMIT PREPARED gid
     ;
 
 rollbackPrepared
-    : ROLLBACK PREPARED xid
+    : ROLLBACK PREPARED gid
     ;
 
-xid
+gid
     : STRING_
     ;
 
