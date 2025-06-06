@@ -33,12 +33,14 @@ public class AlterSchemaStatement extends AbstractSQLStatement implements DDLSta
     
     private IdentifierValue schemaName;
     
+    private IdentifierValue renameSchema;
+    
     /**
      * Get rename schema.
      *
      * @return rename schema
      */
     public Optional<IdentifierValue> getRenameSchema() {
-        return Optional.empty();
+        return Optional.ofNullable(renameSchema);
     }
 }

@@ -41,6 +41,10 @@ public class CreateIndexStatement extends AbstractSQLStatement implements DDLSta
     
     private SimpleTableSegment table;
     
+    private boolean ifNotExists;
+    
+    private Integer generatedIndexStartIndex;
+    
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     /**
@@ -49,32 +53,7 @@ public class CreateIndexStatement extends AbstractSQLStatement implements DDLSta
      * @return generated index start index
      */
     public Optional<Integer> getGeneratedIndexStartIndex() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set generated index start index.
-     *
-     * @param generatedIndexStartIndex generated index start index
-     */
-    public void setGeneratedIndexStartIndex(final Integer generatedIndexStartIndex) {
-    }
-    
-    /**
-     * Judge whether contains if not exists or not.
-     *
-     * @return whether contains if not exists or not
-     */
-    public boolean isIfNotExists() {
-        return false;
-    }
-    
-    /**
-     * Set if not exists or not.
-     *
-     * @param ifNotExists if not exists or not
-     */
-    public void setIfNotExists(final boolean ifNotExists) {
+        return Optional.ofNullable(generatedIndexStartIndex);
     }
     
     /**

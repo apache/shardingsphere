@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -28,16 +29,10 @@ import java.util.LinkedList;
  * Drop schema statement.
  */
 @Getter
+@Setter
 public class DropSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IdentifierValue> schemaNames = new LinkedList<>();
     
-    /**
-     * Judge whether SQL statement contains cascade or not.
-     *
-     * @return SQL statement contains cascade or not
-     */
-    public boolean isContainsCascade() {
-        return false;
-    }
+    private boolean containsCascade;
 }
