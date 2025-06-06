@@ -41,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -116,7 +115,7 @@ class GroupByMemoryMergedResultTest {
     }
     
     private SelectStatementContext createSelectStatementContext() {
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(num)"));
@@ -131,7 +130,7 @@ class GroupByMemoryMergedResultTest {
     }
     
     private SelectStatementContext createSelectStatementContext(final ShardingSphereDatabase database) {
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
@@ -239,7 +238,7 @@ class GroupByMemoryMergedResultTest {
     }
     
     private SelectStatementContext createSelectStatementContextForCountGroupBy() {
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));
@@ -252,7 +251,7 @@ class GroupByMemoryMergedResultTest {
     }
     
     private SelectStatementContext createSelectStatementContextForCountGroupByDifferentOrderBy() {
-        SelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));

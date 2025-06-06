@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateP
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateProcedureStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -65,7 +64,7 @@ class ShardingCreateProcedureSupportedCheckerTest {
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         routineBody.getValidStatements().add(selectValidStatementSegment);
-        MySQLCreateProcedureStatement sqlStatement = new MySQLCreateProcedureStatement();
+        CreateProcedureStatement sqlStatement = new CreateProcedureStatement();
         sqlStatement.setRoutineBody(routineBody);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -83,7 +82,7 @@ class ShardingCreateProcedureSupportedCheckerTest {
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
-        MySQLCreateProcedureStatement sqlStatement = new MySQLCreateProcedureStatement();
+        CreateProcedureStatement sqlStatement = new CreateProcedureStatement();
         sqlStatement.setRoutineBody(routineBody);
         CreateProcedureStatementContext sqlStatementContext = new CreateProcedureStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);

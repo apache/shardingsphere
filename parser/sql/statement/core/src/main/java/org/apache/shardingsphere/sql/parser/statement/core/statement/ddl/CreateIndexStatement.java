@@ -45,6 +45,10 @@ public class CreateIndexStatement extends AbstractSQLStatement implements DDLSta
     
     private Integer generatedIndexStartIndex;
     
+    private AlgorithmTypeSegment algorithmType;
+    
+    private LockTableSegment lockTable;
+    
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     /**
@@ -62,15 +66,7 @@ public class CreateIndexStatement extends AbstractSQLStatement implements DDLSta
      * @return algorithm type
      */
     public Optional<AlgorithmTypeSegment> getAlgorithmType() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set algorithm type.
-     *
-     * @param algorithmType algorithm type
-     */
-    public void setAlgorithmType(final AlgorithmTypeSegment algorithmType) {
+        return Optional.ofNullable(algorithmType);
     }
     
     /**
@@ -79,14 +75,6 @@ public class CreateIndexStatement extends AbstractSQLStatement implements DDLSta
      * @return lock table
      */
     public Optional<LockTableSegment> getLockTable() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Set lock table.
-     *
-     * @param lockTable lock table
-     */
-    public void setLockTable(final LockTableSegment lockTable) {
+        return Optional.ofNullable(lockTable);
     }
 }

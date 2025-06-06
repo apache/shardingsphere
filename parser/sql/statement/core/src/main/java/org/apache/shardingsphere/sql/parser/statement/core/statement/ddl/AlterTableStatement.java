@@ -31,7 +31,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
@@ -53,6 +55,10 @@ public class AlterTableStatement extends AbstractSQLStatement implements DDLStat
     private ConvertTableDefinitionSegment convertTableDefinition;
     
     private ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
+    
+    private AlgorithmTypeSegment algorithmSegment;
+    
+    private LockTableSegment lockTableSegment;
     
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
@@ -101,5 +107,23 @@ public class AlterTableStatement extends AbstractSQLStatement implements DDLStat
      */
     public Optional<ModifyCollectionRetrievalSegment> getModifyCollectionRetrieval() {
         return Optional.ofNullable(modifyCollectionRetrieval);
+    }
+    
+    /**
+     * Get algorithm segment.
+     *
+     * @return algorithm segment
+     */
+    public Optional<AlgorithmTypeSegment> getGetAlgorithmSegment() {
+        return Optional.ofNullable(algorithmSegment);
+    }
+    
+    /**
+     * Get lock table Segment.
+     *
+     * @return lock table segment
+     */
+    public Optional<LockTableSegment> getLockTableSegment() {
+        return Optional.ofNullable(lockTableSegment);
     }
 }

@@ -37,6 +37,8 @@ public class CreateFunctionStatement extends AbstractSQLStatement implements DDL
     
     private FunctionNameSegment functionName;
     
+    private RoutineBodySegment routineBody;
+    
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
     
     /**
@@ -54,6 +56,6 @@ public class CreateFunctionStatement extends AbstractSQLStatement implements DDL
      * @return routine body
      */
     public Optional<RoutineBodySegment> getRoutineBody() {
-        return Optional.empty();
+        return Optional.ofNullable(routineBody);
     }
 }
