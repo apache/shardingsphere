@@ -21,7 +21,6 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAcce
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
@@ -180,10 +178,5 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     private Collection<SimpleTableSegment> getLockTables(final Collection<RelationExprContext> relationExprContexts) {
         return relationExprContexts.stream().map(each -> (SimpleTableSegment) visit(each.qualifiedName())).collect(Collectors.toList());
-    }
-    
-    @Override
-    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new CheckpointStatement();
     }
 }

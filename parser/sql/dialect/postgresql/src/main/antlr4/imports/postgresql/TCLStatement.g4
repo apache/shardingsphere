@@ -107,6 +107,3 @@ lockType
     | ACCESS EXCLUSIVE
     ;
 
-checkpoint
-    : CHECKPOINT
-    ;

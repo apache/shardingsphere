@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * Checkpoint statement.
+ * PostgreSQL checkpoint statement.
  */
-public final class CheckpointStatement extends AbstractSQLStatement implements TCLStatement {
+public final class PostgreSQLCheckpointStatement extends AbstractSQLStatement implements DALStatement {
 }
