@@ -32,6 +32,8 @@ public class AlterIndexStatement extends AbstractSQLStatement implements DDLStat
     
     private IndexSegment index;
     
+    private IndexSegment renameIndex;
+    
     /**
      * Get index segment.
      *
@@ -64,6 +66,6 @@ public class AlterIndexStatement extends AbstractSQLStatement implements DDLStat
      * @return rename index segment
      */
     public Optional<IndexSegment> getRenameIndex() {
-        return Optional.empty();
+        return Optional.ofNullable(renameIndex);
     }
 }

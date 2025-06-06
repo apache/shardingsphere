@@ -36,20 +36,5 @@ public class DropTableStatement extends AbstractSQLStatement implements DDLState
     
     private boolean ifExists;
     
-    /**
-     * Set contains cascade.
-     *
-     * @param containsCascade contains cascade or not
-     */
-    public void setContainsCascade(final boolean containsCascade) {
-    }
-    
-    /**
-     * Judge whether contains cascade.
-     *
-     * @return contains cascade or not
-     */
-    public boolean isContainsCascade() {
-        return false;
-    }
+    private boolean containsCascade;
 }

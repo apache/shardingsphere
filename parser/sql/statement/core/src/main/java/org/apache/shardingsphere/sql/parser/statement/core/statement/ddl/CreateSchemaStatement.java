@@ -31,6 +31,8 @@ public class CreateSchemaStatement extends AbstractSQLStatement implements DDLSt
     
     private IdentifierValue schemaName;
     
+    private IdentifierValue username;
+    
     /**
      * Get schema name.
      *
@@ -46,6 +48,6 @@ public class CreateSchemaStatement extends AbstractSQLStatement implements DDLSt
      * @return username
      */
     public Optional<IdentifierValue> getUsername() {
-        return Optional.empty();
+        return Optional.ofNullable(username);
     }
 }

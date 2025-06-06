@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
@@ -32,9 +33,12 @@ import java.util.Optional;
  * Drop index statement.
  */
 @Getter
+@Setter
 public class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
+    
+    private boolean ifExists;
     
     /**
      * Get simple table.
@@ -51,23 +55,6 @@ public class DropIndexStatement extends AbstractSQLStatement implements DDLState
      * @param simpleTableSegment simple table
      */
     public void setSimpleTable(final SimpleTableSegment simpleTableSegment) {
-    }
-    
-    /**
-     * Judge whether contains exist clause or not.
-     *
-     * @return whether contains exist clause or not
-     */
-    public boolean isIfExists() {
-        return false;
-    }
-    
-    /**
-     * Set if exists or not.
-     *
-     * @param ifExists if exists or not
-     */
-    public void setIfExists(final boolean ifExists) {
     }
     
     /**

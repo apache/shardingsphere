@@ -31,9 +31,11 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public abstract class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
+public class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment view;
+    
+    private SimpleTableSegment renameView;
     
     /**
      * Get select statement.
@@ -75,15 +77,7 @@ public abstract class AlterViewStatement extends AbstractSQLStatement implements
      * @return rename view
      */
     public Optional<SimpleTableSegment> getRenameView() {
-        return Optional.empty();
-    }
-    
-    /**
-     * Get rename view.
-     *
-     * @param renameView rename view
-     */
-    public void setRenameView(final SimpleTableSegment renameView) {
+        return Optional.ofNullable(renameView);
     }
     
     /**
