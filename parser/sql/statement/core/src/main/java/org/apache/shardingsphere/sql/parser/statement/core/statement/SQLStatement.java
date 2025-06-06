@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * SQL statement.
@@ -39,7 +38,5 @@ public interface SQLStatement extends ASTNode {
      *
      * @return variable names
      */
-    default Collection<String> getVariableNames() {
-        return Collections.emptyList();
-    }
+    Collection<String> getVariableNames();
 }
