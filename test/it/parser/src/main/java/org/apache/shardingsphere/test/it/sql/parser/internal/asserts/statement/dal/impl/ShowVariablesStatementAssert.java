@@ -38,8 +38,6 @@ public final class ShowVariablesStatementAssert {
      * @param expected expected show variables statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowVariablesStatement actual, final ShowVariablesStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
-        }
+        ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
     }
 }

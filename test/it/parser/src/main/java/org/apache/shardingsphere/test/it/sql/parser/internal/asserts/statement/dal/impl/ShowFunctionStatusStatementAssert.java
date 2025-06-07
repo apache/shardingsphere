@@ -38,8 +38,6 @@ public final class ShowFunctionStatusStatementAssert {
      * @param expected expected show function status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowFunctionStatusStatement actual, final ShowFunctionStatusStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
-        }
+        ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
     }
 }

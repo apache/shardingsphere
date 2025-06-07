@@ -40,12 +40,10 @@ public final class ShowOpenTablesStatementAssert {
      * @param expected expected show open tables statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowOpenTablesStatement actual, final ShowOpenTablesStatementTestCase expected) {
-        if (actual.getFromDatabase().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
+        if (null != actual.getFromDatabase()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
         }
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
-        }
+        ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
     }
 }

@@ -17,39 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
-import java.util.Optional;
-
 /**
  * Show events statement for MySQL.
  */
 @RequiredArgsConstructor
+@Getter
 public final class MySQLShowEventsStatement extends AbstractSQLStatement implements DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
-    
-    /**
-     * Get from database.
-     *
-     * @return from database
-     */
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
-    }
-    
-    /**
-     * Get filter segment.
-     *
-     * @return filter segment
-     */
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
-    }
 }

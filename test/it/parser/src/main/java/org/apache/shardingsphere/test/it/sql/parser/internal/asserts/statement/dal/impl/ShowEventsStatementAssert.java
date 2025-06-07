@@ -40,12 +40,10 @@ public final class ShowEventsStatementAssert {
      * @param expected expected show events statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowEventsStatement actual, final ShowEventsStatementTestCase expected) {
-        if (actual.getFromDatabase().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
+        if (null != actual.getFromDatabase()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
         }
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
-        }
+        ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
     }
 }

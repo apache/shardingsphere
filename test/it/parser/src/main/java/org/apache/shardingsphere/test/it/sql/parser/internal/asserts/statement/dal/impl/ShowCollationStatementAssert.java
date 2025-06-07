@@ -38,8 +38,6 @@ public final class ShowCollationStatementAssert {
      * @param expected expected show collation statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCollationStatement actual, final ShowCollationStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
-        }
+        ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
     }
 }
