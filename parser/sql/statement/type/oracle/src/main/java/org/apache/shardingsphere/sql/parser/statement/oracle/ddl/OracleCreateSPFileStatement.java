@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Create server parameter file statement.
+ * Create server parameter file statement for Oracle.
  */
 public final class OracleCreateSPFileStatement extends AbstractSQLStatement implements DDLStatement {
 }

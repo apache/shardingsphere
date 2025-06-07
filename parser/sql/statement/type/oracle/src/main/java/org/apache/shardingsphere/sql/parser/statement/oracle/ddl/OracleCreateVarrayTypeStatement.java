@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
 
 /**
- * Oracle create varray type statement.
+ * Create varray type statement for Oracle.
  */
 @RequiredArgsConstructor
 @Getter

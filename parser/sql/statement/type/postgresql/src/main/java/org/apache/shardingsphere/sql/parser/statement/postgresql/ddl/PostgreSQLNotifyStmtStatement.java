@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL notify statement.
+ * Notify statement for PostgreSQL.
  */
 public final class PostgreSQLNotifyStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

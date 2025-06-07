@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter attribute dimension statement.
+ * Alter attribute dimension statement for Oracle.
  */
 public final class OracleAlterAttributeDimensionStatement extends AbstractSQLStatement implements DDLStatement {
 }

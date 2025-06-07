@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * MySQL create server statement.
+ * Create server statement for MySQL.
  */
 public final class MySQLCreateServerStatement extends AbstractSQLStatement implements DDLStatement {
 }

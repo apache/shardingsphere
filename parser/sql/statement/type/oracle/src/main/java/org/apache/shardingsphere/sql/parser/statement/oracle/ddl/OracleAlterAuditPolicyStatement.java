@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter audit policy statement.
+ * Alter audit policy statement for Oracle.
  */
 public final class OracleAlterAuditPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

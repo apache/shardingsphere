@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop index type statement.
+ * Drop index type statement for Oracle.
  */
 public final class OracleDropIndexTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

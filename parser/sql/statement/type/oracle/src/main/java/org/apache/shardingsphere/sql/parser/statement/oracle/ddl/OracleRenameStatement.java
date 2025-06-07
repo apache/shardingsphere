@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle rename statement.
+ * Rename statement for Oracle.
  */
 public final class OracleRenameStatement extends AbstractSQLStatement implements DDLStatement {
 }

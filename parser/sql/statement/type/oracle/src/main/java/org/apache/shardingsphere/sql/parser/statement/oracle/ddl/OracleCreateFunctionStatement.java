@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateF
 import java.util.List;
 
 /**
- * Oracle create function statement.
+ * Create function statement for Oracle.
  */
 @RequiredArgsConstructor
 @Getter

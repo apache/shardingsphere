@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Oracle create procedure statement.
+ * Create procedure statement for Oracle.
  */
 @RequiredArgsConstructor
 @Getter

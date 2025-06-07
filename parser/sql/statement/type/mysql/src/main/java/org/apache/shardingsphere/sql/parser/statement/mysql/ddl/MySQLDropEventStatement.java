@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * MySQL drop event statement.
+ * Drop event statement for MySQL.
  */
 public final class MySQLDropEventStatement extends AbstractSQLStatement implements DDLStatement {
 }

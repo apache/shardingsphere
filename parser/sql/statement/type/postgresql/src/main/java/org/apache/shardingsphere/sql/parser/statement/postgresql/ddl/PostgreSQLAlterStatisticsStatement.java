@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL alter statistics statement.
+ * Alter statistics statement for PostgreSQL.
  */
 public final class PostgreSQLAlterStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
 }

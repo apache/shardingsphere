@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter analytic view statement.
+ * Alter analytic view statement for Oracle.
  */
 public final class OracleAlterAnalyticViewStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL create event trigger statement.
+ * Create event trigger statement for PostgreSQL.
  */
 public final class PostgreSQLCreateEventTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

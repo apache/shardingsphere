@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQLServer create table statement.
+ * Create table statement for SQLServer.
  */
 @Getter
 public final class SQLServerCreateTableStatement extends CreateTableStatement {

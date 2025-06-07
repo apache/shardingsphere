@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL alter policy statement.
+ * Alter policy statement for PostgreSQL.
  */
 public final class PostgreSQLAlterPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

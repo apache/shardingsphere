@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle create java statement.
+ * Create java statement for Oracle.
  */
 public final class OracleCreateJavaStatement extends AbstractSQLStatement implements DDLStatement {
 }

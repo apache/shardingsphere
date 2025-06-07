@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle create restore point statement.
+ * Create restore point statement for Oracle.
  */
 public final class OracleCreateRestorePointStatement extends AbstractSQLStatement implements DDLStatement {
 }

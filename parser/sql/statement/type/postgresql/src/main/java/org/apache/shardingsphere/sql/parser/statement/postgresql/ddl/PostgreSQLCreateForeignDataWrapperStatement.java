@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL create foreign data wrapper statement.
+ * Create foreign data wrapper statement for PostgreSQL.
  */
 public final class PostgreSQLCreateForeignDataWrapperStatement extends AbstractSQLStatement implements DDLStatement {
 }

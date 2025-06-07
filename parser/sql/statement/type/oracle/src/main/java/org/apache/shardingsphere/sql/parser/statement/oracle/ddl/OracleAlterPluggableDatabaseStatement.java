@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter pluggable database statement.
+ * Alter pluggable database statement for Oracle.
  */
 public final class OracleAlterPluggableDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
 }

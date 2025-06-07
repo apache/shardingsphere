@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop materialized zone map statement.
+ * Drop materialized zone map statement for Oracle.
  */
 public final class OracleDropMaterializedZoneMapStatement extends AbstractSQLStatement implements DDLStatement {
 }

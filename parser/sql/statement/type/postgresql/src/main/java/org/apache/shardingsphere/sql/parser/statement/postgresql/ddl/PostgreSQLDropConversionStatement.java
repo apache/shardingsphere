@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL drop conversion statement.
+ * Drop conversion statement for PostgreSQL.
  */
 public final class PostgreSQLDropConversionStatement extends AbstractSQLStatement implements DDLStatement {
 }

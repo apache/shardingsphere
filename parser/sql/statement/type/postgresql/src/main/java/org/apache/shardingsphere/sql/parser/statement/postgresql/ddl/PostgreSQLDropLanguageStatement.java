@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL drop language statement.
+ * Drop language statement for PostgreSQL.
  */
 public final class PostgreSQLDropLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }

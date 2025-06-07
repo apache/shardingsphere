@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL drop Owned statement.
+ * Drop Owned statement for PostgreSQL.
  */
 public final class PostgreSQLDropOwnedStatement extends AbstractSQLStatement implements DDLStatement {
 }

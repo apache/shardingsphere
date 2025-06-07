@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL alter group statement.
+ * Alter group statement for PostgreSQL.
  */
 public final class PostgreSQLAlterGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

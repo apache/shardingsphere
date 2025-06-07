@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter cluster statement.
+ * Alter cluster statement for Oracle.
  */
 public final class OracleAlterClusterStatement extends AbstractSQLStatement implements DDLStatement {
 }

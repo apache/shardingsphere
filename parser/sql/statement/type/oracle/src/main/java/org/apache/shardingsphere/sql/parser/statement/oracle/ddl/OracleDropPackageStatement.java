@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop package statement.
+ * Drop package statement for Oracle.
  */
 public final class OracleDropPackageStatement extends AbstractSQLStatement implements DDLStatement {
 }

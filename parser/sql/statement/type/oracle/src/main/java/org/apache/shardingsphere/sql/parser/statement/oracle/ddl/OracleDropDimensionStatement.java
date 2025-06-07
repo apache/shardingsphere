@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop dimension statement.
+ * Drop dimension statement for Oracle.
  */
 public final class OracleDropDimensionStatement extends AbstractSQLStatement implements DDLStatement {
 }

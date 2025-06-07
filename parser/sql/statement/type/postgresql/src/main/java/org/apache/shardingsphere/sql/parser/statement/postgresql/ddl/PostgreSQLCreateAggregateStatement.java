@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL create aggregate statement.
+ * Create aggregate statement for PostgreSQL.
  */
 public final class PostgreSQLCreateAggregateStatement extends AbstractSQLStatement implements DDLStatement {
 }

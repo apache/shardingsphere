@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL create text search statement.
+ * Create text search statement for PostgreSQL.
  */
 public final class PostgreSQLCreateTextSearchStatement extends AbstractSQLStatement implements DDLStatement {
 }

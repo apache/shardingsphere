@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle create control file statement.
+ * Create control file statement for Oracle.
  */
 public final class OracleCreateControlFileStatement extends AbstractSQLStatement implements DDLStatement {
 }

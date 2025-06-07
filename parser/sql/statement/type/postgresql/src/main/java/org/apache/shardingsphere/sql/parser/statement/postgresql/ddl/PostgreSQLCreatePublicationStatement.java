@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL create publication statement.
+ * Create publication statement for PostgreSQL.
  */
 public final class PostgreSQLCreatePublicationStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -44,7 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropInd
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
@@ -220,8 +220,8 @@ public final class DDLStatementAssert {
             UpdateStatisticsStatementAssert.assertIs(assertContext, (UpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
         } else if (actual instanceof OpenStatement) {
             OpenStatementAssert.assertIs(assertContext, (OpenStatement) actual, (OpenStatementTestCase) expected);
-        } else if (actual instanceof FlashbackTableStatement) {
-            FlashbackTableStatementAssert.assertIs(assertContext, (FlashbackTableStatement) actual, (FlashbackTableStatementTestCase) expected);
+        } else if (actual instanceof OracleFlashbackTableStatement) {
+            FlashbackTableStatementAssert.assertIs(assertContext, (OracleFlashbackTableStatement) actual, (FlashbackTableStatementTestCase) expected);
         }
     }
 }

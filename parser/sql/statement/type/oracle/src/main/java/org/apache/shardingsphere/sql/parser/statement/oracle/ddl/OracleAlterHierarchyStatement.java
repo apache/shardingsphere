@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Alter hierarchy statement.
+ * Alter hierarchy statement for Oracle.
  */
 public final class OracleAlterHierarchyStatement extends AbstractSQLStatement implements DDLStatement {
 }

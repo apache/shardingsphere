@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter lockdown profile statement.
+ * Alter lockdown profile statement for Oracle.
  */
 public final class OracleAlterLockdownProfileStatement extends AbstractSQLStatement implements DDLStatement {
 }
