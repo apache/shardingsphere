@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateProcedureStatement;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.DCLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.DDLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.DMLStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.lcl.LCLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.plsql.PLSQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.RALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.RDLStatementAssert;
@@ -72,6 +74,8 @@ public final class SQLStatementAssert {
             DDLStatementAssert.assertIs(assertContext, (DDLStatement) actual, expected);
         } else if (actual instanceof TCLStatement) {
             TCLStatementAssert.assertIs(assertContext, (TCLStatement) actual, expected);
+        } else if (actual instanceof LCLStatement) {
+            LCLStatementAssert.assertIs(assertContext, (LCLStatement) actual, expected);
         } else if (actual instanceof DCLStatement) {
             DCLStatementAssert.assertIs(assertContext, (DCLStatement) actual, expected);
         } else if (actual instanceof DALStatement) {

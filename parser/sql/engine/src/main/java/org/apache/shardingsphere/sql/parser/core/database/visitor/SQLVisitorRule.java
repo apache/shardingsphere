@@ -301,13 +301,13 @@ public enum SQLVisitorRule {
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
     
-    LOCK("Lock", SQLStatementType.TCL),
-    
-    UNLOCK("Unlock", SQLStatementType.TCL),
-    
     COMMIT_PREPARED("CommitPrepared", SQLStatementType.TCL),
     
     ROLLBACK_PREPARED("RollbackPrepared", SQLStatementType.TCL),
+    
+    LOCK("Lock", SQLStatementType.LCL),
+    
+    UNLOCK("Unlock", SQLStatementType.LCL),
     
     GRANT("Grant", SQLStatementType.DCL),
     

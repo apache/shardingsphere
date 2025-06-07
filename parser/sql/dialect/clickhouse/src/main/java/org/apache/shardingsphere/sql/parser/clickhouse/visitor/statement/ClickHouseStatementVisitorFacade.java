@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDALStatementVisitor;
@@ -49,6 +50,11 @@ public final class ClickHouseStatementVisitorFacade implements SQLStatementVisit
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
         return ClickHouseTCLStatementVisitor.class;
+    }
+    
+    @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
+        throw new UnsupportedOperationException("");
     }
     
     @Override

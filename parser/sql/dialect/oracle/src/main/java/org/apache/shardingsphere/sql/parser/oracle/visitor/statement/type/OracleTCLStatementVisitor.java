@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetCon
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;

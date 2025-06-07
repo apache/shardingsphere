@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement;
 
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
@@ -51,6 +52,11 @@ public final class SQL92StatementVisitorFacade implements SQLStatementVisitorFac
     }
     
     @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
+        throw new UnsupportedOperationException("");
+    }
+    
+    @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
         return SQL92DCLStatementVisitor.class;
     }
@@ -62,7 +68,7 @@ public final class SQL92StatementVisitorFacade implements SQLStatementVisitorFac
     
     @Override
     public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return null;
+        throw new UnsupportedOperationException("");
     }
     
     @Override

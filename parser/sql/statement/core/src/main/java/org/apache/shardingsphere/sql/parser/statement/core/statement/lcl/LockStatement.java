@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.lcl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
+import java.util.Collection;
+
 /**
- * Unlock statement.
+ * Lock statement.
  */
-public final class UnlockStatement extends AbstractSQLStatement implements TCLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class LockStatement extends AbstractSQLStatement implements LCLStatement {
+    
+    private final Collection<SimpleTableSegment> tables;
 }

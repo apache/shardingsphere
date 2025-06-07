@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement;
+parser grammar LCLStatement;
 
-/**
- * SQL statement type.
- */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, LCL, DCL, DAL, RL
-}
+import BaseRule, DMLStatement;
+
+lock
+    : LOCK TABLE (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? (COMMA_ (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? )* IN lockmodeClause MODE ( NOWAIT | WAIT INTEGER_)?
+    ;

@@ -17,18 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLLCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
  * Statement visitor facade for PostgreSQL.
@@ -51,6 +53,11 @@ public final class PostgreSQLStatementVisitorFacade implements SQLStatementVisit
     }
     
     @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
+        return PostgreSQLLCLStatementVisitor.class;
+    }
+    
+    @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
         return PostgreSQLDCLStatementVisitor.class;
     }
@@ -62,7 +69,7 @@ public final class PostgreSQLStatementVisitorFacade implements SQLStatementVisit
     
     @Override
     public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return null;
+        throw new UnsupportedOperationException("");
     }
     
     @Override

@@ -23,16 +23,13 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatem
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IsolationTypesContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionAccessModeContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaBeginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaEndContext;
@@ -43,18 +40,14 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStateme
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.UnlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAEndStatement;
@@ -62,11 +55,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAPr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARecoveryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * TCL statement visitor for MySQL.
@@ -188,27 +176,5 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitXaRecovery(final XaRecoveryContext ctx) {
         return new XARecoveryStatement();
-    }
-    
-    @Override
-    public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
-    }
-    
-    private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (TableLockContext each : tableLockContexts) {
-            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(each.tableName());
-            if (null != each.alias()) {
-                simpleTableSegment.setAlias((AliasSegment) visit(each.alias()));
-            }
-            result.add(simpleTableSegment);
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitUnlock(final UnlockContext ctx) {
-        return new UnlockStatement();
     }
 }

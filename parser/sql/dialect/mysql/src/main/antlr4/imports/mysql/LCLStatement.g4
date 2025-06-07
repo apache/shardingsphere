@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement;
+parser grammar LCLStatement;
 
-/**
- * SQL statement type.
- */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, LCL, DCL, DAL, RL
-}
+import BaseRule;
+
+lock
+    : LOCK (INSTANCE FOR BACKUP | ((TABLES | TABLE) tableLock (COMMA_ tableLock)*))
+    ;
+
+unlock
+    : UNLOCK (INSTANCE | TABLE | TABLES)
+    ;
+
+tableLock
+    : tableName (AS? alias)? lockOption
+    ;
+
+lockOption
+    : READ LOCAL? | LOW_PRIORITY? WRITE
+    ;

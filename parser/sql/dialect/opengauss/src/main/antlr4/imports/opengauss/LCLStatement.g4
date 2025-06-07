@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement;
+parser grammar LCLStatement;
 
-/**
- * SQL statement type.
- */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, LCL, DCL, DAL, RL
-}
+import DMLStatement;
+
+lock
+    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
+    ;
+
+lockType
+    : ACCESS SHARE
+    | ROW SHARE
+    | ROW EXCLUSIVE
+    | SHARE UPDATE EXCLUSIVE
+    | SHARE
+    | SHARE ROW EXCLUSIVE
+    | EXCLUSIVE
+    | ACCESS EXCLUSIVE
+    ;

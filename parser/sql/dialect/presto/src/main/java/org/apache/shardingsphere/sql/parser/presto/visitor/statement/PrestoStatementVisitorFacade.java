@@ -21,6 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDDLStatementVisitor;
@@ -44,6 +45,11 @@ public final class PrestoStatementVisitorFacade implements SQLStatementVisitorFa
     
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
+        throw new UnsupportedOperationException("");
+    }
+    
+    @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
         throw new UnsupportedOperationException("");
     }
     

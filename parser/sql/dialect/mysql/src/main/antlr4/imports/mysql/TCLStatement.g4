@@ -51,14 +51,6 @@ begin
     : BEGIN WORK?
     ;
 
-lock
-    : LOCK (INSTANCE FOR BACKUP | ((TABLES | TABLE) tableLock (COMMA_ tableLock)*))
-    ;
-
-unlock
-    : UNLOCK (INSTANCE | TABLE | TABLES)
-    ;
-
 releaseSavepoint
     : RELEASE SAVEPOINT identifier
     ;
@@ -69,14 +61,6 @@ optionChain
 
 optionRelease
     : NO? RELEASE
-    ;
-
-tableLock
-    : tableName (AS? alias)? lockOption
-    ;
-
-lockOption
-    : READ LOCAL? | LOW_PRIORITY? WRITE
     ;
 
 xaBegin
