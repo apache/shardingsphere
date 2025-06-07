@@ -42,10 +42,10 @@ public final class CloneStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCloneStatement actual, final CloneStatementTestCase expected) {
         if (null != expected.getDataDirectory()) {
-            assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneActionSegment().getCloneDir(), is(expected.getDataDirectory().getLocation()));
+            assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneAction().getCloneDir(), is(expected.getDataDirectory().getLocation()));
         }
         if (null != expected.getInstance()) {
-            CloneInstanceSegment instance = actual.getCloneActionSegment().getCloneInstance();
+            CloneInstanceSegment instance = actual.getCloneAction().getCloneInstance();
             assertThat(assertContext.getText("Actual instance hostname does not match: "), instance.getHostname(), is(expected.getInstance().getHostname()));
             assertThat(assertContext.getText("Actual instance username does not match: "), instance.getUsername(), is(expected.getInstance().getUsername()));
             assertThat(assertContext.getText("Actual instance port does not match: "), instance.getPort(), is(expected.getInstance().getPort()));

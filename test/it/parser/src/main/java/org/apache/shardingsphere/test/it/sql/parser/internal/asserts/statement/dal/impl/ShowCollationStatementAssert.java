@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCollationStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.character.MySQLShowCollationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCollationStatementTestCase;
@@ -38,8 +38,8 @@ public final class ShowCollationStatementAssert {
      * @param expected expected show collation statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCollationStatement actual, final ShowCollationStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+        if (null != actual.getFilter()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }
     }
 }

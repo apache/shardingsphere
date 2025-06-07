@@ -56,11 +56,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowFunctionStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcedureStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
