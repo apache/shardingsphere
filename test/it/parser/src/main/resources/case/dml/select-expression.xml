@@ -1853,9 +1853,14 @@
         </projections>
         <where start-index="22" stop-index="50">
             <expr>
-                <column name="order_id" start-index="35" stop-index="50">
-                    <owner name="t_order" start-index="35" stop-index="41" />
-                </column>
+                <unary-operation-expression text="BINARY t_order.order_id" start-index="28" stop-index="50">
+                    <operator>BINARY</operator>
+                    <expr>
+                        <column name="order_id" start-index="35" stop-index="50">
+                            <owner name="t_order" start-index="35" stop-index="41" />
+                        </column>
+                    </expr>
+                </unary-operation-expression>
             </expr>
         </where>
     </select>
@@ -1877,8 +1882,13 @@
                     </left>
                     <operator>=</operator>
                     <right>
-                        <parameter-marker-expression parameter-index="0" start-index="54" stop-index="54" />
-                        <literal-expression value="1" start-index="54" stop-index="54" />
+                        <unary-operation-expression text="BINARY ?" start-index="47" stop-index="54">
+                            <operator>BINARY</operator>
+                            <expr>
+                                <parameter-marker-expression parameter-index="0" start-index="54" stop-index="54" />
+                                <literal-expression value="1" start-index="54" stop-index="54" />
+                            </expr>
+                        </unary-operation-expression>
                     </right>
                 </binary-operation-expression>
             </expr>
