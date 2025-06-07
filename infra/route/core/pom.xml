@@ -20,14 +20,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
+        <artifactId>shardingsphere-infra-route</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-route</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-route-core</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>core</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-session</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-checker</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
