@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * DDL statement.
+ * Data definition statement.
  */
 public interface DDLStatement extends SQLStatement {
 }

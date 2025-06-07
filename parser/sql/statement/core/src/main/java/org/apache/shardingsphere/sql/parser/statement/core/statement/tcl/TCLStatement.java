@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Transaction Control Language statement.
+ * Transaction control statement.
  */
 public interface TCLStatement extends SQLStatement {
 }
