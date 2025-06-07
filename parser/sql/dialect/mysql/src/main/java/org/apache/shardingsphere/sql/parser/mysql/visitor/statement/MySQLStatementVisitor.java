@@ -1278,7 +1278,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.caseExpression());
         }
         if (null != ctx.BINARY()) {
-            return visit(ctx.simpleExpr(0));
+            return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), ctx.BINARY().getText(), ctx.getText());
         }
         if (null != ctx.TILDE_()) {
             return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), "~", ctx.getText());
