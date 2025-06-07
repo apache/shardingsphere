@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-parser grammar LCLStatement;
+grammar LCLStatement;
 
 import BaseRule, DMLStatement;
 
