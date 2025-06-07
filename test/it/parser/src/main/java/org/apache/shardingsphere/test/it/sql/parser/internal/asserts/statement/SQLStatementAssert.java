@@ -76,7 +76,7 @@ public final class SQLStatementAssert {
             TCLStatementAssert.assertIs(assertContext, (TCLStatement) actual, expected);
         } else if (actual instanceof LCLStatement) {
             LCLStatementAssert.assertIs(assertContext, (LCLStatement) actual, expected);
-        }  else if (actual instanceof DCLStatement) {
+        } else if (actual instanceof DCLStatement) {
             DCLStatementAssert.assertIs(assertContext, (DCLStatement) actual, expected);
         } else if (actual instanceof DALStatement) {
             DALStatementAssert.assertIs(assertContext, (DALStatement) actual, expected);

@@ -54,7 +54,7 @@ public final class ClickHouseStatementVisitorFacade implements SQLStatementVisit
     
     @Override
     public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
-        throw  new UnsupportedOperationException("");
+        throw new UnsupportedOperationException("");
     }
     
     @Override
