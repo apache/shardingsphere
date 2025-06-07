@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar LCLStatement;
+parser grammar LCLStatement;
 
 import DMLStatement;
 
