@@ -80,7 +80,7 @@ class TablelessRouteEngineFactoryTest {
     
     @BeforeEach
     void setUp() {
-        when((sqlStatementContext).getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(new LinkedList<>());
     }
