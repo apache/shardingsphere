@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement.type;
+
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 
 /**
- * SQL statement type.
+ * LCL statement visitor.
  */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, LCL, DCL, DAL, RL
+public interface LCLStatementVisitor extends SQLStatementVisitor {
 }

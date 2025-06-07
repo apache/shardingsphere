@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 
@@ -50,6 +51,13 @@ public interface SQLStatementVisitorFacade extends DatabaseTypedSPI {
      * @return TCL visitor class
      */
     Class<? extends TCLStatementVisitor> getTCLVisitorClass();
+    
+    /**
+     * Get LCL visitor class.
+     *
+     * @return LCL visitor class
+     */
+    Class<? extends LCLStatementVisitor> getLCLVisitorClass();
     
     /**
      * Get DCL visitor class.

@@ -54,6 +54,8 @@ public final class SQLStatementVisitorFactory {
                 return visitorFacade.getDDLVisitorClass().getConstructor().newInstance();
             case TCL:
                 return visitorFacade.getTCLVisitorClass().getConstructor().newInstance();
+            case LCL:
+                return visitorFacade.getLCLVisitorClass().getConstructor().newInstance();
             case DCL:
                 return visitorFacade.getDCLVisitorClass().getConstructor().newInstance();
             case DAL:

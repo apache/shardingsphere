@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.lcl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
- * SQL statement type.
+ * Unlock statement.
  */
-public enum SQLStatementType {
-    
-    DML, DDL, TCL, LCL, DCL, DAL, RL
+public final class UnlockStatement extends AbstractSQLStatement implements LCLStatement {
 }

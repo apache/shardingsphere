@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement;
 
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLRLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLLCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLRLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
  * Statement visitor facade for MySQL.
@@ -49,6 +51,11 @@ public final class MySQLStatementVisitorFacade implements SQLStatementVisitorFac
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
         return MySQLTCLStatementVisitor.class;
+    }
+    
+    @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
+        return MySQLLCLStatementVisitor.class;
     }
     
     @Override

@@ -888,10 +888,6 @@ rowPatternAggregateFunc
     : (RUNNING | FINAL)? aggregationFunction
     ;
 
-lock
-    : LOCK TABLE (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? (COMMA_ (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? )* IN lockmodeClause MODE ( NOWAIT | WAIT INTEGER_)?
-    ;
-
 partitionExtensionClause
     : PARTITION LP_ partitionName RP_
     | PARTITION FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_

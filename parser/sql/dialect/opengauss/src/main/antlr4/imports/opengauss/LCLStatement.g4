@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.tcl;
+grammar LCLStatement;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import DMLStatement;
 
-/**
- * Unlock statement.
- */
-public final class UnlockStatement extends AbstractSQLStatement implements TCLStatement {
-}
+lock
+    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
+    ;
+
+lockType
+    : ACCESS SHARE
+    | ROW SHARE
+    | ROW EXCLUSIVE
+    | SHARE UPDATE EXCLUSIVE
+    | SHARE
+    | SHARE ROW EXCLUSIVE
+    | EXCLUSIVE
+    | ACCESS EXCLUSIVE
+    ;

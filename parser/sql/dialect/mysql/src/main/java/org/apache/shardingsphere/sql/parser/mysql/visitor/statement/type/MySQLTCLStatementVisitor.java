@@ -48,13 +48,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.UnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.UnlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAEndStatement;
@@ -188,27 +188,5 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitXaRecovery(final XaRecoveryContext ctx) {
         return new XARecoveryStatement();
-    }
-    
-    @Override
-    public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
-    }
-    
-    private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (TableLockContext each : tableLockContexts) {
-            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(each.tableName());
-            if (null != each.alias()) {
-                simpleTableSegment.setAlias((AliasSegment) visit(each.alias()));
-            }
-            result.add(simpleTableSegment);
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitUnlock(final UnlockContext ctx) {
-        return new UnlockStatement();
     }
 }
