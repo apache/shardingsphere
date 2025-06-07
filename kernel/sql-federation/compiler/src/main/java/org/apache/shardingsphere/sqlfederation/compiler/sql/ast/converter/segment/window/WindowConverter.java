@@ -55,7 +55,7 @@ public final class WindowConverter {
         SqlNodeList result = new SqlNodeList(sqlWindows, SqlParserPos.ZERO);
         return Optional.of(result);
     }
-
+    
     /**
      * Convert window item segment to sql window.
      *
