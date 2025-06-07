@@ -380,7 +380,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         PartitionDefinitionSegment partitionDefinition = null == ctx.partitionList()
                 ? null
                 : new PartitionDefinitionSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(),
-                (SimpleTableSegment) visit(ctx.tableName()), ((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
+                        (SimpleTableSegment) visit(ctx.tableName()), ((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
         return new MySQLCacheIndexStatement(name, tableIndexes, partitionDefinition);
     }
     
