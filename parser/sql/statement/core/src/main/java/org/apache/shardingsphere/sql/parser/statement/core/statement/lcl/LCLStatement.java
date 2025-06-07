@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.lcl;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Lock Control Language statement.
+ * Lock control statement.
  */
 public interface LCLStatement extends SQLStatement {
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dml;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * DML statement.
+ * Data manipulation statement.
  */
 public interface DMLStatement extends SQLStatement {
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * DAL statement.
+ * Database administration statement.
  */
 public interface DALStatement extends SQLStatement {
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * DCL statement.
+ * Data control statement.
  */
 public interface DCLStatement extends SQLStatement {
 }
