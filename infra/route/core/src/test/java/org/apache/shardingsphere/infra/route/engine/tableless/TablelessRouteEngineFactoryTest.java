@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,9 +32,9 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.Tab
 import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
@@ -41,16 +43,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateS
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -59,9 +62,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class TablelessRouteEngineFactoryTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock(extraInterfaces = TableAvailable.class)
     private SQLStatementContext sqlStatementContext;
@@ -74,23 +80,15 @@ class TablelessRouteEngineFactoryTest {
     
     @BeforeEach
     void setUp() {
+        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
-        when(tablesContext.getTableNames()).thenReturn(new ArrayList<>());
+        when(tablesContext.getTableNames()).thenReturn(new LinkedList<>());
     }
     
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         return result;
-    }
-    
-    @Test
-    void assertNewInstanceForSetResourceGroup() {
-        SetResourceGroupStatement resourceGroupStatement = mock(SetResourceGroupStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, mock(ShardingSphereDatabase.class));
-        assertThat(actual, instanceOf(TablelessInstanceBroadcastRouteEngine.class));
     }
     
     @Test
@@ -121,9 +119,12 @@ class TablelessRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceForCreateResourceGroup() {
-        CreateResourceGroupStatement resourceGroupStatement = mock(CreateResourceGroupStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(resourceGroupStatement);
+    void assertNewInstanceForInstanceBroadcastRoute() {
+        SQLStatement sqlStatement = mock(DALStatement.class);
+        DialectTablelessBroadcastRouteDecider dialectTablelessBroadcastRouteDecider = mock(DialectTablelessBroadcastRouteDecider.class);
+        when(dialectTablelessBroadcastRouteDecider.isInstanceBroadcastRoute(sqlStatement)).thenReturn(true);
+        when(DatabaseTypedSPILoader.findService(DialectTablelessBroadcastRouteDecider.class, databaseType)).thenReturn(Optional.of(dialectTablelessBroadcastRouteDecider));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
         assertThat(actual, instanceOf(TablelessInstanceBroadcastRouteEngine.class));
