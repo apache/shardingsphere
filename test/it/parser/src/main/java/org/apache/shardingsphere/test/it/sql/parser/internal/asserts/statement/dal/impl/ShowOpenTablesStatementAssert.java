@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowOpenTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowOpenTablesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -39,7 +39,7 @@ public final class ShowOpenTablesStatementAssert {
      * @param actual actual show open tables statement
      * @param expected expected show open tables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowOpenTablesStatement actual, final ShowOpenTablesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowOpenTablesStatement actual, final ShowOpenTablesStatementTestCase expected) {
         if (actual.getFromDatabase().isPresent()) {
             DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());

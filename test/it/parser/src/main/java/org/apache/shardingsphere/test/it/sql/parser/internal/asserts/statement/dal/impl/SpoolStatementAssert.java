@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SpoolStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SpoolStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class SpoolStatementAssert {
      * @param actual actual spool statement
      * @param expected expected spool statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SpoolStatement actual, final SpoolStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleSpoolStatement actual, final SpoolStatementTestCase expected) {
         if (null != expected.getFilename()) {
             assertThat(assertContext.getText("Actual filename does not match: "), actual.getFileName(), is(expected.getFilename()));
         }

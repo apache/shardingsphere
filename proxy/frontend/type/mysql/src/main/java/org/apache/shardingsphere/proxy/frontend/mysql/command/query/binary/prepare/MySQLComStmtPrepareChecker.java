@@ -21,27 +21,27 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CacheIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLInstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadIndexInfoStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRepairTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinaryLogsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinlogEventsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowBinaryLogsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowBinlogEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowErrorsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowWarningsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UninstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowErrorsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowWarningsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RenameUserStatement;
@@ -92,16 +92,16 @@ public final class MySQLComStmtPrepareChecker {
     
     static {
         ALLOWED_SQL_STATEMENTS.addAll(Arrays.asList(AlterTableStatement.class, AlterUserStatement.class, AnalyzeTableStatement.class,
-                CacheIndexStatement.class, CallStatement.class, MySQLChangeMasterStatement.class, ChecksumTableStatement.class, CommitStatement.class,
+                MySQLCacheIndexStatement.class, CallStatement.class, MySQLChangeMasterStatement.class, MySQLChecksumTableStatement.class, CommitStatement.class,
                 CreateIndexStatement.class, DropIndexStatement.class, CreateDatabaseStatement.class, DropDatabaseStatement.class,
                 CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, RenameUserStatement.class, DropUserStatement.class,
                 CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, FlushStatement.class,
-                MySQLGrantStatement.class, InsertStatement.class, InstallPluginStatement.class, KillStatement.class, LoadIndexInfoStatement.class,
-                OptimizeTableStatement.class, RenameTableStatement.class, RepairTableStatement.class, ResetStatement.class,
-                MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, ShowWarningsStatement.class, ShowErrorsStatement.class,
-                ShowBinlogEventsStatement.class, ShowCreateProcedureStatement.class, ShowCreateFunctionStatement.class, ShowCreateEventStatement.class,
-                ShowCreateTableStatement.class, ShowCreateViewStatement.class, ShowBinaryLogsStatement.class, ShowStatusStatement.class,
-                MySQLStartSlaveStatement.class, MySQLStopSlaveStatement.class, TruncateStatement.class, UninstallPluginStatement.class, UpdateStatement.class,
+                MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, KillStatement.class, MySQLLoadIndexInfoStatement.class,
+                OptimizeTableStatement.class, RenameTableStatement.class, MySQLRepairTableStatement.class, MySQLResetStatement.class,
+                MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
+                MySQLShowBinlogEventsStatement.class, MySQLShowCreateProcedureStatement.class, MySQLShowCreateFunctionStatement.class, MySQLShowCreateEventStatement.class,
+                ShowCreateTableStatement.class, MySQLShowCreateViewStatement.class, MySQLShowBinaryLogsStatement.class, MySQLShowStatusStatement.class,
+                MySQLStartSlaveStatement.class, MySQLStopSlaveStatement.class, TruncateStatement.class, MySQLUninstallPluginStatement.class, UpdateStatement.class,
                 XABeginStatement.class, XAPrepareStatement.class, XACommitStatement.class, XARollbackStatement.class, XAEndStatement.class, XARecoveryStatement.class));
     }
     

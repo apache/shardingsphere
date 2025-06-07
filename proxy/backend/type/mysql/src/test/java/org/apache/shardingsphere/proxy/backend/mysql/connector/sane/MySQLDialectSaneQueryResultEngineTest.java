@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowOtherStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowOtherStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -90,7 +90,7 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForShowOtherStatement() {
-        Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new ShowOtherStatement(), new SQLException(""));
+        Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new MySQLShowOtherStatement(), new SQLException(""));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
         RawMemoryQueryResult actualResult = (RawMemoryQueryResult) actual.get();
