@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegm
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
- * SQLServer drop login statement.
+ * Drop login statement for SQLServer.
  */
 @RequiredArgsConstructor
 @Getter

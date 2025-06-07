@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQLServer grant statement.
+ * Grant statement for SQLServer.
  */
 @Getter
 public final class SQLServerGrantStatement extends GrantStatement {

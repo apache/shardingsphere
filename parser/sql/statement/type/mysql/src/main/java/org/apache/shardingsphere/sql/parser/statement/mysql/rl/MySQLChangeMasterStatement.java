@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
 
 /**
- * MySQL change master statement.
+ * Change master statement for MySQL.
  */
 public final class MySQLChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
 }

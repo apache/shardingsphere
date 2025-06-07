@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 
 /**
- * PostgreSQL reassign owned statement.
+ * Reassign owned statement for PostgreSQL.
  */
 public final class PostgreSQLReassignOwnedStatement extends AbstractSQLStatement implements DCLStatement {
 }

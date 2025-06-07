@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * MySQL grant statement.
+ * Grant statement for MySQL.
  */
 @Getter
 @Setter

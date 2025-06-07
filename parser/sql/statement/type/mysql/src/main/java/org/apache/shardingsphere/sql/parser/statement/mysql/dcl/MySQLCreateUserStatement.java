@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * MySQL create user statement.
+ * Create user statement for MySQL.
  */
 @Getter
 @Setter

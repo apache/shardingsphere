@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
 
 /**
- * MySQL start replica statement.
+ * Start replica statement for MySQL.
  */
 public final class MySQLStartReplicaStatement extends AbstractSQLStatement implements RLStatement {
 }
