@@ -29,7 +29,7 @@ public interface DialectTablelessBroadcastRouteDecider extends DatabaseTypedSPI 
     
     /**
      * Whether data source broadcast route.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return broadcast route or not
      */
@@ -37,7 +37,7 @@ public interface DialectTablelessBroadcastRouteDecider extends DatabaseTypedSPI 
     
     /**
      * Whether instance broadcast route.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @return broadcast route or not
      */
