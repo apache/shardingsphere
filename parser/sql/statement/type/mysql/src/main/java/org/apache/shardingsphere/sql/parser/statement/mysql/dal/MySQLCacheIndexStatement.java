@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
@@ -26,18 +26,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStat
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Cache index statement for MySQL.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class MySQLCacheIndexStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final Collection<CacheTableIndexSegment> tableIndexes = new LinkedList<>();
+    private final IdentifierValue name;
     
-    private PartitionDefinitionSegment partitionDefinition;
+    private final Collection<CacheTableIndexSegment> tableIndexes;
     
-    private IdentifierValue name;
+    private final PartitionDefinitionSegment partitionDefinition;
+    
 }
