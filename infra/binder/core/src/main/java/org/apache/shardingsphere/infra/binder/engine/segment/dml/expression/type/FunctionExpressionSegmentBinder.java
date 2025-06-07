@@ -52,6 +52,7 @@ public final class FunctionExpressionSegmentBinder {
         result.setOwner(segment.getOwner());
         result.getParameters().addAll(segment.getParameters().stream()
                 .map(each -> ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        segment.getWindow().ifPresent(result::setWindow);
         return result;
     }
 }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Function segment.
@@ -49,4 +50,13 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     
     @Setter
     private WindowItemSegment window;
+    
+    /**
+     * Get window.
+     *
+     * @return window
+     */
+    public Optional<WindowItemSegment> getWindow() {
+        return Optional.ofNullable(window);
+    }
 }
