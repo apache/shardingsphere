@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDCLStatementVisitor;
@@ -65,11 +64,6 @@ public final class OpenGaussStatementVisitorFacade implements SQLStatementVisito
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return OpenGaussDALStatementVisitor.class;
-    }
-    
-    @Override
-    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        throw new UnsupportedOperationException("");
     }
     
     @Override

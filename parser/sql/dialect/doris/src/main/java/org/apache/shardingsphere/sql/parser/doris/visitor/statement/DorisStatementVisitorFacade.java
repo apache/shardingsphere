@@ -22,14 +22,12 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisLCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisRLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisTCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
@@ -66,11 +64,6 @@ public final class DorisStatementVisitorFacade implements SQLStatementVisitorFac
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return DorisDALStatementVisitor.class;
-    }
-    
-    @Override
-    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return DorisRLStatementVisitor.class;
     }
     
     @Override

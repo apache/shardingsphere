@@ -475,13 +475,13 @@ public enum SQLVisitorRule {
     
     LOAD_STATEMENT("LoadStatement", SQLStatementType.DML),
     
-    CHANGE_MASTER("ChangeMasterTo", SQLStatementType.RL),
+    CHANGE_MASTER("ChangeMasterTo", SQLStatementType.DAL),
     
-    CHANGE_REPLICATION_SOURCE_TO("ChangeReplicationSourceTo", SQLStatementType.RL),
+    CHANGE_REPLICATION_SOURCE_TO("ChangeReplicationSourceTo", SQLStatementType.DAL),
     
-    START_SLAVE("StartSlave", SQLStatementType.RL),
+    START_SLAVE("StartSlave", SQLStatementType.DAL),
     
-    STOP_SLAVE("StopSlave", SQLStatementType.RL),
+    STOP_SLAVE("StopSlave", SQLStatementType.DAL),
     
     XA_BEGIN("XaBegin", SQLStatementType.TCL),
     
@@ -709,7 +709,7 @@ public enum SQLVisitorRule {
     
     SPOOL("Spool", SQLStatementType.DAL),
     
-    START_REPLICA("StartReplica", SQLStatementType.RL),
+    START_REPLICA("StartReplica", SQLStatementType.DAL),
     
     OPEN("Open", SQLStatementType.DDL);
     
