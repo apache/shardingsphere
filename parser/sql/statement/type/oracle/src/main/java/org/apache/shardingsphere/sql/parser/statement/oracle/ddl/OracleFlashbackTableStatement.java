@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
+package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Flashback table statement.
+ * Flashback table statement for Oracle.
  */
 @RequiredArgsConstructor
 @Getter
-public final class FlashbackTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OracleFlashbackTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final SimpleTableSegment table;
     

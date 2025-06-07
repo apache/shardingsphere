@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * MySQL alter instance statement.
+ * Alter instance statement for MySQL.
  */
 public final class MySQLAlterInstanceStatement extends AbstractSQLStatement implements DDLStatement {
 }

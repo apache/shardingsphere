@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
 
+/****
+ * Create nested table type statement for Oracle.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatement {

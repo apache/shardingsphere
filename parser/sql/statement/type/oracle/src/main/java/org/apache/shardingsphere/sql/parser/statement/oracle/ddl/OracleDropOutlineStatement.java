@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop outline statement.
+ * Drop outline statement for Oracle.
  */
 public final class OracleDropOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

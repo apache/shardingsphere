@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle create rollback segment statement.
+ * Create rollback segment statement for Oracle.
  */
 public final class OracleCreateRollbackSegmentStatement extends AbstractSQLStatement implements DDLStatement {
 }

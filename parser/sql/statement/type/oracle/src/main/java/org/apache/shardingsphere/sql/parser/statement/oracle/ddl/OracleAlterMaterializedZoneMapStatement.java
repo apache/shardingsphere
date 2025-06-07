@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter materialized zone map statement.
+ * Alter materialized zone map statement for Oracle.
  */
 public final class OracleAlterMaterializedZoneMapStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -25,6 +25,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateT
 
 import java.util.Collection;
 
+/**
+ * Create object type statement for Oracle.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class OracleCreateObjectTypeStatement extends CreateTypeStatement {

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL alter language statement.
+ * Alter language statement for PostgreSQL.
  */
 public final class PostgreSQLAlterLanguageStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter materialized view log statement.
+ * Alter materialized view log statement for Oracle.
  */
 public final class OracleAlterMaterializedViewLogStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle switch statement.
+ * Switch statement for Oracle.
  */
 public final class OracleSwitchStatement extends AbstractSQLStatement implements DDLStatement {
 }

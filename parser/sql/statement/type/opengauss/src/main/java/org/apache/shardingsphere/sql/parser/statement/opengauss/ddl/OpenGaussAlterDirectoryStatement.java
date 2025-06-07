@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * OpenGauss Alter directory statement.
+ * Alter directory statement for openGauss.
  */
 public final class OpenGaussAlterDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
 }

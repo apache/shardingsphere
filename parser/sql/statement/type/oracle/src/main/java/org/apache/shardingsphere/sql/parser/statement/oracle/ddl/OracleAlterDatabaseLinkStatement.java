@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter database link statement.
+ * Alter database link statement for Oracle.
  */
 public final class OracleAlterDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement {
 }

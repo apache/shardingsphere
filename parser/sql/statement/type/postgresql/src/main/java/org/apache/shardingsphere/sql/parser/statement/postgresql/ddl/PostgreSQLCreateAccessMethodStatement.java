@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL create access method statement.
+ * Create access method statement for PostgreSQL.
  */
 public final class PostgreSQLCreateAccessMethodStatement extends AbstractSQLStatement implements DDLStatement {
 }

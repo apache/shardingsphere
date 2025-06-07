@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter flashback archive statement.
+ * Alter flashback archive statement for Oracle.
  */
 public final class OracleAlterFlashbackArchiveStatement extends AbstractSQLStatement implements DDLStatement {
 }

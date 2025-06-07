@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL discard statement.
+ * Discard statement for PostgreSQL.
  */
 public final class PostgreSQLDiscardStatement extends AbstractSQLStatement implements DDLStatement {
 }

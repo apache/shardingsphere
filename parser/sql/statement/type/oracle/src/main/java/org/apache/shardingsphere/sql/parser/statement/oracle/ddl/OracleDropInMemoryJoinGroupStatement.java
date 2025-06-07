@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop in memory join group statement.
+ * Drop in memory join group statement for Oracle.
  */
 public final class OracleDropInMemoryJoinGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

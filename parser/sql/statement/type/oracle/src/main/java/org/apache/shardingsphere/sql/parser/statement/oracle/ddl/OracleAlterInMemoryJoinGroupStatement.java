@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter in memory join group statement.
+ * Alter in memory join group statement for Oracle.
  */
 public final class OracleAlterInMemoryJoinGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

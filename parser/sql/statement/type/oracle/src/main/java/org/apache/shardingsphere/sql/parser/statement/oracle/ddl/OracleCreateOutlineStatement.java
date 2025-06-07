@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle create outline statement.
+ * Create outline statement for Oracle.
  */
 public final class OracleCreateOutlineStatement extends AbstractSQLStatement implements DDLStatement {
 }

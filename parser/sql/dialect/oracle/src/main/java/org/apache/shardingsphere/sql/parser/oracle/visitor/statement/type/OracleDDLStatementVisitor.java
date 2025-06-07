@@ -274,7 +274,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTab
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -1011,7 +1011,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
-        return new FlashbackTableStatement((SimpleTableSegment) visit(ctx.tableName()), null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
+        return new OracleFlashbackTableStatement((SimpleTableSegment) visit(ctx.tableName()), null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
     }
     
     @Override

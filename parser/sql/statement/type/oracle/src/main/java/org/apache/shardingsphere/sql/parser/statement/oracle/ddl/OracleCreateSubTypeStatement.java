@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateT
 import java.util.Collection;
 
 /**
- * Oracle create sub type statement.
+ * Create sub type statement for Oracle.
  */
 @RequiredArgsConstructor
 @Getter

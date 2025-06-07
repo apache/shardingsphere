@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle create diskgroup statement.
+ * Create diskgroup statement for Oracle.
  */
 public final class OracleCreateDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

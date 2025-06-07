@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * PostgreSQL checkpoint statement.
+ * Checkpoint statement for PostgreSQL.
  */
 public final class PostgreSQLCheckpointStatement extends AbstractSQLStatement implements DALStatement {
 }

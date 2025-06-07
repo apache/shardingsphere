@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * SQLServer create service statement.
+ * Create service statement for SQLServer.
  */
 public final class SQLServerCreateServiceStatement extends AbstractSQLStatement implements DDLStatement {
 }

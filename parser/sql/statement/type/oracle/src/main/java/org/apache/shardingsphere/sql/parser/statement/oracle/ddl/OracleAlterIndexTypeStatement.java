@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle alter index type statement.
+ * Alter index type statement for Oracle.
  */
 public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

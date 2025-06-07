@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL alter subscription statement.
+ * Alter subscription statement for PostgreSQL.
  */
 public final class PostgreSQLAlterSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
 }

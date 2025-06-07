@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL drop foreign table statement.
+ * Drop foreign table statement for PostgreSQL.
  */
 public final class PostgreSQLDropForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
 }

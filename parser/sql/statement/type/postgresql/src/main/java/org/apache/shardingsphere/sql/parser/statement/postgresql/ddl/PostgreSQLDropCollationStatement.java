@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * PostgreSQL drop collation statement.
+ * Drop collation statement for PostgreSQL.
  */
 public final class PostgreSQLDropCollationStatement extends AbstractSQLStatement implements DDLStatement {
 }

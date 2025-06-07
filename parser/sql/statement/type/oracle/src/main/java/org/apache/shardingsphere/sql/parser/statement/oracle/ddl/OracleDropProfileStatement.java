@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * Oracle drop profile statement.
+ * Drop profile statement for Oracle.
  */
 public final class OracleDropProfileStatement extends AbstractSQLStatement implements DDLStatement {
 }

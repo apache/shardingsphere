@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 
 /**
- * MySQL create logfile group statement.
+ * Create logfile group statement for MySQL.
  */
 public final class MySQLCreateLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement {
 }
