@@ -224,6 +224,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -372,24 +373,15 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCacheIndex(final CacheIndexContext ctx) {
-        MySQLCacheIndexStatement result = new MySQLCacheIndexStatement();
-        if (null != ctx.cacheTableIndexList()) {
-            for (CacheTableIndexListContext each : ctx.cacheTableIndexList()) {
-                result.getTableIndexes().add((CacheTableIndexSegment) visit(each));
-            }
-        }
-        if (null != ctx.partitionList()) {
-            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
-            PartitionDefinitionSegment segment = new PartitionDefinitionSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(), table);
-            segment.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
-            result.setPartitionDefinition(segment);
-        }
-        if (null != ctx.DEFAULT()) {
-            result.setName(new IdentifierValue(ctx.DEFAULT().getText()));
-        } else {
-            result.setName((IdentifierValue) visit(ctx.identifier()));
-        }
-        return result;
+        IdentifierValue name = null == ctx.DEFAULT() ? (IdentifierValue) visit(ctx.identifier()) : new IdentifierValue(ctx.DEFAULT().getText());
+        Collection<CacheTableIndexSegment> tableIndexes = null == ctx.cacheTableIndexList()
+                ? Collections.emptyList()
+                : ctx.cacheTableIndexList().stream().map(each -> (CacheTableIndexSegment) visit(each)).collect(Collectors.toList());
+        PartitionDefinitionSegment partitionDefinition = null == ctx.partitionList()
+                ? null
+                : new PartitionDefinitionSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(),
+                        (SimpleTableSegment) visit(ctx.tableName()), ((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
+        return new MySQLCacheIndexStatement(name, tableIndexes, partitionDefinition);
     }
     
     @Override
