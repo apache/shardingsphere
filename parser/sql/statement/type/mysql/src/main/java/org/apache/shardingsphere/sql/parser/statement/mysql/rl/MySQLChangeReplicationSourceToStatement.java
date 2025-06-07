@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
 
 /**
- * MySQL change replication source statement.
+ * Change replication source statement for MySQL.
  */
 public final class MySQLChangeReplicationSourceToStatement extends AbstractSQLStatement implements RLStatement {
 }

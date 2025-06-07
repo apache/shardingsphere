@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQLServer revoke statement.
+ * Revoke statement for SQLServer.
  */
 @Getter
 public final class SQLServerRevokeStatement extends RevokeStatement {

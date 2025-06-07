@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUs
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 
 /**
- * Alter user statement.
+ * Alter user statement for SQLServer.
  */
 @RequiredArgsConstructor
 @Getter

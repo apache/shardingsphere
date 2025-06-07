@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
 
 /**
- * MySQL start slave statement.
+ * Start slave statement for MySQL.
  */
 public final class MySQLStartSlaveStatement extends AbstractSQLStatement implements RLStatement {
 }

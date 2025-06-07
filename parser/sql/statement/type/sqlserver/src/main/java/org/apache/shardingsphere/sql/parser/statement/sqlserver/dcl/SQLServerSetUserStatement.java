@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 
 /**
- * SQLServer set user statement.
+ * Set user statement for SQLServer.
  */
 @RequiredArgsConstructor
 @Getter

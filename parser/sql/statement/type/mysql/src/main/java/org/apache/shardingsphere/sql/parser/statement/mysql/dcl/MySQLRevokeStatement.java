@@ -28,7 +28,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * MySQL revoke statement.
+ * Revoke statement for MySQL.
  */
 @Getter
 @Setter
