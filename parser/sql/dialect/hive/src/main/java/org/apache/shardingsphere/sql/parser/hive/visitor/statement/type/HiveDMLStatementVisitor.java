@@ -196,7 +196,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * DML statement visitor for hive.
+ * DML statement visitor for Hive.
  */
 public final class HiveDMLStatementVisitor extends HiveStatementVisitor implements DMLStatementVisitor {
     
