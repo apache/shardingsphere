@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStateme
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * ClickHouse RL statement visitor.
+ * RL statement visitor for ClickHouse.
  */
 public final class ClickHouseRLStatementVisitor extends ClickHouseStatementVisitor implements RLStatementVisitor {
 }

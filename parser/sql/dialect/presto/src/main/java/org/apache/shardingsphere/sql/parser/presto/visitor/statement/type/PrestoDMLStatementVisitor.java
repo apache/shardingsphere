@@ -192,7 +192,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * DML statement visitor for presto.
+ * DML statement visitor for Presto.
  */
 public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor implements DMLStatementVisitor {
     

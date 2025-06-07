@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatem
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * ClickHouse DCL statement visitor.
+ * DCL statement visitor for ClickHouse.
  */
 public final class ClickHouseDCLStatementVisitor extends ClickHouseStatementVisitor implements DCLStatementVisitor {
 }
