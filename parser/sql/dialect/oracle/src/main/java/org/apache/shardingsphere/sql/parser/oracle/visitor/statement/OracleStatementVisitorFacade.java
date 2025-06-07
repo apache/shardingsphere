@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type.OracleDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type.OracleDCLStatementVisitor;
@@ -65,11 +64,6 @@ public final class OracleStatementVisitorFacade implements SQLStatementVisitorFa
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return OracleDALStatementVisitor.class;
-    }
-    
-    @Override
-    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return null;
     }
     
     @Override

@@ -19,12 +19,15 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinaryLogFileIndexNumberContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BinlogContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CacheTableIndexListContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeMasterToContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeReplicationSourceToContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChannelOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CheckTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChecksumTableContext;
@@ -109,6 +112,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShutdownContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StartSlaveContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
@@ -142,6 +147,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterRe
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChangeReplicationSourceToStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCheckTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
@@ -206,6 +213,9 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTrigger
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowVariablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowWarningsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShutdownStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStartReplicaStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
@@ -883,6 +893,31 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
         return new AlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
+        return new MySQLChangeMasterStatement();
+    }
+    
+    @Override
+    public ASTNode visitStartSlave(final StartSlaveContext ctx) {
+        return new MySQLStartSlaveStatement();
+    }
+    
+    @Override
+    public ASTNode visitStopSlave(final StopSlaveContext ctx) {
+        return new MySQLStopSlaveStatement();
+    }
+    
+    @Override
+    public ASTNode visitChangeReplicationSourceTo(final ChangeReplicationSourceToContext ctx) {
+        return new MySQLChangeReplicationSourceToStatement();
+    }
+    
+    @Override
+    public ASTNode visitStartReplica(final MySQLStatementParser.StartReplicaContext ctx) {
+        return new MySQLStartReplicaStatement();
     }
     
     @Override

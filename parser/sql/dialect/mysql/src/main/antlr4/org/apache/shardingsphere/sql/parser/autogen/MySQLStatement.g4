@@ -17,7 +17,7 @@
 
 grammar MySQLStatement;
 
-import Comments, DDLStatement, TCLStatement, LCLStatement, DCLStatement, RLStatement;
+import Comments, DDLStatement, TCLStatement, LCLStatement, DCLStatement;
 
 execute
     : (select

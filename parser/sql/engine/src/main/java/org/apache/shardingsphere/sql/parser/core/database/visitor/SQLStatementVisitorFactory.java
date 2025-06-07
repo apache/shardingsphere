@@ -60,8 +60,6 @@ public final class SQLStatementVisitorFactory {
                 return visitorFacade.getDCLVisitorClass().getConstructor().newInstance();
             case DAL:
                 return visitorFacade.getDALVisitorClass().getConstructor().newInstance();
-            case RL:
-                return visitorFacade.getRLVisitorClass().getConstructor().newInstance();
             default:
                 throw new SQLParsingException(type.name());
         }

@@ -19,12 +19,15 @@ package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinaryLogFileIndexNumberContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CacheIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CacheTableIndexListContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeMasterToContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeReplicationSourceToContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChannelOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CheckTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChecksumTableContext;
@@ -109,6 +112,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShutdownContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StartSlaveContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
@@ -142,6 +147,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterRe
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChangeReplicationSourceToStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCheckTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
@@ -206,6 +213,9 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTrigger
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowVariablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowWarningsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShutdownStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStartReplicaStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
@@ -872,6 +882,31 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
         return new AlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
+        return new MySQLChangeMasterStatement();
+    }
+    
+    @Override
+    public ASTNode visitStartSlave(final StartSlaveContext ctx) {
+        return new MySQLStartSlaveStatement();
+    }
+    
+    @Override
+    public ASTNode visitStopSlave(final StopSlaveContext ctx) {
+        return new MySQLStopSlaveStatement();
+    }
+    
+    @Override
+    public ASTNode visitChangeReplicationSourceTo(final ChangeReplicationSourceToContext ctx) {
+        return new MySQLChangeReplicationSourceToStatement();
+    }
+    
+    @Override
+    public ASTNode visitStartReplica(final DorisStatementParser.StartReplicaContext ctx) {
+        return new MySQLStartReplicaStatement();
     }
     
     @Override

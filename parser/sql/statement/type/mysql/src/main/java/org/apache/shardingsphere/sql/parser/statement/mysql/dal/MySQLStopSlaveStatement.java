@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.rl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * Replication statement.
+ * Stop slave statement for MySQL.
  */
-public interface RLStatement extends SQLStatement {
+public final class MySQLStopSlaveStatement extends AbstractSQLStatement implements DALStatement {
 }

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.rl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.rl.RLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * Change master statement for MySQL.
+ * Change replication source statement for MySQL.
  */
-public final class MySQLChangeMasterStatement extends AbstractSQLStatement implements RLStatement {
+public final class MySQLChangeReplicationSourceToStatement extends AbstractSQLStatement implements DALStatement {
 }

@@ -60,9 +60,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoState
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLChangeMasterStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStartSlaveStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.rl.MySQLStopSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChangeMasterStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStartSlaveStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;

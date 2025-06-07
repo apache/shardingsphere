@@ -22,13 +22,11 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseRLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseTCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
@@ -65,11 +63,6 @@ public final class ClickHouseStatementVisitorFacade implements SQLStatementVisit
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return ClickHouseDALStatementVisitor.class;
-    }
-    
-    @Override
-    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return ClickHouseRLStatementVisitor.class;
     }
     
     @Override

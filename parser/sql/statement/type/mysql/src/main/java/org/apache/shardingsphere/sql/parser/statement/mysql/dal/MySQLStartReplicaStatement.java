@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * RL statement visitor for ClickHouse.
+ * Start replica statement for MySQL.
  */
-public final class ClickHouseRLStatementVisitor extends ClickHouseStatementVisitor implements RLStatementVisitor {
+public final class MySQLStartReplicaStatement extends AbstractSQLStatement implements DALStatement {
 }
