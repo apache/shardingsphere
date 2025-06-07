@@ -19,5 +19,8 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
+/**
+ * Load statement.
+ */
 public final class LoadStatement extends AbstractSQLStatement implements DALStatement {
 }

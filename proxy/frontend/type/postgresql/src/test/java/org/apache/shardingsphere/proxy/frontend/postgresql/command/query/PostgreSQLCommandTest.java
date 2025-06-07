@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
@@ -121,7 +121,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfVacuumStatement() {
-        assertThat(PostgreSQLCommand.valueOf(VacuumStatement.class).orElse(null), is(PostgreSQLCommand.VACUUM));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLVacuumStatement.class).orElse(null), is(PostgreSQLCommand.VACUUM));
         assertThat(PostgreSQLCommand.VACUUM.getTag(), is("VACUUM"));
     }
     

@@ -19,27 +19,27 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CacheIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCacheIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.InstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLInstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadIndexInfoStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RepairTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRepairTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinaryLogsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowBinlogEventsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowBinaryLogsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowBinlogEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowErrorsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowWarningsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UninstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowErrorsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowWarningsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RenameUserStatement;
@@ -87,18 +87,19 @@ class MySQLComStmtPrepareCheckerTest {
     void assertIsStatementAllowed() {
         CreateTableStatement createTableStatement = new CreateTableStatement();
         Collection<SQLStatement> sqlStatements = Arrays.asList(
-                new AlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(Collections.emptyList()), new CacheIndexStatement(),
-                new CallStatement(null, Collections.emptyList()), new MySQLChangeMasterStatement(), new ChecksumTableStatement(Collections.emptyList()), new CommitStatement(),
+                new AlterTableStatement(), new AlterUserStatement(), new AnalyzeTableStatement(Collections.emptyList()), new MySQLCacheIndexStatement(),
+                new CallStatement(null, Collections.emptyList()), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(Collections.emptyList()), new CommitStatement(),
                 new CreateIndexStatement(), new DropIndexStatement(), new CreateDatabaseStatement(null, false), new DropDatabaseStatement(null, false), createTableStatement,
                 new DropTableStatement(), new MySQLCreateUserStatement(), new RenameUserStatement(), new DropUserStatement(Collections.emptyList()),
                 new CreateViewStatement(), new DropViewStatement(), new DeleteStatement(), new DoStatement(Collections.emptyList()), new FlushStatement(Collections.emptyList(), false),
-                new MySQLGrantStatement(), new InsertStatement(), new InstallPluginStatement(null), new KillStatement(null, null),
-                new LoadIndexInfoStatement(Collections.emptyList()), new OptimizeTableStatement(null), new RenameTableStatement(Collections.emptyList()),
-                new RepairTableStatement(Collections.emptyList()),
-                new ResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new SelectStatement(), new SetStatement(Collections.emptyList()), new ShowWarningsStatement(null),
-                new ShowErrorsStatement(null), new ShowBinlogEventsStatement(null, null), new ShowCreateProcedureStatement(null), new ShowCreateFunctionStatement(null),
-                new ShowCreateEventStatement(null), new ShowCreateTableStatement(null), new ShowCreateViewStatement(null), new ShowBinaryLogsStatement(), new ShowStatusStatement(null),
-                new MySQLStartSlaveStatement(), new MySQLStopSlaveStatement(), new TruncateStatement(), new UninstallPluginStatement(null), new UpdateStatement(),
+                new MySQLGrantStatement(), new InsertStatement(), new MySQLInstallPluginStatement(null), new KillStatement(null, null),
+                new MySQLLoadIndexInfoStatement(Collections.emptyList()), new OptimizeTableStatement(null), new RenameTableStatement(Collections.emptyList()),
+                new MySQLRepairTableStatement(Collections.emptyList()),
+                new MySQLResetStatement(Collections.emptyList()), new MySQLRevokeStatement(), new SelectStatement(), new SetStatement(Collections.emptyList()), new MySQLShowWarningsStatement(null),
+                new MySQLShowErrorsStatement(null), new MySQLShowBinlogEventsStatement(null, null), new MySQLShowCreateProcedureStatement(null), new MySQLShowCreateFunctionStatement(null),
+                new MySQLShowCreateEventStatement(null), new ShowCreateTableStatement(null), new MySQLShowCreateViewStatement(null), new MySQLShowBinaryLogsStatement(),
+                new MySQLShowStatusStatement(null),
+                new MySQLStartSlaveStatement(), new MySQLStopSlaveStatement(), new TruncateStatement(), new MySQLUninstallPluginStatement(null), new UpdateStatement(),
                 new XABeginStatement("1"), new XAPrepareStatement("1"), new XACommitStatement("1"), new XARollbackStatement("1"), new XAEndStatement("1"), new XARecoveryStatement());
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(each));

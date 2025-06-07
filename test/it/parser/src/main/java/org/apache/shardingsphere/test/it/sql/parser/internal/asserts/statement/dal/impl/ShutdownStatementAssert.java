@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShutdownStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShutdownStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShutdownStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class ShutdownStatementAssert {
      * @param actual actual shutdown statement
      * @param expected expected shutdown statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShutdownStatement actual, final ShutdownStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShutdownStatement actual, final ShutdownStatementTestCase expected) {
     }
 }

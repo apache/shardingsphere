@@ -46,7 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadSta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -135,7 +135,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitVacuum(final VacuumContext ctx) {
-        return new VacuumStatement();
+        return new PostgreSQLVacuumStatement();
     }
     
     @Override
