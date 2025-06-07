@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.Tab
 import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
@@ -63,6 +65,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class TablelessRouteEngineFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Mock(extraInterfaces = TableAvailable.class)
     private SQLStatementContext sqlStatementContext;
     
@@ -74,6 +78,7 @@ class TablelessRouteEngineFactoryTest {
     
     @BeforeEach
     void setUp() {
+        when((sqlStatementContext).getDatabaseType()).thenReturn(databaseType);
         when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(new ArrayList<>());
     }
