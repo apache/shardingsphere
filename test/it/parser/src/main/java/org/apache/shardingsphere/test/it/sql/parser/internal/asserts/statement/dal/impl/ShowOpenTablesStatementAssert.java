@@ -44,6 +44,8 @@ public final class ShowOpenTablesStatementAssert {
             DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
         }
-        ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
+        if (null != actual.getFilter()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
+        }
     }
 }
