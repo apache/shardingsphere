@@ -49,7 +49,8 @@ public final class UnavailableProxyState implements ProxyClusterState {
     public void check(final SQLStatement sqlStatement, final DatabaseType databaseType) {
         Collection<Class<? extends SQLStatement>> supportedDialectSQLStatementTypes = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)
                 .map(DialectProxyStateSupportedSQLProvider::getSupportedSQLStatementTypesOnUnavailableState).orElse(Collections.emptyList());
-        ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(SUPPORTED_SQL_STATEMENT_TYPES, supportedDialectSQLStatementTypes, UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
+        ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(
+                SUPPORTED_SQL_STATEMENT_TYPES, supportedDialectSQLStatementTypes, UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
         ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), () -> new ShardingSphereStateException(getType(), sqlStatement));
     }
     

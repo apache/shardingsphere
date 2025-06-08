@@ -45,7 +45,8 @@ public final class ReadOnlyProxyState implements ProxyClusterState {
     private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Arrays.asList(
             InsertStatement.class, UpdateStatement.class, DeleteStatement.class, DDLStatement.class, UpdatableRALStatement.class, RDLStatement.class);
     
-    private final ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(SUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList(), UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
+    private final ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(
+            SUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList(), UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
     
     @Override
     public void check(final SQLStatement sqlStatement, final DatabaseType databaseType) {
