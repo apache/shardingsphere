@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DropResourceGroupStatementTestCase;
 
@@ -40,7 +40,7 @@ public final class DropResourceGroupStatementAssert {
      * @param actual actual create resource group statement
      * @param expected expected create resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropResourceGroupStatement actual, final DropResourceGroupStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDropResourceGroupStatement actual, final DropResourceGroupStatementTestCase expected) {
         assertNotNull(expected.getGroup(), assertContext.getText("expected drop resource group should be not null"));
         assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }

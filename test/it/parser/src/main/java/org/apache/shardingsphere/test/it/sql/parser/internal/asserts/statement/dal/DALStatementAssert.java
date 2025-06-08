@@ -19,16 +19,16 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLCheckTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
@@ -42,7 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetPa
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRestartStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLShowBinlogEventsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.character.MySQLShowCollationStatement;
@@ -236,14 +236,14 @@ public final class DALStatementAssert {
             CloneStatementAssert.assertIs(assertContext, (MySQLCloneStatement) actual, (CloneStatementTestCase) expected);
         } else if (actual instanceof MySQLUninstallComponentStatement) {
             UninstallComponentStatementAssert.assertIs(assertContext, (MySQLUninstallComponentStatement) actual, (UninstallComponentStatementTestCase) expected);
-        } else if (actual instanceof CreateResourceGroupStatement) {
-            CreateResourceGroupStatementAssert.assertIs(assertContext, (CreateResourceGroupStatement) actual, (CreateResourceGroupStatementTestCase) expected);
+        } else if (actual instanceof MySQLCreateResourceGroupStatement) {
+            CreateResourceGroupStatementAssert.assertIs(assertContext, (MySQLCreateResourceGroupStatement) actual, (CreateResourceGroupStatementTestCase) expected);
         } else if (actual instanceof MySQLUninstallPluginStatement) {
             UninstallPluginStatementAssert.assertIs(assertContext, (MySQLUninstallPluginStatement) actual, (UninstallPluginStatementTestCase) expected);
         } else if (actual instanceof MySQLRestartStatement) {
             RestartStatementAssert.assertIs(assertContext, (MySQLRestartStatement) actual, (RestartStatementTestCase) expected);
-        } else if (actual instanceof SetResourceGroupStatement) {
-            SetResourceGroupStatementAssert.assertIs(assertContext, (SetResourceGroupStatement) actual, (SetResourceGroupStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetResourceGroupStatement) {
+            SetResourceGroupStatementAssert.assertIs(assertContext, (MySQLSetResourceGroupStatement) actual, (SetResourceGroupStatementTestCase) expected);
         } else if (actual instanceof OptimizeTableStatement) {
             OptimizeTableStatementAssert.assertIs(assertContext, (OptimizeTableStatement) actual, (OptimizeTableStatementTestCase) expected);
         } else if (actual instanceof MySQLRepairTableStatement) {
@@ -286,10 +286,10 @@ public final class DALStatementAssert {
             CheckTableStatementAssert.assertIs(assertContext, (MySQLCheckTableStatement) actual, (CheckTableStatementTestCase) expected);
         } else if (actual instanceof MySQLShowEventsStatement) {
             ShowEventsStatementAssert.assertIs(assertContext, (MySQLShowEventsStatement) actual, (ShowEventsStatementTestCase) expected);
-        } else if (actual instanceof DropResourceGroupStatement) {
-            DropResourceGroupStatementAssert.assertIs(assertContext, (DropResourceGroupStatement) actual, (DropResourceGroupStatementTestCase) expected);
-        } else if (actual instanceof AlterResourceGroupStatement) {
-            AlterResourceGroupStatementAssert.assertIs(assertContext, (AlterResourceGroupStatement) actual, (AlterResourceGroupStatementTestCase) expected);
+        } else if (actual instanceof MySQLDropResourceGroupStatement) {
+            DropResourceGroupStatementAssert.assertIs(assertContext, (MySQLDropResourceGroupStatement) actual, (DropResourceGroupStatementTestCase) expected);
+        } else if (actual instanceof MySQLAlterResourceGroupStatement) {
+            AlterResourceGroupStatementAssert.assertIs(assertContext, (MySQLAlterResourceGroupStatement) actual, (AlterResourceGroupStatementTestCase) expected);
         } else if (actual instanceof MySQLChecksumTableStatement) {
             ChecksumTableStatementAssert.assertIs(assertContext, (MySQLChecksumTableStatement) actual, (ChecksumTableStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCollationStatement) {

@@ -143,7 +143,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLCacheIndexStatement;
@@ -153,9 +153,9 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLCheck
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLHelpStatement;
@@ -168,7 +168,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepai
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRestartStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLShowBinaryLogsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLShowBinlogEventsStatement;
@@ -662,7 +662,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
-        return new CreateResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLCreateResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
@@ -858,7 +858,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
-        return new SetResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLSetResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
@@ -868,12 +868,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropResourceGroup(final DropResourceGroupContext ctx) {
-        return new DropResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLDropResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
-        return new AlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLAlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
