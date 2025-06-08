@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
-import org.apache.shardingsphere.proxy.backend.state.type.dialect.DialectUnavailableProxyStateSupportedSQLProvider;
+import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 
@@ -54,10 +54,10 @@ public final class UnavailableProxyState implements ProxyClusterState {
     }
     
     private Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypes(final DatabaseType databaseType) {
-        Optional<DialectUnavailableProxyStateSupportedSQLProvider> supportedSQLProvider = DatabaseTypedSPILoader.findService(DialectUnavailableProxyStateSupportedSQLProvider.class, databaseType);
+        Optional<DialectProxyStateSupportedSQLProvider> supportedSQLProvider = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType);
         if (supportedSQLProvider.isPresent()) {
             Collection<Class<? extends SQLStatement>> result = new LinkedList<>(SUPPORTED_SQL_STATEMENTS);
-            result.addAll(supportedSQLProvider.get().getSupportedSQLStatementTypes());
+            result.addAll(supportedSQLProvider.get().getSupportedSQLStatementTypesOnUnavailableState());
             return result;
         }
         return SUPPORTED_SQL_STATEMENTS;

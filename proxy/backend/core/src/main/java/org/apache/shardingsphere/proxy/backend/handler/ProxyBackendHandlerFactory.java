@@ -50,10 +50,10 @@ import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandlerFact
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
+import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
@@ -62,7 +62,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStat
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -112,7 +115,7 @@ public final class ProxyBackendHandlerFactory {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
-        checkSupportedSQLStatement(sqlStatement);
+        checkSupportedSQLStatement(databaseType, sqlStatement);
         checkClusterState(sqlStatement, databaseType);
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
@@ -160,14 +163,24 @@ public final class ProxyBackendHandlerFactory {
         }
     }
     
-    private static void checkSupportedSQLStatement(final SQLStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(isSupportedSQLStatement(sqlStatement),
+    private static void checkSupportedSQLStatement(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(isSupportedSQLStatement(databaseType, sqlStatement),
                 () -> new UnsupportedSQLOperationException(String.format("unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName())));
     }
     
-    private static boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof DCLStatement) && !(sqlStatement instanceof FlushStatement)
-                && !(sqlStatement instanceof ShowCreateUserStatement) && !(sqlStatement instanceof RenameTableStatement);
+    private static boolean isSupportedSQLStatement(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        SQLSupportedJudgeEngine judgeEngine = new SQLSupportedJudgeEngine(Collections.emptyList(), getUnsupportedSQLStatementTypes(databaseType));
+        return judgeEngine.isSupported(sqlStatement);
+    }
+    
+    private static Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypes(final DatabaseType databaseType) {
+        Collection<Class<? extends SQLStatement>> result = new LinkedList<>(Arrays.asList(DCLStatement.class, RenameTableStatement.class));
+        Optional<DialectProxyStateSupportedSQLProvider> supportedSQLProvider = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType);
+        if (supportedSQLProvider.isPresent()) {
+            result.addAll(supportedSQLProvider.get().getUnsupportedSQLStatementTypesOnReadyState());
+            return result;
+        }
+        return result;
     }
     
     private static void checkClusterState(final SQLStatement sqlStatement, final DatabaseType databaseType) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.state.type.dialect;
+package org.apache.shardingsphere.proxy.backend.state;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
@@ -27,12 +27,19 @@ import java.util.Collection;
  * Dialect unavailable proxy state supported SQL provider.
  */
 @SingletonSPI
-public interface DialectUnavailableProxyStateSupportedSQLProvider extends DatabaseTypedSPI {
+public interface DialectProxyStateSupportedSQLProvider extends DatabaseTypedSPI {
     
     /**
-     * Get supported SQL statement types.
+     * Get supported SQL statement types on ready proxy state.
+     *
+     * @return unsupported SQL statement types
+     */
+    Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypesOnReadyState();
+    
+    /**
+     * Get supported SQL statement types on unavailable proxy state.
      *
      * @return supported SQL statement types
      */
-    Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypes();
+    Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypesOnUnavailableState();
 }
