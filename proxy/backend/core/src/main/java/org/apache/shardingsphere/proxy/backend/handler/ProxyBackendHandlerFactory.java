@@ -113,7 +113,7 @@ public final class ProxyBackendHandlerFactory {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
         checkSupportedSQLStatement(sqlStatement);
-        checkClusterState(sqlStatement);
+        checkClusterState(sqlStatement, databaseType);
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
         }
@@ -170,10 +170,10 @@ public final class ProxyBackendHandlerFactory {
                 && !(sqlStatement instanceof ShowCreateUserStatement) && !(sqlStatement instanceof RenameTableStatement);
     }
     
-    private static void checkClusterState(final SQLStatement sqlStatement) {
+    private static void checkClusterState(final SQLStatement sqlStatement, final DatabaseType databaseType) {
         ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
         if (ShardingSphereState.OK != currentState) {
-            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement);
+            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement, databaseType);
         }
     }
     
