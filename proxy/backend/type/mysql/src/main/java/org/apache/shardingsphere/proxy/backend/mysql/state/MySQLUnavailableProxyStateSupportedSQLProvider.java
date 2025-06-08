@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.state;
 import org.apache.shardingsphere.proxy.backend.state.type.dialect.DialectUnavailableProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +32,7 @@ public final class MySQLUnavailableProxyStateSupportedSQLProvider implements Dia
     
     @Override
     public Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypes() {
-        return Arrays.asList(ShowDatabasesStatement.class, UseStatement.class);
+        return Arrays.asList(ShowDatabasesStatement.class, MySQLUseStatement.class);
     }
     
     @Override

@@ -50,7 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.My
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 import java.util.Collection;
@@ -82,8 +82,8 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return createExecutorForSelectStatement((SelectStatementContext) sqlStatementContext, sql, databaseName, parameters);
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof UseStatement) {
-            return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
+        if (sqlStatement instanceof MySQLUseStatement) {
+            return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
         if (sqlStatement instanceof ShowDatabasesStatement) {
             return Optional.of(new ShowDatabasesExecutor((ShowDatabasesStatement) sqlStatement));
