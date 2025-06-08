@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.route.engine.tableless;
 
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
  * Dialect tableless broadcast route decider.
@@ -33,7 +33,7 @@ public interface DialectTablelessBroadcastRouteDecider extends DatabaseTypedSPI 
      * @param sqlStatement SQL statement
      * @return broadcast route or not
      */
-    boolean isDataSourceBroadcastRoute(SQLStatement sqlStatement);
+    boolean isDataSourceBroadcastRoute(DALStatement sqlStatement);
     
     /**
      * Whether instance broadcast route.
@@ -41,5 +41,5 @@ public interface DialectTablelessBroadcastRouteDecider extends DatabaseTypedSPI 
      * @param sqlStatement SQL statement
      * @return broadcast route or not
      */
-    boolean isInstanceBroadcastRoute(SQLStatement sqlStatement);
+    boolean isInstanceBroadcastRoute(DALStatement sqlStatement);
 }
