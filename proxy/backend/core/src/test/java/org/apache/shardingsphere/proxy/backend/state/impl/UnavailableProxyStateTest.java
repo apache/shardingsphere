@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.type.UnavailableProxyState;
-import org.apache.shardingsphere.proxy.backend.state.type.dialect.DialectUnavailableProxyStateSupportedSQLProvider;
+import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -56,9 +56,9 @@ class UnavailableProxyStateTest {
     
     @Test
     void assertExecuteWithDialectSupportedSQL() {
-        DialectUnavailableProxyStateSupportedSQLProvider supportedSQLProvider = mock(DialectUnavailableProxyStateSupportedSQLProvider.class);
-        when(supportedSQLProvider.getSupportedSQLStatementTypes()).thenReturn(Collections.singleton(DMLStatement.class));
-        when(DatabaseTypedSPILoader.findService(DialectUnavailableProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.of(supportedSQLProvider));
+        DialectProxyStateSupportedSQLProvider supportedSQLProvider = mock(DialectProxyStateSupportedSQLProvider.class);
+        when(supportedSQLProvider.getSupportedSQLStatementTypesOnUnavailableState()).thenReturn(Collections.singleton(DMLStatement.class));
+        when(DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.of(supportedSQLProvider));
         assertDoesNotThrow(() -> new UnavailableProxyState().check(mock(DMLStatement.class), databaseType));
     }
 }

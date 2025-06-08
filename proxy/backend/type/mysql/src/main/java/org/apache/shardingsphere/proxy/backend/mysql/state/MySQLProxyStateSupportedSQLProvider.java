@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.state;
 
-import org.apache.shardingsphere.proxy.backend.state.type.dialect.DialectUnavailableProxyStateSupportedSQLProvider;
+import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
@@ -26,13 +28,22 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Unavailable proxy state supported SQL provider for MySQL.
+ * Proxy state supported SQL provider for MySQL.
  */
-public final class MySQLUnavailableProxyStateSupportedSQLProvider implements DialectUnavailableProxyStateSupportedSQLProvider {
+public final class MySQLProxyStateSupportedSQLProvider implements DialectProxyStateSupportedSQLProvider {
+    
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES_ON_READY_STATE = Arrays.asList(FlushStatement.class, ShowCreateUserStatement.class);
+    
+    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENT_TYPES_ON_UNAVAILABLE_STATE = Arrays.asList(ShowDatabasesStatement.class, MySQLUseStatement.class);
     
     @Override
-    public Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypes() {
-        return Arrays.asList(ShowDatabasesStatement.class, MySQLUseStatement.class);
+    public Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypesOnReadyState() {
+        return UNSUPPORTED_SQL_STATEMENT_TYPES_ON_READY_STATE;
+    }
+    
+    @Override
+    public Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypesOnUnavailableState() {
+        return SUPPORTED_SQL_STATEMENT_TYPES_ON_UNAVAILABLE_STATE;
     }
     
     @Override
