@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
-import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
+import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
@@ -45,7 +45,7 @@ public final class ReadOnlyProxyState implements ProxyClusterState {
     private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Arrays.asList(
             InsertStatement.class, UpdateStatement.class, DeleteStatement.class, DDLStatement.class, UpdatableRALStatement.class, RDLStatement.class);
     
-    private final SQLSupportedJudgeEngine judgeEngine = new SQLSupportedJudgeEngine(SUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList(), UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
+    private final ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(SUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList(), UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
     
     @Override
     public void check(final SQLStatement sqlStatement, final DatabaseType databaseType) {

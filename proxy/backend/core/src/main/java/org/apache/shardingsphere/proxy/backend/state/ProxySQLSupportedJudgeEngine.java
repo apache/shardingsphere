@@ -24,10 +24,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * SQL supported judge engine.
+ * Proxy SQL supported judge engine.
  */
 @RequiredArgsConstructor
-public final class SQLSupportedJudgeEngine {
+public final class ProxySQLSupportedJudgeEngine {
     
     private final Collection<Class<? extends SQLStatement>> supportedStandardSQLStatementTypes;
     

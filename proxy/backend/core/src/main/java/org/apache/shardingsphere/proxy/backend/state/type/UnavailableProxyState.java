@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
-import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
+import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 
@@ -49,7 +49,7 @@ public final class UnavailableProxyState implements ProxyClusterState {
     public void check(final SQLStatement sqlStatement, final DatabaseType databaseType) {
         Collection<Class<? extends SQLStatement>> supportedDialectSQLStatementTypes = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)
                 .map(DialectProxyStateSupportedSQLProvider::getSupportedSQLStatementTypesOnUnavailableState).orElse(Collections.emptyList());
-        SQLSupportedJudgeEngine judgeEngine = new SQLSupportedJudgeEngine(SUPPORTED_SQL_STATEMENT_TYPES, supportedDialectSQLStatementTypes, UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
+        ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(SUPPORTED_SQL_STATEMENT_TYPES, supportedDialectSQLStatementTypes, UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
         ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), () -> new ShardingSphereStateException(getType(), sqlStatement));
     }
     
