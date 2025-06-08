@@ -71,7 +71,7 @@ public final class TablelessRouteEngineFactory {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         // TODO remove this logic when proxy and jdbc support all dal statement @duanzhengqiang
         if (sqlStatement instanceof DALStatement) {
-            return getDALRouteEngine(sqlStatement, database, queryContext.getSqlStatementContext().getDatabaseType());
+            return getDALRouteEngine((DALStatement) sqlStatement, database, queryContext.getSqlStatementContext().getDatabaseType());
         }
         // TODO Support more TCL statements by transaction module, then remove this.
         if (sqlStatement instanceof TCLStatement) {
@@ -86,7 +86,7 @@ public final class TablelessRouteEngineFactory {
         return new TablelessIgnoreRouteEngine();
     }
     
-    private static TablelessRouteEngine getDALRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
+    private static TablelessRouteEngine getDALRouteEngine(final DALStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
         Optional<DialectTablelessBroadcastRouteDecider> dialectTablelessBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectTablelessBroadcastRouteDecider.class, databaseType);
         if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof SetStatement
                 || sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {

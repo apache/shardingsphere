@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.Table
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
@@ -120,7 +119,7 @@ class TablelessRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForInstanceBroadcastRoute() {
-        SQLStatement sqlStatement = mock(DALStatement.class);
+        DALStatement sqlStatement = mock(DALStatement.class);
         DialectTablelessBroadcastRouteDecider dialectTablelessBroadcastRouteDecider = mock(DialectTablelessBroadcastRouteDecider.class);
         when(dialectTablelessBroadcastRouteDecider.isInstanceBroadcastRoute(sqlStatement)).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(DialectTablelessBroadcastRouteDecider.class, databaseType)).thenReturn(Optional.of(dialectTablelessBroadcastRouteDecider));

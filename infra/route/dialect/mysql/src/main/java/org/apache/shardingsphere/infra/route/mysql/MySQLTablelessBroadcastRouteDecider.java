@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.route.mysql;
 
 import org.apache.shardingsphere.infra.route.engine.tableless.DialectTablelessBroadcastRouteDecider;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
 
@@ -30,12 +30,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetReso
 public final class MySQLTablelessBroadcastRouteDecider implements DialectTablelessBroadcastRouteDecider {
     
     @Override
-    public boolean isDataSourceBroadcastRoute(final SQLStatement sqlStatement) {
+    public boolean isDataSourceBroadcastRoute(final DALStatement sqlStatement) {
         return false;
     }
     
     @Override
-    public boolean isInstanceBroadcastRoute(final SQLStatement sqlStatement) {
+    public boolean isInstanceBroadcastRoute(final DALStatement sqlStatement) {
         return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof AlterResourceGroupStatement || sqlStatement instanceof DropResourceGroupStatement
                 || sqlStatement instanceof SetResourceGroupStatement;
     }
