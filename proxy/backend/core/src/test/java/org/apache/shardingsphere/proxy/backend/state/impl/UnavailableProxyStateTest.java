@@ -46,11 +46,13 @@ class UnavailableProxyStateTest {
     
     @Test
     void assertExecuteWithUnsupportedSQL() {
+        when(DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.empty());
         assertThrows(ShardingSphereStateException.class, () -> new UnavailableProxyState().check(mock(DMLStatement.class), databaseType));
     }
     
     @Test
     void assertExecuteWithSupportedSQL() {
+        when(DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)).thenReturn(Optional.empty());
         assertDoesNotThrow(() -> new UnavailableProxyState().check(mock(ImportMetaDataStatement.class), databaseType));
     }
     
