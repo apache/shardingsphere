@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.state;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
@@ -32,7 +32,7 @@ import java.util.Collection;
  */
 public final class MySQLProxyStateSupportedSQLProvider implements DialectProxyStateSupportedSQLProvider {
     
-    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES_ON_READY_STATE = Arrays.asList(FlushStatement.class, ShowCreateUserStatement.class);
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES_ON_READY_STATE = Arrays.asList(FlushStatement.class, MySQLShowCreateUserStatement.class);
     
     private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENT_TYPES_ON_UNAVAILABLE_STATE = Arrays.asList(ShowDatabasesStatement.class, MySQLUseStatement.class);
     

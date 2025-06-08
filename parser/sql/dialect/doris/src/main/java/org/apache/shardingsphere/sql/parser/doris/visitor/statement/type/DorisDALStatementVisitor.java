@@ -181,7 +181,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.My
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger.MySQLShowCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.view.MySQLShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.engine.MySQLShowEngineStatement;
@@ -742,7 +742,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
-        return new ShowCreateUserStatement(((IdentifierValue) visit(ctx.username())).getValue());
+        return new MySQLShowCreateUserStatement(((IdentifierValue) visit(ctx.username())).getValue());
     }
     
     @Override

@@ -49,7 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.character.M
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger.MySQLShowCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.event.MySQLShowEventsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
@@ -212,8 +212,8 @@ public final class DALStatementAssert {
             ShowCreateTableStatementAssert.assertIs(assertContext, (ShowCreateTableStatement) actual, (ShowCreateTableStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateTriggerStatement) {
             ShowCreateTriggerStatementAssert.assertIs(assertContext, (MySQLShowCreateTriggerStatement) actual, (ShowCreateTriggerStatementTestCase) expected);
-        } else if (actual instanceof ShowCreateUserStatement) {
-            ShowCreateUserStatementAssert.assertIs(assertContext, (ShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
+        } else if (actual instanceof MySQLShowCreateUserStatement) {
+            ShowCreateUserStatementAssert.assertIs(assertContext, (MySQLShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
         } else if (actual instanceof ShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (ShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
         } else if (actual instanceof ShowIndexStatement) {
