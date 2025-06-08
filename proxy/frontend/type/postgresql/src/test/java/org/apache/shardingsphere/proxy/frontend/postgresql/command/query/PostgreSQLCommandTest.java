@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.Regist
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
@@ -315,7 +315,7 @@ class PostgreSQLCommandTest {
     
     @Test
     void assertValueOfResetStatement() {
-        assertThat(PostgreSQLCommand.valueOf(ResetParameterStatement.class).orElse(null), is(PostgreSQLCommand.RESET));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLResetParameterStatement.class).orElse(null), is(PostgreSQLCommand.RESET));
         assertThat(PostgreSQLCommand.RESET.getTag(), is("RESET"));
     }
     

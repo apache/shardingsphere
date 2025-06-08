@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * Reset parameter statement.
+ * Load statement for PostgreSQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ResetParameterStatement extends AbstractSQLStatement implements DALStatement {
-    
-    private final String configurationParameter;
+public final class PostgreSQLLoadStatement extends AbstractSQLStatement implements DALStatement {
 }

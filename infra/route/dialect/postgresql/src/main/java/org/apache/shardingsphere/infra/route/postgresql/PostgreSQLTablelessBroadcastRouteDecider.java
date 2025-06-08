@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.route.postgresql;
 
 import org.apache.shardingsphere.infra.route.engine.tableless.DialectTablelessBroadcastRouteDecider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 
 /**
  * Dialect tableless broadcast route decider for PostgreSQL.
@@ -29,7 +29,7 @@ public final class PostgreSQLTablelessBroadcastRouteDecider implements DialectTa
     
     @Override
     public boolean isDataSourceBroadcastRoute(final DALStatement sqlStatement) {
-        return sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof LoadStatement;
+        return sqlStatement instanceof PostgreSQLResetParameterStatement || sqlStatement instanceof PostgreSQLLoadStatement;
     }
     
     @Override

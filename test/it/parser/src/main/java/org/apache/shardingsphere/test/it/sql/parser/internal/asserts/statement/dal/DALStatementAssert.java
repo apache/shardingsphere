@@ -38,7 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillSta
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetPersistStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRestartStatement;
@@ -224,8 +224,8 @@ public final class DALStatementAssert {
             ShowStatementAssert.assertIs(assertContext, (ShowStatement) actual, (ShowStatementTestCase) expected);
         } else if (actual instanceof SetStatement) {
             SetParameterStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetParameterStatementTestCase) expected);
-        } else if (actual instanceof ResetParameterStatement) {
-            ResetParameterStatementAssert.assertIs(assertContext, (ResetParameterStatement) actual, (ResetParameterStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLResetParameterStatement) {
+            ResetParameterStatementAssert.assertIs(assertContext, (PostgreSQLResetParameterStatement) actual, (ResetParameterStatementTestCase) expected);
         } else if (actual instanceof MySQLInstallComponentStatement) {
             InstallComponentStatementAssert.assertIs(assertContext, (MySQLInstallComponentStatement) actual, (InstallComponentStatementTestCase) expected);
         } else if (actual instanceof FlushStatement) {

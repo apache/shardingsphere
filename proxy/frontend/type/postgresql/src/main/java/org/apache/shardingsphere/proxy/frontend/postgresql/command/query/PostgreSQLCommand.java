@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
@@ -125,7 +125,7 @@ public enum PostgreSQLCommand {
     ROLLBACK(RollbackStatement.class),
     RELEASE(ReleaseSavepointStatement.class),
     SET(SetStatement.class, SetTransactionStatement.class),
-    RESET(ResetParameterStatement.class),
+    RESET(PostgreSQLResetParameterStatement.class),
     DECLARE_CURSOR(CursorStatement.class, DeclareStatement.class),
     MOVE(MoveStatement.class),
     CLOSE_CURSOR(CloseStatement.class),

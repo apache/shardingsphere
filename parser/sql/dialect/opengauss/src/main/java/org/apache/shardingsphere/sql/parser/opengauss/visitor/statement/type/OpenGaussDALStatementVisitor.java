@@ -42,8 +42,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
@@ -108,7 +108,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new ResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
+        return new PostgreSQLResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")
@@ -130,7 +130,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitLoad(final LoadContext ctx) {
-        return new LoadStatement();
+        return new PostgreSQLLoadStatement();
     }
     
     @Override
