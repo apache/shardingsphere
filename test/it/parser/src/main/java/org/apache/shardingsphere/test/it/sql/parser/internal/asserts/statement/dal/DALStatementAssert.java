@@ -72,7 +72,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShutdownSta
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.component.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLUninstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.AlterResourceGroupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.impl.BinlogStatementAssert;
@@ -196,8 +196,8 @@ public final class DALStatementAssert {
      * @param expected expected DAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof UseStatement) {
-            UseStatementAssert.assertIs(assertContext, (UseStatement) actual, (UseStatementTestCase) expected);
+        if (actual instanceof MySQLUseStatement) {
+            UseStatementAssert.assertIs(assertContext, (MySQLUseStatement) actual, (UseStatementTestCase) expected);
         } else if (actual instanceof EmptyStatement) {
             EmptyStatementAssert.assertIs(assertContext, (EmptyStatement) actual, (EmptyStatementTestCase) expected);
         } else if (actual instanceof ExplainStatement) {

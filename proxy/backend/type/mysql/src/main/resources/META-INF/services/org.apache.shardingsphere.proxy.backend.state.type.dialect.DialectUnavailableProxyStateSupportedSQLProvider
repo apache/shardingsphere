@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.state.type.ReadOnlyProxyState
-org.apache.shardingsphere.proxy.backend.state.type.UnavailableProxyState
+org.apache.shardingsphere.proxy.backend.mysql.state.MySQLUnavailableProxyStateSupportedSQLProvider

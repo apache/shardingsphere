@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.state;
+package org.apache.shardingsphere.proxy.backend.mysql.state;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.proxy.backend.state.type.dialect.DialectUnavailableProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Proxy cluster state.
+ * Unavailable proxy state supported SQL provider for MySQL.
  */
-public interface ProxyClusterState extends TypedSPI {
+public final class MySQLUnavailableProxyStateSupportedSQLProvider implements DialectUnavailableProxyStateSupportedSQLProvider {
     
-    /**
-     * Check SQL statement.
-     *
-     * @param sqlStatement SQL statement
-     * @param databaseType database type
-     */
-    void check(SQLStatement sqlStatement, DatabaseType databaseType);
+    @Override
+    public Collection<Class<? extends SQLStatement>> getSupportedSQLStatementTypes() {
+        return Arrays.asList(ShowDatabasesStatement.class, MySQLUseStatement.class);
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
 }
