@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLCache
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
@@ -96,7 +96,7 @@ public final class MySQLComStmtPrepareChecker {
                 CreateIndexStatement.class, DropIndexStatement.class, CreateDatabaseStatement.class, DropDatabaseStatement.class,
                 CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, RenameUserStatement.class, DropUserStatement.class,
                 CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, FlushStatement.class,
-                MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, KillStatement.class, MySQLLoadIndexInfoStatement.class,
+                MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, MySQLKillStatement.class, MySQLLoadIndexInfoStatement.class,
                 OptimizeTableStatement.class, RenameTableStatement.class, MySQLRepairTableStatement.class, MySQLResetStatement.class,
                 MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
                 MySQLShowBinlogEventsStatement.class, MySQLShowCreateProcedureStatement.class, MySQLShowCreateFunctionStatement.class, MySQLShowCreateEventStatement.class,

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 
 import java.sql.SQLException;
 
@@ -35,7 +35,7 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
     
     private static final String QUERY_SCOPE = "QUERY";
     
-    private final KillStatement killStatement;
+    private final MySQLKillStatement killStatement;
     
     /**
      * Execute.
