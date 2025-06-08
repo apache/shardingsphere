@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
+            <artifactId>shardingsphere-infra-route-core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

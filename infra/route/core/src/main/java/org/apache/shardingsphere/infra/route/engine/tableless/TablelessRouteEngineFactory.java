@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessInstanceBroadcastRouteEngine;
@@ -30,13 +32,9 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.Tablel
 import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.LoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
@@ -53,6 +51,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSch
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
+
+import java.util.Optional;
 
 /**
  * Tableless route engine factory.
@@ -71,7 +71,7 @@ public final class TablelessRouteEngineFactory {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         // TODO remove this logic when proxy and jdbc support all dal statement @duanzhengqiang
         if (sqlStatement instanceof DALStatement) {
-            return getDALRouteEngine(sqlStatement, database);
+            return getDALRouteEngine(sqlStatement, database, queryContext.getSqlStatementContext().getDatabaseType());
         }
         // TODO Support more TCL statements by transaction module, then remove this.
         if (sqlStatement instanceof TCLStatement) {
@@ -86,22 +86,16 @@ public final class TablelessRouteEngineFactory {
         return new TablelessIgnoreRouteEngine();
     }
     
-    private static TablelessRouteEngine getDALRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database) {
-        if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof SetStatement) {
+    private static TablelessRouteEngine getDALRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
+        Optional<DialectTablelessBroadcastRouteDecider> dialectTablelessBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectTablelessBroadcastRouteDecider.class, databaseType);
+        if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof SetStatement
+                || sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
-        if (sqlStatement instanceof ResetParameterStatement || sqlStatement instanceof ShowDatabasesStatement || sqlStatement instanceof LoadStatement) {
-            return new TablelessDataSourceBroadcastRouteEngine();
-        }
-        if (isResourceGroupStatement(sqlStatement)) {
+        if (dialectTablelessBroadcastRouteDecider.map(optional -> optional.isInstanceBroadcastRoute(sqlStatement)).orElse(false)) {
             return new TablelessInstanceBroadcastRouteEngine(database);
         }
         return new TablelessIgnoreRouteEngine();
-    }
-    
-    private static boolean isResourceGroupStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof AlterResourceGroupStatement || sqlStatement instanceof DropResourceGroupStatement
-                || sqlStatement instanceof SetResourceGroupStatement;
     }
     
     private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
