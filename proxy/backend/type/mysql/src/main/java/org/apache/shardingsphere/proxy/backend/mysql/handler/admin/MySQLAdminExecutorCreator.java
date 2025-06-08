@@ -42,7 +42,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UseD
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
@@ -106,8 +106,8 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (sqlStatement instanceof MySQLShowProcessListStatement) {
             return Optional.of(new ShowProcessListExecutor(((MySQLShowProcessListStatement) sqlStatement).isFull()));
         }
-        if (sqlStatement instanceof KillStatement) {
-            return Optional.of(new KillProcessExecutor((KillStatement) sqlStatement));
+        if (sqlStatement instanceof MySQLKillStatement) {
+            return Optional.of(new KillProcessExecutor((MySQLKillStatement) sqlStatement));
         }
         return Optional.empty();
     }

@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.Explain
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.component.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.KillStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLLoadIndexInfoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
@@ -268,8 +268,8 @@ public final class DALStatementAssert {
             ResetPersistStatementAssert.assertIs(assertContext, (MySQLResetPersistStatement) actual, (ResetPersistStatementTestCase) expected);
         } else if (actual instanceof MySQLShowProcedureCodeStatement) {
             ShowProcedureCodeStatementAssert.assertIs(assertContext, (MySQLShowProcedureCodeStatement) actual, (ShowProcedureCodeStatementTestCase) expected);
-        } else if (actual instanceof KillStatement) {
-            KillStatementAssert.assertIs(assertContext, (KillStatement) actual, (KillStatementTestCase) expected);
+        } else if (actual instanceof MySQLKillStatement) {
+            KillStatementAssert.assertIs(assertContext, (MySQLKillStatement) actual, (KillStatementTestCase) expected);
         } else if (actual instanceof MySQLCacheIndexStatement) {
             CacheIndexStatementAssert.assertIs(assertContext, (MySQLCacheIndexStatement) actual, (CacheIndexStatementTestCase) expected);
         } else if (actual instanceof MySQLLoadIndexInfoStatement) {

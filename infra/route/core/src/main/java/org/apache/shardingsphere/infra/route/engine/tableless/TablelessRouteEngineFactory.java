@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.route.engine.tableless;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTab
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
@@ -85,21 +85,27 @@ public final class TablelessRouteEngineFactory {
     }
     
     private static TablelessRouteEngine getDMLRouteEngine(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof SelectStatementContext) {
-            return new TablelessDataSourceUnicastRouteEngine();
-        }
-        return new TablelessIgnoreRouteEngine();
+        return sqlStatementContext instanceof SelectStatementContext ? new TablelessDataSourceUnicastRouteEngine() : new TablelessIgnoreRouteEngine();
     }
     
     private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         if (sqlStatementContext instanceof CursorAvailable) {
-            return getCursorRouteEngine(sqlStatementContext, database);
+            return getCursorRouteEngine(sqlStatementContext.getSqlStatement(), database);
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (isFunctionDDLStatement(sqlStatement) || isSchemaDDLStatement(sqlStatement)) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
         return new TablelessDataSourceBroadcastRouteEngine();
+    }
+    
+    private static TablelessRouteEngine getCursorRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database) {
+        if (sqlStatement instanceof CloseStatement && ((CloseStatement) sqlStatement).isCloseAll()) {
+            return new TablelessDataSourceBroadcastRouteEngine();
+        }
+        return sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement
+                ? new TablelessInstanceBroadcastRouteEngine(database)
+                : new TablelessIgnoreRouteEngine();
     }
     
     private static boolean isFunctionDDLStatement(final SQLStatement sqlStatement) {
@@ -110,19 +116,8 @@ public final class TablelessRouteEngineFactory {
         return sqlStatement instanceof CreateSchemaStatement || sqlStatement instanceof AlterSchemaStatement || sqlStatement instanceof DropSchemaStatement;
     }
     
-    private static TablelessRouteEngine getCursorRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
-            return new TablelessDataSourceBroadcastRouteEngine();
-        }
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            return new TablelessInstanceBroadcastRouteEngine(database);
-        }
-        return new TablelessIgnoreRouteEngine();
-    }
-    
     private static TablelessRouteEngine getDALRouteEngine(final DALStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
-        Optional<DialectTablelessBroadcastRouteDecider> dialectTablelessBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectTablelessBroadcastRouteDecider.class, databaseType);
+        Optional<DialectDALStatementBroadcastRouteDecider> dialectTablelessBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType);
         if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof ShowDatabasesStatement
                 || sqlStatement instanceof SetStatement) {
             return new TablelessDataSourceBroadcastRouteEngine();

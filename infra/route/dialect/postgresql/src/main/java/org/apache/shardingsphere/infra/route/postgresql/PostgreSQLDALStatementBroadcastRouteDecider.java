@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.route.postgresql;
 
-import org.apache.shardingsphere.infra.route.engine.tableless.DialectTablelessBroadcastRouteDecider;
+import org.apache.shardingsphere.infra.route.engine.tableless.DialectDALStatementBroadcastRouteDecider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 
 /**
- * Dialect tableless broadcast route decider for PostgreSQL.
+ * Dialect DAL statement broadcast route decider for PostgreSQL.
  */
-public final class PostgreSQLTablelessBroadcastRouteDecider implements DialectTablelessBroadcastRouteDecider {
+public final class PostgreSQLDALStatementBroadcastRouteDecider implements DialectDALStatementBroadcastRouteDecider {
     
     @Override
     public boolean isDataSourceBroadcastRoute(final DALStatement sqlStatement) {

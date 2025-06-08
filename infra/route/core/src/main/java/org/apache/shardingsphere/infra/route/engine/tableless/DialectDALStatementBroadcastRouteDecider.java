@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * Dialect tableless broadcast route decider.
+ * Dialect DAL statement broadcast route decider.
  */
 @SingletonSPI
-public interface DialectTablelessBroadcastRouteDecider extends DatabaseTypedSPI {
+public interface DialectDALStatementBroadcastRouteDecider extends DatabaseTypedSPI {
     
     /**
      * Whether data source broadcast route.
