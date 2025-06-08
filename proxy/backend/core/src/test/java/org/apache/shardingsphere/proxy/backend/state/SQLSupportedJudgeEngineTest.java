@@ -33,21 +33,25 @@ class SQLSupportedJudgeEngineTest {
     
     @Test
     void assertIsSupportedWithInSupportedList() {
-        assertTrue(new SQLSupportedJudgeEngine(Collections.singleton(SelectStatement.class), Collections.emptyList()).isSupported(mock(SelectStatement.class)));
+        assertTrue(new SQLSupportedJudgeEngine(Collections.singleton(SelectStatement.class), Collections.emptyList(), Collections.emptyList(), Collections.emptyList())
+                .isSupported(mock(SelectStatement.class)));
     }
     
     @Test
     void assertIsNotSupportedWithInUnsupportedList() {
-        assertFalse(new SQLSupportedJudgeEngine(Collections.emptyList(), Collections.singleton(SelectStatement.class)).isSupported(mock(SelectStatement.class)));
+        assertFalse(new SQLSupportedJudgeEngine(Collections.emptyList(), Collections.emptyList(), Collections.singleton(SelectStatement.class), Collections.emptyList())
+                .isSupported(mock(SelectStatement.class)));
     }
     
     @Test
     void assertIsSupportedWithOverlappedList() {
-        assertTrue(new SQLSupportedJudgeEngine(Collections.singleton(SelectStatement.class), Collections.singleton(SQLStatement.class)).isSupported(mock(SelectStatement.class)));
+        assertTrue(new SQLSupportedJudgeEngine(Collections.singleton(SelectStatement.class), Collections.emptyList(), Collections.singleton(SQLStatement.class), Collections.emptyList())
+                .isSupported(mock(SelectStatement.class)));
     }
     
     @Test
     void assertIsSupportedWithoutList() {
-        assertTrue(new SQLSupportedJudgeEngine(Collections.singleton(SelectStatement.class), Collections.singleton(UpdateStatement.class)).isSupported(mock(DeleteStatement.class)));
+        assertTrue(new SQLSupportedJudgeEngine(Collections.singleton(SelectStatement.class), Collections.emptyList(), Collections.singleton(UpdateStatement.class), Collections.emptyList())
+                .isSupported(mock(DeleteStatement.class)));
     }
 }

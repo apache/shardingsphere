@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * SQL supported judge engine.
@@ -28,9 +29,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class SQLSupportedJudgeEngine {
     
-    private final Collection<Class<? extends SQLStatement>> supportedSQLStatements;
+    private final Collection<Class<? extends SQLStatement>> supportedStandardSQLStatementTypes;
     
-    private final Collection<Class<? extends SQLStatement>> unsupportedSQLStatements;
+    private final Collection<Class<? extends SQLStatement>> supportedDialectSQLStatementTypes;
+    
+    private final Collection<Class<? extends SQLStatement>> unsupportedStandardSQLStatementTypes;
+    
+    private final Collection<Class<? extends SQLStatement>> unsupportedDialectSQLStatementTypes;
     
     /**
      * Judge whether to support SQL.
@@ -39,16 +44,26 @@ public final class SQLSupportedJudgeEngine {
      * @return supported or not
      */
     public boolean isSupported(final SQLStatement sqlStatement) {
-        for (Class<? extends SQLStatement> each : supportedSQLStatements) {
+        for (Class<? extends SQLStatement> each : combineSQLStatementTypes(supportedStandardSQLStatementTypes, supportedDialectSQLStatementTypes)) {
             if (each.isAssignableFrom(sqlStatement.getClass())) {
                 return true;
             }
         }
-        for (Class<? extends SQLStatement> each : unsupportedSQLStatements) {
+        for (Class<? extends SQLStatement> each : combineSQLStatementTypes(unsupportedStandardSQLStatementTypes, unsupportedDialectSQLStatementTypes)) {
             if (each.isAssignableFrom(sqlStatement.getClass())) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private Collection<Class<? extends SQLStatement>> combineSQLStatementTypes(final Collection<Class<? extends SQLStatement>> standardSQLStatementTypes,
+                                                                               final Collection<Class<? extends SQLStatement>> dialectSQLStatementTypes) {
+        if (dialectSQLStatementTypes.isEmpty()) {
+            return standardSQLStatementTypes;
+        }
+        Collection<Class<? extends SQLStatement>> result = new LinkedList<>(standardSQLStatementTypes);
+        result.addAll(dialectSQLStatementTypes);
+        return result;
     }
 }
