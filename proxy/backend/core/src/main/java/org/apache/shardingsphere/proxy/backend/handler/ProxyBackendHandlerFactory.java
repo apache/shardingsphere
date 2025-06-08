@@ -49,9 +49,9 @@ import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
-import org.apache.shardingsphere.proxy.backend.state.SQLSupportedJudgeEngine;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
@@ -65,7 +65,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -73,6 +72,8 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyBackendHandlerFactory {
+    
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_STANDARD_SQL_STATEMENT_TYPES = Arrays.asList(DCLStatement.class, RenameTableStatement.class);
     
     /**
      * Create new instance of backend handler.
@@ -169,18 +170,10 @@ public final class ProxyBackendHandlerFactory {
     }
     
     private static boolean isSupportedSQLStatement(final DatabaseType databaseType, final SQLStatement sqlStatement) {
-        SQLSupportedJudgeEngine judgeEngine = new SQLSupportedJudgeEngine(Collections.emptyList(), getUnsupportedSQLStatementTypes(databaseType));
-        return judgeEngine.isSupported(sqlStatement);
-    }
-    
-    private static Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypes(final DatabaseType databaseType) {
-        Collection<Class<? extends SQLStatement>> result = new LinkedList<>(Arrays.asList(DCLStatement.class, RenameTableStatement.class));
-        Optional<DialectProxyStateSupportedSQLProvider> supportedSQLProvider = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType);
-        if (supportedSQLProvider.isPresent()) {
-            result.addAll(supportedSQLProvider.get().getUnsupportedSQLStatementTypesOnReadyState());
-            return result;
-        }
-        return result;
+        Collection<Class<? extends SQLStatement>> unsupportedDialectSQLStatementTypes = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)
+                .map(DialectProxyStateSupportedSQLProvider::getUnsupportedSQLStatementTypesOnReadyState).orElse(Collections.emptyList());
+        return new ProxySQLSupportedJudgeEngine(
+                Collections.emptyList(), Collections.emptyList(), UNSUPPORTED_STANDARD_SQL_STATEMENT_TYPES, unsupportedDialectSQLStatementTypes).isSupported(sqlStatement);
     }
     
     private static void checkClusterState(final SQLStatement sqlStatement, final DatabaseType databaseType) {
