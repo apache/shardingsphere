@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 /**
- * Alter resource group statement.
+ * Alter resource group statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterResourceGroupStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLAlterResourceGroupStatement extends AbstractSQLStatement implements DALStatement {
     
     private final String groupName;
 }

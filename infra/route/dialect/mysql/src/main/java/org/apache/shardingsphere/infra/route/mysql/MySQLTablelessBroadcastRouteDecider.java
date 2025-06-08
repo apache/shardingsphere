@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.route.mysql;
 
 import org.apache.shardingsphere.infra.route.engine.tableless.DialectTablelessBroadcastRouteDecider;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DropResourceGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLSetResourceGroupStatement;
 
 /**
  * Dialect tableless broadcast route decider for MySQL.
@@ -36,8 +36,8 @@ public final class MySQLTablelessBroadcastRouteDecider implements DialectTablele
     
     @Override
     public boolean isInstanceBroadcastRoute(final DALStatement sqlStatement) {
-        return sqlStatement instanceof CreateResourceGroupStatement || sqlStatement instanceof AlterResourceGroupStatement || sqlStatement instanceof DropResourceGroupStatement
-                || sqlStatement instanceof SetResourceGroupStatement;
+        return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLAlterResourceGroupStatement || sqlStatement instanceof MySQLDropResourceGroupStatement
+                || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
     
     @Override
