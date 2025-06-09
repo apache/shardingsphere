@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.extractor;
+package org.apache.shardingsphere.infra.binder.sqlserver;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Dialect SQL statement context extractor.
+ * SQL statement extractor for SQLServer.
  */
-@SingletonSPI
-public interface DialectSQLStatementContextExtractor extends DatabaseTypedSPI {
+public final class SQLServerSQLStatementExtractor implements DialectSQLStatementExtractor {
     
-    /**
-     * Extract table segments.
-     *
-     * @param sqlStatement SQL statement
-     * @return extracted table segments
-     */
-    Collection<SimpleTableSegment> extractTables(SQLStatement sqlStatement);
+    @Override
+    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof DenyUserStatement) {
+            return Collections.singleton(((DenyUserStatement) sqlStatement).getTable());
+        }
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "SQLServer";
+    }
 }

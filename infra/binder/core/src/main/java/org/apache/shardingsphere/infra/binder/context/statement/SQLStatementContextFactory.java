@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementContextExtractor;
+import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowIndexStatementContext;
@@ -123,10 +123,9 @@ public final class SQLStatementContextFactory {
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        Optional<DialectSQLStatementContextExtractor> dialectTableAvailableSQLStatementContextExtractor = DatabaseTypedSPILoader.findService(
-                DialectSQLStatementContextExtractor.class, databaseType);
-        if (dialectTableAvailableSQLStatementContextExtractor.isPresent()) {
-            Collection<SimpleTableSegment> tableSegments = dialectTableAvailableSQLStatementContextExtractor.get().extractTables(sqlStatement);
+        Optional<DialectSQLStatementExtractor> dialectSQLStatementExtractor = DatabaseTypedSPILoader.findService(DialectSQLStatementExtractor.class, databaseType);
+        if (dialectSQLStatementExtractor.isPresent()) {
+            Collection<SimpleTableSegment> tableSegments = dialectSQLStatementExtractor.get().extractTables(sqlStatement);
             if (!tableSegments.isEmpty()) {
                 return new TableAvailableSQLStatementContext(databaseType, sqlStatement, tableSegments);
             }

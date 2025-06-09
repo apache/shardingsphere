@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.binder.mysql.MySQLSQLStatementContextExtractor
+org.apache.shardingsphere.infra.binder.sqlserver.SQLServerSQLStatementExtractor
