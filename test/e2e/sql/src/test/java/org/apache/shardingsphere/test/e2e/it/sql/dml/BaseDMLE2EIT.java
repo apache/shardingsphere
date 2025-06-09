@@ -73,6 +73,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public abstract class BaseDMLE2EIT implements SQLE2EIT {
     
@@ -266,13 +267,29 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
             return;
         }
         if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+            if (isNullValue(expected)) {
+                assertNull(actual.getDate(columnIndex));
+                return;
+            }
             assertThat(DateTimeFormatterFactory.getDateFormatter().format(actual.getDate(columnIndex).toLocalDate()), is(expected));
         } else if (Arrays.asList(Types.TIME, Types.TIME_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
+            if (isNullValue(expected)) {
+                assertNull(actual.getTime(columnIndex));
+                return;
+            }
             assertThat(DateTimeFormatterFactory.getTimeFormatter().format(actual.getTime(columnIndex).toLocalTime()), is(expected));
         } else if (Arrays.asList(Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE).contains(actual.getMetaData().getColumnType(columnIndex))) {
             if ("Oracle".equals(databaseType.getType()) && "DATE".equalsIgnoreCase(actual.getMetaData().getColumnTypeName(columnIndex)) || "openGauss".equals(databaseType.getType())) {
+                if (isNullValue(expected)) {
+                    assertNull(actual.getDate(columnIndex));
+                    return;
+                }
                 assertThat(DateTimeFormatterFactory.getDateFormatter().format(actual.getDate(columnIndex).toLocalDate()), is(expected));
             } else {
+                if (isNullValue(expected)) {
+                    assertNull(actual.getTimestamp(columnIndex));
+                    return;
+                }
                 assertThat(DateTimeFormatterFactory.getShortMillisFormatter().format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
@@ -288,6 +305,10 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
         } else {
             assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         }
+    }
+    
+    private boolean isNullValue(final String value) {
+        return null == value || "NULL".equalsIgnoreCase(value);
     }
     
     private boolean isPostgreSQLOrOpenGaussMoney(final String columnTypeName, final DatabaseType databaseType) {
