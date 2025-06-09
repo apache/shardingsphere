@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
@@ -90,7 +90,7 @@ class MySQLComStmtPrepareCheckerTest {
                 mock(CallStatement.class), mock(MySQLChangeMasterStatement.class), mock(MySQLChecksumTableStatement.class), mock(CommitStatement.class),
                 mock(CreateIndexStatement.class), mock(DropIndexStatement.class), mock(CreateDatabaseStatement.class), mock(DropDatabaseStatement.class), mock(CreateTableStatement.class),
                 mock(DropTableStatement.class), mock(MySQLCreateUserStatement.class), mock(RenameUserStatement.class), mock(DropUserStatement.class),
-                mock(CreateViewStatement.class), mock(DropViewStatement.class), mock(DeleteStatement.class), mock(DoStatement.class), mock(FlushStatement.class),
+                mock(CreateViewStatement.class), mock(DropViewStatement.class), mock(DeleteStatement.class), mock(DoStatement.class), mock(MySQLFlushStatement.class),
                 mock(MySQLGrantStatement.class), mock(InsertStatement.class), mock(MySQLInstallPluginStatement.class), mock(MySQLKillStatement.class),
                 mock(MySQLLoadIndexInfoStatement.class), mock(OptimizeTableStatement.class), mock(RenameTableStatement.class), mock(MySQLRepairTableStatement.class),
                 mock(MySQLResetStatement.class), mock(MySQLRevokeStatement.class), mock(SelectStatement.class), mock(SetStatement.class), mock(MySQLShowWarningsStatement.class),

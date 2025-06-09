@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLChecksumTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLLoadIndexInfoStatement;
@@ -95,7 +95,7 @@ public final class MySQLComStmtPrepareChecker {
                 MySQLCacheIndexStatement.class, CallStatement.class, MySQLChangeMasterStatement.class, MySQLChecksumTableStatement.class, CommitStatement.class,
                 CreateIndexStatement.class, DropIndexStatement.class, CreateDatabaseStatement.class, DropDatabaseStatement.class,
                 CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, RenameUserStatement.class, DropUserStatement.class,
-                CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, FlushStatement.class,
+                CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, MySQLFlushStatement.class,
                 MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, MySQLKillStatement.class, MySQLLoadIndexInfoStatement.class,
                 OptimizeTableStatement.class, RenameTableStatement.class, MySQLRepairTableStatement.class, MySQLResetStatement.class,
                 MySQLRevokeStatement.class, SelectStatement.class, SetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
