@@ -26,10 +26,6 @@
     <artifactId>shardingsphere-sql-federation-compiler</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <calcite.version>1.39.0</calcite.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
