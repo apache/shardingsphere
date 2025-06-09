@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.aware;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 
 /**
  * Cursor aware.

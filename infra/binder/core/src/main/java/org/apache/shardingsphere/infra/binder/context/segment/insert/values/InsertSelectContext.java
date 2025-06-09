@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.insert.values;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
