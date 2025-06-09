@@ -19,8 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.table.DialectTableAvailableSQLStatementContextExtractor;
-import org.apache.shardingsphere.infra.binder.context.statement.table.TableAvailableSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.extractor.DialectTableAvailableSQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowIndexStatementContext;
