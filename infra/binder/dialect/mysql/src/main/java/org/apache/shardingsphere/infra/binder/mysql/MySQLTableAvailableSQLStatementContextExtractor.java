@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.mysql;
 
-import org.apache.shardingsphere.infra.binder.context.statement.table.DialectTableAvailableSQLStatementContextExtractor;
+import org.apache.shardingsphere.infra.binder.context.extractor.DialectTableAvailableSQLStatementContextExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;

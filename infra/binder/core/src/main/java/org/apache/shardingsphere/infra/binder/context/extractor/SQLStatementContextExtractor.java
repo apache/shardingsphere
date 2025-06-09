@@ -45,6 +45,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * SQL statement context extractor.
+ */
 @HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementContextExtractor {
@@ -122,7 +125,7 @@ public final class SQLStatementContextExtractor {
             return Collections.emptySet();
         }
         Collection<SelectStatementContext> allSubqueryContexts = getAllSubqueryContexts(sqlStatementContext);
-        return SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
+        return getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
     }
     
     /**
