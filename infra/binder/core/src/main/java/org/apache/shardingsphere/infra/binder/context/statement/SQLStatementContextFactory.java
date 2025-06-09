@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.statement.table.DialectTableAvailableSQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.table.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
@@ -51,22 +52,20 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.LoadDat
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
@@ -102,8 +101,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * SQL statement context factory.
@@ -123,6 +124,14 @@ public final class SQLStatementContextFactory {
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+        Optional<DialectTableAvailableSQLStatementContextExtractor> dialectTableAvailableSQLStatementContextExtractor = DatabaseTypedSPILoader.findService(
+                DialectTableAvailableSQLStatementContextExtractor.class, databaseType);
+        if (dialectTableAvailableSQLStatementContextExtractor.isPresent()) {
+            Collection<SimpleTableSegment> tableSegments = dialectTableAvailableSQLStatementContextExtractor.get().extract(sqlStatement);
+            if (!tableSegments.isEmpty()) {
+                return new TableAvailableSQLStatementContext(databaseType, sqlStatement, tableSegments);
+            }
+        }
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, databaseType, (DMLStatement) sqlStatement, params, currentDatabaseName);
         }
@@ -239,9 +248,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof RevokeStatement) {
             return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((RevokeStatement) sqlStatement).getTables());
         }
-        if (sqlStatement instanceof DenyUserStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((DenyUserStatement) sqlStatement).getTable());
-        }
         return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
     
@@ -249,9 +255,6 @@ public final class SQLStatementContextFactory {
                                                               final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);
-        }
-        if (sqlStatement instanceof ShowCreateTableStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((ShowCreateTableStatement) sqlStatement).getTable());
         }
         if (sqlStatement instanceof ShowColumnsStatement) {
             return new ShowColumnsStatementContext(databaseType, (ShowColumnsStatement) sqlStatement);
@@ -267,12 +270,6 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((AnalyzeTableStatement) sqlStatement).getTables());
-        }
-        if (sqlStatement instanceof FlushStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((FlushStatement) sqlStatement).getTables());
-        }
-        if (sqlStatement instanceof OptimizeTableStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((OptimizeTableStatement) sqlStatement).getTables());
         }
         return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }

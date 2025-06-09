@@ -20,24 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc-dialect</artifactId>
+        <artifactId>shardingsphere-infra-binder-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-jdbc-dialect-sqlserver</artifactId>
+    <artifactId>shardingsphere-infra-binder-sqlserver</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
+            <artifactId>shardingsphere-infra-binder-core</artifactId>
             <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-binder-sqlserver</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>
