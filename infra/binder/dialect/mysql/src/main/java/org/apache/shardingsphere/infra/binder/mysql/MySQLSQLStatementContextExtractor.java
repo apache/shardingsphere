@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.mysql;
 
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectTableAvailableSQLStatementContextExtractor;
+import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementContextExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Table available SQL statement context extractor for MySQL.
+ * SQL statement context extractor for MySQL.
  */
-public final class MySQLTableAvailableSQLStatementContextExtractor implements DialectTableAvailableSQLStatementContextExtractor {
+public final class MySQLSQLStatementContextExtractor implements DialectSQLStatementContextExtractor {
     
     @Override
-    public Collection<SimpleTableSegment> extract(final SQLStatement sqlStatement) {
+    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof ShowCreateTableStatement) {
             return Collections.singleton(((ShowCreateTableStatement) sqlStatement).getTable());
         }
