@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.checker.sql.table;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;

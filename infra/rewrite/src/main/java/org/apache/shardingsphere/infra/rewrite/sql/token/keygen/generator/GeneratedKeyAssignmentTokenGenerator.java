@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.GeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.LiteralGeneratedKeyAssignmentToken;

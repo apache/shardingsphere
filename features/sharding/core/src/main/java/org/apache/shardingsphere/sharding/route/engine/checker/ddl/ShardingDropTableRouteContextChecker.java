@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
