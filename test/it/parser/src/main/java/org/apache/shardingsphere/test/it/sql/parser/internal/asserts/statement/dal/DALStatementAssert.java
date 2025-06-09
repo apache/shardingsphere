@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterSt
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.component.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
@@ -228,8 +228,8 @@ public final class DALStatementAssert {
             ResetParameterStatementAssert.assertIs(assertContext, (PostgreSQLResetParameterStatement) actual, (ResetParameterStatementTestCase) expected);
         } else if (actual instanceof MySQLInstallComponentStatement) {
             InstallComponentStatementAssert.assertIs(assertContext, (MySQLInstallComponentStatement) actual, (InstallComponentStatementTestCase) expected);
-        } else if (actual instanceof FlushStatement) {
-            FlushStatementAssert.assertIs(assertContext, (FlushStatement) actual, (FlushStatementTestCase) expected);
+        } else if (actual instanceof MySQLFlushStatement) {
+            FlushStatementAssert.assertIs(assertContext, (MySQLFlushStatement) actual, (FlushStatementTestCase) expected);
         } else if (actual instanceof MySQLInstallPluginStatement) {
             InstallPluginStatementAssert.assertIs(assertContext, (MySQLInstallPluginStatement) actual, (InstallPluginStatementTestCase) expected);
         } else if (actual instanceof MySQLCloneStatement) {

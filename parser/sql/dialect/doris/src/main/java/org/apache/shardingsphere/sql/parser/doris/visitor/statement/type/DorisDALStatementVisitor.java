@@ -157,7 +157,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLCr
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLHelpStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.component.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
@@ -414,12 +414,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitFlush(final FlushContext ctx) {
-        return null == ctx.tablesOption() ? new FlushStatement(Collections.emptyList(), false) : visit(ctx.tablesOption());
+        return null == ctx.tablesOption() ? new MySQLFlushStatement(Collections.emptyList(), false) : visit(ctx.tablesOption());
     }
     
     @Override
     public ASTNode visitTablesOption(final TablesOptionContext ctx) {
-        return new FlushStatement(ctx.tableName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), true);
+        return new MySQLFlushStatement(ctx.tableName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), true);
     }
     
     @Override

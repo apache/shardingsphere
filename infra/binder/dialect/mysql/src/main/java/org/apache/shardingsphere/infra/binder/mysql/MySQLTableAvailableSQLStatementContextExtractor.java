@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.mysql;
 import org.apache.shardingsphere.infra.binder.context.statement.table.DialectTableAvailableSQLStatementContextExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 
@@ -37,8 +37,8 @@ public final class MySQLTableAvailableSQLStatementContextExtractor implements Di
         if (sqlStatement instanceof ShowCreateTableStatement) {
             return Collections.singleton(((ShowCreateTableStatement) sqlStatement).getTable());
         }
-        if (sqlStatement instanceof FlushStatement) {
-            return ((FlushStatement) sqlStatement).getTables();
+        if (sqlStatement instanceof MySQLFlushStatement) {
+            return ((MySQLFlushStatement) sqlStatement).getTables();
         }
         if (sqlStatement instanceof OptimizeTableStatement) {
             return ((OptimizeTableStatement) sqlStatement).getTables();
