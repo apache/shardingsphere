@@ -55,7 +55,7 @@ import static org.hamcrest.Matchers.nullValue;
 @SuppressWarnings({"resource", "SqlNoDataSourceInspection"})
 @EnabledInNativeImage
 @Testcontainers
-public class PrestoTest {
+class PrestoTest {
     
     private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.presto.";
     
