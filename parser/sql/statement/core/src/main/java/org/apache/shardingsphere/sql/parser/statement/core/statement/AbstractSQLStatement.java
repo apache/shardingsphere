@@ -33,25 +33,21 @@ import java.util.LinkedList;
 @Getter
 public class AbstractSQLStatement implements SQLStatement {
     
-    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedHashSet<>();
-    
     private final Collection<Integer> uniqueParameterIndexes = new HashSet<>();
     
-    private final Collection<CommentSegment> commentSegments = new LinkedList<>();
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedHashSet<>();
     
     private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     
+    private final Collection<CommentSegment> commentSegments = new LinkedList<>();
+    
     @Override
-    public int getParameterCount() {
+    public final int getParameterCount() {
         return uniqueParameterIndexes.size();
     }
     
-    /**
-     * Add parameter marker segment.
-     *
-     * @param parameterMarkerSegments parameter marker segment collection
-     */
-    public void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
+    @Override
+    public final void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
         for (ParameterMarkerSegment each : parameterMarkerSegments) {
             this.parameterMarkerSegments.add(each);
             uniqueParameterIndexes.add(each.getParameterIndex());
