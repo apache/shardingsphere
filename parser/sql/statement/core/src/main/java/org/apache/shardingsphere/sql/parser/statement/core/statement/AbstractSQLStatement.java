@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Comme
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
@@ -33,9 +32,9 @@ import java.util.LinkedList;
 @Getter
 public class AbstractSQLStatement implements SQLStatement {
     
-    private final Collection<Integer> uniqueParameterIndexes = new HashSet<>();
+    private final Collection<Integer> uniqueParameterIndexes = new LinkedHashSet<>();
     
-    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedHashSet<>();
+    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
     private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     
