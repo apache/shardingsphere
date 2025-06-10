@@ -1464,7 +1464,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
-        selectStatement.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
+        selectStatement.addParameterMarkerSegments(getParameterMarkerSegments());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
