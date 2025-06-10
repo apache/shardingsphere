@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 
@@ -47,7 +47,7 @@ public final class AlterViewStatementBinder implements SQLStatementBinder<AlterV
         AlterViewStatement result = new AlterViewStatement();
         sqlStatement.getViewDefinition().ifPresent(result::setViewDefinition);
         sqlStatement.getConstraintDefinition().ifPresent(result::setConstraintDefinition);
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

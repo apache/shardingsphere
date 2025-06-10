@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
 /**
@@ -44,7 +44,7 @@ public final class DropTableStatementBinder implements SQLStatementBinder<DropTa
         DropTableStatement result = new DropTableStatement();
         result.setIfExists(sqlStatement.isIfExists());
         result.setContainsCascade(sqlStatement.isContainsCascade());
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 
@@ -41,7 +41,7 @@ public final class LoadXMLStatementBinder implements SQLStatementBinder<LoadXMLS
     
     private LoadXMLStatement copy(final LoadXMLStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
         LoadXMLStatement result = new LoadXMLStatement(boundTableSegment);
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

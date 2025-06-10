@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
@@ -48,7 +48,7 @@ public final class ShowColumnsStatementBinder implements SQLStatementBinder<Show
     
     private ShowColumnsStatement copy(final ShowColumnsStatement sqlStatement, final SimpleTableSegment table, final ShowFilterSegment filter) {
         ShowColumnsStatement result = new ShowColumnsStatement(table, sqlStatement.getFromDatabase().orElse(null), filter);
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

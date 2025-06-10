@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,7 +55,7 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
         ExplainStatement result = new ExplainStatement();
         sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
         sqlStatement.getColumnWild().ifPresent(result::setColumnWild);
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

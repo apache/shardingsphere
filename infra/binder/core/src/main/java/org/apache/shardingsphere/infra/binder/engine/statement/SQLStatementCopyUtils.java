@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Statement copy utils.
+ * SQL statement copy utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StatementCopyUtils {
+public final class SQLStatementCopyUtils {
     
     /**
      * Copy attributes of SQL statement.

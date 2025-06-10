@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 
 import java.util.LinkedList;
@@ -44,7 +44,7 @@ public final class OptimizeTableStatementBinder implements SQLStatementBinder<Op
     
     private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement) {
         OptimizeTableStatement result = new OptimizeTableStatement(new LinkedList<>());
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.StatementCopyUtils;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -36,7 +36,7 @@ public final class CursorStatementBinder implements SQLStatementBinder<CursorSta
     
     private CursorStatement copy(final CursorStatement sqlStatement, final SelectStatement boundSelectStatement) {
         CursorStatement result = new CursorStatement(sqlStatement.getCursorName(), boundSelectStatement);
-        StatementCopyUtils.copyAttributes(sqlStatement, result);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }
