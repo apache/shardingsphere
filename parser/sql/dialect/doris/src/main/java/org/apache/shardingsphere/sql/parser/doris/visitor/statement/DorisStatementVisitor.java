@@ -692,7 +692,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1442,7 +1442,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1464,7 +1464,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
-        selectStatement.addParameterMarkerSegments(getParameterMarkerSegments());
+        selectStatement.addParameterMarkers(getParameterMarkerSegments());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
@@ -1514,7 +1514,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1578,7 +1578,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1645,7 +1645,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1688,7 +1688,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else {
             result = (SelectStatement) visit(ctx.getChild(0));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     

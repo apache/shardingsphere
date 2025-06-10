@@ -89,9 +89,9 @@ class SQLStatementContextFactoryTest {
         SelectStatement selectStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
         when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
         when(selectStatement.getProjections().getProjections()).thenReturn(Collections.emptyList());
-        when(selectStatement.getCommentSegments()).thenReturn(Collections.emptyList());
+        when(selectStatement.getComments()).thenReturn(Collections.emptyList());
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
-        when(cursorStatement.getCommentSegments()).thenReturn(Collections.emptyList());
+        when(cursorStatement.getComments()).thenReturn(Collections.emptyList());
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }

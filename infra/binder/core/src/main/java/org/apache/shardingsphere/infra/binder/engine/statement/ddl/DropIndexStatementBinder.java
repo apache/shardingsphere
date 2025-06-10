@@ -51,8 +51,8 @@ public final class DropIndexStatementBinder implements SQLStatementBinder<DropIn
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
         result.setIfExists(sqlStatement.isIfExists());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

@@ -40,8 +40,8 @@ public final class ShowIndexStatementBinder implements SQLStatementBinder<ShowIn
     
     private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment table) {
         ShowIndexStatement result = new ShowIndexStatement(table, sqlStatement.getFromDatabase().orElse(null));
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

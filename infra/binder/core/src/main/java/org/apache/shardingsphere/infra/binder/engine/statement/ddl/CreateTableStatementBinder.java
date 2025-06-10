@@ -48,13 +48,13 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
     private static CreateTableStatement copy(final CreateTableStatement sqlStatement) {
         CreateTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.getConstraintDefinitions().addAll(sqlStatement.getConstraintDefinitions());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
         result.setIfNotExists(sqlStatement.isIfNotExists());
         result.getColumns().addAll(sqlStatement.getColumns());
         sqlStatement.getLikeTable().ifPresent(result::setLikeTable);
         sqlStatement.getCreateTableOption().ifPresent(result::setCreateTableOption);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

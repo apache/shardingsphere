@@ -955,7 +955,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.aggregationClause());
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1151,7 +1151,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.rowSetFunction()) {
             result.setRowSetFunctionSegment((FunctionSegment) visit(ctx.rowSetFunction()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1349,7 +1349,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputClause()) {
             result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1414,7 +1414,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputClause()) {
             result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     

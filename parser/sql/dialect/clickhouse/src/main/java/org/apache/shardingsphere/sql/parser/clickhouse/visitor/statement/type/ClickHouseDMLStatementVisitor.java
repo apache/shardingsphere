@@ -83,7 +83,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     public ASTNode visitInsert(final InsertContext ctx) {
         InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -118,7 +118,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -167,7 +167,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -184,7 +184,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     public ASTNode visitSelect(final ClickHouseStatementParser.SelectContext ctx) {
         // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     

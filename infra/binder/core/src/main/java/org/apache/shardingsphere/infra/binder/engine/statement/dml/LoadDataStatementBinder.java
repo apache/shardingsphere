@@ -40,8 +40,8 @@ public final class LoadDataStatementBinder implements SQLStatementBinder<LoadDat
     
     private LoadDataStatement copy(final LoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
         LoadDataStatement result = new LoadDataStatement(boundTableSegment);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

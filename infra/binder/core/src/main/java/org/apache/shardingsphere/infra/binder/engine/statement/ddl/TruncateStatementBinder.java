@@ -43,8 +43,8 @@ public final class TruncateStatementBinder implements SQLStatementBinder<Truncat
     @SneakyThrows(ReflectiveOperationException.class)
     private static TruncateStatement copy(final TruncateStatement sqlStatement) {
         TruncateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

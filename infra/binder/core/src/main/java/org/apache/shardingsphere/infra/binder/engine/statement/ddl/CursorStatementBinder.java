@@ -35,8 +35,8 @@ public final class CursorStatementBinder implements SQLStatementBinder<CursorSta
     
     private static CursorStatement copy(final CursorStatement sqlStatement, final SelectStatement boundSelectStatement) {
         CursorStatement result = new CursorStatement(sqlStatement.getCursorName(), boundSelectStatement);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

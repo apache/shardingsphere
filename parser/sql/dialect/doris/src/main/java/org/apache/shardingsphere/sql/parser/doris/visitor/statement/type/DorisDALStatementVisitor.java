@@ -253,7 +253,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowStatus(final ShowStatusContext ctx) {
         MySQLShowStatusStatement result = new MySQLShowStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -547,7 +547,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         ShowDatabasesStatement result = new ShowDatabasesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -555,7 +555,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
         MySQLShowEventsStatement result = new MySQLShowEventsStatement(
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -563,7 +563,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         ShowTablesStatement result = new ShowTablesStatement(null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()),
                 null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()), null != ctx.FULL());
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -571,7 +571,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
         MySQLShowTriggersStatement result = new MySQLShowTriggersStatement(
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -584,7 +584,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
         ShowTableStatusStatement result = new ShowTableStatusStatement(
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -592,7 +592,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
         ShowColumnsStatement result = new ShowColumnsStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visit(ctx.fromTable())).getTable(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -680,35 +680,35 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
         MySQLShowVariablesStatement result = new MySQLShowVariablesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
         MySQLShowCharacterSetStatement result = new MySQLShowCharacterSetStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCollation(final ShowCollationContext ctx) {
         MySQLShowCollationStatement result = new MySQLShowCollationStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowFunctionStatus(final ShowFunctionStatusContext ctx) {
         MySQLShowFunctionStatusStatement result = new MySQLShowFunctionStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowProcedureStatus(final ShowProcedureStatusContext ctx) {
         MySQLShowProcedureStatusStatement result = new MySQLShowProcedureStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -716,7 +716,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
         MySQLShowOpenTablesStatement result = new MySQLShowOpenTablesStatement(
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     

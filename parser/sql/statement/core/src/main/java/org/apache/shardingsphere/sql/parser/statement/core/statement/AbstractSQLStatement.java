@@ -34,11 +34,11 @@ public class AbstractSQLStatement implements SQLStatement {
     
     private final Collection<Integer> uniqueParameterIndexes = new LinkedHashSet<>();
     
-    private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
+    private final Collection<ParameterMarkerSegment> parameterMarkers = new LinkedList<>();
     
     private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     
-    private final Collection<CommentSegment> commentSegments = new LinkedList<>();
+    private final Collection<CommentSegment> comments = new LinkedList<>();
     
     @Override
     public final int getParameterCount() {
@@ -46,9 +46,9 @@ public class AbstractSQLStatement implements SQLStatement {
     }
     
     @Override
-    public final void addParameterMarkerSegments(final Collection<ParameterMarkerSegment> parameterMarkerSegments) {
-        for (ParameterMarkerSegment each : parameterMarkerSegments) {
-            this.parameterMarkerSegments.add(each);
+    public final void addParameterMarkers(final Collection<ParameterMarkerSegment> segments) {
+        for (ParameterMarkerSegment each : segments) {
+            parameterMarkers.add(each);
             uniqueParameterIndexes.add(each.getParameterIndex());
         }
     }

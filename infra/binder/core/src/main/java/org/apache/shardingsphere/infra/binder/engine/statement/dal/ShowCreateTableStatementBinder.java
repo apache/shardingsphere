@@ -40,8 +40,8 @@ public final class ShowCreateTableStatementBinder implements SQLStatementBinder<
     
     private ShowCreateTableStatement copy(final ShowCreateTableStatement sqlStatement, final SimpleTableSegment table) {
         ShowCreateTableStatement result = new ShowCreateTableStatement(table);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

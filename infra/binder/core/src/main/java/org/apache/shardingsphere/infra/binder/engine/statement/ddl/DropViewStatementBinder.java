@@ -43,8 +43,8 @@ public final class DropViewStatementBinder implements SQLStatementBinder<DropVie
     @SneakyThrows(ReflectiveOperationException.class)
     private static DropViewStatement copy(final DropViewStatement sqlStatement) {
         DropViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

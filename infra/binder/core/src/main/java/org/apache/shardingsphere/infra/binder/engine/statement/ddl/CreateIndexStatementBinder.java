@@ -52,8 +52,8 @@ public final class CreateIndexStatementBinder implements SQLStatementBinder<Crea
         result.setIfNotExists(sqlStatement.isIfNotExists());
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

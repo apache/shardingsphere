@@ -68,9 +68,9 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
             sqlStatement = sqlParserEngine.parse(escapedSql, true);
             sql = escapedSql;
         }
-        List<Integer> actualParameterMarkerIndexes = new ArrayList<>(sqlStatement.getParameterMarkerSegments().size());
+        List<Integer> actualParameterMarkerIndexes = new ArrayList<>(sqlStatement.getParameterMarkers().size());
         if (sqlStatement.getParameterCount() > 0) {
-            List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(sqlStatement.getParameterMarkerSegments());
+            List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(sqlStatement.getParameterMarkers());
             for (ParameterMarkerSegment each : parameterMarkerSegments) {
                 actualParameterMarkerIndexes.add(each.getParameterIndex());
             }
