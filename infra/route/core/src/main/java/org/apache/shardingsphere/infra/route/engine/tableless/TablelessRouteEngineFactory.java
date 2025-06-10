@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.generic.NoTablelessRouteInfoException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessInstanceBroadcastRouteEngine;
-import org.apache.shardingsphere.infra.route.engine.tableless.type.ignore.TablelessIgnoreRouteEngine;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -64,6 +64,7 @@ public final class TablelessRouteEngineFactory {
      * @param queryContext query context
      * @param database database
      * @return created instance
+     * @throws NoTablelessRouteInfoException if the SQL statement is not supported by tableless route engine
      */
     public static TablelessRouteEngine newInstance(final QueryContext queryContext, final ShardingSphereDatabase database) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
@@ -81,11 +82,14 @@ public final class TablelessRouteEngineFactory {
         if (sqlStatement instanceof TCLStatement) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
-        return new TablelessIgnoreRouteEngine();
+        throw new NoTablelessRouteInfoException();
     }
     
     private static TablelessRouteEngine getDMLRouteEngine(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext ? new TablelessDataSourceUnicastRouteEngine() : new TablelessIgnoreRouteEngine();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return new TablelessDataSourceUnicastRouteEngine();
+        }
+        throw new NoTablelessRouteInfoException();
     }
     
     private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
@@ -96,16 +100,17 @@ public final class TablelessRouteEngineFactory {
         if (isFunctionDDLStatement(sqlStatement) || isSchemaDDLStatement(sqlStatement)) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
-        return new TablelessDataSourceBroadcastRouteEngine();
+        throw new NoTablelessRouteInfoException();
     }
     
     private static TablelessRouteEngine getCursorRouteEngine(final SQLStatement sqlStatement, final ShardingSphereDatabase database) {
         if (sqlStatement instanceof CloseStatement && ((CloseStatement) sqlStatement).isCloseAll()) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
-        return sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement
-                ? new TablelessInstanceBroadcastRouteEngine(database)
-                : new TablelessIgnoreRouteEngine();
+        if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
+            return new TablelessInstanceBroadcastRouteEngine(database);
+        }
+        throw new NoTablelessRouteInfoException();
     }
     
     private static boolean isFunctionDDLStatement(final SQLStatement sqlStatement) {
@@ -128,6 +133,6 @@ public final class TablelessRouteEngineFactory {
         if (dialectDALStatementBroadcastRouteDecider.map(optional -> optional.isInstanceBroadcastRoute(sqlStatement)).orElse(false)) {
             return new TablelessInstanceBroadcastRouteEngine(database);
         }
-        return new TablelessIgnoreRouteEngine();
+        throw new NoTablelessRouteInfoException();
     }
 }

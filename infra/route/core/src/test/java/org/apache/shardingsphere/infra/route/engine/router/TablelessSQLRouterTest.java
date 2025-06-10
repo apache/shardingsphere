@@ -59,7 +59,7 @@ class TablelessSQLRouterTest {
         when(database.getRuleMetaData().getAttributes(AggregatedDataSourceRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         RouteContext actual = new TablelessSQLRouter().route(queryContext, ruleMetaData, database, Collections.emptyList(), new RouteContext());
         assertTrue(actual.getOriginalDataNodes().isEmpty());
-        assertTrue(actual.getRouteUnits().isEmpty());
+        assertThat(actual.getRouteUnits().size(), is(1));
         assertTrue(actual.getRouteStageContexts().isEmpty());
     }
     
