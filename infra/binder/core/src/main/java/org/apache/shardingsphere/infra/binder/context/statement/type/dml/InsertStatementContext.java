@@ -151,7 +151,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
         setCombineSelectSubqueryType(selectStatementContext);
         setProjectionSelectSubqueryType(selectStatementContext);
         InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, params, paramsOffset.get());
-        paramsOffset.addAndGet(insertSelectContext.getParameterCount());
+        paramsOffset.addAndGet(insertSelectContext.getSelectStatementContext().getSqlStatement().getParameterCount());
         return Optional.of(insertSelectContext);
     }
     

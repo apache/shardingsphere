@@ -32,19 +32,17 @@ import java.util.List;
 @ToString
 public final class InsertSelectContext {
     
-    private final int parameterCount;
-    
     private final List<Object> parameters;
     
     private final SelectStatementContext selectStatementContext;
     
     public InsertSelectContext(final SelectStatementContext selectStatementContext, final List<Object> params, final int parametersOffset) {
-        parameterCount = selectStatementContext.getSqlStatement().getParameterCount();
         this.selectStatementContext = selectStatementContext;
         parameters = getParameters(params, parametersOffset);
     }
     
     private List<Object> getParameters(final List<Object> params, final int parametersOffset) {
+        int parameterCount = selectStatementContext.getSqlStatement().getParameterCount();
         if (params.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
         }
