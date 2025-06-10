@@ -117,11 +117,11 @@ public final class TablelessRouteEngineFactory {
     }
     
     private static TablelessRouteEngine getDALRouteEngine(final DALStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
-        Optional<DialectDALStatementBroadcastRouteDecider> dialectDALStatementBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType);
         if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof ShowDatabasesStatement
                 || sqlStatement instanceof SetStatement) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
+        Optional<DialectDALStatementBroadcastRouteDecider> dialectDALStatementBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType);
         if (dialectDALStatementBroadcastRouteDecider.map(optional -> optional.isDataSourceBroadcastRoute(sqlStatement)).orElse(false)) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
