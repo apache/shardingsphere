@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment view;
     
