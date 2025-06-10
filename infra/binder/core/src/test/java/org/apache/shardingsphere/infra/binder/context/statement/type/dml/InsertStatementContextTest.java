@@ -132,7 +132,7 @@ class InsertStatementContextTest {
     void assertInsertSelect() {
         InsertStatement insertStatement = new InsertStatement();
         SelectStatement selectStatement = new SelectStatement();
-        selectStatement.addParameterMarkerSegments(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
+        selectStatement.addParameterMarkers(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");
         insertStatement.setInsertSelect(insertSelect);

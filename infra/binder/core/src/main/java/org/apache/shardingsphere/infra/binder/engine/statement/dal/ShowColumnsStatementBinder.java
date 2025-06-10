@@ -47,8 +47,8 @@ public final class ShowColumnsStatementBinder implements SQLStatementBinder<Show
     
     private ShowColumnsStatement copy(final ShowColumnsStatement sqlStatement, final SimpleTableSegment table, final ShowFilterSegment filter) {
         ShowColumnsStatement result = new ShowColumnsStatement(table, sqlStatement.getFromDatabase().orElse(null), filter);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

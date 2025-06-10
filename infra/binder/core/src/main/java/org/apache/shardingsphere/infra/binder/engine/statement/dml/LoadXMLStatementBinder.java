@@ -40,8 +40,8 @@ public final class LoadXMLStatementBinder implements SQLStatementBinder<LoadXMLS
     
     private LoadXMLStatement copy(final LoadXMLStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
         LoadXMLStatement result = new LoadXMLStatement(boundTableSegment);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

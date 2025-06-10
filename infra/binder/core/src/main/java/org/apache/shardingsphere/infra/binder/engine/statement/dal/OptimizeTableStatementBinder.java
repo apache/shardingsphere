@@ -43,8 +43,8 @@ public final class OptimizeTableStatementBinder implements SQLStatementBinder<Op
     
     private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement) {
         OptimizeTableStatement result = new OptimizeTableStatement(new LinkedList<>());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

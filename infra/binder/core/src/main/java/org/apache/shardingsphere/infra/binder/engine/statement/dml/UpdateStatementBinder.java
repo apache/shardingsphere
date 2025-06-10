@@ -54,8 +54,8 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     private UpdateStatement copy(final UpdateStatement sqlStatement) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getLimit().ifPresent(result::setLimit);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

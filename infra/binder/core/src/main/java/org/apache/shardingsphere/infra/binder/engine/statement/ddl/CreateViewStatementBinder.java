@@ -47,8 +47,8 @@ public final class CreateViewStatementBinder implements SQLStatementBinder<Creat
     private static CreateViewStatement copy(final CreateViewStatement sqlStatement) {
         CreateViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         result.setViewDefinition(sqlStatement.getViewDefinition());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

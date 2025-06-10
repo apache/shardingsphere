@@ -54,8 +54,8 @@ public final class CopyStatementBinder implements SQLStatementBinder<CopyStateme
     private CopyStatement copy(final CopyStatement sqlStatement,
                                final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns, final PrepareStatementQuerySegment boundPrepareStatementQuery) {
         CopyStatement result = new CopyStatement(boundTable, boundColumns, boundPrepareStatementQuery);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

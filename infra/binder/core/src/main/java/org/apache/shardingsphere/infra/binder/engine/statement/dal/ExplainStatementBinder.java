@@ -54,8 +54,8 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
     @SneakyThrows(ReflectiveOperationException.class)
     private ExplainStatement copy(final ExplainStatement sqlStatement) {
         ExplainStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
         sqlStatement.getColumnWild().ifPresent(result::setColumnWild);

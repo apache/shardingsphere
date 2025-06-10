@@ -56,7 +56,7 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         } else if (null != ctx.select()) {
             result.setSqlStatement((SQLStatement) visitor.visit(ctx.select()));
         }
-        result.addParameterMarkerSegments(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
         return result;
     }

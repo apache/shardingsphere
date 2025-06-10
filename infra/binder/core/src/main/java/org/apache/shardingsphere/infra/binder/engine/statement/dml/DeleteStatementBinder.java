@@ -52,8 +52,8 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         DeleteStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

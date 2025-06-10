@@ -378,7 +378,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((SelectStatement) visitor.visit(ctx.select()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.addParameterMarkerSegments(getGlobalParameterMarkerSegments());
+        result.addParameterMarkers(getGlobalParameterMarkerSegments());
         return result;
     }
     

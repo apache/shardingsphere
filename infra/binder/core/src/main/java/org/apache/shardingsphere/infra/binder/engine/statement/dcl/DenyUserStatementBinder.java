@@ -46,8 +46,8 @@ public final class DenyUserStatementBinder implements SQLStatementBinder<DenyUse
     private static DenyUserStatement copy(final DenyUserStatement sqlStatement) {
         DenyUserStatement result = new DenyUserStatement();
         result.setTable(sqlStatement.getTable());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
+        result.addParameterMarkers(sqlStatement.getParameterMarkers());
+        result.getComments().addAll(sqlStatement.getComments());
         result.getVariableNames().addAll(sqlStatement.getVariableNames());
         return result;
     }

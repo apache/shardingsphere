@@ -40,14 +40,14 @@ public interface SQLStatement extends ASTNode {
      *
      * @return parameter marker segments
      */
-    Collection<ParameterMarkerSegment> getParameterMarkerSegments();
+    Collection<ParameterMarkerSegment> getParameterMarkers();
     
     /**
-     * Add parameter marker segment.
+     * Add parameter marker segments.
      *
-     * @param parameterMarkerSegments parameter marker segment collection
+     * @param segments parameter marker segments
      */
-    void addParameterMarkerSegments(Collection<ParameterMarkerSegment> parameterMarkerSegments);
+    void addParameterMarkers(Collection<ParameterMarkerSegment> segments);
     
     /**
      * Get variable names.
@@ -61,5 +61,5 @@ public interface SQLStatement extends ASTNode {
      *
      * @return comment segments
      */
-    Collection<CommentSegment> getCommentSegments();
+    Collection<CommentSegment> getComments();
 }
