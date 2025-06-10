@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmen
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -93,6 +94,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getWindow().ifPresent(result::setWindow);
         sqlStatement.getModelSegment().ifPresent(result::setModelSegment);
         sqlStatement.getSubqueryType().ifPresent(result::setSubqueryType);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }
