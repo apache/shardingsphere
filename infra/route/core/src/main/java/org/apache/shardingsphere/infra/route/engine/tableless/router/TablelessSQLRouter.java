@@ -21,11 +21,14 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngineFactory;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Tableless sql router.
@@ -46,9 +49,18 @@ public final class TablelessSQLRouter {
                               final Collection<String> tableNames, final RouteContext routeContext) {
         if (tableNames.isEmpty() && routeContext.getRouteUnits().isEmpty()) {
             Collection<String> aggregatedDataSources = getAggregatedDataSources(database);
+            if (1 == aggregatedDataSources.size()) {
+                return createSingleRouteContext(aggregatedDataSources.iterator().next());
+            }
             return TablelessRouteEngineFactory.newInstance(queryContext, database).route(globalRuleMetaData, aggregatedDataSources);
         }
         return routeContext;
+    }
+    
+    private RouteContext createSingleRouteContext(final String aggregatedDataSource) {
+        RouteContext result = new RouteContext();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(aggregatedDataSource, aggregatedDataSource), Collections.emptyList()));
+        return result;
     }
     
     private Collection<String> getAggregatedDataSources(final ShardingSphereDatabase database) {

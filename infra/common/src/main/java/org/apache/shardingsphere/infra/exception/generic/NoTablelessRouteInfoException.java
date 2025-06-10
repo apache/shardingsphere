@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.engine.tableless.type.ignore;
+package org.apache.shardingsphere.infra.exception.generic;
 
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.core.external.sql.type.generic.GenericSQLException;
 
 /**
- * Tableless ignore route engine.
+ * No tableless route info exception.
  */
-public final class TablelessIgnoreRouteEngine implements TablelessRouteEngine {
+public final class NoTablelessRouteInfoException extends GenericSQLException {
     
-    @Override
-    public RouteContext route(final RuleMetaData globalRuleMetaData, final Collection<String> aggregatedDataSources) {
-        return new RouteContext();
+    private static final long serialVersionUID = 6012633104276667301L;
+    
+    public NoTablelessRouteInfoException() {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 30, "No tableless route info found.");
     }
 }
