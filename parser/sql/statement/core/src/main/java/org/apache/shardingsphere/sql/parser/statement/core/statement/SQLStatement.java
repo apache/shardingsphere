@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 
 import java.util.Collection;
 
@@ -34,9 +36,30 @@ public interface SQLStatement extends ASTNode {
     int getParameterCount();
     
     /**
+     * Get parameter marker segments.
+     *
+     * @return parameter marker segments
+     */
+    Collection<ParameterMarkerSegment> getParameterMarkerSegments();
+    
+    /**
+     * Add parameter marker segment.
+     *
+     * @param parameterMarkerSegments parameter marker segment collection
+     */
+    void addParameterMarkerSegments(Collection<ParameterMarkerSegment> parameterMarkerSegments);
+    
+    /**
      * Get variable names.
      *
      * @return variable names
      */
     Collection<String> getVariableNames();
+    
+    /**
+     * Get comment segments.
+     *
+     * @return comment segments
+     */
+    Collection<CommentSegment> getCommentSegments();
 }

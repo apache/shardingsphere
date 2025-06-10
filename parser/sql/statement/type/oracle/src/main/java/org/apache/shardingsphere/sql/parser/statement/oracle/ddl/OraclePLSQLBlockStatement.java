@@ -24,9 +24,4 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStat
  * PLSQL block statement for Oracle.
  */
 public final class OraclePLSQLBlockStatement extends AbstractSQLStatement implements DDLStatement {
-    
-    @Override
-    public int getParameterCount() {
-        return 0;
-    }
 }
