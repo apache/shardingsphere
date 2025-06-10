@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public class DropViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<SimpleTableSegment> views = new LinkedList<>();
     

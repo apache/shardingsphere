@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -51,14 +51,11 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private ExplainStatement copy(final ExplainStatement sqlStatement) {
-        ExplainStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        ExplainStatement result = new ExplainStatement();
         sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
         sqlStatement.getColumnWild().ifPresent(result::setColumnWild);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

@@ -46,7 +46,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class AlterTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
     

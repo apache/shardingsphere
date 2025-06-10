@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 
 /**
@@ -41,9 +41,8 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static AlterTableStatement copy(final AlterTableStatement sqlStatement) {
-        AlterTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private AlterTableStatement copy(final AlterTableStatement sqlStatement) {
+        AlterTableStatement result = new AlterTableStatement();
         // TODO bind column and reference table if kernel need use them
         sqlStatement.getConvertTableDefinition().ifPresent(result::setConvertTableDefinition);
         result.getAddColumnDefinitions().addAll(sqlStatement.getAddColumnDefinitions());
@@ -58,9 +57,7 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
         result.getRenameColumnDefinitions().addAll(sqlStatement.getRenameColumnDefinitions());
         result.getRenameIndexDefinitions().addAll(sqlStatement.getRenameIndexDefinitions());
         sqlStatement.getModifyCollectionRetrieval().ifPresent(result::setModifyCollectionRetrieval);
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

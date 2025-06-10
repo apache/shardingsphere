@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.ddl.column.RenameTa
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 
@@ -45,9 +46,7 @@ public final class RenameTableStatementBinder implements SQLStatementBinder<Rena
     
     private static RenameTableStatement copy(final RenameTableStatement sqlStatement, final Collection<RenameTableDefinitionSegment> boundRenameTables) {
         RenameTableStatement result = new RenameTableStatement(boundRenameTables);
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

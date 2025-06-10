@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
 
 /**
@@ -40,14 +40,11 @@ public final class DropTableStatementBinder implements SQLStatementBinder<DropTa
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static DropTableStatement copy(final DropTableStatement sqlStatement) {
-        DropTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private DropTableStatement copy(final DropTableStatement sqlStatement) {
+        DropTableStatement result = new DropTableStatement();
         result.setIfExists(sqlStatement.isIfExists());
         result.setContainsCascade(sqlStatement.isContainsCascade());
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

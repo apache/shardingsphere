@@ -20,13 +20,13 @@ package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 
 /**
@@ -44,17 +44,14 @@ public final class CreateIndexStatementBinder implements SQLStatementBinder<Crea
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static CreateIndexStatement copy(final CreateIndexStatement sqlStatement) {
-        CreateIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private CreateIndexStatement copy(final CreateIndexStatement sqlStatement) {
+        CreateIndexStatement result = new CreateIndexStatement();
         result.setIndex(sqlStatement.getIndex());
         sqlStatement.getGeneratedIndexStartIndex().ifPresent(result::setGeneratedIndexStartIndex);
         result.setIfNotExists(sqlStatement.isIfNotExists());
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

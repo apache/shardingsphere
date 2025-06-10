@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 
@@ -43,14 +43,11 @@ public final class AlterViewStatementBinder implements SQLStatementBinder<AlterV
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static AlterViewStatement copy(final AlterViewStatement sqlStatement) {
-        AlterViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private AlterViewStatement copy(final AlterViewStatement sqlStatement) {
+        AlterViewStatement result = new AlterViewStatement();
         sqlStatement.getViewDefinition().ifPresent(result::setViewDefinition);
         sqlStatement.getConstraintDefinition().ifPresent(result::setConstraintDefinition);
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

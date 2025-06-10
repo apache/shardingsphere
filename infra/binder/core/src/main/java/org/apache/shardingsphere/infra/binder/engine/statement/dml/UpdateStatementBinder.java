@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.Where
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 /**
@@ -54,9 +55,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     private UpdateStatement copy(final UpdateStatement sqlStatement) {
         UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
         sqlStatement.getLimit().ifPresent(result::setLimit);
-        result.addParameterMarkers(sqlStatement.getParameterMarkers());
-        result.getComments().addAll(sqlStatement.getComments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }
