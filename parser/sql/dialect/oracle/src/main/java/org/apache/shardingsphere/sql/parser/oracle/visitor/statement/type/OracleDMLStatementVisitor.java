@@ -1331,7 +1331,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
+        result.addParameterMarkerSegments(popAllStatementParameterMarkerSegments());
         return result;
     }
     
@@ -1400,7 +1400,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
-        subquerySegment.getSelect().getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
+        subquerySegment.getSelect().addParameterMarkerSegments(popAllStatementParameterMarkerSegments());
         SubqueryTableSegment result = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
         if (null != ctx.alias()) {
             result.setAlias((AliasSegment) visit(ctx.alias()));
@@ -1418,7 +1418,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.deleteWhereClause()) {
             result.setDeleteWhere((WhereSegment) visit(ctx.deleteWhereClause()));
         }
-        result.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
+        result.addParameterMarkerSegments(popAllStatementParameterMarkerSegments());
         return result;
     }
     
