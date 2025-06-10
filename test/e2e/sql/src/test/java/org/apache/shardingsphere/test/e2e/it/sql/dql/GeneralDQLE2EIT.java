@@ -20,11 +20,11 @@ package org.apache.shardingsphere.test.e2e.it.sql.dql;
 import org.apache.shardingsphere.test.e2e.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.framework.SQLE2EITArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.framework.SQLE2EITSettings;
-import org.apache.shardingsphere.test.e2e.it.SQLE2EITContext;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.type.SQLExecuteType;
+import org.apache.shardingsphere.test.e2e.it.SQLE2EITContext;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -116,9 +116,10 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteQueryForStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                                 final AssertionTestParameter testParam) throws SQLException {
+        String assertionSQL = null == context.getAssertion().getAssertionSQL() ? context.getSQL() : context.getAssertion().getAssertionSQL().getSql();
         try (
                 Statement expectedStatement = expectedConnection.createStatement();
-                ResultSet expectedResultSet = expectedStatement.executeQuery(context.getSQL());
+                ResultSet expectedResultSet = expectedStatement.executeQuery(assertionSQL);
                 Statement actualStatement = actualConnection.createStatement();
                 ResultSet actualResultSet = actualStatement.executeQuery(context.getSQL())) {
             assertResultSet(actualResultSet, expectedResultSet, testParam);
@@ -127,8 +128,9 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteQueryForPreparedStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                                         final AssertionTestParameter testParam) throws SQLException {
+        String assertionSQL = null == context.getAssertion().getAssertionSQL() ? context.getSQL() : context.getAssertion().getAssertionSQL().getSql();
         try (
-                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(context.getSQL());
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(assertionSQL);
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(context.getSQL())) {
             for (SQLValue each : context.getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
@@ -217,10 +219,11 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteForStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                            final AssertionTestParameter testParam) throws SQLException {
+        String assertionSQL = null == context.getAssertion().getAssertionSQL() ? context.getSQL() : context.getAssertion().getAssertionSQL().getSql();
         try (
                 Statement actualStatement = actualConnection.createStatement();
                 Statement expectedStatement = expectedConnection.createStatement()) {
-            assertTrue(expectedStatement.execute(context.getSQL()) && actualStatement.execute(context.getSQL()), "Not a query statement.");
+            assertTrue(expectedStatement.execute(assertionSQL) && actualStatement.execute(context.getSQL()), "Not a query statement.");
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -231,9 +234,10 @@ class GeneralDQLE2EIT extends BaseDQLE2EIT {
     
     private void assertExecuteForPreparedStatement(final SQLE2EITContext context, final Connection actualConnection, final Connection expectedConnection,
                                                    final AssertionTestParameter testParam) throws SQLException {
+        String assertionSQL = null == context.getAssertion().getAssertionSQL() ? context.getSQL() : context.getAssertion().getAssertionSQL().getSql();
         try (
                 PreparedStatement actualPreparedStatement = actualConnection.prepareStatement(context.getSQL());
-                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(context.getSQL())) {
+                PreparedStatement expectedPreparedStatement = expectedConnection.prepareStatement(assertionSQL)) {
             for (SQLValue each : context.getAssertion().getSQLValues()) {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
