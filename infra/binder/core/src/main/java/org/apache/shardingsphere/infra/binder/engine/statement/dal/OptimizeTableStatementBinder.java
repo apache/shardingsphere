@@ -25,9 +25,11 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Optimize table statement binder.
@@ -36,14 +38,14 @@ public final class OptimizeTableStatementBinder implements SQLStatementBinder<Op
     
     @Override
     public OptimizeTableStatement bind(final OptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        OptimizeTableStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getTables().forEach(each -> result.getTables().add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)));
-        return result;
+        Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
+                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)).collect(Collectors.toList());
+        return copy(sqlStatement, boundTables);
     }
     
-    private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement) {
-        OptimizeTableStatement result = new OptimizeTableStatement(new LinkedList<>());
+    private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
+        OptimizeTableStatement result = new OptimizeTableStatement(boundTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
