@@ -42,7 +42,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class SelectStatement extends AbstractSQLStatement implements DMLStatement {
+public final class SelectStatement extends AbstractSQLStatement implements DMLStatement {
     
     private ProjectionsSegment projections;
     
@@ -58,7 +58,7 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     
     private CombineSegment combine;
     
-    private WithSegment withSegment;
+    private WithSegment with;
     
     private SubqueryType subqueryType;
     
@@ -68,11 +68,11 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WindowSegment window;
     
-    private TableSegment intoSegment;
+    private TableSegment into;
     
-    private ModelSegment modelSegment;
+    private ModelSegment model;
     
-    private WithTableHintSegment withTableHintSegment;
+    private WithTableHintSegment withTableHint;
     
     /**
      * Get from.
@@ -120,21 +120,21 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get combine segment.
+     * Get combine.
      *
-     * @return combine segment
+     * @return combine
      */
     public Optional<CombineSegment> getCombine() {
         return Optional.ofNullable(combine);
     }
     
     /**
-     * Get with segment.
+     * Get with.
      *
-     * @return with segment.
+     * @return with.
      */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
     }
     
     /**
@@ -147,56 +147,56 @@ public class SelectStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get limit segment.
+     * Get limit.
      *
-     * @return limit segment
+     * @return limit
      */
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
     
     /**
-     * Get lock segment.
+     * Get lock.
      *
-     * @return lock segment
+     * @return lock
      */
     public Optional<LockSegment> getLock() {
         return Optional.ofNullable(lock);
     }
     
     /**
-     * Get window segment.
+     * Get window.
      *
-     * @return window segment
+     * @return window
      */
     public Optional<WindowSegment> getWindow() {
         return Optional.ofNullable(window);
     }
     
     /**
-     * Get into segment.
+     * Get into.
      *
-     * @return into table segment
+     * @return into table
      */
-    public Optional<TableSegment> getIntoSegment() {
-        return Optional.ofNullable(intoSegment);
+    public Optional<TableSegment> getInto() {
+        return Optional.ofNullable(into);
     }
     
     /**
-     * Get model segment.
+     * Get model.
      *
-     * @return model segment
+     * @return model
      */
-    public Optional<ModelSegment> getModelSegment() {
-        return Optional.ofNullable(modelSegment);
+    public Optional<ModelSegment> getModel() {
+        return Optional.ofNullable(model);
     }
     
     /**
-     * Get with table hint segment.
+     * Get with table hint.
      *
-     * @return with table hint segment.
+     * @return with table hint.
      */
-    public Optional<WithTableHintSegment> getWithTableHintSegment() {
-        return Optional.ofNullable(withTableHintSegment);
+    public Optional<WithTableHintSegment> getWithTableHint() {
+        return Optional.ofNullable(withTableHint);
     }
 }

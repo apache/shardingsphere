@@ -87,16 +87,16 @@ public final class InsertStatement extends AbstractSQLStatement implements DMLSt
     /**
      * Get table.
      *
-     * @return simple table segment
+     * @return table
      */
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
     }
     
     /**
-     * Get insert columns segment.
+     * Get insert columns.
      *
-     * @return insert columns segment
+     * @return insert columns
      */
     public Optional<InsertColumnsSegment> getInsertColumns() {
         return Optional.ofNullable(insertColumns);
@@ -112,27 +112,27 @@ public final class InsertStatement extends AbstractSQLStatement implements DMLSt
     }
     
     /**
-     * Get insert select segment.
+     * Get insert select.
      *
-     * @return insert select segment
+     * @return insert select
      */
     public Optional<SubquerySegment> getInsertSelect() {
         return Optional.ofNullable(insertSelect);
     }
     
     /**
-     * Get On duplicate key columns segment.
+     * Get On duplicate key columns.
      *
-     * @return on duplicate key columns segment
+     * @return on duplicate key columns
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumns);
     }
     
     /**
-     * Get set assignment segment.
+     * Get set assignment.
      *
-     * @return set assignment segment
+     * @return set assignment
      */
     public Optional<SetAssignmentSegment> getSetAssignment() {
         return Optional.ofNullable(setAssignment);

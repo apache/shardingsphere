@@ -951,7 +951,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         }
         if (null != ctx.withClause()) {
             WithSegment withSegment = (WithSegment) visit(ctx.withClause());
-            result.setWithSegment(withSegment);
+            result.setWith(withSegment);
         }
         return result;
     }
@@ -1039,7 +1039,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
             result.setProjections(new ProjectionsSegment(-1, -1));
         }
         if (null != ctx.intoClause()) {
-            result.setIntoSegment((TableSegment) visit(ctx.intoClause()));
+            result.setInto((TableSegment) visit(ctx.intoClause()));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());

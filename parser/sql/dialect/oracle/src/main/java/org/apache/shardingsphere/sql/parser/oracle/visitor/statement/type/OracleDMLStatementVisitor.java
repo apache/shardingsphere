@@ -437,7 +437,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         // TODO Visit hierarchicalQueryClause
         if (null != ctx.modelClause()) {
-            result.setModelSegment((ModelSegment) visit(ctx.modelClause()));
+            result.setModel((ModelSegment) visit(ctx.modelClause()));
         }
         // TODO Visit windowClause
         if (null != ctx.orderByClause()) {
@@ -586,7 +586,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SelectStatement left = (SelectStatement) visit(ctx.selectSubquery(0));
             result.setProjections(left.getProjections());
             left.getFrom().ifPresent(result::setFrom);
-            left.getWithSegment().ifPresent(result::setWithSegment);
+            left.getWith().ifPresent(result::setWith);
             createSelectCombineClause(ctx, result, left);
         } else {
             result = null != ctx.queryBlock() ? (SelectStatement) visit(ctx.queryBlock()) : (SelectStatement) visit(ctx.parenthesisSelectSubquery());
@@ -626,7 +626,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
@@ -645,7 +645,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             }
         }
         if (null != ctx.modelClause()) {
-            result.setModelSegment((ModelSegment) visit(ctx.modelClause()));
+            result.setModel((ModelSegment) visit(ctx.modelClause()));
         }
         return result;
     }

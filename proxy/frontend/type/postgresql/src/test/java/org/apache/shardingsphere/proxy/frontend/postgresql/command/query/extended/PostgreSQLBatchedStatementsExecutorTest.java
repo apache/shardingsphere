@@ -62,7 +62,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -118,12 +117,8 @@ class PostgreSQLBatchedStatementsExecutorTest {
     }
     
     private InsertStatementContext mockInsertStatementContext() {
-        InsertStatement insertStatement = mock(InsertStatement.class, RETURNS_DEEP_STUBS);
-        when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))));
-        when(insertStatement.getInsertColumns()).thenReturn(Optional.empty());
-        when(insertStatement.getInsertSelect()).thenReturn(Optional.empty());
-        when(insertStatement.getValues()).thenReturn(Collections.emptyList());
-        when(insertStatement.getComments()).thenReturn(Collections.emptyList());
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getDatabaseType()).thenReturn(databaseType);
         when(result.getSqlStatement()).thenReturn(insertStatement);
