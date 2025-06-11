@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +37,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CreateTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
     
@@ -54,6 +53,8 @@ public class CreateTableStatement extends AbstractSQLStatement implements DDLSta
     
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
     
+    private final List<ColumnSegment> columns = new LinkedList<>();
+    
     /**
      * Get select statement.
      *
@@ -61,15 +62,6 @@ public class CreateTableStatement extends AbstractSQLStatement implements DDLSta
      */
     public Optional<SelectStatement> getSelectStatement() {
         return Optional.ofNullable(selectStatement);
-    }
-    
-    /**
-     * Get list of columns.
-     *
-     * @return list of columns
-     */
-    public List<ColumnSegment> getColumns() {
-        return Collections.emptyList();
     }
     
     /**

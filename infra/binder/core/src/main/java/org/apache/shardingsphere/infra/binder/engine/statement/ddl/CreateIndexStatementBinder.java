@@ -27,7 +27,12 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Create index statement binder.
@@ -36,16 +41,17 @@ public final class CreateIndexStatementBinder implements SQLStatementBinder<Crea
     
     @Override
     public CreateIndexStatement bind(final CreateIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        CreateIndexStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
-        sqlStatement.getColumns()
-                .forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        return result;
+        SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
+        Collection<ColumnSegment> boundColumns = sqlStatement.getColumns().stream()
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create())).collect(Collectors.toList());
+        return copy(sqlStatement, boundTable, boundColumns);
     }
     
-    private CreateIndexStatement copy(final CreateIndexStatement sqlStatement) {
+    private CreateIndexStatement copy(final CreateIndexStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
         CreateIndexStatement result = new CreateIndexStatement();
+        result.setTable(boundTable);
+        result.getColumns().addAll(boundColumns);
         result.setIndex(sqlStatement.getIndex());
         sqlStatement.getGeneratedIndexStartIndex().ifPresent(result::setGeneratedIndexStartIndex);
         result.setIfNotExists(sqlStatement.isIfNotExists());
