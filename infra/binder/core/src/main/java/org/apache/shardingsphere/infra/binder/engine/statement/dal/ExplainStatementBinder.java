@@ -32,18 +32,16 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
     
     @Override
     public ExplainStatement bind(final ExplainStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        ExplainStatement result = copy(sqlStatement);
-        SQLStatement explainSQLStatement = sqlStatement.getSqlStatement();
-        SQLStatement boundSQLStatement = explainSQLStatement instanceof DMLStatement
+        SQLStatement boundSQLStatement = sqlStatement.getSqlStatement() instanceof DMLStatement
                 ? new DMLStatementBindEngine(binderContext.getMetaData(),
-                        binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType()).bind((DMLStatement) explainSQLStatement)
-                : explainSQLStatement;
-        result.setSqlStatement(boundSQLStatement);
-        return result;
+                        binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType()).bind((DMLStatement) sqlStatement.getSqlStatement())
+                : sqlStatement.getSqlStatement();
+        return copy(sqlStatement, boundSQLStatement);
     }
     
-    private ExplainStatement copy(final ExplainStatement sqlStatement) {
+    private ExplainStatement copy(final ExplainStatement sqlStatement, final SQLStatement boundSQLStatement) {
         ExplainStatement result = new ExplainStatement();
+        result.setSqlStatement(boundSQLStatement);
         sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
         sqlStatement.getColumnWild().ifPresent(result::setColumnWild);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
