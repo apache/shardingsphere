@@ -54,26 +54,31 @@ public final class SQLStatementCompiler {
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         RelNode logicalPlan = converter.convertQuery(sqlNode, true, true).rel;
         RelDataType resultColumnType = converter.getValidatedNodeType(sqlNode);
-        RelNode rewritePlan = rewrite(logicalPlan, databaseType);
-        RelNode physicalPlan = optimize(rewritePlan, converter);
+        RelNode rewrittenPlan = rewrite(logicalPlan, databaseType);
+        RelNode physicalPlan = optimize(rewrittenPlan, converter, databaseType);
         RelMetadataQueryBase.THREAD_PROVIDERS.remove();
         return new SQLFederationExecutionPlan(physicalPlan, resultColumnType);
     }
     
     private RelNode rewrite(final RelNode logicalPlan, final String databaseType) {
-        RelNode rewrittenPlan = LogicalScanRelRewriter.rewrite(logicalPlan, databaseType);
+        RelNode rewrittenPlan = rewriteTableScan(logicalPlan, databaseType);
         RelOptPlanner hepPlanner = SQLFederationPlannerBuilder.buildHepPlanner();
         hepPlanner.setRoot(rewrittenPlan);
         return hepPlanner.findBestExp();
     }
     
-    private RelNode optimize(final RelNode rewritePlan, final SQLFederationRelConverter converter) {
+    private RelNode optimize(final RelNode logicalPlan, final SQLFederationRelConverter converter, final String databaseType) {
+        RelNode rewrittenPlan = rewriteTableScan(logicalPlan, databaseType);
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (rewritePlan.getTraitSet().contains(convention)) {
-            planner.setRoot(rewritePlan);
+        if (rewrittenPlan.getTraitSet().contains(convention)) {
+            planner.setRoot(rewrittenPlan);
         } else {
-            planner.setRoot(planner.changeTraits(rewritePlan, converter.getCluster().traitSet().replace(convention)));
+            planner.setRoot(planner.changeTraits(rewrittenPlan, converter.getCluster().traitSet().replace(convention)));
         }
         return planner.findBestExp();
+    }
+    
+    private RelNode rewriteTableScan(final RelNode logicalPlan, final String databaseType) {
+        return LogicalScanRelRewriter.rewrite(logicalPlan, databaseType);
     }
 }

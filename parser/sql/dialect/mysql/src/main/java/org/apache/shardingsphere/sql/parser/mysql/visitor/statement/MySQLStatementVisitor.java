@@ -183,6 +183,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Inte
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
@@ -506,12 +507,23 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.predicate()) {
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
-            right = new SubqueryExpressionSegment(
-                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+            right = createRightExpression(ctx);
         }
         String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+    }
+    
+    private ExpressionSegment createRightExpression(final BooleanPrimaryContext ctx) {
+        SubqueryExpressionSegment result = new SubqueryExpressionSegment(
+                new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+        if (null != ctx.ANY() || null != ctx.ALL()) {
+            int startIndex = null == ctx.ANY() ? ctx.ALL().getSymbol().getStartIndex() : ctx.ANY().getSymbol().getStartIndex();
+            String quantifyOperator = null == ctx.ANY() ? ctx.ALL().getText() : ctx.ANY().getText();
+            return new QuantifySubqueryExpression(startIndex, result.getStopIndex(), result.getSubquery(), quantifyOperator);
+        } else {
+            return result;
+        }
     }
     
     @Override

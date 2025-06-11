@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -192,6 +193,9 @@ public final class TableExtractor {
         }
         if (expressionSegment instanceof TypeCastExpression) {
             extractTablesFromExpression(((TypeCastExpression) expressionSegment).getExpression());
+        }
+        if (expressionSegment instanceof QuantifySubqueryExpression) {
+            extractTablesFromExpression(((QuantifySubqueryExpression) expressionSegment).getSubquery());
         }
     }
     

@@ -21,32 +21,27 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.OuterJoinExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 
 /**
- * Outer join expression binder.
+ * Quantify subquery expression binder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OuterJoinExpressionBinder {
+public final class QuantifySubqueryExpressionBinder {
     
     /**
-     * Bind outer join expression.
+     * Bind quantify subquery expression.
      *
-     * @param segment outer join expression segment
-     * @param parentSegmentType parent segment type
+     * @param segment quantify subquery expression
      * @param binderContext SQL statement binder context
      * @param tableBinderContexts table binder contexts
-     * @param outerTableBinderContexts outer table binder contexts
-     * @return bound outer join expression
+     * @return bound quantify subquery expression
      */
-    public static OuterJoinExpression bind(final OuterJoinExpression segment, final SegmentType parentSegmentType,
-                                           final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
-                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        ColumnSegment boundColumnName = ColumnSegmentBinder.bind(segment.getColumnName(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        return new OuterJoinExpression(segment.getStartIndex(), segment.getStopIndex(), boundColumnName, segment.getJoinOperator(), segment.getText());
+    public static QuantifySubqueryExpression bind(final QuantifySubqueryExpression segment, final SQLStatementBinderContext binderContext,
+                                                  final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        return new QuantifySubqueryExpression(segment.getStartIndex(), segment.getStopIndex(), SubquerySegmentBinder.bind(segment.getSubquery(), binderContext, tableBinderContexts),
+                segment.getQuantifyOperator());
     }
 }

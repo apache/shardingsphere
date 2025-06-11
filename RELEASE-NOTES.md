@@ -45,6 +45,7 @@
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
+1. SQL Parser: Support mysql quantify operator parse and upgrade calcite to 1.40.0 - [#35675](https://github.com/apache/shardingsphere/pull/35675)
 
 ### Bug Fixes
 

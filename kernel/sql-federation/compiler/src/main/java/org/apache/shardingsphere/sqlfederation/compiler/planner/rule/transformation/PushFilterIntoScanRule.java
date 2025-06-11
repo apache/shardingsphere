@@ -24,6 +24,7 @@ import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.rex.RexCall;
 import org.apache.calcite.rex.RexNode;
+import org.apache.calcite.rex.RexSubQuery;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical.LogicalScan;
 import org.immutables.value.Value;
 
@@ -54,7 +55,25 @@ public final class PushFilterIntoScanRule extends RelRule<PushFilterIntoScanRule
         }
         LogicalFilter logicalFilter = call.rel(0);
         RexNode condition = logicalFilter.getCondition();
+        if (isConditionContainsRexSubQuery(condition)) {
+            return false;
+        }
         return !(condition instanceof RexCall) || !containsCorrelate(((RexCall) condition).getOperands());
+    }
+    
+    private boolean isConditionContainsRexSubQuery(final RexNode condition) {
+        if (condition instanceof RexSubQuery) {
+            return true;
+        }
+        if (!(condition instanceof RexCall)) {
+            return false;
+        }
+        for (RexNode each : ((RexCall) condition).getOperands()) {
+            if (each instanceof RexSubQuery) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean containsCorrelate(final Collection<RexNode> operands) {
