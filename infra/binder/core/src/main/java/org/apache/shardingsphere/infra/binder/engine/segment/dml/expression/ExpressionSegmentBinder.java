@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.InExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.NotExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.OuterJoinExpressionBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.QuantifySubqueryExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -46,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -108,6 +110,9 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof OuterJoinExpression) {
             return OuterJoinExpressionBinder.bind((OuterJoinExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof QuantifySubqueryExpression) {
+            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, tableBinderContexts);
         }
         // TODO support more ExpressionSegment bound
         return segment;

@@ -30,6 +30,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.operator.common.SQLExtensionOperatorTable;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
@@ -79,6 +80,7 @@ public final class BinaryOperationExpressionConverter {
         register(SqlStdOperatorTable.CONCAT);
         register(SqlStdOperatorTable.PATTERN_ALTER);
         register(SqlStdOperatorTable.MOD);
+        SqlStdOperatorTable.QUANTIFY_OPERATORS.forEach(BinaryOperationExpressionConverter::register);
         register(SQLExtensionOperatorTable.DIV);
         register(SQLExtensionOperatorTable.CARET);
         register(SQLExtensionOperatorTable.AMPERSAND);
@@ -119,25 +121,55 @@ public final class BinaryOperationExpressionConverter {
     }
     
     private static SqlOperator convertOperator(final BinaryOperationExpression segment) {
-        String operator = segment.getOperator();
-        if ("IS".equalsIgnoreCase(operator)) {
-            String literals = String.valueOf(((LiteralExpressionSegment) segment.getRight()).getLiterals());
-            if ("NULL".equalsIgnoreCase(literals)) {
-                operator = "IS NULL";
-            } else if ("NOT NULL".equalsIgnoreCase(literals)) {
-                operator = "IS NOT NULL";
-            } else if ("FALSE".equalsIgnoreCase(literals)) {
-                operator = "IS FALSE";
-            } else if ("NOT FALSE".equalsIgnoreCase(literals)) {
-                operator = "IS NOT FALSE";
-            } else if ("TRUE".equalsIgnoreCase(literals)) {
-                operator = "IS TRUE";
-            } else if ("NOT TRUE".equalsIgnoreCase(literals)) {
-                operator = "IS NOT TRUE";
-            }
-        }
+        String operator = getOperator(segment);
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
+    }
+    
+    private static String getOperator(final BinaryOperationExpression segment) {
+        String result = null;
+        if ("IS".equalsIgnoreCase(segment.getOperator())) {
+            result = findIsOperator(segment).orElse(null);
+        }
+        if (segment.getRight() instanceof QuantifySubqueryExpression) {
+            result = findQuantifyOperator(segment.getOperator(), (QuantifySubqueryExpression) segment.getRight()).orElse(null);
+        }
+        return null == result ? segment.getOperator() : result;
+    }
+    
+    private static Optional<String> findIsOperator(final BinaryOperationExpression segment) {
+        String literals = String.valueOf(((LiteralExpressionSegment) segment.getRight()).getLiterals());
+        if ("NULL".equalsIgnoreCase(literals)) {
+            return Optional.of(SqlStdOperatorTable.IS_NULL.getName());
+        } else if ("NOT NULL".equalsIgnoreCase(literals)) {
+            return Optional.of(SqlStdOperatorTable.IS_NOT_NULL.getName());
+        } else if ("FALSE".equalsIgnoreCase(literals)) {
+            return Optional.of(SqlStdOperatorTable.IS_FALSE.getName());
+        } else if ("NOT FALSE".equalsIgnoreCase(literals)) {
+            return Optional.of(SqlStdOperatorTable.IS_NOT_FALSE.getName());
+        } else if ("TRUE".equalsIgnoreCase(literals)) {
+            return Optional.of(SqlStdOperatorTable.IS_TRUE.getName());
+        } else if ("NOT TRUE".equalsIgnoreCase(literals)) {
+            return Optional.of(SqlStdOperatorTable.IS_NOT_TRUE.getName());
+        }
+        return Optional.empty();
+    }
+    
+    private static Optional<String> findQuantifyOperator(final String operator, final QuantifySubqueryExpression quantifySubquery) {
+        if ("=".equals(operator)) {
+            return "ALL".equalsIgnoreCase(quantifySubquery.getQuantifyOperator()) ? Optional.of(SqlStdOperatorTable.ALL_EQ.getName()) : Optional.of(SqlStdOperatorTable.SOME_EQ.getName());
+        } else if (">".equals(operator)) {
+            return "ALL".equalsIgnoreCase(quantifySubquery.getQuantifyOperator()) ? Optional.of(SqlStdOperatorTable.ALL_GT.getName()) : Optional.of(SqlStdOperatorTable.SOME_GT.getName());
+        } else if (">=".equals(operator)) {
+            return "ALL".equalsIgnoreCase(quantifySubquery.getQuantifyOperator()) ? Optional.of(SqlStdOperatorTable.ALL_GE.getName()) : Optional.of(SqlStdOperatorTable.SOME_GE.getName());
+        } else if ("<".equals(operator)) {
+            return "ALL".equalsIgnoreCase(quantifySubquery.getQuantifyOperator()) ? Optional.of(SqlStdOperatorTable.ALL_LT.getName()) : Optional.of(SqlStdOperatorTable.SOME_LT.getName());
+        } else if ("<=".equals(operator)) {
+            return "ALL".equalsIgnoreCase(quantifySubquery.getQuantifyOperator()) ? Optional.of(SqlStdOperatorTable.ALL_LE.getName()) : Optional.of(SqlStdOperatorTable.SOME_LE.getName());
+        } else if ("!=".equals(operator) || "<>".equals(operator)) {
+            return "ALL".equalsIgnoreCase(quantifySubquery.getQuantifyOperator()) ? Optional.of(SqlStdOperatorTable.ALL_NE.getName()) : Optional.of(SqlStdOperatorTable.SOME_NE.getName());
+        }
+        return Optional.empty();
     }
     
     private static List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator) {
