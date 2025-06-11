@@ -228,6 +228,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -498,18 +499,29 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             } else if (null != ctx.textString()) {
                 result.setColumnWild((ColumnSegment) visit(ctx.textString()));
             }
-        } else if (null != ctx.explainableStatement()) {
-            result.setSqlStatement((SQLStatement) visit(ctx.explainableStatement()));
-        } else if (null != ctx.select()) {
-            result.setSqlStatement((SQLStatement) visit(ctx.select()));
-        } else if (null != ctx.delete()) {
-            result.setSqlStatement((SQLStatement) visit(ctx.delete()));
-        } else if (null != ctx.update()) {
-            result.setSqlStatement((SQLStatement) visit(ctx.update()));
-        } else if (null != ctx.insert()) {
-            result.setSqlStatement((SQLStatement) visit(ctx.insert()));
+        } else {
+            getExplainableSQLStatement(ctx).ifPresent(result::setSqlStatement);
         }
         return result;
+    }
+    
+    private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {
+        if (null != ctx.explainableStatement()) {
+            return Optional.of((SQLStatement) visit(ctx.explainableStatement()));
+        }
+        if (null != ctx.select()) {
+            return Optional.of((SQLStatement) visit(ctx.select()));
+        }
+        if (null != ctx.delete()) {
+            return Optional.of((SQLStatement) visit(ctx.delete()));
+        }
+        if (null != ctx.update()) {
+            return Optional.of((SQLStatement) visit(ctx.update()));
+        }
+        if (null != ctx.insert()) {
+            return Optional.of((SQLStatement) visit(ctx.insert()));
+        }
+        return Optional.empty();
     }
     
     @Override
