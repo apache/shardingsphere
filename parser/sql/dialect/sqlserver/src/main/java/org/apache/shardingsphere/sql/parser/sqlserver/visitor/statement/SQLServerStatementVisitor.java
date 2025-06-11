@@ -1140,16 +1140,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result = (InsertStatement) visit(ctx.insertSelectClause());
         }
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.rowSetFunction()) {
-            result.setRowSetFunctionSegment((FunctionSegment) visit(ctx.rowSetFunction()));
+            result.setRowSetFunction((FunctionSegment) visit(ctx.rowSetFunction()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -1189,7 +1189,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         InsertStatement result = new InsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
@@ -1198,7 +1198,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
         InsertStatement result = new InsertStatement();
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
-        result.setExecSegment((ExecSegment) visit(ctx.exec()));
+        result.setExec((ExecSegment) visit(ctx.exec()));
         return result;
     }
     
@@ -1281,7 +1281,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
@@ -1300,7 +1300,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }

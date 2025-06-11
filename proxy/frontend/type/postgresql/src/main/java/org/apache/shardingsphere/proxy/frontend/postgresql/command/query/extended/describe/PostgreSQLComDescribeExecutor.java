@@ -126,7 +126,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement) {
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement();
         Collection<Integer> unspecifiedTypeParameterIndexes = getUnspecifiedTypeParameterIndexes(preparedStatement);
-        Optional<ReturningSegment> returningSegment = insertStatement.getReturningSegment();
+        Optional<ReturningSegment> returningSegment = insertStatement.getReturning();
         if (insertStatement.getParameterMarkers().isEmpty() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
             return;
         }

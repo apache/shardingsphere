@@ -48,7 +48,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class InsertStatement extends AbstractSQLStatement implements DMLStatement {
+public final class InsertStatement extends AbstractSQLStatement implements DMLStatement {
     
     private SimpleTableSegment table;
     
@@ -60,25 +60,25 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
-    private ReturningSegment returningSegment;
+    private ReturningSegment returning;
     
-    private OutputSegment outputSegment;
+    private OutputSegment output;
     
-    private WithSegment withSegment;
+    private WithSegment with;
     
     private MultiTableInsertType multiTableInsertType;
     
-    private MultiTableInsertIntoSegment multiTableInsertIntoSegment;
+    private MultiTableInsertIntoSegment multiTableInsertInto;
     
-    private MultiTableConditionalIntoSegment multiTableConditionalIntoSegment;
+    private MultiTableConditionalIntoSegment multiTableConditionalInto;
     
     private WhereSegment where;
     
-    private ExecSegment execSegment;
+    private ExecSegment exec;
     
-    private WithTableHintSegment withTableHintSegment;
+    private WithTableHintSegment withTableHint;
     
-    private FunctionSegment rowSetFunctionSegment;
+    private FunctionSegment rowSetFunction;
     
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
@@ -139,21 +139,21 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get with segment.
+     * Get with.
      *
-     * @return with segment
+     * @return with
      */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
     }
     
     /**
-     * Get output segment.
+     * Get output.
      *
-     * @return output segment
+     * @return output
      */
-    public Optional<OutputSegment> getOutputSegment() {
-        return Optional.ofNullable(outputSegment);
+    public Optional<OutputSegment> getOutput() {
+        return Optional.ofNullable(output);
     }
     
     /**
@@ -166,30 +166,30 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get multi table insert into segment.
+     * Get multi table insert into.
      *
-     * @return multi table insert into segment
+     * @return multi table insert into
      */
-    public Optional<MultiTableInsertIntoSegment> getMultiTableInsertIntoSegment() {
-        return Optional.ofNullable(multiTableInsertIntoSegment);
+    public Optional<MultiTableInsertIntoSegment> getMultiTableInsertInto() {
+        return Optional.ofNullable(multiTableInsertInto);
     }
     
     /**
-     * Get multi table conditional into segment.
+     * Get multi table conditional into.
      *
-     * @return multi table conditional into segment
+     * @return multi table conditional into
      */
-    public Optional<MultiTableConditionalIntoSegment> getMultiTableConditionalIntoSegment() {
-        return Optional.ofNullable(multiTableConditionalIntoSegment);
+    public Optional<MultiTableConditionalIntoSegment> getMultiTableConditionalInto() {
+        return Optional.ofNullable(multiTableConditionalInto);
     }
     
     /**
-     * Get returning segment of insert statement.
+     * Get returning.
      *
-     * @return returning segment
+     * @return returning
      */
-    public Optional<ReturningSegment> getReturningSegment() {
-        return Optional.ofNullable(returningSegment);
+    public Optional<ReturningSegment> getReturning() {
+        return Optional.ofNullable(returning);
     }
     
     /**
@@ -202,29 +202,29 @@ public class InsertStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get execute segment.
+     * Get execute.
      *
-     * @return execute segment
+     * @return execute
      */
-    public Optional<ExecSegment> getExecSegment() {
-        return Optional.ofNullable(execSegment);
+    public Optional<ExecSegment> getExec() {
+        return Optional.ofNullable(exec);
     }
     
     /**
-     * Get with table hint segment.
+     * Get with table hint.
      *
-     * @return with table hint segment
+     * @return with table hint
      */
-    public Optional<WithTableHintSegment> getWithTableHintSegment() {
-        return Optional.ofNullable(withTableHintSegment);
+    public Optional<WithTableHintSegment> getWithTableHint() {
+        return Optional.ofNullable(withTableHint);
     }
     
     /**
-     * Get rowSet function segment.
+     * Get row set function.
      *
-     * @return rowSet function segment
+     * @return row set function
      */
-    public Optional<FunctionSegment> getRowSetFunctionSegment() {
-        return Optional.ofNullable(rowSetFunctionSegment);
+    public Optional<FunctionSegment> getRowSetFunction() {
+        return Optional.ofNullable(rowSetFunction);
     }
 }

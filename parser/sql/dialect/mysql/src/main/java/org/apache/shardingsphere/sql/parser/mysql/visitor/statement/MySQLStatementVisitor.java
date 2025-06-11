@@ -1470,7 +1470,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         return result;
     }
@@ -1545,7 +1545,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         return result;
     }
