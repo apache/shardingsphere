@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
@@ -219,6 +220,10 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             closeExecutor();
             if (null != getStatementManager()) {
                 getStatementManager().close();
+                Connection connection = getConnection();
+                if (connection instanceof ShardingSphereConnection) {
+                    ((ShardingSphereConnection) connection).getStatementManagers().remove(getStatementManager());
+                }
             }
         } finally {
             getRoutedStatements().clear();
