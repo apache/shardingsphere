@@ -50,8 +50,8 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
-        OrderBySegment boundOrderBy = sqlStatement.getOrderBy().map(optional -> 
-                OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
+                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
     }
     
