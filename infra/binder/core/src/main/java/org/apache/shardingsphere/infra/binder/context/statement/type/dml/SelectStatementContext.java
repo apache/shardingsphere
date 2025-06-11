@@ -389,7 +389,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWithSegment().isPresent();
+        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWith().isPresent();
     }
     
     /**
@@ -428,6 +428,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWithSegment();
+        return getSqlStatement().getWith();
     }
 }

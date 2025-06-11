@@ -972,20 +972,20 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
             WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
-            result.setWithSegment(withSegment);
+            result.setWith(withSegment);
         }
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.intoClause()) {
-            result.setIntoSegment((TableSegment) visit(ctx.intoClause()));
+            result.setInto((TableSegment) visit(ctx.intoClause()));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
             result.setFrom(tableSource);
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));

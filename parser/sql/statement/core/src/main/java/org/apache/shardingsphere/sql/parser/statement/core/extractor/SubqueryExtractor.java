@@ -79,8 +79,8 @@ public final class SubqueryExtractor {
         if (selectStatement.getCombine().isPresent()) {
             extractSubquerySegmentsFromCombine(result, selectStatement.getCombine().get(), needRecursive, parentSubqueryType);
         }
-        if (selectStatement.getWithSegment().isPresent()) {
-            extractSubquerySegmentsFromCTEs(result, selectStatement.getWithSegment().get().getCommonTableExpressions(), needRecursive);
+        if (selectStatement.getWith().isPresent()) {
+            extractSubquerySegmentsFromCTEs(result, selectStatement.getWith().get().getCommonTableExpressions(), needRecursive);
         }
     }
     

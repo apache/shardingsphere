@@ -742,7 +742,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
         if (null != result && null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         return result;
     }

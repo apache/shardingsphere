@@ -63,7 +63,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     }
     
     private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {
-        return selectStatement.getWithSegment().flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
+        return selectStatement.getWith().flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
     }
     
     private SqlSelect convertSelect(final SelectStatement selectStatement) {

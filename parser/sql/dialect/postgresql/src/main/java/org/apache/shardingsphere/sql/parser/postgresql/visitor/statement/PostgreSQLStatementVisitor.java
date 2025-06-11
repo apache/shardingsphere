@@ -920,7 +920,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         if (null != ctx.withClause()) {
             WithSegment withSegment = (WithSegment) visit(ctx.withClause());
-            result.setWithSegment(withSegment);
+            result.setWith(withSegment);
         }
         return result;
     }
@@ -1005,7 +1005,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             result.setProjections(projects);
         }
         if (null != ctx.intoClause()) {
-            result.setIntoSegment((TableSegment) visit(ctx.intoClause()));
+            result.setInto((TableSegment) visit(ctx.intoClause()));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());

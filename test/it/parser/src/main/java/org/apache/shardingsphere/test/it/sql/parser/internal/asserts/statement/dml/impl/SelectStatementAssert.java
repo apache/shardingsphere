@@ -163,7 +163,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<WithSegment> withSegment = actual.getWithSegment();
+        Optional<WithSegment> withSegment = actual.getWith();
         if (null == expected.getWithClause()) {
             assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
@@ -186,7 +186,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertModelClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<ModelSegment> modelSegment = actual.getModelSegment();
+        Optional<ModelSegment> modelSegment = actual.getModel();
         if (null == expected.getModelClause()) {
             assertFalse(modelSegment.isPresent(), assertContext.getText("Actual model segment should not exist."));
         } else {
@@ -196,7 +196,7 @@ public final class SelectStatementAssert {
     }
     
     private static void assertIntoClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        Optional<TableSegment> intoSegment = actual.getIntoSegment();
+        Optional<TableSegment> intoSegment = actual.getInto();
         if (null == expected.getIntoClause()) {
             assertFalse(intoSegment.isPresent(), assertContext.getText("Actual into segment should not exist."));
         } else {
