@@ -1330,7 +1330,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitUpdate(final UpdateContext ctx) {
         UpdateStatement result = new UpdateStatement();
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -1338,16 +1338,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setFrom((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
+            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;

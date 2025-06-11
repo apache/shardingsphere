@@ -89,6 +89,6 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWithSegment();
+        return getSqlStatement().getWith();
     }
 }
