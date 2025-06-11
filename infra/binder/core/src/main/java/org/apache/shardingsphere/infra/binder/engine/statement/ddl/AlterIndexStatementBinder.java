@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 
 /**
@@ -37,16 +35,15 @@ public final class AlterIndexStatementBinder implements SQLStatementBinder<Alter
         if (!sqlStatement.getSimpleTable().isPresent()) {
             return sqlStatement;
         }
-        AlterIndexStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setSimpleTable(SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, tableBinderContexts));
-        return result;
+        SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, LinkedHashMultimap.create());
+        return copy(sqlStatement, boundTable);
     }
     
-    private AlterIndexStatement copy(final AlterIndexStatement sqlStatement) {
+    private AlterIndexStatement copy(final AlterIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
         AlterIndexStatement result = new AlterIndexStatement();
         sqlStatement.getIndex().ifPresent(result::setIndex);
-        sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
+        sqlStatement.getRenameIndex().ifPresent(result::setRenameIndex);
+        result.setSimpleTable(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

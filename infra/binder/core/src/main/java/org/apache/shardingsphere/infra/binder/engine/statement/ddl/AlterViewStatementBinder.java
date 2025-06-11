@@ -26,7 +26,9 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 /**
  * Alter view statement binder.
@@ -35,16 +37,18 @@ public final class AlterViewStatementBinder implements SQLStatementBinder<AlterV
     
     @Override
     public AlterViewStatement bind(final AlterViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        AlterViewStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setView(SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts));
-        sqlStatement.getSelect().ifPresent(optional -> result.setSelect(new SelectStatementBinder().bind(optional, binderContext)));
-        sqlStatement.getRenameView().ifPresent(optional -> result.setRenameView(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
-        return result;
+        SimpleTableSegment boundView = SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts);
+        SelectStatement boundSelect = sqlStatement.getSelect().map(optional -> new SelectStatementBinder().bind(optional, binderContext)).orElse(null);
+        SimpleTableSegment boundRenameView = sqlStatement.getRenameView().map(optional -> SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
+        return copy(sqlStatement, boundView, boundSelect, boundRenameView);
     }
     
-    private AlterViewStatement copy(final AlterViewStatement sqlStatement) {
+    private AlterViewStatement copy(final AlterViewStatement sqlStatement, final SimpleTableSegment boundView, final SelectStatement boundSelect, final SimpleTableSegment boundRenameView) {
         AlterViewStatement result = new AlterViewStatement();
+        result.setView(boundView);
+        result.setSelect(boundSelect);
+        result.setRenameView(boundRenameView);
         sqlStatement.getViewDefinition().ifPresent(result::setViewDefinition);
         sqlStatement.getConstraintDefinition().ifPresent(result::setConstraintDefinition);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);

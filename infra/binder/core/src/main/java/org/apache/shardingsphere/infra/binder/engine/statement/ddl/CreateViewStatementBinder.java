@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 /**
  * Create view statement binder.
@@ -35,16 +34,16 @@ public final class CreateViewStatementBinder implements SQLStatementBinder<Creat
     
     @Override
     public CreateViewStatement bind(final CreateViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        CreateViewStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setReplaceView(sqlStatement.isReplaceView());
-        result.setView(SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts));
-        result.setSelect(new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext));
-        return result;
+        SimpleTableSegment boundView = SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, LinkedHashMultimap.create());
+        SelectStatement boundSelect = new SelectStatementBinder().bind(sqlStatement.getSelect(), binderContext);
+        return copy(sqlStatement, boundView, boundSelect);
     }
     
-    private CreateViewStatement copy(final CreateViewStatement sqlStatement) {
+    private CreateViewStatement copy(final CreateViewStatement sqlStatement, final SimpleTableSegment boundView, final SelectStatement boundSelect) {
         CreateViewStatement result = new CreateViewStatement();
+        result.setView(boundView);
+        result.setSelect(boundSelect);
+        result.setReplaceView(sqlStatement.isReplaceView());
         result.setViewDefinition(sqlStatement.getViewDefinition());
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;

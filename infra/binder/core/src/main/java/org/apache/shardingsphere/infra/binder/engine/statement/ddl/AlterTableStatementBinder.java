@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 
 /**
@@ -34,15 +35,16 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
     
     @Override
     public AlterTableStatement bind(final AlterTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        AlterTableStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
-        sqlStatement.getRenameTable().ifPresent(optional -> result.setRenameTable(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
-        return result;
+        SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
+        SimpleTableSegment boundRenameTable = sqlStatement.getRenameTable().map(optional -> SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
+        return copy(sqlStatement, boundTable, boundRenameTable);
     }
     
-    private AlterTableStatement copy(final AlterTableStatement sqlStatement) {
+    private AlterTableStatement copy(final AlterTableStatement sqlStatement, final SimpleTableSegment boundTable, final SimpleTableSegment boundRenameTable) {
         AlterTableStatement result = new AlterTableStatement();
+        result.setTable(boundTable);
+        result.setRenameTable(boundRenameTable);
         // TODO bind column and reference table if kernel need use them
         sqlStatement.getConvertTableDefinition().ifPresent(result::setConvertTableDefinition);
         result.getAddColumnDefinitions().addAll(sqlStatement.getAddColumnDefinitions());

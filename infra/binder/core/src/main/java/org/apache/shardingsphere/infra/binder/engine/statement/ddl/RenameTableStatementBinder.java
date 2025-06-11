@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.ddl.column.RenameTableDefinitionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
@@ -38,9 +35,8 @@ public final class RenameTableStatementBinder implements SQLStatementBinder<Rena
     
     @Override
     public RenameTableStatement bind(final RenameTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         Collection<RenameTableDefinitionSegment> boundRenameTables = sqlStatement.getRenameTables().stream()
-                .map(each -> RenameTableDefinitionSegmentBinder.bind(each, binderContext, tableBinderContexts)).collect(Collectors.toList());
+                .map(each -> RenameTableDefinitionSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
         return copy(sqlStatement, boundRenameTables);
     }
     

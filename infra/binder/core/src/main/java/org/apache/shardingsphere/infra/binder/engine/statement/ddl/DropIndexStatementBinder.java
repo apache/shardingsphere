@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
 
 /**
@@ -37,16 +35,13 @@ public final class DropIndexStatementBinder implements SQLStatementBinder<DropIn
         if (!sqlStatement.getSimpleTable().isPresent()) {
             return sqlStatement;
         }
-        DropIndexStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setSimpleTable(SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, tableBinderContexts));
-        sqlStatement.getIndexes().forEach(each -> result.getIndexes().add(each));
-        return result;
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private DropIndexStatement copy(final DropIndexStatement sqlStatement) {
+    private DropIndexStatement copy(final DropIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
         DropIndexStatement result = new DropIndexStatement();
-        sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
+        result.setSimpleTable(boundTable);
+        result.getIndexes().addAll(sqlStatement.getIndexes());
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
         result.setIfExists(sqlStatement.isIfExists());
