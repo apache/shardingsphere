@@ -69,7 +69,7 @@ public final class DALStatementBindEngine {
             return new ShowIndexStatementBinder().bind((ShowIndexStatement) statement, binderContext);
         }
         if (statement instanceof ExplainStatement) {
-            return new ExplainStatementBinder(metaData, currentDatabaseName, hintValueContext).bind((ExplainStatement) statement, binderContext);
+            return new ExplainStatementBinder().bind((ExplainStatement) statement, binderContext);
         }
         return statement;
     }

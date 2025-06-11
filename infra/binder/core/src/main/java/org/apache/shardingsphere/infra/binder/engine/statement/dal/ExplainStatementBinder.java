@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
@@ -31,21 +28,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStat
 /**
  * Explain statement binder.
  */
-@RequiredArgsConstructor
 public final class ExplainStatementBinder implements SQLStatementBinder<ExplainStatement> {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
     
     @Override
     public ExplainStatement bind(final ExplainStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         ExplainStatement result = copy(sqlStatement);
         SQLStatement explainSQLStatement = sqlStatement.getSqlStatement();
         SQLStatement boundSQLStatement = explainSQLStatement instanceof DMLStatement
-                ? new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, binderContext.getDatabaseType()).bind((DMLStatement) explainSQLStatement)
+                ? new DMLStatementBindEngine(binderContext.getMetaData(),
+                        binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType()).bind((DMLStatement) explainSQLStatement)
                 : explainSQLStatement;
         result.setSqlStatement(boundSQLStatement);
         return result;
