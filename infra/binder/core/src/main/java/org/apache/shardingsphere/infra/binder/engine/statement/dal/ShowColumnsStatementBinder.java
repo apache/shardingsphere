@@ -40,14 +40,13 @@ public final class ShowColumnsStatementBinder implements SQLStatementBinder<Show
     @Override
     public ShowColumnsStatement bind(final ShowColumnsStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegment table = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
-        Optional<ShowFilterSegment> boundFilter = sqlStatement.getFilter()
-                .map(showFilterSegment -> ShowFilterSegmentBinder.bind(showFilterSegment, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
-        return copy(sqlStatement, table, boundFilter.orElse(null));
+        SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
+        Optional<ShowFilterSegment> boundFilter = sqlStatement.getFilter().map(optional -> ShowFilterSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
+        return copy(sqlStatement, boundTable, boundFilter.orElse(null));
     }
     
-    private ShowColumnsStatement copy(final ShowColumnsStatement sqlStatement, final SimpleTableSegment table, final ShowFilterSegment filter) {
-        ShowColumnsStatement result = new ShowColumnsStatement(table, sqlStatement.getFromDatabase().orElse(null), filter);
+    private ShowColumnsStatement copy(final ShowColumnsStatement sqlStatement, final SimpleTableSegment boundTable, final ShowFilterSegment boundFilter) {
+        ShowColumnsStatement result = new ShowColumnsStatement(boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

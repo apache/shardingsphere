@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -35,12 +32,11 @@ public final class ShowIndexStatementBinder implements SQLStatementBinder<ShowIn
     
     @Override
     public ShowIndexStatement bind(final ShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment table) {
-        ShowIndexStatement result = new ShowIndexStatement(table, sqlStatement.getFromDatabase().orElse(null));
+    private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
+        ShowIndexStatement result = new ShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
