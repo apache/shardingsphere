@@ -1677,10 +1677,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         return result;
     }

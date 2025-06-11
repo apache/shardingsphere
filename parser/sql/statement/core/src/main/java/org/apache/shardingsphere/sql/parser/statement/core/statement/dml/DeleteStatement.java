@@ -35,7 +35,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
+public final class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
     
     private TableSegment table;
     
@@ -45,11 +45,11 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
     
     private LimitSegment limit;
     
-    private WithSegment withSegment;
+    private WithSegment with;
     
-    private ReturningSegment returningSegment;
+    private ReturningSegment returning;
     
-    private OutputSegment outputSegment;
+    private OutputSegment output;
     
     /**
      * Get where.
@@ -79,29 +79,29 @@ public class DeleteStatement extends AbstractSQLStatement implements DMLStatemen
     }
     
     /**
-     * Get with segment.
+     * Get with.
      *
-     * @return with segment
+     * @return with
      */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
     }
     
     /**
-     * Get returning segment of delete statement.
+     * Get returning.
      *
-     * @return returning segment
+     * @return returning
      */
-    public Optional<ReturningSegment> getReturningSegment() {
-        return Optional.ofNullable(returningSegment);
+    public Optional<ReturningSegment> getReturning() {
+        return Optional.ofNullable(returning);
     }
     
     /**
-     * Get output segment.
+     * Get output.
      *
-     * @return output segment
+     * @return output
      */
-    public Optional<OutputSegment> getOutputSegment() {
-        return Optional.ofNullable(outputSegment);
+    public Optional<OutputSegment> getOutput() {
+        return Optional.ofNullable(output);
     }
 }

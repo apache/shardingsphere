@@ -1398,7 +1398,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement result = new DeleteStatement();
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.multipleTablesClause()) {
             result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
@@ -1406,13 +1406,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setTable((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
