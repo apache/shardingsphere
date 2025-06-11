@@ -703,7 +703,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
         }
         if (null != ctx.returningClause()) {
-            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;

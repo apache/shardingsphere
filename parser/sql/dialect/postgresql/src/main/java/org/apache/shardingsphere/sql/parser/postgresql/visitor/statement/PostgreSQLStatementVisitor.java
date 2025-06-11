@@ -700,7 +700,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
         }
         if (null != ctx.returningClause()) {
-            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;

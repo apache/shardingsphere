@@ -341,6 +341,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWithSegment();
+        return getSqlStatement().getWith();
     }
 }

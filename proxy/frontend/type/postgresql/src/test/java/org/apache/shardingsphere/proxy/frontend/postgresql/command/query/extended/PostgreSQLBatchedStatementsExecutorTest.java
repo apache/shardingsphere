@@ -120,6 +120,8 @@ class PostgreSQLBatchedStatementsExecutorTest {
     private InsertStatementContext mockInsertStatementContext() {
         InsertStatement insertStatement = mock(InsertStatement.class, RETURNS_DEEP_STUBS);
         when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))));
+        when(insertStatement.getInsertColumns()).thenReturn(Optional.empty());
+        when(insertStatement.getInsertSelect()).thenReturn(Optional.empty());
         when(insertStatement.getValues()).thenReturn(Collections.emptyList());
         when(insertStatement.getComments()).thenReturn(Collections.emptyList());
         InsertStatementContext result = mock(InsertStatementContext.class);

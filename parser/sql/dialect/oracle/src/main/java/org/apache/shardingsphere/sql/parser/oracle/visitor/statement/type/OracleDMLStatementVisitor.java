@@ -338,9 +338,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             MultiTableInsertIntoSegment multiTableInsertIntoSegment = new MultiTableInsertIntoSegment(
                     multiTableElementContexts.get(0).getStart().getStartIndex(), multiTableElementContexts.get(multiTableElementContexts.size() - 1).getStop().getStopIndex());
             multiTableInsertIntoSegment.getInsertStatements().addAll(createInsertIntoSegments(multiTableElementContexts));
-            result.setMultiTableInsertIntoSegment(multiTableInsertIntoSegment);
+            result.setMultiTableInsertInto(multiTableInsertIntoSegment);
         } else {
-            result.setMultiTableConditionalIntoSegment((MultiTableConditionalIntoSegment) visit(ctx.conditionalInsertClause()));
+            result.setMultiTableConditionalInto((MultiTableConditionalIntoSegment) visit(ctx.conditionalInsertClause()));
         }
         result.setInsertSelect(new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), (SelectStatement) visit(ctx.selectSubquery()),
                 getOriginalText(ctx.selectSubquery())));
