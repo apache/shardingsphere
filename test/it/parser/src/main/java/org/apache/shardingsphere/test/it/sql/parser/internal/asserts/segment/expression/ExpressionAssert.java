@@ -486,6 +486,7 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual quantify subquery expression should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual quantify subquery expression should exist."));
+            assertThat(assertContext.getText("Quantify operator assertion error: "), actual.getQuantifyOperator(), is(expected.getOperator()));
             assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
         }
     }

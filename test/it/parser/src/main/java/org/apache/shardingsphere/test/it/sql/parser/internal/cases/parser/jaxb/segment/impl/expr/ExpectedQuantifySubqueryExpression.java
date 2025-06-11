@@ -33,4 +33,7 @@ public final class ExpectedQuantifySubqueryExpression extends AbstractExpectedSQ
     
     @XmlElement
     private ExpectedSubquery subquery;
+    
+    @XmlElement
+    private String operator;
 }
