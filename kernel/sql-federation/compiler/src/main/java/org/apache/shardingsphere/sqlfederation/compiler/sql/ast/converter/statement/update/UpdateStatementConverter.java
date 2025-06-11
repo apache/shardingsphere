@@ -62,7 +62,7 @@ public final class UpdateStatementConverter implements SQLStatementConverter<Upd
         SqlNode condition = updateStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlNodeList columns = new SqlNodeList(SqlParserPos.ZERO);
         SqlNodeList expressions = new SqlNodeList(SqlParserPos.ZERO);
-        for (ColumnAssignmentSegment each : updateStatement.getAssignmentSegment().orElseThrow(IllegalStateException::new).getAssignments()) {
+        for (ColumnAssignmentSegment each : updateStatement.getAssignment().orElseThrow(IllegalStateException::new).getAssignments()) {
             columns.addAll(convertColumn(each.getColumns()));
             expressions.add(convertExpression(each.getValue()));
         }

@@ -156,7 +156,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturningSegment((ReturningSegment) visit(ctx.returningClause()));
+            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
         }
         return result;
     }

@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class UpdateStatement extends AbstractSQLStatement implements DMLStatement {
+public final class UpdateStatement extends AbstractSQLStatement implements DMLStatement {
     
     private TableSegment table;
     
@@ -54,112 +54,112 @@ public class UpdateStatement extends AbstractSQLStatement implements DMLStatemen
     
     private WhereSegment deleteWhere;
     
-    private WithSegment withSegment;
+    private WithSegment with;
     
-    private ReturningSegment returningSegment;
+    private ReturningSegment returning;
     
-    private WithTableHintSegment withTableHintSegment;
+    private WithTableHintSegment withTableHint;
     
-    private OptionHintSegment optionHintSegment;
+    private OptionHintSegment optionHint;
     
-    private OutputSegment outputSegment;
+    private OutputSegment output;
     
     /**
      * Get where.
      *
-     * @return where segment
+     * @return where
      */
     public Optional<WhereSegment> getWhere() {
         return Optional.ofNullable(where);
     }
     
     /**
-     * Get assignment segment.
+     * Get assignment.
      *
-     * @return assignment segment
+     * @return assignment
      */
-    public Optional<SetAssignmentSegment> getAssignmentSegment() {
+    public Optional<SetAssignmentSegment> getAssignment() {
         return Optional.ofNullable(setAssignment);
     }
     
     /**
-     * Get order by segment.
+     * Get order by.
      *
-     * @return order by segment
+     * @return order by
      */
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
     }
     
     /**
-     * Get limit segment.
+     * Get limit.
      *
-     * @return limit segment
+     * @return limit
      */
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
     
     /**
-     * Get with segment.
+     * Get with.
      *
-     * @return with segment
+     * @return with
      */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
     }
     
     /**
-     * Get option hint segment.
+     * Get option hint.
      *
-     * @return option hint segment
+     * @return option hint
      */
-    public Optional<OptionHintSegment> getOptionHintSegment() {
-        return Optional.ofNullable(optionHintSegment);
+    public Optional<OptionHintSegment> getOptionHint() {
+        return Optional.ofNullable(optionHint);
     }
     
     /**
-     * Get output segment.
+     * Get output.
      *
-     * @return output segment
+     * @return output
      */
-    public Optional<OutputSegment> getOutputSegment() {
-        return Optional.ofNullable(outputSegment);
+    public Optional<OutputSegment> getOutput() {
+        return Optional.ofNullable(output);
     }
     
     /**
-     * Get from segment.
+     * Get from.
      *
-     * @return from segment
+     * @return from
      */
     public Optional<TableSegment> getFrom() {
         return Optional.ofNullable(from);
     }
     
     /**
-     * Get delete where segment.
+     * Get delete where.
      *
-     * @return delete where segment
+     * @return delete where
      */
     public Optional<WhereSegment> getDeleteWhere() {
         return Optional.ofNullable(deleteWhere);
     }
     
     /**
-     * Get returning segment of update statement.
+     * Get returning.
      *
      * @return returning segment
      */
-    public Optional<ReturningSegment> getReturningSegment() {
-        return Optional.ofNullable(returningSegment);
+    public Optional<ReturningSegment> getReturning() {
+        return Optional.ofNullable(returning);
     }
     
     /**
-     * Get with table hint segment.
+     * Get with table hint.
      *
-     * @return with table hint segment.
+     * @return with table hint.
      */
-    public Optional<WithTableHintSegment> getWithTableHintSegment() {
-        return Optional.ofNullable(withTableHintSegment);
+    public Optional<WithTableHintSegment> getWithTableHint() {
+        return Optional.ofNullable(withTableHint);
     }
 }

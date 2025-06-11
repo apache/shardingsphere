@@ -118,7 +118,7 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertOptionHint(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        Optional<OptionHintSegment> optionHintSegment = actual.getOptionHintSegment();
+        Optional<OptionHintSegment> optionHintSegment = actual.getOptionHint();
         if (null == expected.getOptionHint()) {
             assertFalse(optionHintSegment.isPresent(), assertContext.getText("Actual option hint segment should not exist."));
         } else {
@@ -129,7 +129,7 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertOutputClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = actual.getOutputSegment();
+        Optional<OutputSegment> outputSegment = actual.getOutput();
         if (null == expected.getOutputClause()) {
             assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {
