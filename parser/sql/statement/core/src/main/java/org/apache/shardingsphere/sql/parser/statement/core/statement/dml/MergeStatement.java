@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class MergeStatement extends AbstractSQLStatement implements DMLStatement {
+public final class MergeStatement extends AbstractSQLStatement implements DMLStatement {
     
     private TableSegment target;
     
@@ -50,17 +50,17 @@ public class MergeStatement extends AbstractSQLStatement implements DMLStatement
     
     private InsertStatement insert;
     
-    private WithSegment withSegment;
+    private WithSegment with;
     
-    private WithTableHintSegment withTableHintSegment;
+    private WithTableHintSegment withTableHint;
     
     private Collection<IndexSegment> indexes = new LinkedList<>();
     
-    private OutputSegment outputSegment;
+    private OutputSegment output;
     
-    private OptionHintSegment optionHintSegment;
+    private OptionHintSegment optionHint;
     
-    private Collection<MergeWhenAndThenSegment> whenAndThenSegments = new LinkedList<>();
+    private Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
     
     /**
      * Get update statement.
@@ -81,38 +81,38 @@ public class MergeStatement extends AbstractSQLStatement implements DMLStatement
     }
     
     /**
-     * Get with segment.
+     * Get with.
      *
-     * @return with segment
+     * @return with
      */
-    public Optional<WithSegment> getWithSegment() {
-        return Optional.ofNullable(withSegment);
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
     }
     
     /**
-     * Get with table hint segment.
+     * Get with table hint.
      *
-     * @return with table hint segment
+     * @return with table hint
      */
-    public Optional<WithTableHintSegment> getWithTableHintSegment() {
-        return Optional.ofNullable(withTableHintSegment);
+    public Optional<WithTableHintSegment> getWithTableHint() {
+        return Optional.ofNullable(withTableHint);
     }
     
     /**
-     * Get output segment.
+     * Get output.
      *
-     * @return output segment
+     * @return output
      */
-    public Optional<OutputSegment> getOutputSegment() {
-        return Optional.ofNullable(outputSegment);
+    public Optional<OutputSegment> getOutput() {
+        return Optional.ofNullable(output);
     }
     
     /**
-     * Get option hint segment.
+     * Get option hint.
      *
-     * @return option hint segment.
+     * @return option hint.
      */
-    public Optional<OptionHintSegment> getOptionHintSegment() {
-        return Optional.ofNullable(optionHintSegment);
+    public Optional<OptionHintSegment> getOptionHint() {
+        return Optional.ofNullable(optionHint);
     }
 }
