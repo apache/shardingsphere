@@ -34,7 +34,7 @@ public final class LoadDataStatementContext extends CommonSQLStatementContext im
     
     public LoadDataStatementContext(final DatabaseType databaseType, final LoadDataStatement sqlStatement) {
         super(databaseType, sqlStatement);
-        tablesContext = new TablesContext(sqlStatement.getTableSegment());
+        tablesContext = new TablesContext(sqlStatement.getTable());
     }
     
     @Override

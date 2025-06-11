@@ -40,7 +40,7 @@ public final class ShardingLoadDataSupportedChecker implements SupportedSQLCheck
     
     @Override
     public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final LoadDataStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         ShardingSpherePreconditions.checkState(!rule.isShardingTable(tableName), () -> new UnsupportedShardingOperationException("LOAD DATA", tableName));
     }
 }
