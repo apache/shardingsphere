@@ -36,7 +36,7 @@ public final class LoadDataStatementBinder implements SQLStatementBinder<LoadDat
     @Override
     public LoadDataStatement bind(final LoadDataStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTableSegment(), binderContext, tableBinderContexts));
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
     }
     
     private LoadDataStatement copy(final LoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {

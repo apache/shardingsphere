@@ -29,5 +29,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQL
 @Getter
 public final class LoadXMLStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private final SimpleTableSegment tableSegment;
+    private final SimpleTableSegment table;
 }

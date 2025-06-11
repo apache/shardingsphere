@@ -45,9 +45,9 @@ public final class LoadDataStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final LoadDataStatement actual, final LoadDataStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(actual.getTableSegment(), assertContext.getText("Actual table should not exist."));
+            assertNull(actual.getTable(), assertContext.getText("Actual table should not exist."));
         } else {
-            TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
 }
