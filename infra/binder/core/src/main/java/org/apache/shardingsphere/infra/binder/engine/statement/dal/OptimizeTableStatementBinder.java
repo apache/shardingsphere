@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -38,9 +35,8 @@ public final class OptimizeTableStatementBinder implements SQLStatementBinder<Op
     
     @Override
     public OptimizeTableStatement bind(final OptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
-                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)).collect(Collectors.toList());
+                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
         return copy(sqlStatement, boundTables);
     }
     

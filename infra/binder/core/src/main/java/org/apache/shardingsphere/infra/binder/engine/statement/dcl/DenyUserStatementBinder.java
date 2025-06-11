@@ -27,7 +27,12 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Deny user statement binder.
@@ -36,17 +41,17 @@ public final class DenyUserStatementBinder implements SQLStatementBinder<DenyUse
     
     @Override
     public DenyUserStatement bind(final DenyUserStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        DenyUserStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setTable(SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
-        sqlStatement.getColumns()
-                .forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        return result;
+        SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
+        Collection<ColumnSegment> columns = sqlStatement.getColumns().stream()
+                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create())).collect(Collectors.toList());
+        return copy(sqlStatement, boundTable, columns);
     }
     
-    private static DenyUserStatement copy(final DenyUserStatement sqlStatement) {
+    private DenyUserStatement copy(final DenyUserStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
         DenyUserStatement result = new DenyUserStatement();
-        result.setTable(sqlStatement.getTable());
+        result.setTable(boundTable);
+        sqlStatement.getColumns().addAll(boundColumns);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

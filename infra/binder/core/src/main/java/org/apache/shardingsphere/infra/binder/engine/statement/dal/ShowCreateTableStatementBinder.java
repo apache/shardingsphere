@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
@@ -35,12 +32,11 @@ public final class ShowCreateTableStatementBinder implements SQLStatementBinder<
     
     @Override
     public ShowCreateTableStatement bind(final ShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private ShowCreateTableStatement copy(final ShowCreateTableStatement sqlStatement, final SimpleTableSegment table) {
-        ShowCreateTableStatement result = new ShowCreateTableStatement(table);
+    private ShowCreateTableStatement copy(final ShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
+        ShowCreateTableStatement result = new ShowCreateTableStatement(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
