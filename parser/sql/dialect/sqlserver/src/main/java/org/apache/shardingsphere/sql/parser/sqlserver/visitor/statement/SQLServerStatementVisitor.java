@@ -1770,10 +1770,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         MergeStatement result = new MergeStatement();
         result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withMergeHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
             if (null != ctx.withMergeHint().indexName()) {
                 Collection<IndexSegment> indexSegments = new LinkedList<>();
                 for (IndexNameContext each : ctx.withMergeHint().indexName()) {
@@ -1790,14 +1790,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.mergeWhenClause()) {
             for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
-                result.getWhenAndThenSegments().add((MergeWhenAndThenSegment) visit(each));
+                result.getWhenAndThens().add((MergeWhenAndThenSegment) visit(each));
             }
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
+            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
         return result;
     }
