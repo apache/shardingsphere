@@ -93,7 +93,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     }
     
     private SelectStatement copy(final SelectStatement sqlStatement, final WithSegment boundWith, final TableSegment boundFrom, final ProjectionsSegment boundProjections,
-                                 final WhereSegment boundWhere, CombineSegment boundCombine, final LockSegment boundLock, final GroupBySegment boundGroupBy, OrderBySegment boundOrderBy,
+                                 final WhereSegment boundWhere, final CombineSegment boundCombine, final LockSegment boundLock, final GroupBySegment boundGroupBy, OrderBySegment boundOrderBy,
                                  final HavingSegment boundHaving) {
         SelectStatement result = new SelectStatement();
         result.setWith(boundWith);
