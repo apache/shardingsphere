@@ -458,15 +458,6 @@ public final class ExpressionAssert {
         }
     }
     
-    private static void assertQuantifySubqueryExpression(final SQLCaseAssertContext assertContext, final QuantifySubqueryExpression actual, final ExpectedQuantifySubqueryExpression expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual quantify subquery expression should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual quantify subquery expression should exist."));
-            assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
-        }
-    }
-    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -487,6 +478,15 @@ public final class ExpressionAssert {
             } else {
                 assertIntervalYearToMonthExpression(assertContext, actual.getYearToMonthExpression(), expected.getYearToMonthExpression());
             }
+        }
+    }
+    
+    private static void assertQuantifySubqueryExpression(final SQLCaseAssertContext assertContext, final QuantifySubqueryExpression actual, final ExpectedQuantifySubqueryExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual quantify subquery expression should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual quantify subquery expression should exist."));
+            assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
         }
     }
     
