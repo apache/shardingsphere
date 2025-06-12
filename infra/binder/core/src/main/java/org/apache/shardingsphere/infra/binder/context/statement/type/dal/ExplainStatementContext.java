@@ -53,7 +53,7 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        sqlStatement.getSimpleTable().ifPresent(result::add);
+        sqlStatement.getTable().ifPresent(result::add);
         SQLStatement explainableStatement = sqlStatement.getSqlStatement();
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView

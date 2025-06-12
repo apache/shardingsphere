@@ -35,17 +35,17 @@ public final class ExplainStatement extends AbstractSQLStatement implements DALS
     
     private SQLStatement sqlStatement;
     
-    private SimpleTableSegment simpleTable;
+    private SimpleTableSegment table;
     
     private ColumnSegment columnWild;
     
     /**
-     * Get simple table.
+     * Get table.
      *
-     * @return simple table
+     * @return table
      */
-    public Optional<SimpleTableSegment> getSimpleTable() {
-        return Optional.ofNullable(simpleTable);
+    public Optional<SimpleTableSegment> getTable() {
+        return Optional.ofNullable(table);
     }
     
     /**
