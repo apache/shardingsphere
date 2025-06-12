@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Explain statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
-    private SQLStatement sqlStatement;
+    private final SQLStatement sqlStatement;
 }

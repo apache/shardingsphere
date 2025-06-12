@@ -492,12 +492,9 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        if (null == ctx.tableName()) {
-            ExplainStatement result = new ExplainStatement();
-            getExplainableSQLStatement(ctx).ifPresent(result::setSqlStatement);
-            return result;
-        }
-        return new MySQLDescribeStatement((SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
+        return null == ctx.tableName()
+                ? new ExplainStatement(getExplainableSQLStatement(ctx).orElse(null))
+                : new MySQLDescribeStatement((SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
     }
     
     private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {
