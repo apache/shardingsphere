@@ -20,11 +20,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DeleteStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -33,20 +30,11 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 @Setter
-public final class ExplainStatementTestCase extends SQLParserTestCase {
+public final class DescribeStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectClause;
+    @XmlElement(name = "simple-table")
+    private ExpectedSimpleTable table;
     
-    @XmlElement(name = "insert")
-    private InsertStatementTestCase insertClause;
-    
-    @XmlElement(name = "update")
-    private UpdateStatementTestCase updateClause;
-    
-    @XmlElement(name = "delete")
-    private DeleteStatementTestCase deleteClause;
-    
-    @XmlElement(name = "create-table")
-    private CreateTableStatementTestCase createTableAsSelectClause;
+    @XmlElement(name = "column-wild")
+    private ExpectedColumn column;
 }
