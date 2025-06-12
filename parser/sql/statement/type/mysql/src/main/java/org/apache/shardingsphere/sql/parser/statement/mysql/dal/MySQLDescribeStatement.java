@@ -15,42 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 import java.util.Optional;
 
 /**
- * Describe statement.
+ * Describe statement for MySQL.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class DescribeStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private ColumnSegment columnWild;
-    
-    /**
-     * Get table.
-     *
-     * @return table
-     */
-    public Optional<SimpleTableSegment> getTable() {
-        return Optional.ofNullable(table);
-    }
+    private final ColumnSegment columnWildcard;
     
     /**
-     * Get column segment.
+     * Get column wildcard.
      *
-     * @return column segment
+     * @return column wildcard
      */
-    public Optional<ColumnSegment> getColumnWild() {
-        return Optional.ofNullable(columnWild);
+    public Optional<ColumnSegment> getColumnWildcard() {
+        return Optional.ofNullable(columnWildcard);
     }
 }

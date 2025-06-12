@@ -143,7 +143,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLBinlogStatement;
@@ -510,14 +510,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             getExplainableSQLStatement(ctx).ifPresent(result::setSqlStatement);
             return result;
         }
-        DescribeStatement result = new DescribeStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        if (null != ctx.columnRef()) {
-            result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
-        } else if (null != ctx.textString()) {
-            result.setColumnWild((ColumnSegment) visit(ctx.textString()));
-        }
-        return result;
+        return new MySQLDescribeStatement((SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
     }
     
     private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {
@@ -537,6 +530,16 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             return Optional.of((SQLStatement) visit(ctx.insert()));
         }
         return Optional.empty();
+    }
+    
+    private ColumnSegment getColumnWildcard(final ExplainContext ctx) {
+        if (null != ctx.columnRef()) {
+            return (ColumnSegment) visit(ctx.columnRef());
+        }
+        if (null != ctx.textString()) {
+            return (ColumnSegment) visit(ctx.textString());
+        }
+        return null;
     }
     
     @Override
