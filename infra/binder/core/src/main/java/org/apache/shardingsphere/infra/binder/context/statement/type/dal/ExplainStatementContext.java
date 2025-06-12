@@ -27,11 +27,9 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,13 +50,10 @@ public final class ExplainStatementContext extends CommonSQLStatementContext imp
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        SQLStatement explainableStatement = sqlStatement.getSqlStatement();
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
-        extractor.extractTablesFromSQLStatement(explainableStatement);
-        result.addAll(extractor.getRewriteTables());
-        return result;
+        extractor.extractTablesFromSQLStatement(sqlStatement.getSqlStatement());
+        return extractor.getRewriteTables();
     }
     
     @Override

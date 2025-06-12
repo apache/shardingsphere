@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DescribeStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DescribeStatementTestCase;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Describe statement assert.
@@ -40,22 +40,18 @@ public final class DescribeStatementAssert {
      * @param actual actual explain statement
      * @param expected expected describe statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DescribeStatement actual, final DescribeStatementTestCase expected) {
-        if (actual.getColumnWild().isPresent() && null != expected.getTable()) {
-            assertExplainStatementColumnWild(assertContext, actual, expected);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final DescribeStatementTestCase expected) {
+        TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        if (actual.getColumnWildcard().isPresent()) {
+            assertDescribeColumnWild(assertContext, actual, expected);
         }
     }
     
-    private static void assertExplainStatementColumnWild(final SQLCaseAssertContext assertContext, final DescribeStatement actual, final DescribeStatementTestCase expected) {
-        if (actual.getTable().isPresent()) {
-            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
-            if (actual.getColumnWild().isPresent()) {
-                ColumnAssert.assertIs(assertContext, actual.getColumnWild().get(), expected.getColumn());
-            } else {
-                assertFalse(actual.getColumnWild().isPresent(), assertContext.getText("Actual column wild should not exist."));
-            }
+    private static void assertDescribeColumnWild(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final DescribeStatementTestCase expected) {
+        if (actual.getColumnWildcard().isPresent()) {
+            ColumnAssert.assertIs(assertContext, actual.getColumnWildcard().get(), expected.getColumn());
         } else {
-            assertFalse(actual.getTable().isPresent(), assertContext.getText("Actual table should not exist."));
+            assertNull(expected.getColumn(), assertContext.getText("Actual column wild should not exist."));
         }
     }
 }
