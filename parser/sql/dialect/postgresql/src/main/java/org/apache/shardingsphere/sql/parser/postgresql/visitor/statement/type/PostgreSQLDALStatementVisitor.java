@@ -145,9 +145,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        ExplainStatement result = new ExplainStatement();
-        result.setSqlStatement((SQLStatement) visit(ctx.explainableStmt()));
-        return result;
+        return new ExplainStatement((SQLStatement) visit(ctx.explainableStmt()));
     }
     
     @Override

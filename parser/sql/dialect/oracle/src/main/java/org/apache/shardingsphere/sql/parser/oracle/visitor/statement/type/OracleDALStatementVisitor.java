@@ -45,11 +45,10 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        ExplainStatement result = new ExplainStatement();
         OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
-        getExplainableSQLStatement(ctx, visitor).ifPresent(result::setSqlStatement);
+        ExplainStatement result = new ExplainStatement(getExplainableSQLStatement(ctx, visitor).orElse(null));
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
         return result;
