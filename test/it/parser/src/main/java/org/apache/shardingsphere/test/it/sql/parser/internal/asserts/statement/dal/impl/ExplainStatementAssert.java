@@ -67,15 +67,15 @@ public final class ExplainStatementAssert {
     }
     
     private static void assertExplainStatementColumnWild(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
-        if (actual.getSimpleTable().isPresent()) {
-            TableAssert.assertIs(assertContext, actual.getSimpleTable().get(), expected.getTable());
+        if (actual.getTable().isPresent()) {
+            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
             if (actual.getColumnWild().isPresent()) {
                 ColumnAssert.assertIs(assertContext, actual.getColumnWild().get(), expected.getColumn());
             } else {
                 assertFalse(actual.getColumnWild().isPresent(), assertContext.getText("Actual column wild should not exist."));
             }
         } else {
-            assertFalse(actual.getSimpleTable().isPresent(), assertContext.getText("Actual table should not exist."));
+            assertFalse(actual.getTable().isPresent(), assertContext.getText("Actual table should not exist."));
         }
     }
 }

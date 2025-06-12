@@ -493,7 +493,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitExplain(final ExplainContext ctx) {
         ExplainStatement result = new ExplainStatement();
         if (null != ctx.tableName()) {
-            result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
             if (null != ctx.columnRef()) {
                 result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
             } else if (null != ctx.textString()) {
