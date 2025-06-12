@@ -19,12 +19,15 @@ package org.apache.shardingsphere.sqlfederation.engine;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -54,9 +57,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.exception.SQLFederationUnsupportedSQLException;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessor;
 import org.apache.shardingsphere.sqlfederation.engine.processor.SQLFederationProcessorFactory;
-import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
@@ -76,6 +79,7 @@ import java.util.Optional;
 /**
  * SQL federation engine.
  */
+@Slf4j
 @Getter
 public final class SQLFederationEngine implements AutoCloseable {
     
@@ -182,6 +186,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
                                   final SQLFederationContext federationContext) {
         queryContext = federationContext.getQueryContext();
+        logSQL(queryContext, federationContext.getMetaData().getProps());
         try {
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
             CompilerContext compilerContext = sqlFederationRule.getCompilerContext();
@@ -199,6 +204,17 @@ public final class SQLFederationEngine implements AutoCloseable {
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
         } finally {
             processEngine.completeSQLExecution(federationContext.getProcessId());
+        }
+    }
+    
+    private void logSQL(final QueryContext queryContext, final ConfigurationProperties props) {
+        if (!props.<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)) {
+            return;
+        }
+        if (queryContext.getParameters().isEmpty()) {
+            log.info("SQL Federation Logic SQL: {} ::: {} ::: {}", queryContext.getSql(), currentDatabaseName, currentSchemaName);
+        } else {
+            log.info("SQL Federation Logic SQL: {} ::: {} ::: {} ::: {}", queryContext.getSql(), queryContext.getParameters(), currentDatabaseName, currentSchemaName);
         }
     }
     
