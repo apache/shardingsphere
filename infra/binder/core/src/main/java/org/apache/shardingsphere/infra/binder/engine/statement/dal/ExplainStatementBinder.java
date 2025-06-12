@@ -42,8 +42,6 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
     private ExplainStatement copy(final ExplainStatement sqlStatement, final SQLStatement boundSQLStatement) {
         ExplainStatement result = new ExplainStatement();
         result.setSqlStatement(boundSQLStatement);
-        sqlStatement.getTable().ifPresent(result::setTable);
-        sqlStatement.getColumnWild().ifPresent(result::setColumnWild);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

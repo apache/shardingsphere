@@ -143,6 +143,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLBinlogStatement;
@@ -504,16 +505,17 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        ExplainStatement result = new ExplainStatement();
-        if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-            if (null != ctx.columnRef()) {
-                result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
-            } else if (null != ctx.textString()) {
-                result.setColumnWild((ColumnSegment) visit(ctx.textString()));
-            }
-        } else {
+        if (null == ctx.tableName()) {
+            ExplainStatement result = new ExplainStatement();
             getExplainableSQLStatement(ctx).ifPresent(result::setSqlStatement);
+            return result;
+        }
+        DescribeStatement result = new DescribeStatement();
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.columnRef()) {
+            result.setColumnWild((ColumnSegment) visit(ctx.columnRef()));
+        } else if (null != ctx.textString()) {
+            result.setColumnWild((ColumnSegment) visit(ctx.textString()));
         }
         return result;
     }

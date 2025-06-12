@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Explain statement.
+ * Describe statement test case.
  */
 @Getter
 @Setter
-public final class ExplainStatement extends AbstractSQLStatement implements DALStatement {
+public final class DescribeStatementTestCase extends SQLParserTestCase {
     
-    private SQLStatement sqlStatement;
+    @XmlElement(name = "simple-table")
+    private ExpectedSimpleTable table;
+    
+    @XmlElement(name = "column-wild")
+    private ExpectedColumn column;
 }
