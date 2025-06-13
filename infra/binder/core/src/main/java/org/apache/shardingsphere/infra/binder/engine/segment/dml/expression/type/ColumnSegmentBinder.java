@@ -292,7 +292,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static List<ColumnSegmentInputInfo> findUsingColumnSegmentInputInfos(final Collection<TableSegmentBinderContext> tableBinderContexts, final String columnName) {
-        List<ColumnSegmentInputInfo> result = new ArrayList<>();
+        List<ColumnSegmentInputInfo> result = new ArrayList<>(tableBinderContexts.size());
         for (TableSegmentBinderContext each : tableBinderContexts) {
             Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
