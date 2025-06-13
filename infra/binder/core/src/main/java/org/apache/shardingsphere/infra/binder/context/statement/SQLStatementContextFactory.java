@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIn
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
@@ -198,7 +197,7 @@ public final class SQLStatementContextFactory {
             return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((TruncateStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CreateFunctionStatement) {
-            return new CreateFunctionStatementContext(databaseType, (CreateFunctionStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((CreateFunctionStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CreateProcedureStatement) {
             return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
