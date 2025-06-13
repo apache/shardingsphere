@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTa
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
@@ -48,6 +47,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
@@ -200,7 +200,8 @@ public final class SQLStatementContextFactory {
             return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((CreateFunctionStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CreateProcedureStatement) {
-            return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement,
+                    ((CreateProcedureStatement) sqlStatement).getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList));
         }
         if (sqlStatement instanceof CreateViewStatement) {
             return new CreateViewStatementContext(metaData, databaseType, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
