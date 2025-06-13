@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -37,7 +37,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -55,11 +54,9 @@ class ShardingCreateProcedureSupportedCheckerTest {
     @Test
     void assertCheck() {
         SelectStatement selectStatement = new SelectStatement();
-        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
-        selectStatement.setFrom(fromTable);
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        when(createTableStatement.getTable()).thenReturn(table);
+        when(createTableStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);
         ValidStatementSegment selectValidStatementSegment = new ValidStatementSegment(0, 0);
@@ -73,22 +70,21 @@ class ShardingCreateProcedureSupportedCheckerTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("bar_tbl")).thenReturn(true);
         when(rule.isShardingTable("bar_tbl")).thenReturn(false);
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, Arrays.asList(fromTable, table));
+        CreateProcedureStatementContext sqlStatementContext = new CreateProcedureStatementContext(mock(), sqlStatement);
         assertDoesNotThrow(() -> new ShardingCreateProcedureSupportedChecker().check(rule, database, schema, sqlStatementContext));
     }
     
     @Test
     void assertCheckWithShardingTable() {
         SelectStatement selectStatement = new SelectStatement();
-        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        selectStatement.setFrom(fromTable);
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         CreateProcedureStatement sqlStatement = new CreateProcedureStatement();
         sqlStatement.setRoutineBody(routineBody);
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, fromTable);
+        CreateProcedureStatementContext sqlStatementContext = new CreateProcedureStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingCreateProcedureSupportedChecker().check(rule, database, mock(), sqlStatementContext));
@@ -97,15 +93,14 @@ class ShardingCreateProcedureSupportedCheckerTest {
     @Test
     void assertCheckWithNoSuchTable() {
         SelectStatement selectStatement = new SelectStatement();
-        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        selectStatement.setFrom(fromTable);
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         CreateProcedureStatement sqlStatement = mock(CreateProcedureStatement.class);
         when(sqlStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, fromTable);
+        CreateProcedureStatementContext sqlStatementContext = new CreateProcedureStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateProcedureSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
@@ -113,15 +108,14 @@ class ShardingCreateProcedureSupportedCheckerTest {
     @Test
     void assertCheckWithTableExists() {
         CreateTableStatement createTableStatement = new CreateTableStatement();
-        SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        createTableStatement.setTable(fromTable);
+        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         routineBody.getValidStatements().add(validStatementSegment);
         CreateProcedureStatement sqlStatement = mock(CreateProcedureStatement.class);
         when(sqlStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, fromTable);
+        CreateProcedureStatementContext sqlStatementContext = new CreateProcedureStatementContext(mock(), sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("foo_tbl")).thenReturn(true);
