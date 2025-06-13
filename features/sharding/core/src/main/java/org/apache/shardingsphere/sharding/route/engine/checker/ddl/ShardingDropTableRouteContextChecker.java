@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -45,17 +45,16 @@ public final class ShardingDropTableRouteContextChecker implements ShardingRoute
     
     @Override
     public void check(final ShardingRule shardingRule, final QueryContext queryContext, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        DropTableStatementContext dropTableStatementContext = (DropTableStatementContext) queryContext.getSqlStatementContext();
-        DropTableStatement dropTableStatement = dropTableStatementContext.getSqlStatement();
+        TableAvailableSQLStatementContext dropTableStatementContext = (TableAvailableSQLStatementContext) queryContext.getSqlStatementContext();
         checkTableInUsed(shardingRule, dropTableStatementContext, routeContext);
-        for (SimpleTableSegment each : dropTableStatement.getTables()) {
+        for (SimpleTableSegment each : ((DropTableStatement) dropTableStatementContext.getSqlStatement()).getTables()) {
             if (ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, each.getTableName().getIdentifier().getValue())) {
                 throw new ShardingDDLRouteException("DROP", "TABLE", dropTableStatementContext.getTablesContext().getTableNames());
             }
         }
     }
     
-    private void checkTableInUsed(final ShardingRule shardingRule, final DropTableStatementContext sqlStatementContext, final RouteContext routeContext) {
+    private void checkTableInUsed(final ShardingRule shardingRule, final TableAvailableSQLStatementContext sqlStatementContext, final RouteContext routeContext) {
         Collection<String> dropTables = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> otherRuleActualTables = shardingRule.getShardingTables().values().stream().filter(each -> !dropTables.contains(each.getLogicTable()))
                 .flatMap(each -> each.getActualDataNodes().stream().map(DataNode::getTableName)).collect(Collectors.toCollection(CaseInsensitiveSet::new));
