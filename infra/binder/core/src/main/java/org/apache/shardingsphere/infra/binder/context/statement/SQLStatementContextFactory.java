@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateT
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.CopyStatementContext;
@@ -186,7 +185,7 @@ public final class SQLStatementContextFactory {
             return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((RenameTableStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof DropTableStatement) {
-            return new DropTableStatementContext(databaseType, (DropTableStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((DropTableStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CreateIndexStatement) {
             return new CreateIndexStatementContext(databaseType, (CreateIndexStatement) sqlStatement);
