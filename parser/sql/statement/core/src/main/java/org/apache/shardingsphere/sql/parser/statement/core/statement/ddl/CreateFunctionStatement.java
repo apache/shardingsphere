@@ -65,7 +65,7 @@ public class CreateFunctionStatement extends AbstractSQLStatement implements DDL
     
     /**
      * Get tables.
-     * 
+     *
      * @return tables
      */
     public Collection<SimpleTableSegment> getTables() {
