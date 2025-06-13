@@ -200,13 +200,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
-        if (pivotColumnNames.isEmpty()) {
-            return Optional.empty();
-        }
-        if (pivotColumnNames.contains(segment.getIdentifier().getValue())) {
-            return Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
-        }
-        return Optional.empty();
+        return pivotColumnNames.isEmpty() || !pivotColumnNames.contains(segment.getIdentifier().getValue()) ? Optional.empty() : Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment,
