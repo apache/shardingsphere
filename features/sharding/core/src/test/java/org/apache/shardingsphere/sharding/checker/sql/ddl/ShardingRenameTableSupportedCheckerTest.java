@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.RenameTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
@@ -30,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -46,23 +47,25 @@ class ShardingRenameTableSupportedCheckerTest {
     
     @Test
     void assertCheckShardingTable() {
-        RenameTableStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
+        TableAvailableSQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         when(rule.containsShardingTable(argThat(tableNames -> tableNames.contains("t_order") || tableNames.contains("t_user_order")))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingRenameTableSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
     @Test
     void assertCheckNormalCase() {
-        RenameTableStatementContext sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
+        TableAvailableSQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
         assertDoesNotThrow(() -> new ShardingRenameTableSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
-    private RenameTableStatementContext createRenameTableStatementContext(final String originTableName, final String newTableName) {
+    private TableAvailableSQLStatementContext createRenameTableStatementContext(final String originTableName, final String newTableName) {
         RenameTableStatement sqlStatement = mock(RenameTableStatement.class);
         RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 0);
-        renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName))));
-        renameTableDefinitionSegment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(newTableName))));
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName)));
+        SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(newTableName)));
+        renameTableDefinitionSegment.setTable(table);
+        renameTableDefinitionSegment.setRenameTable(renameTable);
         when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
-        return new RenameTableStatementContext(mock(), sqlStatement);
+        return new TableAvailableSQLStatementContext(mock(), sqlStatement, Arrays.asList(table, renameTable));
     }
 }

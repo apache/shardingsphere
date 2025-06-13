@@ -43,7 +43,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropVie
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.PrepareStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -186,7 +185,7 @@ public final class SQLStatementContextFactory {
             return new AlterTableStatementContext(databaseType, (AlterTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof RenameTableStatement) {
-            return new RenameTableStatementContext(databaseType, (RenameTableStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((RenameTableStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof DropTableStatement) {
             return new DropTableStatementContext(databaseType, (DropTableStatement) sqlStatement);
