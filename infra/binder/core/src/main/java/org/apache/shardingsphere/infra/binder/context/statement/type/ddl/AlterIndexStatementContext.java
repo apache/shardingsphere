@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 
 import java.util.Collection;
@@ -42,13 +41,7 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     
     public AlterIndexStatementContext(final DatabaseType databaseType, final AlterIndexStatement sqlStatement) {
         super(databaseType, sqlStatement);
-        SimpleTableSegment simpleTableSegment = sqlStatement.getSimpleTable().orElse(null);
-        tablesContext = new TablesContext(simpleTableSegment);
-    }
-    
-    @Override
-    public AlterIndexStatement getSqlStatement() {
-        return (AlterIndexStatement) super.getSqlStatement();
+        tablesContext = new TablesContext(sqlStatement.getSimpleTable().orElse(null));
     }
     
     @Override
@@ -64,5 +57,10 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public AlterIndexStatement getSqlStatement() {
+        return (AlterIndexStatement) super.getSqlStatement();
     }
 }

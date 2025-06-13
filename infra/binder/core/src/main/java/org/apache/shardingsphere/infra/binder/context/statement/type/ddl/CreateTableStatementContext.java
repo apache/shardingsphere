@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateT
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create table statement context.
@@ -63,11 +64,6 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public CreateTableStatement getSqlStatement() {
-        return (CreateTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<IndexSegment> getIndexes() {
         Collection<IndexSegment> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
@@ -87,10 +83,11 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
-            result.addAll(each.getIndexColumns());
-        }
-        return result;
+        return getSqlStatement().getConstraintDefinitions().stream().flatMap(each -> each.getIndexColumns().stream()).collect(Collectors.toList());
+    }
+    
+    @Override
+    public CreateTableStatement getSqlStatement() {
+        return (CreateTableStatement) super.getSqlStatement();
     }
 }

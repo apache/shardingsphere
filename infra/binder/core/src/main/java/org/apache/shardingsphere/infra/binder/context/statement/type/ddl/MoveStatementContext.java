@@ -51,11 +51,6 @@ public final class MoveStatementContext extends CommonSQLStatementContext implem
     }
     
     @Override
-    public MoveStatement getSqlStatement() {
-        return (MoveStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Optional<CursorNameSegment> getCursorName() {
         return Optional.of(getSqlStatement().getCursorName());
     }
@@ -79,5 +74,10 @@ public final class MoveStatementContext extends CommonSQLStatementContext implem
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getJoinConditions();
+    }
+    
+    @Override
+    public MoveStatement getSqlStatement() {
+        return (MoveStatement) super.getSqlStatement();
     }
 }

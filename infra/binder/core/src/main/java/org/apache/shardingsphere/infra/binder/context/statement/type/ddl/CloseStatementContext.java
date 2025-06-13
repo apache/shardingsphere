@@ -51,11 +51,6 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     }
     
     @Override
-    public CloseStatement getSqlStatement() {
-        return (CloseStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Optional<CursorNameSegment> getCursorName() {
         return getSqlStatement().getCursorName();
     }
@@ -79,5 +74,10 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getJoinConditions();
+    }
+    
+    @Override
+    public CloseStatement getSqlStatement() {
+        return (CloseStatement) super.getSqlStatement();
     }
 }

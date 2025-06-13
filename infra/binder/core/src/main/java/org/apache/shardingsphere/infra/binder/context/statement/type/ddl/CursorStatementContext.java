@@ -73,11 +73,6 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public CursorStatement getSqlStatement() {
-        return (CursorStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Optional<CursorNameSegment> getCursorName() {
         return Optional.of(getSqlStatement().getCursorName());
     }
@@ -95,5 +90,10 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return joinConditions;
+    }
+    
+    @Override
+    public CursorStatement getSqlStatement() {
+        return (CursorStatement) super.getSqlStatement();
     }
 }
