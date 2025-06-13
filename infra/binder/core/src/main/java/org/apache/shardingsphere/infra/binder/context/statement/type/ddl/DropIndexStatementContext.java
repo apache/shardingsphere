@@ -46,11 +46,6 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     }
     
     @Override
-    public DropIndexStatement getSqlStatement() {
-        return (DropIndexStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<IndexSegment> getIndexes() {
         return getSqlStatement().getIndexes();
     }
@@ -58,5 +53,10 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext i
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public DropIndexStatement getSqlStatement() {
+        return (DropIndexStatement) super.getSqlStatement();
     }
 }

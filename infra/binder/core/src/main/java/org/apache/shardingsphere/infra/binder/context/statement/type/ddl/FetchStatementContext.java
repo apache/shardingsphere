@@ -51,11 +51,6 @@ public final class FetchStatementContext extends CommonSQLStatementContext imple
     }
     
     @Override
-    public FetchStatement getSqlStatement() {
-        return (FetchStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Optional<CursorNameSegment> getCursorName() {
         return Optional.of(getSqlStatement().getCursorName());
     }
@@ -79,5 +74,10 @@ public final class FetchStatementContext extends CommonSQLStatementContext imple
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getJoinConditions();
+    }
+    
+    @Override
+    public FetchStatement getSqlStatement() {
+        return (FetchStatement) super.getSqlStatement();
     }
 }

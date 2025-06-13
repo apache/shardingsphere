@@ -75,11 +75,6 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
     }
     
     @Override
-    public AlterTableStatement getSqlStatement() {
-        return (AlterTableStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<IndexSegment> getIndexes() {
         Collection<IndexSegment> result = new LinkedList<>();
         for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
@@ -111,5 +106,10 @@ public final class AlterTableStatementContext extends CommonSQLStatementContext 
             result.addAll(each.getConstraintDefinition().getIndexColumns());
         }
         return result;
+    }
+    
+    @Override
+    public AlterTableStatement getSqlStatement() {
+        return (AlterTableStatement) super.getSqlStatement();
     }
 }

@@ -50,11 +50,6 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     }
     
     @Override
-    public CreateIndexStatement getSqlStatement() {
-        return (CreateIndexStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<IndexSegment> getIndexes() {
         if (null == getSqlStatement().getIndex()) {
             return getSqlStatement().getGeneratedIndexStartIndex().map(each -> Collections.singletonList(new IndexSegment(each, each,
@@ -66,5 +61,10 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
         return getSqlStatement().getColumns();
+    }
+    
+    @Override
+    public CreateIndexStatement getSqlStatement() {
+        return (CreateIndexStatement) super.getSqlStatement();
     }
 }

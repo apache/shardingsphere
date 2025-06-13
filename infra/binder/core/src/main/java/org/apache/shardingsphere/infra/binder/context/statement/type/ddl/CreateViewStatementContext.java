@@ -57,11 +57,6 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     }
     
     @Override
-    public CreateViewStatement getSqlStatement() {
-        return (CreateViewStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<WhereSegment> getWhereSegments() {
         return selectStatementContext.getWhereSegments();
     }
@@ -74,5 +69,10 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return selectStatementContext.getJoinConditions();
+    }
+    
+    @Override
+    public CreateViewStatement getSqlStatement() {
+        return (CreateViewStatement) super.getSqlStatement();
     }
 }

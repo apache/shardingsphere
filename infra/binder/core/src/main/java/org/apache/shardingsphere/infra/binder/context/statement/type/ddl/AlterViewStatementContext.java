@@ -85,11 +85,6 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     }
     
     @Override
-    public AlterViewStatement getSqlStatement() {
-        return (AlterViewStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<WhereSegment> getWhereSegments() {
         return getSelectStatementContext().isPresent() ? getSelectStatementContext().get().getWhereSegments() : Collections.emptyList();
     }
@@ -102,5 +97,10 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return getSelectStatementContext().isPresent() ? getSelectStatementContext().get().getJoinConditions() : Collections.emptyList();
+    }
+    
+    @Override
+    public AlterViewStatement getSqlStatement() {
+        return (AlterViewStatement) super.getSqlStatement();
     }
 }
