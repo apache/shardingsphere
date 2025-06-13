@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.checker.sql.ddl;
 import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
@@ -30,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,7 +59,13 @@ class ShardingRenameTableSupportedCheckerTest {
     }
     
     private TableAvailableSQLStatementContext createRenameTableStatementContext(final String originTableName, final String newTableName) {
-        return new TableAvailableSQLStatementContext(mock(), mock(RenameTableStatement.class), Arrays.asList(
-                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName))), new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(newTableName)))));
+        RenameTableStatement sqlStatement = mock(RenameTableStatement.class);
+        RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 0);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName)));
+        SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(newTableName)));
+        renameTableDefinitionSegment.setTable(table);
+        renameTableDefinitionSegment.setRenameTable(renameTable);
+        when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
+        return new TableAvailableSQLStatementContext(mock(), sqlStatement, Arrays.asList(table, renameTable));
     }
 }
