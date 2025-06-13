@@ -91,6 +91,8 @@ public final class QueryContext {
      * @return used database
      */
     public ShardingSphereDatabase getUsedDatabase() {
+        ShardingSpherePreconditions.checkNotNull(usedDatabaseNames, NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkNotEmpty(usedDatabaseNames, NoDatabaseSelectedException::new);
         ShardingSpherePreconditions.checkState(usedDatabaseNames.size() <= 1,
                 () -> new UnsupportedSQLOperationException(String.format("Can not support multiple logic databases [%s]", Joiner.on(", ").join(usedDatabaseNames))));
         String databaseName = usedDatabaseNames.isEmpty() ? connectionContext.getCurrentDatabaseName().orElseThrow(NoDatabaseSelectedException::new) : usedDatabaseNames.iterator().next();
