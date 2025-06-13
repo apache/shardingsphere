@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +71,8 @@ public final class BroadcastUnicastRouteEngine implements BroadcastRouteEngine {
     }
     
     private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext || sqlStatementContext instanceof DropViewStatementContext;
+        return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext
+                || sqlStatementContext.getSqlStatement() instanceof DropViewStatement;
     }
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
