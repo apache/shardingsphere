@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CommentStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -87,7 +87,7 @@ public final class PipelineDDLDecorator {
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
             appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
         }
-        if (sqlStatementContext instanceof CommentStatementContext) {
+        if (sqlStatementContext.getSqlStatement() instanceof CommentStatement) {
             appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CreateIndexStatementContext) {
@@ -159,7 +159,7 @@ public final class PipelineDDLDecorator {
     
     private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine, final DatabaseType databaseType) {
         SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, databaseType, sql);
-        if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext instanceof CommentStatementContext
+        if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext.getSqlStatement() instanceof CommentStatement
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
             if (((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
                 return sql;

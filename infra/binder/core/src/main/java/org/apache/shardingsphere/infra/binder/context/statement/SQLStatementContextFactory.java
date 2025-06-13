@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIn
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CommentStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
@@ -218,7 +217,8 @@ public final class SQLStatementContextFactory {
             return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((PrepareStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CommentStatement) {
-            return new CommentStatementContext(databaseType, (CommentStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement,
+                    null == ((CommentStatement) sqlStatement).getTable() ? Collections.emptyList() : Collections.singletonList(((CommentStatement) sqlStatement).getTable()));
         }
         if (sqlStatement instanceof CursorStatement) {
             return new CursorStatementContext(metaData, databaseType, params, (CursorStatement) sqlStatement, currentDatabaseName);
