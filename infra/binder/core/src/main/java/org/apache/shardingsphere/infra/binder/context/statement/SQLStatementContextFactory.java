@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateFunctionStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateSchemaStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
@@ -172,7 +171,7 @@ public final class SQLStatementContextFactory {
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                                               final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
-            return new CreateSchemaStatementContext(databaseType, (CreateSchemaStatement) sqlStatement);
+            return new UnknownSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext(databaseType, (CreateTableStatement) sqlStatement);
