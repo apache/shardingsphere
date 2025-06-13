@@ -19,13 +19,14 @@ package org.apache.shardingsphere.broadcast.route.engine.type.unicast;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,7 +77,9 @@ class BroadcastUnicastRouteEngineTest {
     
     @Test
     void assertRouteToFirstDataSourceWithDropViewStatementContext() {
-        assertRoute(mock(DropViewStatementContext.class), is("ds_0"));
+        SQLStatementContext sqlStatementContext = mock(TableAvailableSQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropViewStatement.class));
+        assertRoute(sqlStatementContext, is("ds_0"));
     }
     
     @Test
