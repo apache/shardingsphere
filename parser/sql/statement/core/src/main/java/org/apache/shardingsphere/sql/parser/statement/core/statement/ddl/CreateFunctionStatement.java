@@ -19,12 +19,16 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,5 +61,14 @@ public class CreateFunctionStatement extends AbstractSQLStatement implements DDL
      */
     public Optional<RoutineBodySegment> getRoutineBody() {
         return Optional.ofNullable(routineBody);
+    }
+    
+    /**
+     * Get tables.
+     *
+     * @return tables
+     */
+    public Collection<SimpleTableSegment> getTables() {
+        return getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
     }
 }
