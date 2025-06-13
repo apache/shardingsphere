@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.RenameTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -41,7 +41,7 @@ public final class ShardingRenameTableRouteContextChecker implements ShardingRou
         for (RenameTableDefinitionSegment each : renameTableStatement.getRenameTables()) {
             String primaryTable = each.getTable().getTableName().getIdentifier().getValue();
             ShardingSpherePreconditions.checkState(!ShardingSupportedCheckUtils.isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable),
-                    () -> new ShardingDDLRouteException("RENAME", "TABLE", ((RenameTableStatementContext) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()));
+                    () -> new ShardingDDLRouteException("RENAME", "TABLE", ((TableAvailableSQLStatementContext) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()));
         }
     }
 }
