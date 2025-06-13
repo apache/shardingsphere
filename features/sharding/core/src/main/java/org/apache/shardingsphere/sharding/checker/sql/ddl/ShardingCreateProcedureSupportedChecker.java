@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -35,16 +35,16 @@ import java.util.Optional;
 /**
  * Create procedure supported checker for sharding.
  */
-public final class ShardingCreateProcedureSupportedChecker implements SupportedSQLChecker<CreateProcedureStatementContext, ShardingRule> {
+public final class ShardingCreateProcedureSupportedChecker implements SupportedSQLChecker<TableAvailableSQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateProcedureStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof CreateProcedureStatement;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final CreateProcedureStatementContext sqlStatementContext) {
-        CreateProcedureStatement createProcedureStatement = sqlStatementContext.getSqlStatement();
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final TableAvailableSQLStatementContext sqlStatementContext) {
+        CreateProcedureStatement createProcedureStatement = (CreateProcedureStatement) sqlStatementContext.getSqlStatement();
         Optional<RoutineBodySegment> routineBodySegment = createProcedureStatement.getRoutineBody();
         if (!routineBodySegment.isPresent()) {
             return;
