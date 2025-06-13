@@ -42,7 +42,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropTab
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.MoveStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.PrepareStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -218,7 +217,7 @@ public final class SQLStatementContextFactory {
             return new DropViewStatementContext(databaseType, (DropViewStatement) sqlStatement);
         }
         if (sqlStatement instanceof PrepareStatement) {
-            return new PrepareStatementContext(databaseType, (PrepareStatement) sqlStatement);
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((PrepareStatement) sqlStatement).getTables());
         }
         if (sqlStatement instanceof CommentStatement) {
             return new CommentStatementContext(databaseType, (CommentStatement) sqlStatement);
