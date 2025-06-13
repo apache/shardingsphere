@@ -84,7 +84,7 @@ public final class PrepareStatement extends AbstractSQLStatement implements DDLS
     
     /**
      * Get tables.
-     * 
+     *
      * @return tables
      */
     public Collection<SimpleTableSegment> getTables() {
