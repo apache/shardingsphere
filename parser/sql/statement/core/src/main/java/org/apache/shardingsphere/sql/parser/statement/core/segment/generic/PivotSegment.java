@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * Pivot segment.
@@ -55,16 +56,16 @@ public final class PivotSegment implements SQLSegment {
     }
     
     /**
-     * Get pivot columns.
+     * Get pivot column names.
      *
-     * @return pivot columns
+     * @return pivot column names
      */
-    public Collection<ColumnSegment> getPivotColumns() {
+    public Collection<String> getPivotColumnNames() {
         Collection<ColumnSegment> result = new HashSet<>(pivotInColumns);
         result.addAll(pivotForColumns);
         if (null != unpivotColumns) {
             result.addAll(unpivotColumns);
         }
-        return result;
+        return result.stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
 }

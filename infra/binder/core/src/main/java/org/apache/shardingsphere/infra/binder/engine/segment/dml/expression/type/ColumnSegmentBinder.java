@@ -200,13 +200,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
-        if (pivotColumnNames.isEmpty()) {
-            return Optional.empty();
-        }
-        if (pivotColumnNames.contains(segment.getIdentifier().getValue())) {
-            return Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
-        }
-        return Optional.empty();
+        return pivotColumnNames.isEmpty() || !pivotColumnNames.contains(segment.getIdentifier().getValue()) ? Optional.empty() : Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment,
@@ -298,7 +292,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static List<ColumnSegmentInputInfo> findUsingColumnSegmentInputInfos(final Collection<TableSegmentBinderContext> tableBinderContexts, final String columnName) {
-        List<ColumnSegmentInputInfo> result = new ArrayList<>();
+        List<ColumnSegmentInputInfo> result = new ArrayList<>(tableBinderContexts.size());
         for (TableSegmentBinderContext each : tableBinderContexts) {
             Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
