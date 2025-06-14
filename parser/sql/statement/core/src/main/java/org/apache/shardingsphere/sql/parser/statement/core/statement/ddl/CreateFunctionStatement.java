@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.R
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +38,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
     
     private FunctionNameSegment functionName;
     
@@ -63,11 +64,7 @@ public class CreateFunctionStatement extends AbstractSQLStatement implements DDL
         return Optional.ofNullable(routineBody);
     }
     
-    /**
-     * Get tables.
-     *
-     * @return tables
-     */
+    @Override
     public Collection<SimpleTableSegment> getTables() {
         return getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
     }

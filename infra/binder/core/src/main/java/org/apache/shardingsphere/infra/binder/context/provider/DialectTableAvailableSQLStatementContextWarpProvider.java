@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.sqlserver;
+package org.apache.shardingsphere.infra.binder.context.provider;
 
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * SQL statement extractor for SQLServer.
+ * Dialect table available SQL statement context warp provider.
  */
-public final class SQLServerSQLStatementExtractor implements DialectSQLStatementExtractor {
+@SingletonSPI
+public interface DialectTableAvailableSQLStatementContextWarpProvider extends DatabaseTypedSPI {
     
-    @Override
-    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DenyUserStatement) {
-            return Collections.singleton(((DenyUserStatement) sqlStatement).getTable());
-        }
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
+    /**
+     * Get need to warp table available SQL statement context SQL statement types.
+     *
+     * @return SQL statement types
+     */
+    Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes();
 }

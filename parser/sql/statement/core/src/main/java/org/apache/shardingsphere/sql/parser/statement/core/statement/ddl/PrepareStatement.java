@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -36,7 +37,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class PrepareStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PrepareStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
     
     private SelectStatement select;
     
@@ -82,11 +83,7 @@ public final class PrepareStatement extends AbstractSQLStatement implements DDLS
         return Optional.ofNullable(delete);
     }
     
-    /**
-     * Get tables.
-     *
-     * @return tables
-     */
+    @Override
     public Collection<SimpleTableSegment> getTables() {
         TableExtractor tableExtractor = new TableExtractor();
         Optional.ofNullable(select).ifPresent(tableExtractor::extractTablesFromSelect);

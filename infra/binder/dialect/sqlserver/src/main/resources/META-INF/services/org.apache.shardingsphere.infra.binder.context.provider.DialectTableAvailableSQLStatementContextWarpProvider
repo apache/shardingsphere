@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.binder.sqlserver.SQLServerSQLStatementExtractor
+org.apache.shardingsphere.infra.binder.sqlserver.SQLServerSQLStatementContextWarpProvider

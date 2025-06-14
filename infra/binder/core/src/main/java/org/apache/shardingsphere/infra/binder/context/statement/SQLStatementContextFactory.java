@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowIndexStatementContext;
@@ -45,8 +45,8 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
@@ -87,7 +87,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeSt
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -110,13 +109,11 @@ public final class SQLStatementContextFactory {
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        Optional<DialectSQLStatementExtractor> dialectSQLStatementExtractor = DatabaseTypedSPILoader.findService(DialectSQLStatementExtractor.class, databaseType);
-        if (dialectSQLStatementExtractor.isPresent()) {
-            Collection<SimpleTableSegment> tableSegments = dialectSQLStatementExtractor.get().extractTables(sqlStatement);
-            if (!tableSegments.isEmpty()) {
-                return new TableAvailableSQLStatementContext(databaseType, sqlStatement,
-                        (1 == tableSegments.size() && null == tableSegments.iterator().next()) ? Collections.emptyList() : tableSegments);
-            }
+        Optional<DialectTableAvailableSQLStatementContextWarpProvider> dialectTableAvailableSQLStatementContextWarpProvider = DatabaseTypedSPILoader.findService(
+                DialectTableAvailableSQLStatementContextWarpProvider.class, databaseType);
+        if (sqlStatement instanceof TableAvailable && dialectTableAvailableSQLStatementContextWarpProvider
+                .map(optional -> dialectTableAvailableSQLStatementContextWarpProvider.get().getNeedToWarpTableAvailableSQLStatementContextTypes().contains(sqlStatement.getClass())).orElse(false)) {
+            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((TableAvailable) sqlStatement).getTables());
         }
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, databaseType, (DMLStatement) sqlStatement, params, currentDatabaseName);

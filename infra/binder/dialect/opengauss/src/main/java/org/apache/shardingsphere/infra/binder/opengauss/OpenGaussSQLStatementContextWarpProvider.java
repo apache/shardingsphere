@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.extractor;
+package org.apache.shardingsphere.infra.binder.opengauss;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.postgresql.PostgreSQLSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 
 /**
- * Dialect SQL statement extractor.
+ * Table available SQL statement context warp provider for openGauss.
  */
-@SingletonSPI
-public interface DialectSQLStatementExtractor extends DatabaseTypedSPI {
+public final class OpenGaussSQLStatementContextWarpProvider implements DialectTableAvailableSQLStatementContextWarpProvider {
     
-    /**
-     * Extract table segments.
-     *
-     * @param sqlStatement SQL statement
-     * @return extracted table segments
-     */
-    Collection<SimpleTableSegment> extractTables(SQLStatement sqlStatement);
+    private final PostgreSQLSQLStatementContextWarpProvider delegate = new PostgreSQLSQLStatementContextWarpProvider();
+    
+    @Override
+    public Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes() {
+        return delegate.getNeedToWarpTableAvailableSQLStatementContextTypes();
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "openGauss";
+    }
 }

@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.opengauss;
+package org.apache.shardingsphere.infra.binder.postgresql;
 
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
-import org.apache.shardingsphere.infra.binder.postgresql.PostgreSQLSQLStatementExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * SQL statement extractor for openGauss.
+ * Table available SQL statement context warp provider for PostgreSQL.
  */
-public final class OpenGaussSQLStatementExtractor implements DialectSQLStatementExtractor {
+public final class PostgreSQLSQLStatementContextWarpProvider implements DialectTableAvailableSQLStatementContextWarpProvider {
     
-    private final PostgreSQLSQLStatementExtractor delegate = new PostgreSQLSQLStatementExtractor();
+    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES = Collections.singleton(CopyStatement.class);
     
     @Override
-    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
-        return delegate.extractTables(sqlStatement);
+    public Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes() {
+        return NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES;
     }
     
     @Override
     public String getDatabaseType() {
-        return "openGauss";
+        return "PostgreSQL";
     }
 }

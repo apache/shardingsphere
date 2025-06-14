@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.postgresql;
+package org.apache.shardingsphere.infra.binder.sqlserver;
 
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * SQL statement extractor for PostgreSQL.
+ * Table available SQL statement context warp provider for SQLServer.
  */
-public final class PostgreSQLSQLStatementExtractor implements DialectSQLStatementExtractor {
+public final class SQLServerSQLStatementContextWarpProvider implements DialectTableAvailableSQLStatementContextWarpProvider {
+    
+    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES = Collections.singleton(DenyUserStatement.class);
     
     @Override
-    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CopyStatement) {
-            return Collections.singleton(((CopyStatement) sqlStatement).getTable().isPresent() ? ((CopyStatement) sqlStatement).getTable().get() : null);
-        }
-        return Collections.emptyList();
+    public Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes() {
+        return NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES;
     }
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "SQLServer";
     }
 }
