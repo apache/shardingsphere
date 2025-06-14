@@ -19,28 +19,29 @@ package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.LoadXMLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 
 /**
  * Load xml supported checker for sharding.
  */
 @HighFrequencyInvocation
-public final class ShardingLoadXmlSupportedChecker implements SupportedSQLChecker<LoadXMLStatementContext, ShardingRule> {
+public final class ShardingLoadXmlSupportedChecker implements SupportedSQLChecker<TableAvailableSQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof LoadXMLStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof LoadXMLStatement;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final LoadXMLStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final TableAvailableSQLStatementContext sqlStatementContext) {
+        String tableName = ((LoadXMLStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
         ShardingSpherePreconditions.checkState(!rule.isShardingTable(tableName), () -> new UnsupportedShardingOperationException("LOAD XML", tableName));
     }
 }
