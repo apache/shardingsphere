@@ -38,6 +38,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -54,6 +56,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class SQLRouteEngineTest {
     
     private final SQLRouteEngine sqlRouteEngine =
@@ -65,7 +68,7 @@ class SQLRouteEngineTest {
     @Mock
     private ShardingSphereMetaData metaData;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private CommonSQLStatementContext sqlStatementContext;
     
     @Mock
@@ -79,6 +82,7 @@ class SQLRouteEngineTest {
         storageUnits.put("ds_0", mock(StorageUnit.class));
         storageUnits.put("ds_1", mock(StorageUnit.class));
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         connectionContext.setCurrentDatabaseName("foo_db");
     }
     
