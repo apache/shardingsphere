@@ -118,7 +118,8 @@ public final class SQLStatementContextFactory {
         if (dialectSQLStatementExtractor.isPresent()) {
             Collection<SimpleTableSegment> tableSegments = dialectSQLStatementExtractor.get().extractTables(sqlStatement);
             if (!tableSegments.isEmpty()) {
-                return new TableAvailableSQLStatementContext(databaseType, sqlStatement, tableSegments);
+                return new TableAvailableSQLStatementContext(databaseType, sqlStatement,
+                        (1 == tableSegments.size() && null == tableSegments.iterator().next()) ? Collections.emptyList() : tableSegments);
             }
         }
         if (sqlStatement instanceof DMLStatement) {

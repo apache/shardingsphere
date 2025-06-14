@@ -32,8 +32,8 @@ public final class PostgreSQLSQLStatementExtractor implements DialectSQLStatemen
     
     @Override
     public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof CopyStatement && ((CopyStatement) sqlStatement).getTable().isPresent()) {
-            return Collections.singleton(((CopyStatement) sqlStatement).getTable().get());
+        if (sqlStatement instanceof CopyStatement) {
+            return Collections.singleton(((CopyStatement) sqlStatement).getTable().isPresent() ? ((CopyStatement) sqlStatement).getTable().get() : null);
         }
         return Collections.emptyList();
     }
