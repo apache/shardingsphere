@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorS
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.MoveStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.LoadDataStatementContext;
@@ -82,7 +81,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.Prepare
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
@@ -120,7 +118,8 @@ public final class SQLStatementContextFactory {
         if (dialectSQLStatementExtractor.isPresent()) {
             Collection<SimpleTableSegment> tableSegments = dialectSQLStatementExtractor.get().extractTables(sqlStatement);
             if (!tableSegments.isEmpty()) {
-                return new TableAvailableSQLStatementContext(databaseType, sqlStatement, tableSegments);
+                return new TableAvailableSQLStatementContext(databaseType, sqlStatement,
+                        (1 == tableSegments.size() && null == tableSegments.iterator().next()) ? Collections.emptyList() : tableSegments);
             }
         }
         if (sqlStatement instanceof DMLStatement) {
@@ -151,9 +150,6 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(databaseType, (InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
-        }
-        if (sqlStatement instanceof CopyStatement) {
-            return new CopyStatementContext(databaseType, (CopyStatement) sqlStatement);
         }
         if (sqlStatement instanceof LoadDataStatement) {
             return new LoadDataStatementContext(databaseType, (LoadDataStatement) sqlStatement);

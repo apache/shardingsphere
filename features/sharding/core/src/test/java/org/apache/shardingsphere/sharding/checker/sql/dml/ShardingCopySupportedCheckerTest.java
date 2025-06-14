@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.CopyStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -44,18 +44,19 @@ class ShardingCopySupportedCheckerTest {
     
     @Test
     void assertCheckWithNotShardingTable() {
-        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), createCopyStatementContext()));
+        assertDoesNotThrow(() -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), createSQLStatementContext()));
     }
     
     @Test
     void assertCheckWitShardingTable() {
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), createCopyStatementContext()));
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), createSQLStatementContext()));
     }
     
-    private CopyStatementContext createCopyStatementContext() {
+    private TableAvailableSQLStatementContext createSQLStatementContext() {
         CopyStatement sqlStatement = mock(CopyStatement.class);
-        when(sqlStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
-        return new CopyStatementContext(mock(), sqlStatement);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
+        when(sqlStatement.getTable()).thenReturn(Optional.of(table));
+        return new TableAvailableSQLStatementContext(mock(), sqlStatement, table);
     }
 }

@@ -55,7 +55,6 @@ public final class ShardingCreateProcedureSupportedChecker implements SupportedS
         ShardingSphereSchema schema = createProcedureStatement.getProcedureName().flatMap(optional -> optional.getOwner()
                 .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElse(currentSchema);
         ShardingSupportedCommonChecker.checkTableExist(schema, existTables);
-        Collection<SimpleTableSegment> notExistTables = extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get());
-        ShardingSupportedCommonChecker.checkTableNotExist(schema, notExistTables);
+        ShardingSupportedCommonChecker.checkTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get()));
     }
 }

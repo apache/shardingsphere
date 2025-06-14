@@ -15,35 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
+package org.apache.shardingsphere.infra.binder.postgresql;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Copy statement context.
+ * SQL statement extractor for PostgreSQL.
  */
-@Getter
-public final class CopyStatementContext extends CommonSQLStatementContext implements TableAvailable {
+public final class PostgreSQLSQLStatementExtractor implements DialectSQLStatementExtractor {
     
-    private final TablesContext tablesContext;
-    
-    public CopyStatementContext(final DatabaseType databaseType, final CopyStatement sqlStatement) {
-        super(databaseType, sqlStatement);
-        Collection<SimpleTableSegment> tables = sqlStatement.getTable().isPresent() ? Collections.singleton(sqlStatement.getTable().get()) : Collections.emptyList();
-        tablesContext = new TablesContext(tables);
+    @Override
+    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof CopyStatement) {
+            return Collections.singleton(((CopyStatement) sqlStatement).getTable().isPresent() ? ((CopyStatement) sqlStatement).getTable().get() : null);
+        }
+        return Collections.emptyList();
     }
     
     @Override
-    public CopyStatement getSqlStatement() {
-        return (CopyStatement) super.getSqlStatement();
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }
