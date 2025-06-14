@@ -34,11 +34,6 @@ public final class TableAvailableSQLStatementContext extends CommonSQLStatementC
     
     private final TablesContext tablesContext;
     
-    public TableAvailableSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement, final SimpleTableSegment table) {
-        super(databaseType, sqlStatement);
-        tablesContext = new TablesContext(table);
-    }
-    
     public TableAvailableSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
         super(databaseType, sqlStatement);
         tablesContext = new TablesContext(tables);

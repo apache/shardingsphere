@@ -39,7 +39,7 @@ class TableAvailableSQLStatementContextTest {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         SimpleTableSegment table = new SimpleTableSegment(tableNameSegment);
-        TableAvailableSQLStatementContext actual = new TableAvailableSQLStatementContext(mock(), sqlStatement, table);
+        TableAvailableSQLStatementContext actual = new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table));
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Collections.singletonList("foo_tbl")));
