@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.binder.context.type;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 
 /**
- * Table available.
+ * Table context available.
  */
-public interface TableAvailable {
+public interface TableContextAvailable {
     
     /**
      * Get tables context.

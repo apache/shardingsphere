@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -101,8 +101,8 @@ class ShardingStandardRouteEngineTest {
     
     @Test
     void assertRouteByHint() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_test"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_test"));
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_hint_test",
                 new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
@@ -119,8 +119,8 @@ class ShardingStandardRouteEngineTest {
     
     @Test
     void assertRouteByMixedWithHintDataSource() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_ds_test"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_ds_test"));
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_hint_ds_test",
                 ShardingRouteEngineFixtureBuilder.createShardingConditions("t_hint_ds_test"), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
@@ -136,8 +136,8 @@ class ShardingStandardRouteEngineTest {
     
     @Test
     void assertRouteByMixedWithHintDataSourceOnly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_ds_test"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_ds_test"));
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_hint_ds_test",
                 new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
@@ -157,8 +157,8 @@ class ShardingStandardRouteEngineTest {
     
     @Test
     void assertRouteByMixedWithHintTable() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_table_test"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_table_test"));
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_hint_table_test",
                 ShardingRouteEngineFixtureBuilder.createShardingConditions("t_hint_table_test"), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
@@ -174,8 +174,8 @@ class ShardingStandardRouteEngineTest {
     
     @Test
     void assertRouteByMixedWithHintTableOnly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_table_test"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_table_test"));
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_hint_table_test",
                 new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
@@ -195,8 +195,8 @@ class ShardingStandardRouteEngineTest {
     
     @Test
     void assertRouteByIntervalTableShardingStrategyOnly() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_interval_test"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_interval_test"));
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_interval_test",
                 ShardingRouteEngineFixtureBuilder.createIntervalShardingConditions("t_interval_test"), sqlStatementContext, new HintValueContext());
         RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createIntervalTableShardingRule());

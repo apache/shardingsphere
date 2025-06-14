@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -68,7 +68,7 @@ class TablelessRouteEngineFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    @Mock(extraInterfaces = TableAvailable.class)
+    @Mock(extraInterfaces = TableContextAvailable.class)
     private SQLStatementContext sqlStatementContext;
     
     @Mock
@@ -80,7 +80,7 @@ class TablelessRouteEngineFactoryTest {
     @BeforeEach
     void setUp() {
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(new LinkedList<>());
     }
     

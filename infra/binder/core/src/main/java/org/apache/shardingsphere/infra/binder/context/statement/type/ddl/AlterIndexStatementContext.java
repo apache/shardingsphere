@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -35,7 +35,7 @@ import java.util.LinkedList;
  * Alter index statement context.
  */
 @Getter
-public final class AlterIndexStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable {
+public final class AlterIndexStatementContext extends CommonSQLStatementContext implements TableContextAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     

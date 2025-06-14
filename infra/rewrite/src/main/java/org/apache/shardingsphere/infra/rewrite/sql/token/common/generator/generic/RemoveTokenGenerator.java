@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.gener
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -46,7 +46,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
             return true;
         }
-        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
+        if (sqlStatementContext instanceof TableContextAvailable && !((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
             return true;
         }
         return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
@@ -58,8 +58,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
             result.addAll(generateRemoveAvailableSQLTokens(((RemoveAvailable) sqlStatementContext).getRemoveSegments()));
         }
-        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
-            result.addAll(generateTableAvailableSQLTokens((TableAvailable) sqlStatementContext, sqlStatementContext.getDatabaseType()));
+        if (sqlStatementContext instanceof TableContextAvailable && !((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
+            result.addAll(generateTableAvailableSQLTokens((TableContextAvailable) sqlStatementContext, sqlStatementContext.getDatabaseType()));
         }
         if (sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty()) {
             result.addAll(generateIndexAvailableSQLTokens((IndexAvailable) sqlStatementContext));
@@ -71,7 +71,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         return removeSegments.stream().map(each -> new RemoveToken(each.getStartIndex(), each.getStopIndex())).collect(Collectors.toList());
     }
     
-    private Collection<RemoveToken> generateTableAvailableSQLTokens(final TableAvailable tableAvailable, final DatabaseType databaseType) {
+    private Collection<RemoveToken> generateTableAvailableSQLTokens(final TableContextAvailable tableAvailable, final DatabaseType databaseType) {
         Collection<RemoveToken> result = new LinkedList<>();
         for (SimpleTableSegment each : tableAvailable.getTablesContext().getSimpleTables()) {
             if (!each.getOwner().isPresent()) {
