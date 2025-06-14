@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.MoveStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.LoadDataStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
@@ -85,7 +84,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -150,9 +148,6 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(databaseType, (InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
-        }
-        if (sqlStatement instanceof LoadDataStatement) {
-            return new LoadDataStatementContext(databaseType, (LoadDataStatement) sqlStatement);
         }
         if (sqlStatement instanceof LoadXMLStatement) {
             return new LoadXMLStatementContext(databaseType, (LoadXMLStatement) sqlStatement);
