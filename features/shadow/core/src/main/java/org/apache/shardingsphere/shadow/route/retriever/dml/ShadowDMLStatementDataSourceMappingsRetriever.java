@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
@@ -50,7 +49,7 @@ public final class ShadowDMLStatementDataSourceMappingsRetriever implements Shad
     private final ShadowColumnDataSourceMappingsRetriever shadowColumnDataSourceMappingsRetriever;
     
     public ShadowDMLStatementDataSourceMappingsRetriever(final QueryContext queryContext, final ShadowOperationType operationType) {
-        tableNames = ((TableContextAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames();
+        tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
         tableHintDataSourceMappingsRetriever = new ShadowTableHintDataSourceMappingsRetriever(operationType, queryContext.getHintValueContext().isShadow());
         shadowColumnDataSourceMappingsRetriever = createShadowDataSourceMappingsRetriever(queryContext);
     }

@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -267,9 +266,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
         sqlStatementContext = queryContext.getSqlStatementContext();
         ShardingSpherePreconditions.checkNotNull(sqlStatementContext, () -> new IllegalStateException("Statement context can not be null"));
-        usedDatabaseName = sqlStatementContext instanceof TableContextAvailable
-                ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName())
-                : connection.getCurrentDatabaseName();
+        usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         clearStatements();
     }
@@ -336,11 +333,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        if (!(sqlStatementContext instanceof TableContextAvailable)) {
-            return false;
-        }
         for (DataNodeRuleAttribute each : metaData.getDatabase(usedDatabaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+            if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
         }

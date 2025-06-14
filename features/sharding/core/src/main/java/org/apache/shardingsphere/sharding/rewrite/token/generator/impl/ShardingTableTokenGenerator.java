@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -54,18 +52,12 @@ public final class ShardingTableTokenGenerator implements CollectionSQLTokenGene
     }
     
     private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
-        Collection<String> shardingLogicTableNames = sqlStatementContext instanceof TableContextAvailable
-                ? rule.getShardingLogicTableNames(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames())
-                : Collections.emptyList();
+        Collection<String> shardingLogicTableNames = rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
         return shardingLogicTableNames.size() > 1 && rule.isAllConfigBindingTables(shardingLogicTableNames);
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof TableContextAvailable ? generateSQLTokens((TableContextAvailable) sqlStatementContext) : Collections.emptyList();
-    }
-    
-    private Collection<SQLToken> generateSQLTokens(final TableContextAvailable sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             TableNameSegment tableNameSegment = each.getTableName();

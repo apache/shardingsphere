@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -90,7 +89,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class SelectStatementContext extends CommonSQLStatementContext implements TableContextAvailable, WhereAvailable, ParameterAware, WithAvailable {
+public final class SelectStatementContext extends CommonSQLStatementContext implements WhereAvailable, ParameterAware, WithAvailable {
     
     private final TablesContext tablesContext;
     

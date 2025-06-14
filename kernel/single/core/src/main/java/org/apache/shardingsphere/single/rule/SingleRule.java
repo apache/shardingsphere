@@ -21,7 +21,6 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -42,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -173,8 +171,7 @@ public final class SingleRule implements DatabaseRule {
      * @return qualified tables
      */
     public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        Collection<SimpleTableSegment> tables =
-                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables() : Collections.emptyList();
+        Collection<SimpleTableSegment> tables = sqlStatementContext.getTablesContext().getSimpleTables();
         Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, tables);
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
             result = IndexMetaDataUtils.getTableNames(database, protocolType, ((IndexAvailable) sqlStatementContext).getIndexes());

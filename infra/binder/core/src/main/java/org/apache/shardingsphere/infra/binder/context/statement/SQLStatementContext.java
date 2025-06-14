@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement;
 
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -31,6 +32,13 @@ public interface SQLStatementContext {
      * @return SQL statement
      */
     SQLStatement getSqlStatement();
+    
+    /**
+     * Get tables context.
+     *
+     * @return tables context
+     */
+    TablesContext getTablesContext();
     
     /**
      * Get database type.

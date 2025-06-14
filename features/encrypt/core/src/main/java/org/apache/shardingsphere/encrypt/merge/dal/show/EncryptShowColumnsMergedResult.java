@@ -21,9 +21,8 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -46,9 +45,9 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     private final EncryptRule rule;
     
     public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableContextAvailable && 1 == ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
+        ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
-        tableName = ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.mergedResult = mergedResult;
         this.rule = rule;
     }

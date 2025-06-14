@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -38,7 +37,7 @@ public final class SchemaRefreshUtils {
      * @return schema name
      */
     public static String getSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        return ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaName()
+        return sqlStatementContext.getTablesContext().getSchemaName()
                 .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
     }
 }

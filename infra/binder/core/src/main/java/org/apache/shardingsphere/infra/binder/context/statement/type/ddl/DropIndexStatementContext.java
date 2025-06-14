@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -34,7 +33,7 @@ import java.util.Collections;
  * Drop index statement context.
  */
 @Getter
-public final class DropIndexStatementContext extends CommonSQLStatementContext implements TableContextAvailable, IndexAvailable {
+public final class DropIndexStatementContext extends CommonSQLStatementContext implements IndexAvailable {
     
     private final TablesContext tablesContext;
     

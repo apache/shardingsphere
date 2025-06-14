@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -39,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(MockitoExtension.class)
 class DMLShardingConditionsShardingAuditAlgorithmTest {
@@ -61,8 +59,8 @@ class DMLShardingConditionsShardingAuditAlgorithmTest {
     
     @Test
     void assertCheckWithoutShardingTable() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(ShardingRule.class))));
         assertDoesNotThrow(() -> shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(RuleMetaData.class), database));
@@ -70,8 +68,8 @@ class DMLShardingConditionsShardingAuditAlgorithmTest {
     
     @Test
     void assertCheckWithShardingTable() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("foo_tbl"));
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);

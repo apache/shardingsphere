@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.refresher.pushdown;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -71,7 +70,7 @@ public final class PushDownMetaDataRefreshEngine {
             return;
         }
         Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-        String schemaName = sqlStatementContext instanceof TableContextAvailable ? SchemaRefreshUtils.getSchemaName(database, sqlStatementContext) : null;
+        String schemaName = SchemaRefreshUtils.getSchemaName(database, sqlStatementContext);
         DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
                 .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
         refresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),

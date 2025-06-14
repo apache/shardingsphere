@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement;
 
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+
+import java.util.Collections;
 
 /**
  * Unknown SQL statement context.
@@ -27,5 +30,10 @@ public final class UnknownSQLStatementContext extends CommonSQLStatementContext 
     
     public UnknownSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
         super(databaseType, sqlStatement);
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return new TablesContext(Collections.emptyList());
     }
 }

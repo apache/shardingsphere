@@ -25,7 +25,6 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
@@ -140,8 +139,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         if (allQueryUseSQLFederation) {
             return true;
         }
-        Collection<String> databaseNames =
-                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getDatabaseNames() : Collections.emptyList();
+        Collection<String> databaseNames = sqlStatementContext.getTablesContext().getDatabaseNames();
         if (databaseNames.size() > 1) {
             return true;
         }
@@ -223,10 +221,9 @@ public final class SQLFederationEngine implements AutoCloseable {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
         // TODO set default schema according to search path result
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-            return sqlStatementContext instanceof TableContextAvailable
-                    && ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
-                            ? Collections.singletonList(currentDatabaseName)
-                            : Arrays.asList(currentDatabaseName, currentSchemaName);
+            return sqlStatementContext.getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
+                    ? Collections.singletonList(currentDatabaseName)
+                    : Arrays.asList(currentDatabaseName, currentSchemaName);
         }
         return Collections.singletonList(currentDatabaseName);
     }
@@ -241,8 +238,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     private ExecutionPlanCacheKey buildCacheKey(final ShardingSphereMetaData metaData, final SQLStatementContext sqlStatementContext,
                                                 final String sql, final SQLStatementCompiler sqlStatementCompiler) {
         ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(sql, sqlStatementContext.getSqlStatement(), sqlStatementContext.getDatabaseType().getType(), sqlStatementCompiler);
-        Collection<SimpleTableSegment> tableSegments =
-                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables() : Collections.emptyList();
+        Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : tableSegments) {
             String originalDatabase = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalDatabase().getValue()).orElse(currentDatabaseName);
             String originalSchema = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalSchema().getValue()).orElse(currentSchemaName);

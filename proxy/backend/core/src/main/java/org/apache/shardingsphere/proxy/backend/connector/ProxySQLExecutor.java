@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -117,9 +116,7 @@ public final class ProxySQLExecutor {
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext instanceof TableContextAvailable
-                ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(defaultSchemaName)
-                : defaultSchemaName;
+        return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     
     /**
@@ -169,10 +166,9 @@ public final class ProxySQLExecutor {
     }
     
     private String getTableName(final ExecutionContext executionContext) {
-        return executionContext.getSqlStatementContext() instanceof TableContextAvailable
-                && !((TableContextAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().isEmpty()
-                        ? ((TableContextAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()
-                        : "unknown_table";
+        return executionContext.getSqlStatementContext().getTablesContext().getSimpleTables().isEmpty()
+                ? "unknown_table"
+                : executionContext.getSqlStatementContext().getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     /**

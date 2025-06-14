@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.session.query;
 import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -74,11 +73,8 @@ public final class QueryContext {
     }
     
     private Collection<String> getUsedDatabaseNames(final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
-        if (sqlStatementContext instanceof TableContextAvailable) {
-            Collection<String> result = ((TableContextAvailable) sqlStatementContext).getTablesContext().getDatabaseNames();
-            return result.isEmpty() ? getCurrentDatabaseNames(connectionContext) : result;
-        }
-        return getCurrentDatabaseNames(connectionContext);
+        Collection<String> result = sqlStatementContext.getTablesContext().getDatabaseNames();
+        return result.isEmpty() ? getCurrentDatabaseNames(connectionContext) : result;
     }
     
     private Collection<String> getCurrentDatabaseNames(final ConnectionContext connectionContext) {
