@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -45,8 +44,7 @@ public final class EncryptUpdateAssignmentTokenGenerator implements CollectionSQ
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof UpdateStatementContext
-                && containsEncryptTable(((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables());
+        return sqlStatementContext instanceof UpdateStatementContext && containsEncryptTable(sqlStatementContext.getTablesContext().getSimpleTables());
     }
     
     private boolean containsEncryptTable(final Collection<SimpleTableSegment> simpleTableSegments) {

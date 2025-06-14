@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -38,6 +40,11 @@ public final class ShowTableStatusStatementContext extends CommonSQLStatementCon
     @Override
     public ShowTableStatusStatement getSqlStatement() {
         return (ShowTableStatusStatement) super.getSqlStatement();
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return new TablesContext(Collections.emptyList());
     }
     
     @Override

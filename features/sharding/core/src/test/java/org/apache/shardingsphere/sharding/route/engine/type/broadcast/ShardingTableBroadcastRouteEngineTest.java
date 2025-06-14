@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -50,7 +49,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 class ShardingTableBroadcastRouteEngineTest {
     
@@ -132,8 +130,8 @@ class ShardingTableBroadcastRouteEngineTest {
     }
     
     private SQLStatementContext createSQLStatementContext(final Collection<String> tableNames) {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableContextAvailable) result).getTablesContext().getTableNames()).thenReturn(tableNames);
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(tableNames);
         return result;
     }
     

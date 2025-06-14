@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
@@ -39,11 +38,11 @@ import java.util.Optional;
  * Move statement context.
  */
 @Getter
-public final class MoveStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableContextAvailable, WhereAvailable, CursorAware {
-    
-    private CursorStatementContext cursorStatementContext;
+public final class MoveStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorAware {
     
     private TablesContext tablesContext;
+    
+    private CursorStatementContext cursorStatementContext;
     
     public MoveStatementContext(final DatabaseType databaseType, final MoveStatement sqlStatement) {
         super(databaseType, sqlStatement);

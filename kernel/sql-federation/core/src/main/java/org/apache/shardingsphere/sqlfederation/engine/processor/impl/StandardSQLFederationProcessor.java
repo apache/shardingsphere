@@ -30,7 +30,6 @@ import org.apache.calcite.schema.Table;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -86,9 +85,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
                 new ExecutorContext(prepareEngine, jdbcExecutor, callback, statistics, currentDatabaseName, currentSchemaName, federationContext.isPreview(), federationContext.getProcessId());
         EnumerableScanImplementor scanImplementor = new EnumerableScanImplementor(federationContext.getQueryContext(), compilerContext, executorContext);
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
-        Collection<SimpleTableSegment> simpleTables = sqlStatementContext instanceof TableContextAvailable
-                ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables()
-                : Collections.emptyList();
+        Collection<SimpleTableSegment> simpleTables = sqlStatementContext.getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : simpleTables) {
             Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, sqlStatementContext.getDatabaseType(), federationContext.getQueryContext().getSql());
             if (table instanceof SQLFederationTable) {
@@ -120,9 +117,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     
     @Override
     public void release(final String currentDatabaseName, final String currentSchemaName, final QueryContext queryContext, final SchemaPlus schemaPlus) {
-        Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext() instanceof TableContextAvailable
-                ? ((TableContextAvailable) queryContext.getSqlStatementContext()).getTablesContext().getSimpleTables()
-                : Collections.emptyList();
+        Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext().getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : simpleTables) {
             Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, queryContext.getSqlStatementContext().getDatabaseType(), queryContext.getSql());
             if (table instanceof SQLFederationTable) {
