@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -57,6 +58,6 @@ class ShardingCopySupportedCheckerTest {
         CopyStatement sqlStatement = mock(CopyStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         when(sqlStatement.getTable()).thenReturn(Optional.of(table));
-        return new TableAvailableSQLStatementContext(mock(), sqlStatement, table);
+        return new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table));
     }
 }

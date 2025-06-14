@@ -37,6 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -67,7 +68,7 @@ class ShardingCreateFunctionSupportedCheckerTest {
         routineBody.getValidStatements().add(selectValidStatementSegment);
         CreateFunctionStatement sqlStatement = mock(CreateFunctionStatement.class);
         when(sqlStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, fromTable);
+        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(fromTable));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("bar_tbl")).thenReturn(true);
@@ -85,7 +86,7 @@ class ShardingCreateFunctionSupportedCheckerTest {
         routineBody.getValidStatements().add(validStatementSegment);
         CreateFunctionStatement sqlStatement = mock(CreateFunctionStatement.class);
         when(sqlStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, fromTable);
+        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(fromTable));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingCreateFunctionSupportedChecker().check(rule, database, mock(), sqlStatementContext));
@@ -102,7 +103,7 @@ class ShardingCreateFunctionSupportedCheckerTest {
         routineBody.getValidStatements().add(validStatementSegment);
         CreateFunctionStatement sqlStatement = mock(CreateFunctionStatement.class);
         when(sqlStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, fromTable);
+        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(fromTable));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateFunctionSupportedChecker().check(rule, database, mock(), sqlStatementContext));
     }
@@ -118,7 +119,7 @@ class ShardingCreateFunctionSupportedCheckerTest {
         routineBody.getValidStatements().add(validStatementSegment);
         CreateFunctionStatement sqlStatement = mock(CreateFunctionStatement.class);
         when(sqlStatement.getRoutineBody()).thenReturn(Optional.of(routineBody));
-        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, table);
+        TableAvailableSQLStatementContext sqlStatementContext = new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("foo_tbl")).thenReturn(true);

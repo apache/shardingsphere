@@ -29,6 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -45,7 +47,7 @@ class ShardingLoadDataSupportedCheckerTest {
         LoadDataStatement sqlStatement = mock(LoadDataStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         when(sqlStatement.getTable()).thenReturn(table);
-        assertDoesNotThrow(() -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new TableAvailableSQLStatementContext(mock(), sqlStatement, table)));
+        assertDoesNotThrow(() -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table))));
     }
     
     @Test
@@ -55,6 +57,6 @@ class ShardingLoadDataSupportedCheckerTest {
         when(sqlStatement.getTable()).thenReturn(table);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new TableAvailableSQLStatementContext(mock(), sqlStatement, table)));
+                () -> new ShardingLoadDataSupportedChecker().check(rule, mock(), mock(), new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table))));
     }
 }
