@@ -22,8 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -31,7 +34,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, TableAvailable {
     
     private final SimpleTableSegment table;
     
@@ -44,5 +47,10 @@ public final class MySQLDescribeStatement extends AbstractSQLStatement implement
      */
     public Optional<ColumnSegment> getColumnWildcard() {
         return Optional.ofNullable(columnWildcard);
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getTables() {
+        return Collections.singleton(table);
     }
 }

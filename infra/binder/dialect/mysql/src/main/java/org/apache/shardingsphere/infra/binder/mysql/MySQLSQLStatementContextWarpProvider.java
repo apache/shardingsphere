@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.mysql;
 
-import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
@@ -27,35 +26,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXML
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * SQL statement extractor for MySQL.
+ * Table available SQL statement context warp provider for MySQL.
  */
-public final class MySQLSQLStatementExtractor implements DialectSQLStatementExtractor {
+public final class MySQLSQLStatementContextWarpProvider implements DialectTableAvailableSQLStatementContextWarpProvider {
+    
+    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES = Arrays.asList(
+            ShowCreateTableStatement.class, MySQLFlushStatement.class, OptimizeTableStatement.class, MySQLDescribeStatement.class, LoadDataStatement.class, LoadXMLStatement.class);
     
     @Override
-    public Collection<SimpleTableSegment> extractTables(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof ShowCreateTableStatement) {
-            return Collections.singleton(((ShowCreateTableStatement) sqlStatement).getTable());
-        }
-        if (sqlStatement instanceof MySQLFlushStatement) {
-            return ((MySQLFlushStatement) sqlStatement).getTables();
-        }
-        if (sqlStatement instanceof OptimizeTableStatement) {
-            return ((OptimizeTableStatement) sqlStatement).getTables();
-        }
-        if (sqlStatement instanceof MySQLDescribeStatement) {
-            return Collections.singletonList(((MySQLDescribeStatement) sqlStatement).getTable());
-        }
-        if (sqlStatement instanceof LoadDataStatement) {
-            return Collections.singletonList(((LoadDataStatement) sqlStatement).getTable());
-        }
-        if (sqlStatement instanceof LoadXMLStatement) {
-            return Collections.singletonList(((LoadXMLStatement) sqlStatement).getTable());
-        }
-        return Collections.emptyList();
+    public Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes() {
+        return NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES;
     }
     
     @Override
