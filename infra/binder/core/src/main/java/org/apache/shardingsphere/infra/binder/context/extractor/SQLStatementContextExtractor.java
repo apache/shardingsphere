@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateV
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -60,7 +60,8 @@ public final class SQLStatementContextExtractor {
      * @return table names
      */
     public static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
+        Collection<String> tableNames =
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         if (!tableNames.isEmpty()) {
             return tableNames;
         }
@@ -136,7 +137,7 @@ public final class SQLStatementContextExtractor {
      * @return all where segments
      */
     public static Collection<WhereSegment> getWhereSegments(final WhereAvailable whereAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
-        Map<Integer, WhereSegment> uniqueWhereSegments = new LinkedHashMap<>();
+        Map<Integer, WhereSegment> uniqueWhereSegments = new LinkedHashMap<>(whereAvailable.getWhereSegments().size() + allSubqueryContexts.size(), 1F);
         whereAvailable.getWhereSegments().forEach(each -> uniqueWhereSegments.put(each.getStartIndex() + each.getStopIndex(), each));
         allSubqueryContexts.forEach(each -> each.getWhereSegments().forEach(where -> uniqueWhereSegments.put(where.getStartIndex() + where.getStopIndex(), where)));
         return new ArrayList<>(uniqueWhereSegments.values());

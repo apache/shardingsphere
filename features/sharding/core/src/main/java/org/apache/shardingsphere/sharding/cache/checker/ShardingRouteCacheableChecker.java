@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -145,7 +145,7 @@ public final class ShardingRouteCacheableChecker {
     }
     
     private ShardingRouteCacheableCheckResult checkUpdateOrDeleteCacheable(final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
+        Collection<String> tableNames = ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames();
         if (1 != tableNames.size()) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }

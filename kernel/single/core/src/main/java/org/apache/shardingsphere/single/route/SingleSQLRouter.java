@@ -20,7 +20,7 @@ package org.apache.shardingsphere.single.route;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -77,8 +77,8 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         String logicDataSource = rule.getDataSourceNames().iterator().next();
         String actualDataSource = database.getResourceMetaData().getStorageUnits().keySet().iterator().next();
         RouteContext result = new RouteContext();
-        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
-                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
+        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableContextAvailable
+                ? ((TableContextAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
                 : Collections.emptyList();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(tableNames)));
         return result;

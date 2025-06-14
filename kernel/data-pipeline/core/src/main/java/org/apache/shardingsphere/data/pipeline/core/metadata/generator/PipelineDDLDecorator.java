@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateI
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -85,18 +85,18 @@ public final class PipelineDDLDecorator {
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext instanceof CreateTableStatementContext) {
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
-            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableContextAvailable) sqlStatementContext);
         }
         if (sqlStatementContext.getSqlStatement() instanceof CommentStatement) {
-            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableContextAvailable) sqlStatementContext);
         }
         if (sqlStatementContext instanceof CreateIndexStatementContext) {
-            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableContextAvailable) sqlStatementContext);
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
         }
         if (sqlStatementContext instanceof AlterTableStatementContext) {
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
-            appendFromTable(replaceMap, targetTableName, (TableAvailable) sqlStatementContext);
+            appendFromTable(replaceMap, targetTableName, (TableContextAvailable) sqlStatementContext);
         }
         return doDecorateActualTable(replaceMap, sql);
     }
@@ -106,10 +106,10 @@ public final class PipelineDDLDecorator {
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable) || ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
+        if (!(sqlStatementContext instanceof TableContextAvailable) || ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
             return;
         }
-        TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName();
+        TableNameSegment tableNameSegment = ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName();
         if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
             if (sqlStatementContext instanceof IndexAvailable) {
                 for (IndexSegment each : ((IndexAvailable) sqlStatementContext).getIndexes()) {
@@ -126,7 +126,7 @@ public final class PipelineDDLDecorator {
         }
     }
     
-    private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String targetTableName, final TableAvailable sqlStatementContext) {
+    private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String targetTableName, final TableContextAvailable sqlStatementContext) {
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             if (!targetTableName.equals(each.getTableName().getIdentifier().getValue())) {
                 replaceMap.put(each.getTableName(), targetTableName);
@@ -161,15 +161,15 @@ public final class PipelineDDLDecorator {
         SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, databaseType, sql);
         if (sqlStatementContext instanceof CreateTableStatementContext || sqlStatementContext.getSqlStatement() instanceof CommentStatement
                 || sqlStatementContext instanceof CreateIndexStatementContext || sqlStatementContext instanceof AlterTableStatementContext) {
-            if (((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
+            if (((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty()) {
                 return sql;
             }
-            Optional<String> sqlSchemaName = ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName();
+            Optional<String> sqlSchemaName = ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaName();
             if (sqlSchemaName.isPresent() && sqlSchemaName.get().equals(schemaName)) {
                 return sql;
             }
             Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
-            TableNameSegment tableNameSegment = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName();
+            TableNameSegment tableNameSegment = ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName();
             replaceMap.put(tableNameSegment, schemaName + "." + tableNameSegment.getIdentifier().getValue());
             return doDecorateActualTable(replaceMap, sql);
         }

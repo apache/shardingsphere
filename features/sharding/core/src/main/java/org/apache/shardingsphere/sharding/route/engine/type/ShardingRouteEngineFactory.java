@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -120,8 +120,8 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable) {
-            TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
+        if (sqlStatementContext instanceof TableContextAvailable) {
+            TableContextAvailable tableSegmentsAvailable = (TableContextAvailable) sqlStatementContext;
             return 1 == tableSegmentsAvailable.getTablesContext().getSimpleTables().size()
                     && !"*".equals(tableSegmentsAvailable.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
         }
@@ -131,7 +131,8 @@ public final class ShardingRouteEngineFactory {
     private static ShardingRouteEngine getDQLRouteEngine(final ShardingRule rule, final SQLStatementContext sqlStatementContext,
                                                          final QueryContext queryContext, final ShardingConditions shardingConditions, final Collection<String> logicTableNames,
                                                          final ConfigurationProperties props) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
+        Collection<String> tableNames =
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRouteEngine(sqlStatementContext, tableNames, queryContext.getConnectionContext());
         }

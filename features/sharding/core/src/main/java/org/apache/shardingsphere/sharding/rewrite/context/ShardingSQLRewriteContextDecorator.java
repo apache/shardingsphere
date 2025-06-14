@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -67,10 +67,10 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     }
     
     private boolean containsShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
+        if (!(sqlStatementContext instanceof TableContextAvailable)) {
             return false;
         }
-        for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
+        for (SimpleTableSegment each : ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
             if (rule.isShardingTable(each.getTableName().getIdentifier().getValue())) {
                 return true;
             }

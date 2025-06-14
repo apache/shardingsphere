@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -30,7 +30,7 @@ import java.util.Collection;
  * Table available SQL statement context.
  */
 @Getter
-public final class TableAvailableSQLStatementContext extends CommonSQLStatementContext implements TableAvailable {
+public final class TableAvailableSQLStatementContext extends CommonSQLStatementContext implements TableContextAvailable {
     
     private final TablesContext tablesContext;
     

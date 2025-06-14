@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -75,10 +75,10 @@ class ShardingSphereResultSetTest {
     }
     
     private SQLStatementContext createSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
+        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class));
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
-        when(((TableAvailable) result).getTablesContext()).thenReturn(tablesContext);
+        when(((TableContextAvailable) result).getTablesContext()).thenReturn(tablesContext);
         return result;
     }
     

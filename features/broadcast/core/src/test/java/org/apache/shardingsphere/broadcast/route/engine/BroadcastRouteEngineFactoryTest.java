@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -100,8 +100,8 @@ class BroadcastRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceWithDALStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastTableBroadcastRouteEngine.class));
@@ -109,8 +109,8 @@ class BroadcastRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceWithDCLStatementWithBroadcastTables() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastTableBroadcastRouteEngine.class));
@@ -118,8 +118,8 @@ class BroadcastRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceWithSelectStatementAndIsAllBroadcastTables() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastUnicastRouteEngine.class));
@@ -127,8 +127,8 @@ class BroadcastRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceWithUpdateStatementAndIsAllBroadcastTables() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class));
+        when(((TableContextAvailable) sqlStatementContext).getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastDatabaseBroadcastRouteEngine.class));

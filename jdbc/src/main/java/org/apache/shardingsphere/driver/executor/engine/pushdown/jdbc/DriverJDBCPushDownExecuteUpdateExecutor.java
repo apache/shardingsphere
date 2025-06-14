@@ -24,7 +24,7 @@ import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplay
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionalExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -144,12 +144,12 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
+        if (!(sqlStatementContext instanceof TableContextAvailable)) {
             return false;
         }
         for (ShardingSphereRule each : rules) {
             Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
-            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
                 return true;
             }
         }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
@@ -145,7 +145,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(),
-                sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList(), database);
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(database.getName()));
         ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(database.getName()));
     }
@@ -329,8 +329,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     }
     
     private boolean isNeedAccumulate() {
-        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
-                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
+        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableContextAvailable
+                ? ((TableContextAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
                 : Collections.emptyList();
         for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
             if (each.isNeedAccumulate(tableNames)) {

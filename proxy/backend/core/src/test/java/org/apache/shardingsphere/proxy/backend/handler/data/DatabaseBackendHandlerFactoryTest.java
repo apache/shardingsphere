@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -101,10 +101,10 @@ class DatabaseBackendHandlerFactoryTest {
     }
     
     private SQLStatementContext mockSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
         when(result.getSqlStatement()).thenReturn(mock(SQLStatement.class));
-        when(((TableAvailable) result).getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        when(((TableAvailable) result).getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(((TableContextAvailable) result).getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
+        when(((TableContextAvailable) result).getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
     }
     

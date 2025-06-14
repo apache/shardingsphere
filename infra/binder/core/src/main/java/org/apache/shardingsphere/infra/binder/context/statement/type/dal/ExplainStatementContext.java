@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -36,7 +36,7 @@ import java.util.List;
  * Explain statement context.
  */
 @Getter
-public final class ExplainStatementContext extends CommonSQLStatementContext implements TableAvailable {
+public final class ExplainStatementContext extends CommonSQLStatementContext implements TableContextAvailable {
     
     private final TablesContext tablesContext;
     

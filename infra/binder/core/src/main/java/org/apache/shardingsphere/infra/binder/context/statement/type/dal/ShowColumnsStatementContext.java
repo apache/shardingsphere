@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
@@ -33,7 +33,7 @@ import java.util.LinkedList;
  * Show columns statement context.
  */
 @Getter
-public final class ShowColumnsStatementContext extends CommonSQLStatementContext implements TableAvailable, RemoveAvailable {
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext implements TableContextAvailable, RemoveAvailable {
     
     private final TablesContext tablesContext;
     
