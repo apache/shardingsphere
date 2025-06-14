@@ -140,7 +140,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         if (allQueryUseSQLFederation) {
             return true;
         }
-        Collection<String> databaseNames = sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getDatabaseNames() : Collections.emptyList();
+        Collection<String> databaseNames =
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getDatabaseNames() : Collections.emptyList();
         if (databaseNames.size() > 1) {
             return true;
         }
@@ -222,9 +223,10 @@ public final class SQLFederationEngine implements AutoCloseable {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
         // TODO set default schema according to search path result
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-            return sqlStatementContext instanceof TableContextAvailable && ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
-                    ? Collections.singletonList(currentDatabaseName)
-                    : Arrays.asList(currentDatabaseName, currentSchemaName);
+            return sqlStatementContext instanceof TableContextAvailable
+                    && ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
+                            ? Collections.singletonList(currentDatabaseName)
+                            : Arrays.asList(currentDatabaseName, currentSchemaName);
         }
         return Collections.singletonList(currentDatabaseName);
     }

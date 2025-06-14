@@ -60,7 +60,8 @@ public final class SQLStatementContextExtractor {
      * @return table names
      */
     public static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
+        Collection<String> tableNames =
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         if (!tableNames.isEmpty()) {
             return tableNames;
         }

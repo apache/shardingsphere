@@ -131,7 +131,8 @@ public final class ShardingRouteEngineFactory {
     private static ShardingRouteEngine getDQLRouteEngine(final ShardingRule rule, final SQLStatementContext sqlStatementContext,
                                                          final QueryContext queryContext, final ShardingConditions shardingConditions, final Collection<String> logicTableNames,
                                                          final ConfigurationProperties props) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
+        Collection<String> tableNames =
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRouteEngine(sqlStatementContext, tableNames, queryContext.getConnectionContext());
         }

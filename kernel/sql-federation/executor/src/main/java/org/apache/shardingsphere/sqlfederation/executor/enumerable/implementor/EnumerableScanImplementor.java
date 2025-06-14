@@ -100,7 +100,8 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     }
     
     private boolean containsSystemSchema(final SQLStatementContext sqlStatementContext) {
-        Collection<String> usedSchemaNames = sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList();
+        Collection<String> usedSchemaNames =
+                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList();
         Collection<String> systemSchemas = new SystemDatabase(sqlStatementContext.getDatabaseType()).getSystemSchemas();
         for (String each : usedSchemaNames) {
             if (systemSchemas.contains(each)) {

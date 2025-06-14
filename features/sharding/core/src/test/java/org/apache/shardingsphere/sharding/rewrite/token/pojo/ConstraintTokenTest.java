@@ -39,7 +39,8 @@ class ConstraintTokenTest {
     @Test
     void assertToString() {
         assertThat(new ConstraintToken(0, 1, new IdentifierValue("uc"),
-                mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS)), mock(ShardingRule.class)).toString(getRouteUnit()), is("uc"));
+                mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS)), mock(ShardingRule.class)).toString(getRouteUnit()),
+                is("uc"));
     }
     
     @Test
