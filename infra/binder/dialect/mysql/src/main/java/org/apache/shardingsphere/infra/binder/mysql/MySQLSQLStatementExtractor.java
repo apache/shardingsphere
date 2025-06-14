@@ -20,9 +20,10 @@ package org.apache.shardingsphere.infra.binder.mysql;
 import org.apache.shardingsphere.infra.binder.context.extractor.DialectSQLStatementExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 
 import java.util.Collection;
@@ -46,6 +47,9 @@ public final class MySQLSQLStatementExtractor implements DialectSQLStatementExtr
         }
         if (sqlStatement instanceof MySQLDescribeStatement) {
             return Collections.singletonList(((MySQLDescribeStatement) sqlStatement).getTable());
+        }
+        if (sqlStatement instanceof LoadDataStatement) {
+            return Collections.singletonList(((LoadDataStatement) sqlStatement).getTable());
         }
         return Collections.emptyList();
     }
