@@ -38,5 +38,10 @@
             <artifactId>shardingsphere-parser-sql-statement-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-binder-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
