@@ -74,11 +74,11 @@ class TCLBackendHandlerFactoryTest {
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext()).thenReturn(new TransactionConnectionContext());
-        SQLStatementContext context = mock(SQLStatementContext.class);
-        when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(context, null, connectionSession);
+        ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession);
         assertThat(proxyBackendHandler, instanceOf(TCLBackendHandler.class));
         TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.COMMIT));
