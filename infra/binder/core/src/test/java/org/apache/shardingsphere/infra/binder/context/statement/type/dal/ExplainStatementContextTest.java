@@ -17,28 +17,52 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(SQLStatementContextFactory.class)
 class ExplainStatementContextTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @Mock
+    private ShardingSphereMetaData metaData;
+    
+    @Mock
+    private SQLStatement explainableSQLStatement;
+    
+    @Mock
+    private SQLStatementContext explainableSQLStatementContext;
+    
+    @BeforeEach
+    void setUp() {
+        when(SQLStatementContextFactory.newInstance(metaData, databaseType, explainableSQLStatement, Collections.emptyList(), "foo_db")).thenReturn(explainableSQLStatementContext);
+    }
     
     @Test
     void assertNewInstance() {
-        ExplainStatement explainStatement = mock(ExplainStatement.class);
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(explainStatement.getExplainableSQLStatement()).thenReturn(sqlStatement);
-        ExplainStatementContext actual = new ExplainStatementContext(mock(ShardingSphereMetaData.class), mock(), explainStatement, Collections.emptyList(), "foo_db");
+        ExplainStatement explainStatement = new ExplainStatement(explainableSQLStatement);
+        ExplainStatementContext actual = new ExplainStatementContext(metaData, databaseType, explainStatement, Collections.emptyList(), "foo_db");
         assertThat(actual.getSqlStatement(), is(explainStatement));
-        assertThat(actual.getSqlStatement().getExplainableSQLStatement(), is(sqlStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
+        assertThat(actual.getExplainableSQLStatementContext(), is(explainableSQLStatementContext));
     }
 }
