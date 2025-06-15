@@ -31,7 +31,7 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Getter
-public class CommonSQLStatementContext implements SQLStatementContext {
+public final class CommonSQLStatementContext implements SQLStatementContext {
     
     private final DatabaseType databaseType;
     
