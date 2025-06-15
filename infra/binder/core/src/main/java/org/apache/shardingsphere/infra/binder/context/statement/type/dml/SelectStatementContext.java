@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -89,7 +89,11 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class SelectStatementContext extends CommonSQLStatementContext implements WhereAvailable, ParameterAware, WithAvailable {
+public final class SelectStatementContext implements SQLStatementContext, WhereAvailable, ParameterAware, WithAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final SelectStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -117,7 +121,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     public SelectStatementContext(final DatabaseType databaseType, final SelectStatement sqlStatement,
                                   final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
@@ -126,7 +131,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
         tablesContext = new TablesContext(tableSegments, subqueryContexts);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine(databaseType).createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(databaseType).createProjectionsContext(getSqlStatement().getProjections(), groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(databaseType).createProjectionsContext(sqlStatement.getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine(databaseType).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
         containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), currentDatabaseName);
     }
@@ -142,7 +147,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
         TableExtractor tableExtractor = new TableExtractor();
         appendInheritedSimpleTables(inheritedTables, tableExtractor);
-        tableExtractor.extractTablesFromSelect(getSqlStatement());
+        tableExtractor.extractTablesFromSelect(sqlStatement);
         Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
         for (TableSegment each : tableExtractor.getTableContext()) {
             if (each instanceof SubqueryTableSegment) {
@@ -192,7 +197,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private Map<Integer, SelectStatementContext> createSubqueryContexts(final DatabaseType databaseType, final List<Object> params, final ShardingSphereMetaData metaData,
                                                                         final String currentDatabaseName, final Collection<TableSegment> tableSegments) {
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(getSqlStatement(), false);
+        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(sqlStatement, false);
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
         for (SubquerySegment each : subquerySegments) {
             SelectStatementContext subqueryContext = new SelectStatementContext(databaseType, each.getSelect(), params, metaData, currentDatabaseName, tableSegments);
@@ -208,7 +213,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether contains join query or not
      */
     public boolean isContainsJoinQuery() {
-        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof JoinTableSegment;
+        return sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof JoinTableSegment;
     }
     
     /**
@@ -226,7 +231,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether contains having or not
      */
     public boolean isContainsHaving() {
-        return getSqlStatement().getHaving().isPresent();
+        return sqlStatement.getHaving().isPresent();
     }
     
     /**
@@ -235,7 +240,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether contains combine or not
      */
     public boolean isContainsCombine() {
-        return getSqlStatement().getCombine().isPresent();
+        return sqlStatement.getCombine().isPresent();
     }
     
     /**
@@ -388,7 +393,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return getSqlStatement().getFrom().isPresent() && getSqlStatement().getFrom().get() instanceof SubqueryTableSegment || getSqlStatement().getWith().isPresent();
+        return sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SubqueryTableSegment || sqlStatement.getWith().isPresent();
     }
     
     /**
@@ -398,11 +403,6 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
      */
     public boolean containsDerivedProjections() {
         return containsEnhancedTable && !projectionsContext.getExpandProjections().isEmpty();
-    }
-    
-    @Override
-    public SelectStatement getSqlStatement() {
-        return (SelectStatement) super.getSqlStatement();
     }
     
     @Override
@@ -422,11 +422,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public void setUpParameters(final List<Object> params) {
-        paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);
+        paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
     }
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWith();
+        return sqlStatement.getWith();
     }
 }

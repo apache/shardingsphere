@@ -50,7 +50,7 @@ public final class ShowTableStatusStatementContext implements SQLStatementContex
     @Override
     public Collection<SQLSegment> getRemoveSegments() {
         Collection<SQLSegment> result = new LinkedList<>();
-        getSqlStatement().getFromDatabase().ifPresent(result::add);
+        sqlStatement.getFromDatabase().ifPresent(result::add);
         return result;
     }
 }
