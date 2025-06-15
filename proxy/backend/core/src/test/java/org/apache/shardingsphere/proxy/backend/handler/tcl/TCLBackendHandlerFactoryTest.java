@@ -113,8 +113,9 @@ class TCLBackendHandlerFactoryTest {
     
     @Test
     void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
-        SQLStatementContext context = mock(SQLStatementContext.class);
-        when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         DatabaseConnectorFactory mockFactory = mock(DatabaseConnectorFactory.class);
         when(DatabaseConnectorFactory.getInstance()).thenReturn(mockFactory);
         when(mockFactory.newInstance(any(QueryContext.class), nullable(ProxyDatabaseConnectionManager.class), anyBoolean())).thenReturn(mock(DatabaseConnector.class));
@@ -123,7 +124,7 @@ class TCLBackendHandlerFactoryTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        assertThat(TCLBackendHandlerFactory.newInstance(context, null, connectionSession), instanceOf(DatabaseConnector.class));
+        assertThat(TCLBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession), instanceOf(DatabaseConnector.class));
     }
     
     private ConnectionContext mockConnectionContext() {

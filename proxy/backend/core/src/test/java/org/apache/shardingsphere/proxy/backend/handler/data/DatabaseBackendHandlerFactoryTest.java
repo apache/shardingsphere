@@ -58,8 +58,9 @@ class DatabaseBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
         String sql = "DESC tbl";
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                 mock(ConnectionSession.class), false);
@@ -75,8 +76,9 @@ class DatabaseBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseBackendHandler actual =
                 DatabaseBackendHandlerFactory.newInstance(
                         new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
