@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -54,10 +53,10 @@ class ShardingCopySupportedCheckerTest {
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingCopySupportedChecker().check(rule, mock(), mock(), createSQLStatementContext()));
     }
     
-    private TableAvailableSQLStatementContext createSQLStatementContext() {
+    private CommonSQLStatementContext createSQLStatementContext() {
         CopyStatement sqlStatement = mock(CopyStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         when(sqlStatement.getTable()).thenReturn(Optional.of(table));
-        return new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table));
+        return new CommonSQLStatementContext(mock(), sqlStatement);
     }
 }

@@ -113,7 +113,7 @@ public final class SQLStatementContextFactory {
                 DialectTableAvailableSQLStatementContextWarpProvider.class, databaseType);
         if (sqlStatement instanceof TableAvailable && dialectTableAvailableSQLStatementContextWarpProvider
                 .map(optional -> dialectTableAvailableSQLStatementContextWarpProvider.get().getNeedToWarpTableAvailableSQLStatementContextTypes().contains(sqlStatement.getClass())).orElse(false)) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((TableAvailable) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, databaseType, (DMLStatement) sqlStatement, params, currentDatabaseName);
@@ -162,10 +162,10 @@ public final class SQLStatementContextFactory {
             return new AlterTableStatementContext(databaseType, (AlterTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof RenameTableStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((RenameTableStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof DropTableStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((DropTableStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CreateIndexStatement) {
             return new CreateIndexStatementContext(databaseType, (CreateIndexStatement) sqlStatement);
@@ -177,10 +177,10 @@ public final class SQLStatementContextFactory {
             return new DropIndexStatementContext(databaseType, (DropIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof TruncateStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((TruncateStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CreateFunctionStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((CreateFunctionStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CreateProcedureStatement) {
             return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
@@ -192,14 +192,13 @@ public final class SQLStatementContextFactory {
             return new AlterViewStatementContext(metaData, databaseType, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof DropViewStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((DropViewStatement) sqlStatement).getViews());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof PrepareStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((PrepareStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CommentStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement,
-                    null == ((CommentStatement) sqlStatement).getTable() ? Collections.emptyList() : Collections.singletonList(((CommentStatement) sqlStatement).getTable()));
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CursorStatement) {
             return new CursorStatementContext(metaData, databaseType, params, (CursorStatement) sqlStatement, currentDatabaseName);
@@ -218,10 +217,10 @@ public final class SQLStatementContextFactory {
     
     private static SQLStatementContext getDCLStatementContext(final DatabaseType databaseType, final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((GrantStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof RevokeStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((RevokeStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }
@@ -244,7 +243,7 @@ public final class SQLStatementContextFactory {
             return new ShowIndexStatementContext(databaseType, (ShowIndexStatement) sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new TableAvailableSQLStatementContext(databaseType, sqlStatement, ((AnalyzeTableStatement) sqlStatement).getTables());
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         return new UnknownSQLStatementContext(databaseType, sqlStatement);
     }

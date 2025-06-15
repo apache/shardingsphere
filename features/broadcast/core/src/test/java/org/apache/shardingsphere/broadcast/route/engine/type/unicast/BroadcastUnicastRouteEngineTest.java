@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.broadcast.route.engine.type.unicast;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
@@ -77,7 +77,7 @@ class BroadcastUnicastRouteEngineTest {
     
     @Test
     void assertRouteToFirstDataSourceWithDropViewStatementContext() {
-        SQLStatementContext sqlStatementContext = mock(TableAvailableSQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropViewStatement.class));
         assertRoute(sqlStatementContext, is("ds_0"));
     }

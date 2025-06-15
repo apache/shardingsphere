@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTab
 /**
  * Drop table supported checker for sharding.
  */
-public final class ShardingDropTableSupportedChecker implements SupportedSQLChecker<TableAvailableSQLStatementContext, ShardingRule> {
+public final class ShardingDropTableSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
@@ -39,7 +38,7 @@ public final class ShardingDropTableSupportedChecker implements SupportedSQLChec
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final TableAvailableSQLStatementContext sqlStatementContext) {
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         DropTableStatement dropTableStatement = (DropTableStatement) sqlStatementContext.getSqlStatement();
         if (!dropTableStatement.isIfExists()) {
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElse(currentSchema);

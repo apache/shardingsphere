@@ -23,8 +23,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -208,7 +208,7 @@ class EncryptShowCreateTableMergedResultTest {
     }
     
     private EncryptShowCreateTableMergedResult createMergedResult(final MergedResult mergedResult, final String tableName, final EncryptRule rule) {
-        TableAvailableSQLStatementContext sqlStatementContext = mock(TableAvailableSQLStatementContext.class, RETURNS_DEEP_STUBS);
+        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(1, 4, new IdentifierValue(tableName)))));
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -32,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDat
  * Load data supported checker for sharding.
  */
 @HighFrequencyInvocation
-public final class ShardingLoadDataSupportedChecker implements SupportedSQLChecker<TableAvailableSQLStatementContext, ShardingRule> {
+public final class ShardingLoadDataSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
@@ -40,7 +39,7 @@ public final class ShardingLoadDataSupportedChecker implements SupportedSQLCheck
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final TableAvailableSQLStatementContext sqlStatementContext) {
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         String tableName = ((LoadDataStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
         ShardingSpherePreconditions.checkState(!rule.isShardingTable(tableName), () -> new UnsupportedShardingOperationException("LOAD DATA", tableName));
     }

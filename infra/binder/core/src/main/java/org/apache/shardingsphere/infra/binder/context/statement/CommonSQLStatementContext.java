@@ -19,17 +19,29 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
+
+import java.util.Collections;
 
 /**
  * Common SQL statement context.
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class CommonSQLStatementContext implements SQLStatementContext {
+public class CommonSQLStatementContext implements SQLStatementContext {
     
     private final DatabaseType databaseType;
     
     private final SQLStatement sqlStatement;
+    
+    private final TablesContext tablesContext;
+    
+    public CommonSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
+        tablesContext = new TablesContext(sqlStatement instanceof TableAvailable ? ((TableAvailable) sqlStatement).getTables() : Collections.emptyList());
+    }
 }
