@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -41,7 +41,11 @@ import java.util.Optional;
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext extends CommonSQLStatementContext implements WhereAvailable, WithAvailable {
+public final class UpdateStatementContext implements SQLStatementContext, WhereAvailable, WithAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final UpdateStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -52,7 +56,8 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
     public UpdateStatementContext(final DatabaseType databaseType, final UpdateStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
@@ -67,13 +72,8 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromUpdate(getSqlStatement());
+        tableExtractor.extractTablesFromUpdate(sqlStatement);
         return tableExtractor.getRewriteTables();
-    }
-    
-    @Override
-    public UpdateStatement getSqlStatement() {
-        return (UpdateStatement) super.getSqlStatement();
     }
     
     @Override
@@ -88,6 +88,6 @@ public final class UpdateStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWith();
+        return sqlStatement.getWith();
     }
 }

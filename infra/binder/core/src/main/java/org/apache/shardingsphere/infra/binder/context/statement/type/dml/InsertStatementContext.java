@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.Inse
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -67,20 +67,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Insert SQL statement context.
  */
-public final class InsertStatementContext extends CommonSQLStatementContext implements ParameterAware, WhereAvailable, WithAvailable {
+public final class InsertStatementContext implements SQLStatementContext, ParameterAware, WhereAvailable, WithAvailable {
     
     private final ShardingSphereMetaData metaData;
     
+    @Getter
     private final DatabaseType databaseType;
+    
+    @Getter
+    private final InsertStatement sqlStatement;
+    
+    @Getter
+    private final TablesContext tablesContext;
     
     private final String currentDatabaseName;
     
     private final Map<String, Integer> insertColumnNamesAndIndexes;
     
     private final List<List<ExpressionSegment>> valueExpressions;
-    
-    @Getter
-    private final TablesContext tablesContext;
     
     @Getter
     private final List<String> columnNames;
@@ -98,9 +102,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     public InsertStatementContext(final DatabaseType databaseType, final InsertStatement sqlStatement,
                                   final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        super(databaseType, sqlStatement);
         this.metaData = metaData;
         this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         this.currentDatabaseName = currentDatabaseName;
         valueExpressions = getAllValueExpressions(sqlStatement);
         AtomicInteger parametersOffset = new AtomicInteger(0);
@@ -141,10 +145,10 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private Optional<InsertSelectContext> getInsertSelectContext(final List<Object> params, final AtomicInteger paramsOffset,
                                                                  final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        if (!getSqlStatement().getInsertSelect().isPresent()) {
+        if (!sqlStatement.getInsertSelect().isPresent()) {
             return Optional.empty();
         }
-        SubquerySegment insertSelectSegment = getSqlStatement().getInsertSelect().get();
+        SubquerySegment insertSelectSegment = sqlStatement.getInsertSelect().get();
         SelectStatementContext selectStatementContext = new SelectStatementContext(databaseType, insertSelectSegment.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
         selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
         setCombineSelectSubqueryType(selectStatementContext);
@@ -173,7 +177,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     }
     
     private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> params, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = getSqlStatement().getOnDuplicateKeyColumns();
+        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.getOnDuplicateKeyColumns();
         if (!onDuplicateKeyColumnsSegment.isPresent()) {
             return Optional.empty();
         }
@@ -185,7 +189,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(getSqlStatement());
+        tableExtractor.extractTablesFromInsert(sqlStatement);
         return tableExtractor.getRewriteTables();
     }
     
@@ -228,6 +232,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      *
      * @return on duplicate key update parameters
      */
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public List<Object> getOnDuplicateKeyUpdateParameters() {
         return null == onDuplicateKeyUpdateValueContext ? new ArrayList<>() : onDuplicateKeyUpdateValueContext.getParameters();
     }
@@ -247,7 +252,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      * @return contains insert columns or not
      */
     public boolean containsInsertColumns() {
-        InsertStatement insertStatement = getSqlStatement();
+        InsertStatement insertStatement = sqlStatement;
         return !insertStatement.getColumns().isEmpty() || insertStatement.getSetAssignment().isPresent();
     }
     
@@ -257,7 +262,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      * @return value list count
      */
     public int getValueListCount() {
-        InsertStatement insertStatement = getSqlStatement();
+        InsertStatement insertStatement = sqlStatement;
         return insertStatement.getSetAssignment().isPresent() ? 1 : insertStatement.getValues().size();
     }
     
@@ -267,7 +272,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        return getSqlStatement().getSetAssignment().map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(getSqlStatement().getColumns()));
+        return sqlStatement.getSetAssignment().map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(sqlStatement.getColumns()));
     }
     
     private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
@@ -309,18 +314,13 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public InsertStatement getSqlStatement() {
-        return (InsertStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public void setUpParameters(final List<Object> params) {
         AtomicInteger parametersOffset = new AtomicInteger(0);
         insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
         insertSelectContext = getInsertSelectContext(params, parametersOffset, metaData, currentDatabaseName).orElse(null);
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
-        generatedKeyContext = new GeneratedKeyContextEngine(getSqlStatement(), schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
+        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
     }
     
     @Override
@@ -340,6 +340,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWith();
+        return sqlStatement.getWith();
     }
 }

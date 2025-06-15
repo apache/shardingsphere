@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -43,7 +43,11 @@ import java.util.Optional;
  * Delete statement context.
  */
 @Getter
-public final class DeleteStatementContext extends CommonSQLStatementContext implements WhereAvailable, WithAvailable {
+public final class DeleteStatementContext implements SQLStatementContext, WhereAvailable, WithAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final DeleteStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -54,7 +58,8 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
     public DeleteStatementContext(final DatabaseType databaseType, final DeleteStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
@@ -69,7 +74,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromDelete(getSqlStatement());
+        tableExtractor.extractTablesFromDelete(sqlStatement);
         return filterAliasDeleteTable(tableExtractor.getRewriteTables());
     }
     
@@ -94,11 +99,6 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     }
     
     @Override
-    public DeleteStatement getSqlStatement() {
-        return (DeleteStatement) super.getSqlStatement();
-    }
-    
-    @Override
     public Collection<WhereSegment> getWhereSegments() {
         return whereSegments;
     }
@@ -115,6 +115,6 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Optional<WithSegment> getWith() {
-        return getSqlStatement().getWith();
+        return sqlStatement.getWith();
     }
 }
