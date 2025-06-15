@@ -21,7 +21,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
-import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -99,7 +99,7 @@ class PostgreSQLComBindExecutorTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(
-                "", new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+                "", new CommonSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
@@ -128,7 +128,7 @@ class PostgreSQLComBindExecutorTest {
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
-                new UnknownSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(),
+                new CommonSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(),
                 Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4), Arrays.asList(1, 0));
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         when(bindPacket.getStatementId()).thenReturn(statementId);
