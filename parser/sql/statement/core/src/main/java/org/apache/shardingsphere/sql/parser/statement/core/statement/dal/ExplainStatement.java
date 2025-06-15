@@ -19,15 +19,28 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
+
+import java.util.Collection;
 
 /**
  * Explain statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExplainStatement extends AbstractSQLStatement implements DALStatement {
+public final class ExplainStatement extends AbstractSQLStatement implements DALStatement, TableAvailable {
     
     private final SQLStatement explainableSQLStatement;
+    
+    @Override
+    public Collection<SimpleTableSegment> getTables() {
+        TableExtractor extractor = new TableExtractor();
+        // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
+        extractor.extractTablesFromSQLStatement(explainableSQLStatement);
+        return extractor.getRewriteTables();
+    }
 }

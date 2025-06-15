@@ -19,44 +19,33 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Explain statement context.
  */
 @Getter
-public final class ExplainStatementContext extends CommonSQLStatementContext {
+public final class ExplainStatementContext implements SQLStatementContext {
+    
+    private final DatabaseType databaseType;
+    
+    private final ExplainStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     private final SQLStatementContext explainableSQLStatementContext;
     
-    public ExplainStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final ExplainStatement sqlStatement, final List<Object> params,
-                                   final String currentDatabaseName) {
-        super(databaseType, sqlStatement);
-        tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
+    public ExplainStatementContext(final ShardingSphereMetaData metaData,
+                                   final DatabaseType databaseType, final ExplainStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
+        tablesContext = new TablesContext(sqlStatement.getTables());
         explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
-    }
-    
-    private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
-        TableExtractor extractor = new TableExtractor();
-        // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
-        extractor.extractTablesFromSQLStatement(sqlStatement.getExplainableSQLStatement());
-        return extractor.getRewriteTables();
-    }
-    
-    @Override
-    public ExplainStatement getSqlStatement() {
-        return (ExplainStatement) super.getSqlStatement();
     }
 }
