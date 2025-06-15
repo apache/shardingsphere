@@ -41,20 +41,20 @@ public final class ExplainStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExplainStatement actual, final ExplainStatementTestCase expected) {
         if (null != expected.getSelectClause()) {
-            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getSelectClause());
+            assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getSelectClause());
         } else if (null != expected.getUpdateClause()) {
-            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getUpdateClause());
+            assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getUpdateClause());
         } else if (null != expected.getInsertClause()) {
-            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getInsertClause());
+            assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getInsertClause());
         } else if (null != expected.getDeleteClause()) {
-            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getDeleteClause());
+            assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getDeleteClause());
         } else if (null != expected.getCreateTableAsSelectClause()) {
-            assertNotNull(actual.getSqlStatement(), assertContext.getText("Actual statement should exist."));
-            SQLStatementAssert.assertIs(assertContext, actual.getSqlStatement(), expected.getCreateTableAsSelectClause());
+            assertNotNull(actual.getExplainableSQLStatement(), assertContext.getText("Actual statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, actual.getExplainableSQLStatement(), expected.getCreateTableAsSelectClause());
         }
     }
 }

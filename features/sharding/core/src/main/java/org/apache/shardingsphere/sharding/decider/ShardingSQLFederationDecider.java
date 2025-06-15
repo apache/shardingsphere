@@ -49,7 +49,8 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         } else if (sqlStatementContext instanceof ExplainStatementContext) {
             ExplainStatementContext explainStatementContext = (ExplainStatementContext) sqlStatementContext;
             ShardingSpherePreconditions.checkState(explainStatementContext.getSqlStatementContext() instanceof SelectStatementContext,
-                    () -> new UnsupportedSQLOperationException(String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getSqlStatement())));
+                    () -> new UnsupportedSQLOperationException(
+                            String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getExplainableSQLStatement())));
             return decide0((SelectStatementContext) explainStatementContext.getSqlStatementContext(), database, rule, includedDataNodes);
         }
         throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement()));

@@ -45,13 +45,13 @@ public final class ExplainStatementContext extends CommonSQLStatementContext {
                                    final String currentDatabaseName) {
         super(databaseType, sqlStatement);
         tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
-        sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getSqlStatement(), params, currentDatabaseName);
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
-        extractor.extractTablesFromSQLStatement(sqlStatement.getSqlStatement());
+        extractor.extractTablesFromSQLStatement(sqlStatement.getExplainableSQLStatement());
         return extractor.getRewriteTables();
     }
     

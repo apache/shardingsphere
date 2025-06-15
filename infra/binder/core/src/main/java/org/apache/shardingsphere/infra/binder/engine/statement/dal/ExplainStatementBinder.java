@@ -32,10 +32,10 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
     
     @Override
     public ExplainStatement bind(final ExplainStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        SQLStatement boundSQLStatement = sqlStatement.getSqlStatement() instanceof DMLStatement
+        SQLStatement boundSQLStatement = sqlStatement.getExplainableSQLStatement() instanceof DMLStatement
                 ? new DMLStatementBindEngine(binderContext.getMetaData(),
-                        binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType()).bind((DMLStatement) sqlStatement.getSqlStatement())
-                : sqlStatement.getSqlStatement();
+                        binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType()).bind((DMLStatement) sqlStatement.getExplainableSQLStatement())
+                : sqlStatement.getExplainableSQLStatement();
         return copy(sqlStatement, boundSQLStatement);
     }
     
