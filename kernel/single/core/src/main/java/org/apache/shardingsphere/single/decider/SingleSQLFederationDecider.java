@@ -50,10 +50,10 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
             return decide0((SelectStatementContext) sqlStatementContext, database, rule, includedDataNodes);
         } else if (sqlStatementContext instanceof ExplainStatementContext) {
             ExplainStatementContext explainStatementContext = (ExplainStatementContext) sqlStatementContext;
-            ShardingSpherePreconditions.checkState(explainStatementContext.getSqlStatementContext() instanceof SelectStatementContext,
+            ShardingSpherePreconditions.checkState(explainStatementContext.getExplainableSQLStatementContext() instanceof SelectStatementContext,
                     () -> new UnsupportedSQLOperationException(
                             String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getExplainableSQLStatement())));
-            return decide0((SelectStatementContext) explainStatementContext.getSqlStatementContext(), database, rule, includedDataNodes);
+            return decide0((SelectStatementContext) explainStatementContext.getExplainableSQLStatementContext(), database, rule, includedDataNodes);
         }
         throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement()));
     }

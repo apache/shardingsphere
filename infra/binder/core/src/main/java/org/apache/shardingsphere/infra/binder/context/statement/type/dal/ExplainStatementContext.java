@@ -39,13 +39,13 @@ public final class ExplainStatementContext extends CommonSQLStatementContext {
     
     private final TablesContext tablesContext;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext explainableSQLStatementContext;
     
     public ExplainStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final ExplainStatement sqlStatement, final List<Object> params,
                                    final String currentDatabaseName) {
         super(databaseType, sqlStatement);
         tablesContext = new TablesContext(extractTablesFromExplain(sqlStatement));
-        sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
+        explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
     }
     
     private Collection<SimpleTableSegment> extractTablesFromExplain(final ExplainStatement sqlStatement) {
