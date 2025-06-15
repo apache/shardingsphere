@@ -82,6 +82,7 @@ class SQLLoggerTest {
         appenderList.clear();
     }
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     private Collection<ExecutionUnit> prepareExecutionUnits(final Collection<String> dataSourceNames) {
         return dataSourceNames.stream().map(each -> new ExecutionUnit(each, new SQLUnit(SQL, new ArrayList<>()))).collect(Collectors.toList());
     }
