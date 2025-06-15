@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -39,12 +39,17 @@ import java.util.stream.Collectors;
  * Create table statement context.
  */
 @Getter
-public final class CreateTableStatementContext extends CommonSQLStatementContext implements IndexAvailable, ConstraintAvailable {
+public final class CreateTableStatementContext implements SQLStatementContext, IndexAvailable, ConstraintAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final CreateTableStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     public CreateTableStatementContext(final DatabaseType databaseType, final CreateTableStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getTables(sqlStatement));
     }
     
@@ -83,10 +88,5 @@ public final class CreateTableStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
         return getSqlStatement().getConstraintDefinitions().stream().flatMap(each -> each.getIndexColumns().stream()).collect(Collectors.toList());
-    }
-    
-    @Override
-    public CreateTableStatement getSqlStatement() {
-        return (CreateTableStatement) super.getSqlStatement();
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
@@ -34,19 +34,19 @@ import java.util.Optional;
  * Create procedure statement context.
  */
 @Getter
-public final class CreateProcedureStatementContext extends CommonSQLStatementContext {
+public final class CreateProcedureStatementContext implements SQLStatementContext {
+    
+    private final DatabaseType databaseType;
+    
+    private final CreateProcedureStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     public CreateProcedureStatementContext(final DatabaseType databaseType, final CreateProcedureStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         Optional<RoutineBodySegment> routineBodySegment = sqlStatement.getRoutineBody();
         Collection<SimpleTableSegment> tables = routineBodySegment.map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
         tablesContext = new TablesContext(tables);
-    }
-    
-    @Override
-    public CreateProcedureStatement getSqlStatement() {
-        return (CreateProcedureStatement) super.getSqlStatement();
     }
 }

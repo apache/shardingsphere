@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -34,12 +34,17 @@ import java.util.LinkedList;
  * Alter index statement context.
  */
 @Getter
-public final class AlterIndexStatementContext extends CommonSQLStatementContext implements IndexAvailable {
+public final class AlterIndexStatementContext implements SQLStatementContext, IndexAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final AlterIndexStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     public AlterIndexStatementContext(final DatabaseType databaseType, final AlterIndexStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement.getSimpleTable().orElse(null));
     }
     
@@ -56,10 +61,5 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext 
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
         return Collections.emptyList();
-    }
-    
-    @Override
-    public AlterIndexStatement getSqlStatement() {
-        return (AlterIndexStatement) super.getSqlStatement();
     }
 }

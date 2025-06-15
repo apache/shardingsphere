@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -43,7 +43,11 @@ import java.util.Optional;
  * Alter view statement context.
  */
 @Getter
-public final class AlterViewStatementContext extends CommonSQLStatementContext implements WhereAvailable {
+public final class AlterViewStatementContext implements SQLStatementContext, WhereAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final AlterViewStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -51,7 +55,8 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     
     public AlterViewStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
                                      final AlterViewStatement sqlStatement, final String currentDatabaseName) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
         Optional<SelectStatement> selectStatement = sqlStatement.getSelect();
@@ -96,10 +101,5 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return getSelectStatementContext().isPresent() ? getSelectStatementContext().get().getJoinConditions() : Collections.emptyList();
-    }
-    
-    @Override
-    public AlterViewStatement getSqlStatement() {
-        return (AlterViewStatement) super.getSqlStatement();
     }
 }
