@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
@@ -43,7 +43,11 @@ import java.util.Optional;
  * Cursor statement context.
  */
 @Getter
-public final class CursorStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable {
+public final class CursorStatementContext implements SQLStatementContext, CursorAvailable, WhereAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final CursorStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -57,7 +61,8 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     
     public CursorStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                   final List<Object> params, final CursorStatement sqlStatement, final String currentDatabaseName) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getSimpleTableSegments());
         selectStatementContext = new SelectStatementContext(databaseType, sqlStatement.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
         whereSegments.addAll(selectStatementContext.getWhereSegments());
@@ -89,10 +94,5 @@ public final class CursorStatementContext extends CommonSQLStatementContext impl
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return joinConditions;
-    }
-    
-    @Override
-    public CursorStatement getSqlStatement() {
-        return (CursorStatement) super.getSqlStatement();
     }
 }

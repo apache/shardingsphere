@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -39,7 +39,11 @@ import java.util.List;
  * Create view statement context.
  */
 @Getter
-public final class CreateViewStatementContext extends CommonSQLStatementContext implements WhereAvailable {
+public final class CreateViewStatementContext implements SQLStatementContext, WhereAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final CreateViewStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
@@ -47,7 +51,8 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     
     public CreateViewStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType, final List<Object> params,
                                       final CreateViewStatement sqlStatement, final String currentDatabaseName) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables());
@@ -68,10 +73,5 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return selectStatementContext.getJoinConditions();
-    }
-    
-    @Override
-    public CreateViewStatement getSqlStatement() {
-        return (CreateViewStatement) super.getSqlStatement();
     }
 }

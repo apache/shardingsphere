@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -38,14 +38,19 @@ import java.util.Optional;
  * Close statement context.
  */
 @Getter
-public final class CloseStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorAware {
+public final class CloseStatementContext implements SQLStatementContext, CursorAvailable, WhereAvailable, CursorAware {
+    
+    private final DatabaseType databaseType;
+    
+    private final CloseStatement sqlStatement;
     
     private TablesContext tablesContext;
     
     private CursorStatementContext cursorStatementContext;
     
     public CloseStatementContext(final DatabaseType databaseType, final CloseStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(Collections.emptyList());
     }
     
@@ -73,10 +78,5 @@ public final class CloseStatementContext extends CommonSQLStatementContext imple
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
         return null == cursorStatementContext ? Collections.emptyList() : cursorStatementContext.getJoinConditions();
-    }
-    
-    @Override
-    public CloseStatement getSqlStatement() {
-        return (CloseStatement) super.getSqlStatement();
     }
 }

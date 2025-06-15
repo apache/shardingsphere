@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
@@ -36,14 +36,19 @@ import java.util.Collections;
  * Create index statement context.
  */
 @Getter
-public final class CreateIndexStatementContext extends CommonSQLStatementContext implements IndexAvailable {
+public final class CreateIndexStatementContext implements SQLStatementContext, IndexAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final CreateIndexStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     private final boolean generatedIndex;
     
     public CreateIndexStatementContext(final DatabaseType databaseType, final CreateIndexStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement.getTable());
         generatedIndex = null == sqlStatement.getIndex();
     }
@@ -60,10 +65,5 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
         return getSqlStatement().getColumns();
-    }
-    
-    @Override
-    public CreateIndexStatement getSqlStatement() {
-        return (CreateIndexStatement) super.getSqlStatement();
     }
 }
