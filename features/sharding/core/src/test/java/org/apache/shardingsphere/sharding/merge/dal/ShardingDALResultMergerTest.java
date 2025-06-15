@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.merge.dal;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
@@ -49,7 +48,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(MockitoExtension.class)
 class ShardingDALResultMergerTest {
@@ -98,15 +96,16 @@ class ShardingDALResultMergerTest {
     
     @Test
     void assertMergeWithNotTableAvailable() throws SQLException {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(TransparentMergedResult.class));
     }
     
     private SQLStatementContext mockSQLStatementContext(final DALStatement dalStatement) {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableContextAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(dalStatement);
-        when(((TableContextAvailable) result).getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        when(result.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.connection.kernel;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -60,7 +59,8 @@ class KernelProcessorTest {
     @Test
     void assertGenerateExecutionContext() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        SQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         ConnectionContext connectionContext = mock(ConnectionContext.class);

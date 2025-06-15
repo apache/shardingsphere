@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
@@ -65,10 +64,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     }
     
     private boolean containsEncryptTable(final EncryptRule rule, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableContextAvailable)) {
-            return false;
-        }
-        for (SimpleTableSegment each : ((TableContextAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
+        for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
                 return true;
             }

@@ -54,7 +54,8 @@ class EncryptSQLRewriteContextDecoratorTest {
     @Test
     void assertDecorateWithNotTableAvailable() {
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         decorator.decorate(rule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -88,8 +89,10 @@ class UnicastDatabaseBackendHandlerTest {
     void setUp() throws SQLException {
         when(connectionSession.getCurrentDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         mockDatabaseConnector(new UpdateResponseHeader(mock()));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(
-                new QueryContext(mock(), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), connectionSession);
+                new QueryContext(sqlStatementContext, EXECUTE_SQL, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
     }
     

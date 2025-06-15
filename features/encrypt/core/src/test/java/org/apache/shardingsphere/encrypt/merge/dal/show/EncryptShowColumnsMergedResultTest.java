@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -59,14 +58,16 @@ class EncryptShowColumnsMergedResultTest {
     
     @Test
     void assertNewInstanceWithNotTableAvailableStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, mock(EncryptRule.class)));
     }
     
     @Test
     void assertNewInstanceWithEmptyTable() {
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, mock(EncryptRule.class)));
     }
     

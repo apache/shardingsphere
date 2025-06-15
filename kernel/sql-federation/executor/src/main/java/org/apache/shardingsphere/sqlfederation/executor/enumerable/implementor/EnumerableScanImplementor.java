@@ -23,7 +23,6 @@ import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
@@ -100,8 +99,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     }
     
     private boolean containsSystemSchema(final SQLStatementContext sqlStatementContext) {
-        Collection<String> usedSchemaNames =
-                sqlStatementContext instanceof TableContextAvailable ? ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList();
+        Collection<String> usedSchemaNames = sqlStatementContext.getTablesContext().getSchemaNames();
         Collection<String> systemSchemas = new SystemDatabase(sqlStatementContext.getDatabaseType()).getSystemSchemas();
         for (String each : usedSchemaNames) {
             if (systemSchemas.contains(each)) {
@@ -155,10 +153,8 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         if (driverQuerySystemCatalogOption.isPresent() && driverQuerySystemCatalogOption.get().isSystemTable(table.getName())) {
             return createMemoryEnumerator(MemoryTableStatisticsBuilder.buildTableStatistics(table, queryContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);
         }
-        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableContextAvailable,
-                () -> new IllegalStateException(String.format("Can not support %s in sql federation", sqlStatementContext.getSqlStatement().getClass().getSimpleName())));
-        String databaseName = ((TableContextAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(executorContext.getCurrentDatabaseName());
-        String schemaName = ((TableContextAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(executorContext.getCurrentSchemaName());
+        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(executorContext.getCurrentDatabaseName());
+        String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElse(executorContext.getCurrentSchemaName());
         Optional<TableStatistics> tableStatistics = Optional.ofNullable(executorContext.getStatistics().getDatabaseStatistics(databaseName))
                 .map(optional -> optional.getSchemaStatistics(schemaName)).map(optional -> optional.getTableStatistics(table.getName()));
         return tableStatistics.map(optional -> createMemoryEnumerator(optional, table, databaseType)).orElseGet(this::createEmptyEnumerable);

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -44,7 +43,7 @@ import java.util.Optional;
  * Delete statement context.
  */
 @Getter
-public final class DeleteStatementContext extends CommonSQLStatementContext implements TableContextAvailable, WhereAvailable, WithAvailable {
+public final class DeleteStatementContext extends CommonSQLStatementContext implements WhereAvailable, WithAvailable {
     
     private final TablesContext tablesContext;
     
