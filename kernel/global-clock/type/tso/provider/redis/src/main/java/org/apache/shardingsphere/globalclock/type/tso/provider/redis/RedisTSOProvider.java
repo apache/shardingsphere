@@ -19,9 +19,11 @@ package org.apache.shardingsphere.globalclock.type.tso.provider.redis;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.globalclock.type.tso.provider.TSOProvider;
+import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.params.SetParams;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,9 +34,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class RedisTSOProvider implements TSOProvider {
     
     private static final String CSN_KEY = "csn";
+
+    private static final String CSN_LOCK_KEY = "csn_lock";
     
     private static final long ERROR_CSN = 0L;
-    
+
+    private static final int LOCK_EXPIRE_TIME = 200;
+
     private static final long INIT_CSN = Integer.MAX_VALUE;
     
     private final AtomicBoolean initialized = new AtomicBoolean(false);
@@ -76,20 +82,27 @@ public final class RedisTSOProvider implements TSOProvider {
             }
         }
     }
-    
+
     @Override
     public long getCurrentTimestamp() {
+        String lockValue = String.valueOf(System.nanoTime());
+
         try (Jedis jedis = jedisPool.getResource()) {
-            // TODO use redis lock to instead of reg center's lock. lock here #35041
+            String result = jedis.set(CSN_LOCK_KEY, lockValue, SetParams.setParams().nx().px(LOCK_EXPIRE_TIME));
+            if (!"OK".equals(result)) {
+                throw new InTransactionException();
+            }
             return Long.parseLong(jedis.get(CSN_KEY));
         }
     }
-    
+
     @Override
     public long getNextTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
-            return jedis.incr(CSN_KEY);
-            // TODO use redis lock to instead of reg center's lock. unlock here #35041
+            long next = jedis.incr(CSN_KEY);
+
+            jedis.del(CSN_LOCK_KEY);
+            return next;
         }
     }
     

@@ -102,17 +102,7 @@ public final class BackendTransactionManager implements TransactionManager {
             return;
         }
         DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
-        LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
-        boolean isNeedLock = isNeedLockWhenCommit();
-        LockDefinition lockDefinition = null;
         try {
-            // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
-            if (isNeedLock) {
-                lockDefinition = new GlobalLockDefinition(new TransactionCommitLock());
-                if (!lockContext.tryLock(lockDefinition, 200L)) {
-                    return;
-                }
-            }
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
             }
@@ -124,9 +114,6 @@ public final class BackendTransactionManager implements TransactionManager {
         } finally {
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
-            }
-            if (isNeedLock) {
-                lockContext.unlock(lockDefinition);
             }
             for (Connection each : connection.getCachedConnections().values()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
