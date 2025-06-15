@@ -37,7 +37,7 @@ public final class ExplainStatementContext implements SQLStatementContext {
     
     private final ExplainStatement sqlStatement;
     
-    private final TablesContext tablesContext;
+    private final TablesContext tablesContext; 
     
     private final SQLStatementContext explainableSQLStatementContext;
     
