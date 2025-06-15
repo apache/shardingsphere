@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.checker.sql.table;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTab
 /**
  * Drop table supported checker for single.
  */
-public final class SingleDropTableSupportedChecker implements SupportedSQLChecker<TableAvailableSQLStatementContext, SingleRule> {
+public final class SingleDropTableSupportedChecker implements SupportedSQLChecker<SQLStatementContext, SingleRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
@@ -38,7 +37,7 @@ public final class SingleDropTableSupportedChecker implements SupportedSQLChecke
     }
     
     @Override
-    public void check(final SingleRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final TableAvailableSQLStatementContext sqlStatementContext) {
+    public void check(final SingleRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         ShardingSpherePreconditions.checkState(!((DropTableStatement) sqlStatementContext.getSqlStatement()).isContainsCascade(), UnsupportedDropCascadeTableException::new);
     }
 }

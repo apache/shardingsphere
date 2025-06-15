@@ -23,8 +23,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -32,7 +35,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CommentStatement extends AbstractSQLStatement implements DDLStatement {
+public class CommentStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
     
     private SimpleTableSegment table;
     
@@ -49,5 +52,10 @@ public class CommentStatement extends AbstractSQLStatement implements DDLStateme
      */
     public Optional<IndexTypeSegment> getIndexType() {
         return Optional.ofNullable(indexType);
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getTables() {
+        return null == table ? Collections.emptyList() : Collections.singletonList(table);
     }
 }

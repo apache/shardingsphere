@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Rename table supported checker for sharding.
  */
-public final class ShardingRenameTableSupportedChecker implements SupportedSQLChecker<TableAvailableSQLStatementContext, ShardingRule> {
+public final class ShardingRenameTableSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
@@ -44,7 +43,7 @@ public final class ShardingRenameTableSupportedChecker implements SupportedSQLCh
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final TableAvailableSQLStatementContext sqlStatementContext) {
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getSimpleTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
         List<SimpleTableSegment> renameTables = ((RenameTableStatement) sqlStatementContext.getSqlStatement())

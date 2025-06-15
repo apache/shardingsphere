@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -93,6 +93,7 @@ class ShardingRenameTableRouteContextCheckerTest {
         SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
         renameTableDefinitionSegment.setRenameTable(renameTable);
         when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
-        return new TableAvailableSQLStatementContext(mock(), sqlStatement, Arrays.asList(table, renameTable));
+        when(sqlStatement.getTables()).thenReturn(Arrays.asList(table, renameTable));
+        return new CommonSQLStatementContext(mock(), sqlStatement);
     }
 }

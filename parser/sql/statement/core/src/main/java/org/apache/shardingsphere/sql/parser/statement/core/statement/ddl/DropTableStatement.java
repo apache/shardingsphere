@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class DropTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropTableStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     

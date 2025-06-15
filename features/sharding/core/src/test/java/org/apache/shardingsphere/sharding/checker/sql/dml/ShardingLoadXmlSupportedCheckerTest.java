@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.dml;
 
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -47,7 +47,8 @@ class ShardingLoadXmlSupportedCheckerTest {
         LoadXMLStatement sqlStatement = mock(LoadXMLStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         when(sqlStatement.getTable()).thenReturn(table);
-        assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table))));
+        when(sqlStatement.getTables()).thenReturn(Collections.singleton(table));
+        assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
     }
     
     @Test
@@ -56,7 +57,7 @@ class ShardingLoadXmlSupportedCheckerTest {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         when(sqlStatement.getTable()).thenReturn(table);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new TableAvailableSQLStatementContext(mock(), sqlStatement, Collections.singleton(table))));
+        when(sqlStatement.getTables()).thenReturn(Collections.singleton(table));
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
     }
 }

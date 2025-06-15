@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -28,13 +27,9 @@ import java.util.Collection;
 /**
  * Table available SQL statement context.
  */
-@Getter
 public final class TableAvailableSQLStatementContext extends CommonSQLStatementContext {
     
-    private final TablesContext tablesContext;
-    
     public TableAvailableSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
-        super(databaseType, sqlStatement);
-        tablesContext = new TablesContext(tables);
+        super(databaseType, sqlStatement, new TablesContext(tables));
     }
 }

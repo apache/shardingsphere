@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.merge.dal;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.TableAvailableSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -106,7 +106,7 @@ class EncryptDALResultDecoratorTest {
     }
     
     private SQLStatementContext mockShowCreateTableStatementContext() {
-        TableAvailableSQLStatementContext result = mock(TableAvailableSQLStatementContext.class, RETURNS_DEEP_STUBS);
+        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("foo_tbl")));
         when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
