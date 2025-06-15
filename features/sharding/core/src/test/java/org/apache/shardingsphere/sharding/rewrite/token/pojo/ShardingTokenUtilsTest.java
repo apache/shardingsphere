@@ -38,7 +38,9 @@ class ShardingTokenUtilsTest {
     
     @Test
     void assertGetLogicAndActualTablesWithNotTableAvailable() {
-        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), mock(SQLStatementContext.class), mock(ShardingRule.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), sqlStatementContext, mock(ShardingRule.class));
         assertTrue(actual.isEmpty());
     }
     
