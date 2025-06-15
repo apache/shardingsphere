@@ -72,7 +72,8 @@ class EncryptShowCreateTableMergedResultTest {
     
     @Test
     void assertNewInstanceWithNotTableAvailableStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptShowCreateTableMergedResult(mock(RuleMetaData.class), mergedResult, sqlStatementContext, mock(EncryptRule.class)));
     }
     
