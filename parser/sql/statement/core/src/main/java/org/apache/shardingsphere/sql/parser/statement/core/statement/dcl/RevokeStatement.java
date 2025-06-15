@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.dcl;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,7 +29,7 @@ import java.util.LinkedList;
  * Revoke statement.
  */
 @Getter
-public class RevokeStatement extends AbstractSQLStatement implements DCLStatement {
+public class RevokeStatement extends AbstractSQLStatement implements DCLStatement, TableAvailable {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
