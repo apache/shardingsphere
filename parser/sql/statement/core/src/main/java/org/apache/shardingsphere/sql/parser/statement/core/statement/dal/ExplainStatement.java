@@ -29,5 +29,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 @Getter
 public final class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
-    private final SQLStatement sqlStatement;
+    private final SQLStatement explainableSQLStatement;
 }

@@ -156,7 +156,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private boolean isSupportedSQLStatementContext(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof ExplainStatementContext) {
-            return ((ExplainStatementContext) sqlStatementContext).getSqlStatement().getSqlStatement() instanceof SelectStatement;
+            return ((ExplainStatementContext) sqlStatementContext).getSqlStatement().getExplainableSQLStatement() instanceof SelectStatement;
         }
         return sqlStatementContext instanceof SelectStatementContext;
     }
