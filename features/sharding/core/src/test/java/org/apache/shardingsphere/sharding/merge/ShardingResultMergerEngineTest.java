@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -69,7 +70,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, mock(ShowStatement.class));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, mock(ShowStatement.class));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
     
@@ -93,7 +94,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, mock(FetchStatement.class));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, mock(FetchStatement.class));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }
 }

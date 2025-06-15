@@ -127,7 +127,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DALStatement) {
             return getDALStatementContext(metaData, databaseType, (DALStatement) sqlStatement, params, currentDatabaseName);
         }
-        return new UnknownSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
     private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
@@ -145,7 +145,7 @@ public final class SQLStatementContextFactory {
             return new InsertStatementContext(databaseType, (InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
         }
         if (sqlStatement instanceof CallStatement || sqlStatement instanceof DoStatement || sqlStatement instanceof MergeStatement) {
-            return new UnknownSQLStatementContext(databaseType, sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
@@ -153,7 +153,7 @@ public final class SQLStatementContextFactory {
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                                               final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
-            return new UnknownSQLStatementContext(databaseType, sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext(databaseType, (CreateTableStatement) sqlStatement);
@@ -212,7 +212,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof FetchStatement) {
             return new FetchStatementContext(databaseType, (FetchStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
     private static SQLStatementContext getDCLStatementContext(final DatabaseType databaseType, final DCLStatement sqlStatement) {
@@ -222,7 +222,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof RevokeStatement) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
-        return new UnknownSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
     private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
@@ -245,6 +245,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
-        return new UnknownSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
 }

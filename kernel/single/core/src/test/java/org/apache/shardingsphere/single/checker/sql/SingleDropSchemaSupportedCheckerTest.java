@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.single.checker.sql;
 
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -77,6 +77,6 @@ class SingleDropSchemaSupportedCheckerTest {
         DropSchemaStatement dropSchemaStatement = mock(DropSchemaStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getSchemaNames()).thenReturn(Collections.singleton(new IdentifierValue(schemaName)));
-        return new UnknownSQLStatementContext(mock(), dropSchemaStatement);
+        return new CommonSQLStatementContext(mock(), dropSchemaStatement);
     }
 }
