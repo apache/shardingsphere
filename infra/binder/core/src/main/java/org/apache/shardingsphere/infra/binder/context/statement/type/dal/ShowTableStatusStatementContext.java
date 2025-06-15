@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
@@ -31,20 +32,19 @@ import java.util.LinkedList;
 /**
  * Show table status statement context.
  */
-public final class ShowTableStatusStatementContext extends CommonSQLStatementContext implements RemoveAvailable {
+@Getter
+public final class ShowTableStatusStatementContext implements SQLStatementContext, RemoveAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final ShowTableStatusStatement sqlStatement;
+    
+    private final TablesContext tablesContext;
     
     public ShowTableStatusStatementContext(final DatabaseType databaseType, final ShowTableStatusStatement sqlStatement) {
-        super(databaseType, sqlStatement);
-    }
-    
-    @Override
-    public ShowTableStatusStatement getSqlStatement() {
-        return (ShowTableStatusStatement) super.getSqlStatement();
-    }
-    
-    @Override
-    public TablesContext getTablesContext() {
-        return new TablesContext(Collections.emptyList());
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
+        tablesContext = new TablesContext(Collections.emptyList());
     }
     
     @Override

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
@@ -32,18 +32,18 @@ import java.util.LinkedList;
  * Show index statement context.
  */
 @Getter
-public final class ShowIndexStatementContext extends CommonSQLStatementContext implements RemoveAvailable {
+public final class ShowIndexStatementContext implements SQLStatementContext, RemoveAvailable {
+    
+    private final DatabaseType databaseType;
+    
+    private final ShowIndexStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     public ShowIndexStatementContext(final DatabaseType databaseType, final ShowIndexStatement sqlStatement) {
-        super(databaseType, sqlStatement);
+        this.databaseType = databaseType;
+        this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement.getTable());
-    }
-    
-    @Override
-    public ShowIndexStatement getSqlStatement() {
-        return (ShowIndexStatement) super.getSqlStatement();
     }
     
     @Override
