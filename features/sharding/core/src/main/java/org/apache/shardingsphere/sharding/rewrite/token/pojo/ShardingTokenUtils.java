@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -45,10 +44,7 @@ public final class ShardingTokenUtils {
      */
     public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule rule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        if (tableNames.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        Map<String, String> result = new CaseInsensitiveMap<>(tableNames.size(), 1F);
+        Map<String, String> result = new CaseInsensitiveMap<>();
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName(), each.getActualName());
             result.putAll(rule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));
