@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.context;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -50,15 +51,17 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class SQLRewriteContextTest {
     
-    @Mock
-    private CommonSQLStatementContext sqlStatementContext;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private SQLStatementContext sqlStatementContext;
     
     @Mock
     private SQLToken sqlToken;
     
+    @SuppressWarnings("rawtypes")
     @Mock
     private OptionalSQLTokenGenerator optionalSQLTokenGenerator;
     
+    @SuppressWarnings("rawtypes")
     @Mock
     private CollectionSQLTokenGenerator collectionSQLTokenGenerator;
     
@@ -71,6 +74,7 @@ class SQLRewriteContextTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(optionalSQLTokenGenerator.generateSQLToken(sqlStatementContext)).thenReturn(sqlToken);
         when(collectionSQLTokenGenerator.generateSQLTokens(sqlStatementContext)).thenReturn(Collections.singleton(sqlToken));
         when(database.getName()).thenReturn("foo_db");

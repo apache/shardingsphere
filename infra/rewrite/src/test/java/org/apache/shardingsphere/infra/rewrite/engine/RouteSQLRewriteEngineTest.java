@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.engine;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -54,7 +54,8 @@ class RouteSQLRewriteEngineTest {
     void assertRewriteWithStandardParameterBuilder() {
         DatabaseType databaseType = mock(DatabaseType.class);
         ShardingSphereDatabase database = mockDatabase(databaseType);
-        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         QueryContext queryContext = mockQueryContext(sqlStatementContext, "SELECT ?");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
@@ -68,7 +69,7 @@ class RouteSQLRewriteEngineTest {
         assertThat(actual.getSqlRewriteUnits().get(routeUnit).getParameters(), is(Collections.singletonList(1)));
     }
     
-    private QueryContext mockQueryContext(final CommonSQLStatementContext sqlStatementContext, final String sql) {
+    private QueryContext mockQueryContext(final SQLStatementContext sqlStatementContext, final String sql) {
         QueryContext result = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(result.getSql()).thenReturn(sql);
