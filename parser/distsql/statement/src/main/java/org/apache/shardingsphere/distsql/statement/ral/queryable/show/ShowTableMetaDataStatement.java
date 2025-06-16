@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.statement.ral.queryable.show;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Collection;
@@ -35,10 +35,10 @@ public final class ShowTableMetaDataStatement extends QueryableRALStatement impl
     @Getter
     private final Collection<String> tableNames;
     
-    private final DatabaseSegment database;
+    private final FromDatabaseSegment fromDatabase;
     
     @Override
-    public Optional<DatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(database);
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

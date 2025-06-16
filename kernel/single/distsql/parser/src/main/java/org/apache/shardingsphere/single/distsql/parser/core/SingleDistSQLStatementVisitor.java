@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllSchamesAndTablesFromStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SingleDistSQLStatementParser.AllTablesContext;
@@ -45,6 +46,7 @@ import org.apache.shardingsphere.single.distsql.statement.rql.ShowSingleTablesSt
 import org.apache.shardingsphere.single.distsql.statement.rql.ShowUnloadedSingleTablesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -59,7 +61,9 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitCountSingleTable(final CountSingleTableContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "SINGLE");
+        return new CountRuleStatement(null == ctx.databaseName()
+                ? null
+                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())), "SINGLE");
     }
     
     @Override
@@ -69,13 +73,17 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
-        return new ShowDefaultSingleTableStorageUnitStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowDefaultSingleTableStorageUnitStatement(null == ctx.databaseName()
+                ? null
+                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitShowSingleTables(final ShowSingleTablesContext ctx) {
-        return new ShowSingleTablesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()),
-                null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName()
+                ? null
+                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowSingleTablesStatement(fromDatabase, null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
     }
     
     @Override
@@ -119,13 +127,15 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitShowUnloadedSingleTables(final ShowUnloadedSingleTablesContext ctx) {
-        return null == ctx.fromClause() ? new ShowUnloadedSingleTablesStatement(null, null, null) : visitShowUnloadedSingleTablesWithFromClause(ctx.fromClause());
+        return null == ctx.fromClause() ? new ShowUnloadedSingleTablesStatement(null, null, null) : visitShowUnloadedSingleTablesWithFromClause(ctx.FROM(), ctx.fromClause());
     }
     
-    private ASTNode visitShowUnloadedSingleTablesWithFromClause(final FromClauseContext ctx) {
-        return new ShowUnloadedSingleTablesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()),
-                null == ctx.storageUnitName() ? null : getIdentifierValue(ctx.storageUnitName()),
-                null == ctx.schemaName() ? null : getIdentifierValue(ctx.schemaName()));
+    private ASTNode visitShowUnloadedSingleTablesWithFromClause(final TerminalNode fromCtx, final FromClauseContext ctx) {
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName()
+                ? null
+                : new FromDatabaseSegment(fromCtx.getSymbol().getStartIndex(), fromCtx.getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowUnloadedSingleTablesStatement(fromDatabase,
+                null == ctx.storageUnitName() ? null : getIdentifierValue(ctx.storageUnitName()), null == ctx.schemaName() ? null : getIdentifierValue(ctx.schemaName()));
     }
     
     @Override

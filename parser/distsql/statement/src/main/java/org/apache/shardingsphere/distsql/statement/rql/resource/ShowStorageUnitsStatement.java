@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.statement.rql.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
@@ -31,14 +31,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShowStorageUnitsStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment database;
+    private final FromDatabaseSegment fromDatabase;
     
     private final String likePattern;
-    
-    @Override
-    public Optional<DatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(database);
-    }
     
     /**
      * Get like pattern.
@@ -47,5 +42,10 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement impl
      */
     public Optional<String> getLikePattern() {
         return Optional.ofNullable(likePattern);
+    }
+    
+    @Override
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

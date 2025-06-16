@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ class ShowStorageUnitExecutorTest {
     @Test
     void assertGetRowsWithAllStorageUnits() {
         Map<Integer, String> storageUnitNames = Maps.of(0, "ds_2", 1, "ds_1", 2, "ds_0");
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null), mock(ContextManager.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(FromDatabaseSegment.class), null), mock(ContextManager.class));
         assertThat(actual.size(), is(3));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         int index = 0;
@@ -94,7 +94,7 @@ class ShowStorageUnitExecutorTest {
     
     @Test
     void assertGetRowsWithLikePattern() {
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(DatabaseSegment.class), "%_0"), mock(ContextManager.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowStorageUnitsStatement(mock(FromDatabaseSegment.class), "%_0"), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("ds_0"));

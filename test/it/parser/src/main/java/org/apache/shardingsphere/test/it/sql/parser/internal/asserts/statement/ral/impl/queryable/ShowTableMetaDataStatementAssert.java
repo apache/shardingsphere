@@ -45,7 +45,7 @@ public final class ShowTableMetaDataStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual, final ShowTableMetaDataStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertTrue(actual.getFromDatabase().isPresent());
-            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getDatabase());
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getDatabase());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
         }
     }
