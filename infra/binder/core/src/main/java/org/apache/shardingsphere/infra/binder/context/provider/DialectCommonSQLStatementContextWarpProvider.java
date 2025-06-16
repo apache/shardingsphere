@@ -24,15 +24,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import java.util.Collection;
 
 /**
- * Dialect table available SQL statement context warp provider.
+ * Dialect common SQL Statement context warp provider.
  */
 @SingletonSPI
-public interface DialectTableAvailableSQLStatementContextWarpProvider extends DatabaseTypedSPI {
+public interface DialectCommonSQLStatementContextWarpProvider extends DatabaseTypedSPI {
     
     /**
-     * Get need to warp table available SQL statement context SQL statement types.
+     * Get need to warp SQL statement types.
      *
      * @return SQL statement types
      */
-    Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes();
+    Collection<Class<? extends SQLStatement>> getNeedToWarpSQLStatementTypes();
 }
