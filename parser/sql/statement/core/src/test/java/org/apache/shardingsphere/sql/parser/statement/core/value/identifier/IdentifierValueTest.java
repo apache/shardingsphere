@@ -43,6 +43,12 @@ class IdentifierValueTest {
     }
     
     @Test
+    void assertGetIdentifierValueWithReservedBracket() {
+        String text = "ds_${[1,2]}.t_order";
+        assertThat(new IdentifierValue(text).getValue(), is("ds_${[1,2]}.t_order"));
+    }
+    
+    @Test
     void assertGetValueWithQuoteCharactersWithNullValue() {
         assertThat(new IdentifierValue(null).getValueWithQuoteCharacters(), is(""));
     }
