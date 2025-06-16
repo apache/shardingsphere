@@ -302,7 +302,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null == context) {
             return null;
         }
-        String value = new IdentifierValue(context.getText(), "[]'").getValue();
+        String value = new IdentifierValue(context.getText()).getValue();
         return value.startsWith("'") ? value.substring(1, value.length() - 1) : value.trim();
     }
     
