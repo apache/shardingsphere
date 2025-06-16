@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowIndexStatementContext;
@@ -109,10 +109,10 @@ public final class SQLStatementContextFactory {
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        Optional<DialectTableAvailableSQLStatementContextWarpProvider> dialectTableAvailableSQLStatementContextWarpProvider = DatabaseTypedSPILoader.findService(
-                DialectTableAvailableSQLStatementContextWarpProvider.class, databaseType);
-        if (sqlStatement instanceof TableAvailable && dialectTableAvailableSQLStatementContextWarpProvider
-                .map(optional -> dialectTableAvailableSQLStatementContextWarpProvider.get().getNeedToWarpTableAvailableSQLStatementContextTypes().contains(sqlStatement.getClass())).orElse(false)) {
+        Optional<DialectCommonSQLStatementContextWarpProvider> dialectCommonSQLStatementContextWarpProvider = DatabaseTypedSPILoader.findService(
+                DialectCommonSQLStatementContextWarpProvider.class, databaseType);
+        if (sqlStatement instanceof TableAvailable && dialectCommonSQLStatementContextWarpProvider
+                .map(optional -> dialectCommonSQLStatementContextWarpProvider.get().getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {

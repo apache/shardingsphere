@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.sqlserver;
 
-import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
@@ -25,15 +25,15 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Table available SQL statement context warp provider for SQLServer.
+ * Common SQL Statement context warp provider for SQLServer.
  */
-public final class SQLServerSQLStatementContextWarpProvider implements DialectTableAvailableSQLStatementContextWarpProvider {
+public final class SQLServerSQLStatementContextWarpProvider implements DialectCommonSQLStatementContextWarpProvider {
     
-    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES = Collections.singleton(DenyUserStatement.class);
+    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_SQL_STATEMENT_TYPES = Collections.singleton(DenyUserStatement.class);
     
     @Override
-    public Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes() {
-        return NEED_TO_WARP_TABLE_AVAILABLE_SQL_STATEMENT_CONTEXT_TYPES;
+    public Collection<Class<? extends SQLStatement>> getNeedToWarpSQLStatementTypes() {
+        return NEED_TO_WARP_SQL_STATEMENT_TYPES;
     }
     
     @Override

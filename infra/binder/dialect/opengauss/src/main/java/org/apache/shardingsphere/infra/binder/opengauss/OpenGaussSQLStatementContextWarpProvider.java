@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.infra.binder.opengauss;
 
-import org.apache.shardingsphere.infra.binder.context.provider.DialectTableAvailableSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.infra.binder.postgresql.PostgreSQLSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 
 /**
- * Table available SQL statement context warp provider for openGauss.
+ * Common SQL Statement context warp provider for openGauss.
  */
-public final class OpenGaussSQLStatementContextWarpProvider implements DialectTableAvailableSQLStatementContextWarpProvider {
+public final class OpenGaussSQLStatementContextWarpProvider implements DialectCommonSQLStatementContextWarpProvider {
     
     private final PostgreSQLSQLStatementContextWarpProvider delegate = new PostgreSQLSQLStatementContextWarpProvider();
     
     @Override
-    public Collection<Class<? extends SQLStatement>> getNeedToWarpTableAvailableSQLStatementContextTypes() {
-        return delegate.getNeedToWarpTableAvailableSQLStatementContextTypes();
+    public Collection<Class<? extends SQLStatement>> getNeedToWarpSQLStatementTypes() {
+        return delegate.getNeedToWarpSQLStatementTypes();
     }
     
     @Override
