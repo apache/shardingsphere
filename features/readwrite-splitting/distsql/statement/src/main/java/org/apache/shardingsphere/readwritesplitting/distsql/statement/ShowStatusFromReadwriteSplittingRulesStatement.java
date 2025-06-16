@@ -35,7 +35,7 @@ public final class ShowStatusFromReadwriteSplittingRulesStatement extends Resour
     private final String ruleName;
     
     @Override
-    public Optional<DatabaseSegment> getDatabase() {
+    public Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
     

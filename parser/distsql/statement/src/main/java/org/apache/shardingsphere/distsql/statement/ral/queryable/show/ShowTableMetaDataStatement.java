@@ -38,7 +38,7 @@ public final class ShowTableMetaDataStatement extends QueryableRALStatement impl
     private final DatabaseSegment database;
     
     @Override
-    public Optional<DatabaseSegment> getDatabase() {
+    public Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
 }

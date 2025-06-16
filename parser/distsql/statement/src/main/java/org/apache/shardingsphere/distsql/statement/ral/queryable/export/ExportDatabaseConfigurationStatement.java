@@ -35,7 +35,7 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
     private final String filePath;
     
     @Override
-    public Optional<DatabaseSegment> getDatabase() {
+    public Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
     

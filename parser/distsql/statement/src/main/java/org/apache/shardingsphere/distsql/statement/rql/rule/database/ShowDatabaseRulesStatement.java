@@ -33,7 +33,7 @@ public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement impl
     private final DatabaseSegment database;
     
     @Override
-    public final Optional<DatabaseSegment> getDatabase() {
+    public final Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
 }
