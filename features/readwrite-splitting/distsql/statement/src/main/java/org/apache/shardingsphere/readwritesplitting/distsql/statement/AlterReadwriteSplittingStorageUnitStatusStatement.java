@@ -41,7 +41,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
     private final boolean enable;
     
     @Override
-    public Optional<DatabaseSegment> getDatabase() {
+    public Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
 }

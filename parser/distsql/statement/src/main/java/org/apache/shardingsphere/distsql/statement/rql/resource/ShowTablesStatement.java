@@ -39,7 +39,7 @@ public abstract class ShowTablesStatement extends ResourceQueryStatement impleme
      * @return database
      */
     @Override
-    public final Optional<DatabaseSegment> getDatabase() {
+    public final Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
     

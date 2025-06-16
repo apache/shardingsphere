@@ -51,10 +51,10 @@ public final class ShowTablesStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final ShowTablesStatement actual, final ShowTableStatementTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
+            assertFalse(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
+            assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database should exist."));
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getDatabase());
         }
         if (null == expected.getLikePattern()) {
             assertFalse(actual.getLikePattern().isPresent(), assertContext.getText("Actual like pattern should not exist."));

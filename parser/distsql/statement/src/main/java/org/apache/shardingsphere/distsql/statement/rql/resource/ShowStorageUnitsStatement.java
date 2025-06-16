@@ -36,7 +36,7 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement impl
     private final String likePattern;
     
     @Override
-    public Optional<DatabaseSegment> getDatabase() {
+    public Optional<DatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(database);
     }
     

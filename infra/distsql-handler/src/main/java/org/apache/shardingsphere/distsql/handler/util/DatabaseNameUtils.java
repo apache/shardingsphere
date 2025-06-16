@@ -39,7 +39,7 @@ public final class DatabaseNameUtils {
      * @return database name
      */
     public static String getDatabaseName(final SQLStatement sqlStatement, final String currentDatabaseName) {
-        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
+        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getFromDatabase() : Optional.empty();
         return databaseSegment.map(optional -> optional.getIdentifier().getValue()).orElse(currentDatabaseName);
     }
 }

@@ -53,10 +53,10 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingStorageUnitStatusStatement actual, final DatabaseContainedTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
+            assertFalse(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
+            assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database should exist."));
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getDatabase());
         }
     }
 }

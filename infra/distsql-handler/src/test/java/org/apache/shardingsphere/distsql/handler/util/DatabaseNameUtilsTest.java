@@ -38,7 +38,7 @@ class DatabaseNameUtilsTest {
         FromDatabaseAvailable sqlStatement = mock(FromDatabaseAvailable.class, withSettings().extraInterfaces(SQLStatement.class));
         DatabaseSegment databaseSegment = mock(DatabaseSegment.class, RETURNS_DEEP_STUBS);
         when(databaseSegment.getIdentifier().getValue()).thenReturn("bar_db");
-        when(sqlStatement.getDatabase()).thenReturn(Optional.of(databaseSegment));
+        when(sqlStatement.getFromDatabase()).thenReturn(Optional.of(databaseSegment));
         assertThat(DatabaseNameUtils.getDatabaseName((SQLStatement) sqlStatement, "foo_db"), is("bar_db"));
     }
     
