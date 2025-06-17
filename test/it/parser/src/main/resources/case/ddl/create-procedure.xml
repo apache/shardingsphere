@@ -122,4 +122,25 @@
             <sql-statement start-index="78" stop-index="102" statement-class-simple-name="ShowCreateTableStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_custom_collation_and_insert">
+        <procedure-name name="p" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="87" statement-class-simple-name="DeclareStatement" />
+            <sql-statement start-index="90" stop-index="125" statement-class-simple-name="MySQLSetStatement" />
+            <sql-statement start-index="128" stop-index="181" statement-class-simple-name="MySQLCreateTableStatement" />
+            <sql-statement start-index="184" stop-index="208" statement-class-simple-name="MySQLInsertStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_alter_event">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="54" statement-class-simple-name="MySQLAlterEventStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_with_drop_event">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="28" stop-index="40" statement-class-simple-name="MySQLDropEventStatement" />
+        </sql-statements>
+    </create-procedure>
 </sql-parser-test-cases>
