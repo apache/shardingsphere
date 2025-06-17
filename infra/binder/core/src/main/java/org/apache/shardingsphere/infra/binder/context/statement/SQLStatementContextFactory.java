@@ -39,47 +39,28 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
@@ -140,28 +121,16 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext(databaseType, (InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
         }
-        if (sqlStatement instanceof CallStatement || sqlStatement instanceof DoStatement || sqlStatement instanceof MergeStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
+        return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                                               final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        if (sqlStatement instanceof CreateSchemaStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
         if (sqlStatement instanceof CreateTableStatement) {
             return new CreateTableStatementContext(databaseType, (CreateTableStatement) sqlStatement);
         }
         if (sqlStatement instanceof AlterTableStatement) {
             return new AlterTableStatementContext(databaseType, (AlterTableStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof RenameTableStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof DropTableStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CreateIndexStatement) {
             return new CreateIndexStatementContext(databaseType, (CreateIndexStatement) sqlStatement);
@@ -172,12 +141,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DropIndexStatement) {
             return new DropIndexStatementContext(databaseType, (DropIndexStatement) sqlStatement);
         }
-        if (sqlStatement instanceof TruncateStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof CreateFunctionStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
         if (sqlStatement instanceof CreateProcedureStatement) {
             return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
         }
@@ -186,15 +149,6 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof AlterViewStatement) {
             return new AlterViewStatementContext(metaData, databaseType, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
-        }
-        if (sqlStatement instanceof DropViewStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof PrepareStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof CommentStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof CursorStatement) {
             return new CursorStatementContext(metaData, databaseType, params, (CursorStatement) sqlStatement, currentDatabaseName);
@@ -212,12 +166,6 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDCLStatementContext(final DatabaseType databaseType, final DCLStatement sqlStatement) {
-        if (sqlStatement instanceof GrantStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof RevokeStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
         return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
@@ -225,21 +173,6 @@ public final class SQLStatementContextFactory {
                                                               final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);
-        }
-        if (sqlStatement instanceof ShowColumnsStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof ShowTablesStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof ShowTableStatusStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof ShowIndexStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
-        }
-        if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
