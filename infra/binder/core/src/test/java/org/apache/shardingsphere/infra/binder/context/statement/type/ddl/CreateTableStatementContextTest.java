@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
@@ -33,7 +32,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -47,7 +45,6 @@ class CreateTableStatementContextTest {
         CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         sqlStatement.setTable(table);
-        assertThat(actual, instanceOf(ConstraintAvailable.class));
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(Collections.singletonList(table));
         sqlStatement.getColumnDefinitions().add(columnDefinition);
