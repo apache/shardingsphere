@@ -17,29 +17,32 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
- * Insert columns token.
+ * Default insert columns token.
  */
-public final class InsertColumnsToken extends SQLToken implements Attachable {
+@Getter
+public final class UseDefaultInsertColumnsToken extends SQLToken implements Attachable {
     
     private final List<String> columns;
     
     private final QuoteCharacter quoteCharacter;
     
-    public InsertColumnsToken(final int startIndex, final List<String> columns) {
+    public UseDefaultInsertColumnsToken(final int startIndex, final List<String> columns) {
         super(startIndex);
         this.columns = columns;
-        this.quoteCharacter = QuoteCharacter.NONE;
+        quoteCharacter = QuoteCharacter.NONE;
     }
     
-    public InsertColumnsToken(final int startIndex, final List<String> columns, final QuoteCharacter quoteCharacter) {
+    public UseDefaultInsertColumnsToken(final int startIndex, final List<String> columns, final QuoteCharacter quoteCharacter) {
         super(startIndex);
         this.columns = columns;
         this.quoteCharacter = quoteCharacter;
@@ -47,12 +50,15 @@ public final class InsertColumnsToken extends SQLToken implements Attachable {
     
     @Override
     public String toString() {
-        if (columns.isEmpty()) {
-            return "";
+        return columns.isEmpty() ? "" : "(" + String.join(", ", getColumnNames()) + ")";
+    }
+    
+    private Collection<String> getColumnNames() {
+        Collection<String> result = new ArrayList<>(columns.size());
+        for (String each : columns) {
+            result.add(quoteCharacter.wrap(each));
         }
-        StringJoiner result = new StringJoiner(", ", ", ", "");
-        columns.forEach(each -> result.add(quoteCharacter.wrap(each)));
-        return result.toString();
+        return result;
     }
     
     @Override
