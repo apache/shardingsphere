@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -30,17 +31,13 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowIndexStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowIndexStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailable {
     
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
     
-    /**
-     * Get from database.
-     *
-     * @return from database
-     */
+    @Override
     public Optional<FromDatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(fromDatabase);
     }

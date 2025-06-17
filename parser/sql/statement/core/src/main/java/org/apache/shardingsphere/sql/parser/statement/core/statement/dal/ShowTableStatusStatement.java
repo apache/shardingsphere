@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -28,17 +29,13 @@ import java.util.Optional;
  * Show table status statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailable {
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
     
-    /**
-     * Get from database.
-     *
-     * @return from database
-     */
+    @Override
     public Optional<FromDatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(fromDatabase);
     }

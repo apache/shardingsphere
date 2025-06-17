@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailable {
     
     private final SimpleTableSegment table;
     
@@ -39,11 +40,7 @@ public final class ShowColumnsStatement extends AbstractSQLStatement implements 
     
     private final ShowFilterSegment filter;
     
-    /**
-     * Get from database.
-     *
-     * @return from database
-     */
+    @Override
     public Optional<FromDatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(fromDatabase);
     }
