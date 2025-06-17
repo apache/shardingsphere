@@ -38,7 +38,7 @@ class EncryptWithClauseSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getWith().isPresent()).thenReturn(true);
+        when(sqlStatementContext.getSqlStatement().getWith().isPresent()).thenReturn(true);
         assertTrue(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     
