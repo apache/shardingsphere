@@ -24,7 +24,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilte
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -32,13 +35,18 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailable {
+public final class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement, TableAvailable, FromDatabaseAvailable {
     
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    @Override
+    public Collection<SimpleTableSegment> getTables() {
+        return Collections.singleton(table);
+    }
     
     @Override
     public Optional<FromDatabaseSegment> getFromDatabase() {
