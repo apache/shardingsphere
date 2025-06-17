@@ -85,8 +85,6 @@ class AlterTableStatementContextTest {
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),
                 is(Arrays.asList("foo_tbl", "rename_foo_tbl", "foo_tbl", "foo_tbl", "foo_tbl")));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("index", "drop_index")));
-        assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
-                is(Arrays.asList("constraint", "constraint", "constraint")));
     }
     
     private TableNameSegment createTableNameSegment(final String tableName) {

@@ -21,10 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 import java.util.Collection;
@@ -37,7 +39,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class CreateTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateTableStatement extends AbstractSQLStatement implements DDLStatement, ConstraintAvailable {
     
     private SimpleTableSegment table;
     
@@ -80,5 +82,14 @@ public final class CreateTableStatement extends AbstractSQLStatement implements 
      */
     public Optional<CreateTableOptionSegment> getCreateTableOption() {
         return Optional.ofNullable(createTableOption);
+    }
+    
+    @Override
+    public Collection<ConstraintSegment> getConstraints() {
+        Collection<ConstraintSegment> result = new LinkedList<>();
+        for (ConstraintDefinitionSegment each : constraintDefinitions) {
+            each.getConstraintName().ifPresent(result::add);
+        }
+        return result;
     }
 }

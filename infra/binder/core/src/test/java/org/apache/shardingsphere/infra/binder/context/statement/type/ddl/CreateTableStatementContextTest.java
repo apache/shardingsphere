@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
@@ -58,6 +58,5 @@ class CreateTableStatementContextTest {
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")))));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_idx")));
-        assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_fk")));
     }
 }
