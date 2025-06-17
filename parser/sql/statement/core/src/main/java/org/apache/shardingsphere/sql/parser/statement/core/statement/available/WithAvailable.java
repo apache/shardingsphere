@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.type;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 

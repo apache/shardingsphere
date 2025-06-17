@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.WithAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
@@ -29,19 +28,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtrac
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext implements SQLStatementContext, WhereAvailable, WithAvailable {
+public final class UpdateStatementContext implements SQLStatementContext, WhereAvailable {
     
     private final DatabaseType databaseType;
     
@@ -84,10 +81,5 @@ public final class UpdateStatementContext implements SQLStatementContext, WhereA
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
         return columnSegments;
-    }
-    
-    @Override
-    public Optional<WithSegment> getWith() {
-        return sqlStatement.getWith();
     }
 }

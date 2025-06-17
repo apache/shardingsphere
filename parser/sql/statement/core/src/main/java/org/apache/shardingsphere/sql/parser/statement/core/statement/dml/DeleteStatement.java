@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Outpu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.WithAvailable;
 
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
+public final class DeleteStatement extends AbstractSQLStatement implements DMLStatement, WithAvailable {
     
     private TableSegment table;
     
@@ -79,15 +80,6 @@ public final class DeleteStatement extends AbstractSQLStatement implements DMLSt
     }
     
     /**
-     * Get with.
-     *
-     * @return with
-     */
-    public Optional<WithSegment> getWith() {
-        return Optional.ofNullable(with);
-    }
-    
-    /**
      * Get returning.
      *
      * @return returning
@@ -103,5 +95,10 @@ public final class DeleteStatement extends AbstractSQLStatement implements DMLSt
      */
     public Optional<OutputSegment> getOutput() {
         return Optional.ofNullable(output);
+    }
+    
+    @Override
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
     }
 }
