@@ -101,6 +101,6 @@ class DistSQLQueryBackendHandlerTest {
     }
     
     private ShowTableMetaDataStatement createSqlStatement() {
-        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
+        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
     }
 }

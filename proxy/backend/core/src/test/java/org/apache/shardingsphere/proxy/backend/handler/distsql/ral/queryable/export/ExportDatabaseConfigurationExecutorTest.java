@@ -95,7 +95,7 @@ class ExportDatabaseConfigurationExecutorTest {
         when(database.getName()).thenReturn("empty_db");
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(null, new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("empty_db"))));
+        ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(null, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("empty_db"))));
         ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
         executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, mock(ContextManager.class));

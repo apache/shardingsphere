@@ -73,18 +73,15 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitAlterReadwriteSplittingStorageUnitStatus(final AlterReadwriteSplittingStorageUnitStatusContext ctx) {
-        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), null == ctx.databaseName()
-                ? null
-                : (DatabaseSegment) visit(ctx.databaseName()));
+        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(),
+                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
         return new AlterReadwriteSplittingStorageUnitStatusStatement(fromDatabase, getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.storageUnitName()), null == ctx.DISABLE());
     }
     
     @Override
     public ASTNode visitShowReadwriteSplittingRules(final ShowReadwriteSplittingRulesContext ctx) {
         return new ShowReadwriteSplittingRulesStatement(null == ctx.ruleName() ? null : getIdentifierValue(ctx.ruleName()),
-                null == ctx.databaseName()
-                        ? null
-                        : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -107,8 +104,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitShowStatusFromReadwriteSplittingRules(final ShowStatusFromReadwriteSplittingRulesContext ctx) {
-        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(ctx.FROM().get(0).getSymbol().getStartIndex(), ctx.FROM().get(0).getSymbol().getStopIndex(),
-                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(ctx.FROM().get(0).getSymbol().getStartIndex(), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
         String ruleName = getIdentifierValue(ctx.ruleName());
         return new ShowStatusFromReadwriteSplittingRulesStatement(fromDatabase, ruleName);
     }
@@ -121,7 +117,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     public ASTNode visitCountReadwriteSplittingRule(final CountReadwriteSplittingRuleContext ctx) {
         return new CountRuleStatement(null == ctx.databaseName()
                 ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())), "READWRITE_SPLITTING");
+                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "READWRITE_SPLITTING");
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {

@@ -61,9 +61,7 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitCountSingleTable(final CountSingleTableContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())), "SINGLE");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "SINGLE");
     }
     
     @Override
@@ -73,16 +71,13 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     
     @Override
     public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
-        return new ShowDefaultSingleTableStorageUnitStatement(null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+        return new ShowDefaultSingleTableStorageUnitStatement(
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitShowSingleTables(final ShowSingleTablesContext ctx) {
-        FromDatabaseSegment fromDatabase = null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
         return new ShowSingleTablesStatement(fromDatabase, null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
     }
     
@@ -131,9 +126,7 @@ public final class SingleDistSQLStatementVisitor extends SingleDistSQLStatementB
     }
     
     private ASTNode visitShowUnloadedSingleTablesWithFromClause(final TerminalNode fromCtx, final FromClauseContext ctx) {
-        FromDatabaseSegment fromDatabase = null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(fromCtx.getSymbol().getStartIndex(), fromCtx.getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(fromCtx.getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
         return new ShowUnloadedSingleTablesStatement(fromDatabase,
                 null == ctx.storageUnitName() ? null : getIdentifierValue(ctx.storageUnitName()), null == ctx.schemaName() ? null : getIdentifierValue(ctx.schemaName()));
     }

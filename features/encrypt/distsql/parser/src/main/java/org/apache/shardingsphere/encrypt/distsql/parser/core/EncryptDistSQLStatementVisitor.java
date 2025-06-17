@@ -78,9 +78,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
         return new ShowEncryptRulesStatement(null == ctx.tableRule()
                 ? null
                 : getIdentifierValue(ctx.tableRule().tableName()),
-                null == ctx.databaseName()
-                        ? null
-                        : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -142,9 +140,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitCountEncryptRule(final CountEncryptRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())), "ENCRYPT");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "ENCRYPT");
     }
     
     @Override

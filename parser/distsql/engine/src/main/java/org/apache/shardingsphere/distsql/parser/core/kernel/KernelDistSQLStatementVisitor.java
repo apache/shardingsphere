@@ -137,7 +137,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
         return new ShowTableMetaDataStatement(tableNames, null == ctx.databaseName()
                 ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -219,9 +219,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowStorageUnits(final ShowStorageUnitsContext ctx) {
-        FromDatabaseSegment fromDatabase = null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
         String likePattern = null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern());
         return new ShowStorageUnitsStatement(fromDatabase, likePattern);
     }
@@ -238,9 +236,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowLogicalTables(final ShowLogicalTablesContext ctx) {
-        FromDatabaseSegment fromDatabase = null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
         return new ShowLogicalTablesStatement(null != ctx.FULL(), fromDatabase, null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
     }
     
@@ -277,9 +273,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitExportDatabaseConfiguration(final ExportDatabaseConfigurationContext ctx) {
-        return new ExportDatabaseConfigurationStatement(getIdentifierValue(ctx.filePath()), null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+        return new ExportDatabaseConfigurationStatement(getIdentifierValue(ctx.filePath()),
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -300,9 +295,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowRulesUsedStorageUnit(final ShowRulesUsedStorageUnitContext ctx) {
         return new ShowRulesUsedStorageUnitStatement(getIdentifierValue(ctx.storageUnitName()),
-                null == ctx.databaseName()
-                        ? null
-                        : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override

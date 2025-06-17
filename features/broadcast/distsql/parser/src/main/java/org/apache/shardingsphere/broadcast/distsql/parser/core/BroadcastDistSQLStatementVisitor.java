@@ -55,16 +55,12 @@ public final class BroadcastDistSQLStatementVisitor extends BroadcastDistSQLStat
     
     @Override
     public ASTNode visitShowBroadcastTableRules(final ShowBroadcastTableRulesContext ctx) {
-        return new ShowBroadcastTableRulesStatement(null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+        return new ShowBroadcastTableRulesStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitCountBroadcastRule(final CountBroadcastRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())), "BROADCAST");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "BROADCAST");
     }
     
     @Override

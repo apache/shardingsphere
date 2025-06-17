@@ -43,7 +43,7 @@ class ShowColumnsStatementContextTest {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         when(sqlStatement.getTable()).thenReturn(new SimpleTableSegment(tableNameSegment));
-        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db")));
+        FromDatabaseSegment fromDatabase = new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db")));
         when(sqlStatement.getFromDatabase()).thenReturn(Optional.of(fromDatabase));
         ShowColumnsStatementContext actual = new ShowColumnsStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
