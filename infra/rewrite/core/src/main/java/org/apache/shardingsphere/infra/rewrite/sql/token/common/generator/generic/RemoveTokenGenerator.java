@@ -44,7 +44,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         if (DatabaseTypedSPILoader.findService(DialectToBeRemovedSegmentsProvider.class, sqlStatementContext.getDatabaseType())
-                .map(optional -> optional.getToBeRemovedSQLSegments(sqlStatementContext.getSqlStatement()).isEmpty()).orElse(false)) {
+                .map(optional -> !optional.getToBeRemovedSQLSegments(sqlStatementContext.getSqlStatement()).isEmpty()).orElse(false)) {
             return true;
         }
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
