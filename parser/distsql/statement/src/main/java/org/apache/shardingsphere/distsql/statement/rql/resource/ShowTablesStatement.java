@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.statement.rql.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
@@ -29,19 +29,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class ShowTablesStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment database;
+    private final FromDatabaseSegment fromDatabase;
     
     private final String likePattern;
-    
-    /**
-     * Get database.
-     *
-     * @return database
-     */
-    @Override
-    public final Optional<DatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(database);
-    }
     
     /**
      * Get like pattern.
@@ -50,5 +40,10 @@ public abstract class ShowTablesStatement extends ResourceQueryStatement impleme
      */
     public Optional<String> getLikePattern() {
         return Optional.ofNullable(likePattern);
+    }
+    
+    @Override
+    public final Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

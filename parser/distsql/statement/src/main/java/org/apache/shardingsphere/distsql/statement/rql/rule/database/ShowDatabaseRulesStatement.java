@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.RuleQueryStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
@@ -30,10 +30,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment database;
+    private final FromDatabaseSegment fromDatabase;
     
     @Override
-    public final Optional<DatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(database);
+    public final Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

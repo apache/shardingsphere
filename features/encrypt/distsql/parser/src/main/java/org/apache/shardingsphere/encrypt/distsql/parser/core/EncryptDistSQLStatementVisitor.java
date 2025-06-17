@@ -45,6 +45,7 @@ import org.apache.shardingsphere.encrypt.distsql.statement.ShowEncryptRulesState
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -76,7 +77,8 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     public ASTNode visitShowEncryptRules(final ShowEncryptRulesContext ctx) {
         return new ShowEncryptRulesStatement(null == ctx.tableRule()
                 ? null
-                : getIdentifierValue(ctx.tableRule().tableName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+                : getIdentifierValue(ctx.tableRule().tableName()),
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -138,7 +140,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitCountEncryptRule(final CountEncryptRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "ENCRYPT");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "ENCRYPT");
     }
     
     @Override

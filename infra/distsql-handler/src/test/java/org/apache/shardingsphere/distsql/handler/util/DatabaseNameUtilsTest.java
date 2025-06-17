@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.distsql.handler.util;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -36,8 +36,8 @@ class DatabaseNameUtilsTest {
     @Test
     void assertDatabaseNameWhenAvailableInSQLStatement() {
         FromDatabaseAvailable sqlStatement = mock(FromDatabaseAvailable.class, withSettings().extraInterfaces(SQLStatement.class));
-        DatabaseSegment databaseSegment = mock(DatabaseSegment.class, RETURNS_DEEP_STUBS);
-        when(databaseSegment.getIdentifier().getValue()).thenReturn("bar_db");
+        FromDatabaseSegment databaseSegment = mock(FromDatabaseSegment.class, RETURNS_DEEP_STUBS);
+        when(databaseSegment.getDatabase().getIdentifier().getValue()).thenReturn("bar_db");
         when(sqlStatement.getFromDatabase()).thenReturn(Optional.of(databaseSegment));
         assertThat(DatabaseNameUtils.getDatabaseName((SQLStatement) sqlStatement, "foo_db"), is("bar_db"));
     }

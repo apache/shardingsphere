@@ -43,6 +43,7 @@ import org.apache.shardingsphere.mask.distsql.statement.DropMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.ShowMaskRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -72,12 +73,12 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     @Override
     public ASTNode visitShowMaskRules(final ShowMaskRulesContext ctx) {
         return new ShowMaskRulesStatement(null == ctx.RULE() ? null : getIdentifierValue(ctx.ruleName()),
-                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitCountMaskRule(final CountMaskRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "MASK");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "MASK");
     }
     
     @Override

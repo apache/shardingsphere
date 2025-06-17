@@ -173,7 +173,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTableFromUncompletedDatabase() throws SQLException {
-        ShowTablesStatement showTablesStatement = new ShowTablesStatement(new FromDatabaseSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))), null, false);
+        ShowTablesStatement showTablesStatement = new ShowTablesStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))), null, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         ContextManager contextManager = mockContextManager(mockDatabases());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

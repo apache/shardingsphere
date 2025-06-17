@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.statement.ral.queryable.export;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
@@ -30,14 +30,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment database;
-    
     private final String filePath;
     
-    @Override
-    public Optional<DatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(database);
-    }
+    private final FromDatabaseSegment fromDatabase;
     
     /**
      * Get file path.
@@ -46,5 +41,10 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
      */
     public Optional<String> getFilePath() {
         return Optional.ofNullable(filePath);
+    }
+    
+    @Override
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

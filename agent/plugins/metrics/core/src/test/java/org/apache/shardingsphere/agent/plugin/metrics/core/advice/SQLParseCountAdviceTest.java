@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.query
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
@@ -97,7 +98,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseRQL() {
-        assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null), "RQL=1");
+        assertParse(new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1");
     }
     
     @Test

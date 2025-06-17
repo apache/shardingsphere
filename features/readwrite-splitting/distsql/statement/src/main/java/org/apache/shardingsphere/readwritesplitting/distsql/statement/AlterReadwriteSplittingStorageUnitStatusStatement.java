@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
 
 import java.util.Optional;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @Getter
 public final class AlterReadwriteSplittingStorageUnitStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment database;
+    private final FromDatabaseSegment fromDatabase;
     
     private final String ruleName;
     
@@ -41,7 +41,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
     private final boolean enable;
     
     @Override
-    public Optional<DatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(database);
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
     }
 }

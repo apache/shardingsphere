@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
@@ -39,7 +40,9 @@ public final class DatabaseNameUtils {
      * @return database name
      */
     public static String getDatabaseName(final SQLStatement sqlStatement, final String currentDatabaseName) {
-        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getFromDatabase() : Optional.empty();
+        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable
+                ? ((FromDatabaseAvailable) sqlStatement).getFromDatabase().map(FromDatabaseSegment::getDatabase)
+                : Optional.empty();
         return databaseSegment.map(optional -> optional.getIdentifier().getValue()).orElse(currentDatabaseName);
     }
 }

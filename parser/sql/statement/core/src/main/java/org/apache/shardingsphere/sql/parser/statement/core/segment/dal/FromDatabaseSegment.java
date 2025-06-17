@@ -31,7 +31,14 @@ public final class FromDatabaseSegment implements SQLSegment {
     
     private final int startIndex;
     
-    private final int stopIndex;
-    
     private final DatabaseSegment database;
+    
+    /**
+     * Get stop index.
+     *
+     * @return stop index
+     */
+    public int getStopIndex() {
+        return database.getStopIndex();
+    }
 }
