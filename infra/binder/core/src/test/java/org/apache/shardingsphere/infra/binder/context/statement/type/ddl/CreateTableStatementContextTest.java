@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
@@ -33,7 +32,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,10 +42,8 @@ class CreateTableStatementContextTest {
     @Test
     void assertNewInstance() {
         CreateTableStatement sqlStatement = new CreateTableStatement();
-        CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         sqlStatement.setTable(table);
-        assertThat(actual, instanceOf(ConstraintAvailable.class));
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         when(columnDefinition.getReferencedTables()).thenReturn(Collections.singletonList(table));
         sqlStatement.getColumnDefinitions().add(columnDefinition);
@@ -55,9 +51,9 @@ class CreateTableStatementContextTest {
         when(constraintDefinition.getConstraintName()).thenReturn(Optional.of(new ConstraintSegment(0, 0, new IdentifierValue("foo_fk"))));
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
         sqlStatement.getConstraintDefinitions().add(constraintDefinition);
+        CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")))));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_idx")));
-        assertThat(actual.getConstraints().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_fk")));
     }
 }

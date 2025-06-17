@@ -20,16 +20,12 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
@@ -44,7 +40,7 @@ import java.util.LinkedList;
  * Alter table statement context.
  */
 @Getter
-public final class AlterTableStatementContext implements SQLStatementContext, IndexAvailable, ConstraintAvailable {
+public final class AlterTableStatementContext implements SQLStatementContext, IndexAvailable {
     
     private final DatabaseType databaseType;
     
@@ -89,17 +85,6 @@ public final class AlterTableStatementContext implements SQLStatementContext, In
             result.add(each.getIndexSegment());
             result.add(each.getRenameIndexSegment());
         }
-        return result;
-    }
-    
-    @Override
-    public Collection<ConstraintSegment> getConstraints() {
-        Collection<ConstraintSegment> result = new LinkedList<>();
-        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
-            each.getConstraintDefinition().getConstraintName().ifPresent(result::add);
-        }
-        getSqlStatement().getValidateConstraintDefinitions().stream().map(ValidateConstraintDefinitionSegment::getConstraintName).forEach(result::add);
-        getSqlStatement().getDropConstraintDefinitions().stream().map(DropConstraintDefinitionSegment::getConstraintName).forEach(result::add);
         return result;
     }
     

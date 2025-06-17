@@ -49,7 +49,7 @@ class ShardingConstraintTokenGeneratorTest {
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyConstraint() {
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
-        when(alterTableStatementContext.getConstraints().isEmpty()).thenReturn(true);
+        when(alterTableStatementContext.getSqlStatement().getConstraints().isEmpty()).thenReturn(true);
         assertFalse(generator.isGenerateSQLToken(alterTableStatementContext));
     }
     
@@ -73,8 +73,8 @@ class ShardingConstraintTokenGeneratorTest {
     }
     
     private AlterTableStatementContext mockAlterTableStatementContext() {
-        AlterTableStatementContext result = mock(AlterTableStatementContext.class);
-        when(result.getConstraints()).thenReturn(Collections.singleton(new ConstraintSegment(1, 3, mock(IdentifierValue.class))));
+        AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSqlStatement().getConstraints()).thenReturn(Collections.singleton(new ConstraintSegment(1, 3, mock(IdentifierValue.class))));
         return result;
     }
     

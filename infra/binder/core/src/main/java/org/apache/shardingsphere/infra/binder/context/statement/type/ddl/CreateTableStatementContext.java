@@ -20,12 +20,10 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -39,7 +37,7 @@ import java.util.stream.Collectors;
  * Create table statement context.
  */
 @Getter
-public final class CreateTableStatementContext implements SQLStatementContext, IndexAvailable, ConstraintAvailable {
+public final class CreateTableStatementContext implements SQLStatementContext, IndexAvailable {
     
     private final DatabaseType databaseType;
     
@@ -72,15 +70,6 @@ public final class CreateTableStatementContext implements SQLStatementContext, I
         Collection<IndexSegment> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
             each.getIndexName().ifPresent(result::add);
-        }
-        return result;
-    }
-    
-    @Override
-    public Collection<ConstraintSegment> getConstraints() {
-        Collection<ConstraintSegment> result = new LinkedList<>();
-        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
-            each.getConstraintName().ifPresent(result::add);
         }
         return result;
     }
