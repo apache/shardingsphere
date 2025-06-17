@@ -42,7 +42,6 @@ class CreateTableStatementContextTest {
     @Test
     void assertNewInstance() {
         CreateTableStatement sqlStatement = new CreateTableStatement();
-        CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
         sqlStatement.setTable(table);
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
@@ -52,6 +51,7 @@ class CreateTableStatementContextTest {
         when(constraintDefinition.getConstraintName()).thenReturn(Optional.of(new ConstraintSegment(0, 0, new IdentifierValue("foo_fk"))));
         when(constraintDefinition.getReferencedTable()).thenReturn(Optional.of(table));
         sqlStatement.getConstraintDefinitions().add(constraintDefinition);
+        CreateTableStatementContext actual = new CreateTableStatementContext(mock(), sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
         when(constraintDefinition.getIndexName()).thenReturn(Optional.of(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")))));
         assertThat(actual.getIndexes().stream().map(each -> each.getIndexName().getIdentifier().getValue()).collect(Collectors.toList()), is(Collections.singletonList("foo_idx")));
