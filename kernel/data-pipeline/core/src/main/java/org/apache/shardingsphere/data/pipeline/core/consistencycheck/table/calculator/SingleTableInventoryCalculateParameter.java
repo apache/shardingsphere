@@ -68,16 +68,6 @@ public final class SingleTableInventoryCalculateParameter {
     
     private final QueryType queryType;
     
-    public SingleTableInventoryCalculateParameter(final PipelineDataSource dataSource,
-                                                  final QualifiedTable table, final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys, final Object tableCheckPosition) {
-        this.dataSource = dataSource;
-        this.table = table;
-        this.columnNames = columnNames;
-        this.uniqueKeys = uniqueKeys;
-        queryType = QueryType.RANGE_QUERY;
-        setQueryRange(new QueryRange(tableCheckPosition, false, null));
-    }
-    
     /**
      * Get database type.
      *

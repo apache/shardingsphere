@@ -107,7 +107,8 @@ class RecordSingleTableInventoryCalculatorTest {
     void assertCalculateOfRangeQueryFromBeginWithOrderIdUniqueKey() {
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(5);
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
-                Collections.emptyList(), buildOrderIdUniqueKey(), 0);
+                Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY);
+        param.setQueryRange(new QueryRange(0, false, null));
         Optional<SingleTableInventoryCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
         assertTrue(calculateResult.isPresent());
@@ -120,7 +121,8 @@ class RecordSingleTableInventoryCalculatorTest {
     void assertCalculateOfRangeQueryFromMiddleWithOrderIdUniqueKey() {
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(5);
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
-                Collections.emptyList(), buildOrderIdUniqueKey(), 5);
+                Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY);
+        param.setQueryRange(new QueryRange(5, false, null));
         Optional<SingleTableInventoryCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
         assertTrue(calculateResult.isPresent());
@@ -181,7 +183,8 @@ class RecordSingleTableInventoryCalculatorTest {
             connection.createStatement().execute("CREATE TABLE test1 (user_id INT NOT NULL, order_id INT, status VARCHAR(12), PRIMARY KEY (user_id))");
         }
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test1"),
-                Collections.emptyList(), buildUserIdUniqueKey(), 0);
+                Collections.emptyList(), buildUserIdUniqueKey(), QueryType.RANGE_QUERY);
+        param.setQueryRange(new QueryRange(0, false, null));
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(5);
         Optional<SingleTableInventoryCalculatedResult> calculateResult = calculator.calculateChunk(param);
         QuietlyCloser.close(param.getCalculationContext());
