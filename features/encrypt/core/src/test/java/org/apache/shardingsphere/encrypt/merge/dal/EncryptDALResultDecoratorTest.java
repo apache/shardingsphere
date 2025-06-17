@@ -23,7 +23,6 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -98,7 +97,7 @@ class EncryptDALResultDecoratorTest {
     }
     
     private SQLStatementContext getShowColumnsStatementContext() {
-        ShowColumnsStatementContext result = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("foo_tbl")));
         when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         when(result.getSqlStatement()).thenReturn(mock(ShowColumnsStatement.class));
@@ -106,7 +105,7 @@ class EncryptDALResultDecoratorTest {
     }
     
     private SQLStatementContext mockShowCreateTableStatementContext() {
-        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("foo_tbl")));
         when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));

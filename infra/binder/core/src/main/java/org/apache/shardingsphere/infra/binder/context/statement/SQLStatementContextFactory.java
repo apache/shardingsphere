@@ -21,10 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowTableStatusStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowTablesStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
@@ -231,16 +227,16 @@ public final class SQLStatementContextFactory {
             return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof ShowColumnsStatement) {
-            return new ShowColumnsStatementContext(databaseType, (ShowColumnsStatement) sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof ShowTablesStatement) {
-            return new ShowTablesStatementContext(databaseType, (ShowTablesStatement) sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusStatementContext(databaseType, (ShowTableStatusStatement) sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof ShowIndexStatement) {
-            return new ShowIndexStatementContext(databaseType, (ShowIndexStatement) sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof AnalyzeTableStatement) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
