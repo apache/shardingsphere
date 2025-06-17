@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.FromDatabaseAvailable;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
 
 import java.util.Collection;
 import java.util.Collections;

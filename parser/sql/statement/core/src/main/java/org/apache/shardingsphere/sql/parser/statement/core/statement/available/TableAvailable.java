@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * From database available.
+ * Table available.
  */
-public interface FromDatabaseAvailable {
+public interface TableAvailable {
     
     /**
-     * Get from database.
+     * Get tables.
      *
-     * @return from database
+     * @return tables
      */
-    Optional<FromDatabaseSegment> getFromDatabase();
+    Collection<SimpleTableSegment> getTables();
 }

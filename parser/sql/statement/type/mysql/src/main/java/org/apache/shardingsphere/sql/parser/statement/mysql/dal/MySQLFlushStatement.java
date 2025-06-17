@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 import java.util.Collection;
