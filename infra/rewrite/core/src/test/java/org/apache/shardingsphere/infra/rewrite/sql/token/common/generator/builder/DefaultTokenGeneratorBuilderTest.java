@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder;
 
+import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowColumnsStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ShowTableStatusStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic.RemoveTokenGenerator;
@@ -38,10 +37,8 @@ import static org.mockito.Mockito.when;
 class DefaultTokenGeneratorBuilderTest {
     
     @Test
-    void assertGetSQLTokenGeneratorsWithShowTableStatus() {
-        ShowTableStatusStatementContext sqlStatementContext = mock(ShowTableStatusStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
-        assertGetSQLTokenGenerators(sqlStatementContext);
+    void assertGetSQLTokenGeneratorsWithCommonSQLStatementContext() {
+        assertGetSQLTokenGenerators(mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
@@ -53,8 +50,7 @@ class DefaultTokenGeneratorBuilderTest {
     
     @Test
     void assertGetSQLTokenGeneratorsWithShowColumns() {
-        ShowColumnsStatementContext sqlStatementContext = mock(ShowColumnsStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getRemoveSegments().isEmpty()).thenReturn(false);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(true);
         assertGetSQLTokenGenerators(sqlStatementContext);
     }

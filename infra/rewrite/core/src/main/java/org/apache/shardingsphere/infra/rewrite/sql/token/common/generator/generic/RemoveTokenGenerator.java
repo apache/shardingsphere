@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.gener
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.RemoveAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
+        if (DatabaseTypedSPILoader.findService(DialectToBeRemovedSegmentsProvider.class, sqlStatementContext.getDatabaseType())
+                .map(optional -> !optional.getToBeRemovedSQLSegments(sqlStatementContext.getSqlStatement()).isEmpty()).orElse(false)) {
             return true;
         }
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
@@ -54,8 +56,10 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        if (sqlStatementContext instanceof RemoveAvailable && !((RemoveAvailable) sqlStatementContext).getRemoveSegments().isEmpty()) {
-            result.addAll(generateRemoveAvailableSQLTokens(((RemoveAvailable) sqlStatementContext).getRemoveSegments()));
+        Collection<SQLSegment> toBeRemovedSQLSegments = DatabaseTypedSPILoader.findService(DialectToBeRemovedSegmentsProvider.class, sqlStatementContext.getDatabaseType())
+                .map(optional -> optional.getToBeRemovedSQLSegments(sqlStatementContext.getSqlStatement())).orElse(Collections.emptyList());
+        if (!toBeRemovedSQLSegments.isEmpty()) {
+            result.addAll(generateRemoveAvailableSQLTokens(toBeRemovedSQLSegments));
         }
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             result.addAll(generateTableAvailableSQLTokens(sqlStatementContext, sqlStatementContext.getDatabaseType()));

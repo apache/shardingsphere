@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.type;
+package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic;
 
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 
 /**
- * Remove available.
+ * Dialect to be removed segments provider.
  */
-public interface RemoveAvailable {
+@SingletonSPI
+public interface DialectToBeRemovedSegmentsProvider extends DatabaseTypedSPI {
     
     /**
-     * Get remove segments.
+     * Get to be removed SQL segments.
      *
-     * @return remove segments
+     * @param sqlStatement SQL statement
+     * @return to be removed SQL segments
      */
-    Collection<SQLSegment> getRemoveSegments();
+    Collection<SQLSegment> getToBeRemovedSQLSegments(SQLStatement sqlStatement);
 }

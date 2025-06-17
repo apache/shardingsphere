@@ -20,15 +20,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra</artifactId>
+        <artifactId>shardingsphere-infra-rewrite-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-rewrite</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-infra-rewrite-mysql</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>core</module>
-        <module>dialect</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-rewrite-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-statement-mysql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
