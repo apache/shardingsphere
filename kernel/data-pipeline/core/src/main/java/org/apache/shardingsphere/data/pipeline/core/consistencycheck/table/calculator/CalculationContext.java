@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,7 +40,10 @@ public final class CalculationContext implements AutoCloseable {
     
     private final AtomicReference<ResultSet> resultSet = new AtomicReference<>();
     
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean databaseResourcesReady = new AtomicBoolean(false);
+    
+    @Getter
+    private final Deque<Map<String, Object>> recordDeque = new LinkedList<>();
     
     /**
      * Get connection.
@@ -57,21 +64,21 @@ public final class CalculationContext implements AutoCloseable {
     }
     
     /**
-     * Get result set.
-     *
-     * @return result set
-     */
-    public ResultSet getResultSet() {
-        return resultSet.get();
-    }
-    
-    /**
      * Set prepared statement.
      *
      * @param preparedStatement prepared statement
      */
     public void setPreparedStatement(final PreparedStatement preparedStatement) {
         this.preparedStatement.set(preparedStatement);
+    }
+    
+    /**
+     * Get result set.
+     *
+     * @return result set
+     */
+    public ResultSet getResultSet() {
+        return resultSet.get();
     }
     
     /**
@@ -84,17 +91,34 @@ public final class CalculationContext implements AutoCloseable {
     }
     
     /**
-     * Is closed.
+     * Check if database resources are ready.
      *
-     * @return closed or not
+     * @return true if database resources are ready, false otherwise
      */
-    public boolean isClosed() {
-        return closed.get();
+    public boolean isDatabaseResourcesReady() {
+        return databaseResourcesReady.get();
+    }
+    
+    /**
+     * Set database resources ready.
+     *
+     * @param databaseResourcesReady true if database resources are ready, false otherwise
+     */
+    public void setDatabaseResourcesReady(final boolean databaseResourcesReady) {
+        this.databaseResourcesReady.set(databaseResourcesReady);
     }
     
     @Override
     public void close() {
-        closed.set(true);
+        resetDatabaseResources();
+        recordDeque.clear();
+    }
+    
+    /**
+     * Reset database resources.
+     */
+    public void resetDatabaseResources() {
+        setDatabaseResourcesReady(false);
         QuietlyCloser.close(resultSet.get());
         QuietlyCloser.close(preparedStatement.get());
         QuietlyCloser.close(connection.get());
