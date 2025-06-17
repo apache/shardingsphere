@@ -77,9 +77,10 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     public ASTNode visitShowEncryptRules(final ShowEncryptRulesContext ctx) {
         return new ShowEncryptRulesStatement(null == ctx.tableRule()
                 ? null
-                : getIdentifierValue(ctx.tableRule().tableName()), null == ctx.databaseName()
-                ? null
-                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
+                : getIdentifierValue(ctx.tableRule().tableName()),
+                null == ctx.databaseName()
+                        ? null
+                        : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override

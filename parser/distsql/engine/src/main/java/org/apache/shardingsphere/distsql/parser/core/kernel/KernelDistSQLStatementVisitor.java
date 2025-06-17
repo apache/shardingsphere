@@ -299,7 +299,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowRulesUsedStorageUnit(final ShowRulesUsedStorageUnitContext ctx) {
-        return new ShowRulesUsedStorageUnitStatement(getIdentifierValue(ctx.storageUnitName()), 
+        return new ShowRulesUsedStorageUnitStatement(getIdentifierValue(ctx.storageUnitName()),
                 null == ctx.databaseName()
                         ? null
                         : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), ctx.FROM().getSymbol().getStopIndex(), (DatabaseSegment) visit(ctx.databaseName())));
