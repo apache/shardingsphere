@@ -72,12 +72,12 @@ public final class ShardingSphereResultSetFactory {
                         : columnLabelAndIndexMap);
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private List<ResultSet> getResultSets() throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
-            if (null != each.getResultSet()) {
-                result.add(each.getResultSet());
+            ResultSet resultSet = each.getResultSet();
+            if (null != resultSet) {
+                result.add(resultSet);
             }
         }
         return result;
