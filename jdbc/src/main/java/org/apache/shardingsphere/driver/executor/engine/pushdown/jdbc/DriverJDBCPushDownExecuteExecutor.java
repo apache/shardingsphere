@@ -161,12 +161,12 @@ public final class DriverJDBCPushDownExecuteExecutor {
         return Optional.empty();
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private List<ResultSet> getResultSets(final List<? extends Statement> statements) throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
-            if (null != each.getResultSet()) {
-                result.add(each.getResultSet());
+            ResultSet resultSet = each.getResultSet();
+            if (null != resultSet) {
+                result.add(resultSet);
             }
         }
         return result;
