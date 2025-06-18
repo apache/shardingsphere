@@ -63,7 +63,7 @@ public final class ShardingTableTokenGenerator implements CollectionSQLTokenGene
             TableNameSegment tableNameSegment = each.getTableName();
             if (rule.findShardingTable(tableNameSegment.getIdentifier().getValue()).isPresent()) {
                 result.add(
-                        new ShardingTableToken(tableNameSegment.getStartIndex(), tableNameSegment.getStopIndex(), tableNameSegment.getIdentifier(), (SQLStatementContext) sqlStatementContext, rule));
+                        new ShardingTableToken(tableNameSegment.getStartIndex(), tableNameSegment.getStopIndex(), tableNameSegment.getIdentifier(), sqlStatementContext, rule));
             }
         }
         return result;
