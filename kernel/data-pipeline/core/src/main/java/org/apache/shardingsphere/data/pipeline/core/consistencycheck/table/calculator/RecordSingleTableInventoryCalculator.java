@@ -106,7 +106,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            Map<String, Object> record = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
+            Map<String, Object> record = readRecord(columnValueReaderEngine, resultSet, resultSetMetaData);
             result.add(record);
         }
         return result;
@@ -121,7 +121,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            result.add(readRecord(resultSet, resultSetMetaData, columnValueReaderEngine));
+            result.add(readRecord(columnValueReaderEngine, resultSet, resultSetMetaData));
             if (result.size() == chunkSize) {
                 return result;
             }
@@ -155,7 +155,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         }
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            Map<String, Object> record = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
+            Map<String, Object> record = readRecord(columnValueReaderEngine, resultSet, resultSetMetaData);
             if (null == previousRecord || DataConsistencyCheckUtils.isFirstUniqueKeyValueMatched(previousRecord, record, param.getFirstUniqueKey().getName(), equalsBuilder)) {
                 duplicateRecords.add(record);
                 previousRecord = record;
@@ -289,7 +289,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         return result;
     }
     
-    private Map<String, Object> readRecord(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+    private Map<String, Object> readRecord(final InventoryColumnValueReaderEngine columnValueReaderEngine, final ResultSet resultSet, final ResultSetMetaData resultSetMetaData) throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
         for (int columnIndex = 1, columnCount = resultSetMetaData.getColumnCount(); columnIndex <= columnCount; columnIndex++) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnValueReaderEngine.read(resultSet, resultSetMetaData, columnIndex));
