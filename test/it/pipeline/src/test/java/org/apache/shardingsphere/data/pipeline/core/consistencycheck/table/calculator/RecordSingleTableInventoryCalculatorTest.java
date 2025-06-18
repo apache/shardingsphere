@@ -156,7 +156,8 @@ class RecordSingleTableInventoryCalculatorTest {
     void assertCalculateOfRangeQueryWithMultiColumnUniqueKeys2() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute("CREATE TABLE test3 (user_id INT NOT NULL, order_id INT, status VARCHAR(12))");
-            connection.createStatement().execute("INSERT INTO test3 (user_id,order_id,status) VALUES (3,1,'ok'),(3,2,'ok'),(4,3,'ok'),(4,4,'ok'),(5,5,'ok'),(5,6,'ok'),(6,7,'ok'),(6,8,'ok'),(7,9,'ok')");
+            connection.createStatement().execute(
+                    "INSERT INTO test3 (user_id,order_id,status) VALUES (3,1,'ok'),(3,2,'ok'),(4,3,'ok'),(4,4,'ok'),(5,5,'ok'),(5,6,'ok'),(6,7,'ok'),(6,8,'ok'),(7,9,'ok')");
         }
         RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(1000);
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "test3"),
