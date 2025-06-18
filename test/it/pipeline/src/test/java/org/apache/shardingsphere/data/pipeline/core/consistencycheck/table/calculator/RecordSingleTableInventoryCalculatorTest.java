@@ -105,30 +105,18 @@ class RecordSingleTableInventoryCalculatorTest {
     
     @Test
     void assertCalculateOfRangeQueryFromBeginWithOrderIdUniqueKey() {
-        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(5);
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(4);
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY);
-        param.setQueryRange(new QueryRange(0, false, null));
-        Optional<SingleTableInventoryCalculatedResult> calculateResult = calculator.calculateChunk(param);
-        QuietlyCloser.close(param.getCalculationContext());
-        assertTrue(calculateResult.isPresent());
-        SingleTableInventoryCalculatedResult actual = calculateResult.get();
-        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
-        assertThat(actual.getMaxUniqueKeyValue().get(), is(5));
+        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(0, false, null), 4, 4);
     }
     
     @Test
     void assertCalculateOfRangeQueryFromMiddleWithOrderIdUniqueKey() {
-        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(5);
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(4);
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY);
-        param.setQueryRange(new QueryRange(5, false, null));
-        Optional<SingleTableInventoryCalculatedResult> calculateResult = calculator.calculateChunk(param);
-        QuietlyCloser.close(param.getCalculationContext());
-        assertTrue(calculateResult.isPresent());
-        SingleTableInventoryCalculatedResult actual = calculateResult.get();
-        assertTrue(actual.getMaxUniqueKeyValue().isPresent());
-        assertThat(actual.getMaxUniqueKeyValue().get(), is(10));
+        assertQueryRangeCalculatedResult(calculator, param, new QueryRange(4, false, null), 4, 8);
     }
     
     @Test
