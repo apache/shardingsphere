@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -79,7 +79,7 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> 
     private ShardingConditions createShardingConditions(final QueryContext queryContext,
                                                         final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
-        if (queryContext.getSqlStatementContext().getSqlStatement() instanceof DMLStatement || queryContext.getSqlStatementContext() instanceof CursorAvailable) {
+        if (queryContext.getSqlStatementContext().getSqlStatement() instanceof DMLStatement || queryContext.getSqlStatementContext() instanceof CursorContextAvailable) {
             shardingConditions = new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
         } else {
             shardingConditions = Collections.emptyList();

@@ -21,7 +21,7 @@ import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueDataTypeException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.Column;
@@ -71,7 +71,7 @@ public final class WhereClauseShardingConditionEngine {
      * @return sharding conditions
      */
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
+        if (!(sqlStatementContext instanceof WhereContextAvailable)) {
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();

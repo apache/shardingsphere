@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -43,7 +43,7 @@ import java.util.Optional;
  * Cursor statement context.
  */
 @Getter
-public final class CursorStatementContext implements SQLStatementContext, CursorAvailable, WhereAvailable {
+public final class CursorStatementContext implements SQLStatementContext, CursorContextAvailable, WhereContextAvailable {
     
     private final DatabaseType databaseType;
     

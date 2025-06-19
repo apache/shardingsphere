@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.type;
+package org.apache.shardingsphere.infra.binder.context.available;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import java.util.Collection;
 
 /**
- * Where available.
+ * Where context available.
  */
-public interface WhereAvailable {
+public interface WhereContextAvailable {
     
     /**
      * Get where segments.

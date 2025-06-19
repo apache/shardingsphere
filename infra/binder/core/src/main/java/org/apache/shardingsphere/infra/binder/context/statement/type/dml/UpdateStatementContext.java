@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
@@ -38,7 +38,7 @@ import java.util.LinkedList;
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext implements SQLStatementContext, WhereAvailable {
+public final class UpdateStatementContext implements SQLStatementContext, WhereContextAvailable {
     
     private final DatabaseType databaseType;
     

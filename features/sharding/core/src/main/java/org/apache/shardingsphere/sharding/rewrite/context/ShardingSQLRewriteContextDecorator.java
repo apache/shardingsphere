@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -62,7 +62,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     }
     
     private boolean isCursorAvailableStatement(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CursorAvailable;
+        return sqlStatementContext instanceof CursorContextAvailable;
     }
     
     private boolean containsShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext) {

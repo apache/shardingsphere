@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.Inse
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -65,7 +65,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Insert SQL statement context.
  */
-public final class InsertStatementContext implements SQLStatementContext, ParameterAware, WhereAvailable {
+public final class InsertStatementContext implements SQLStatementContext, ParameterAware, WhereContextAvailable {
     
     private final ShardingSphereMetaData metaData;
     

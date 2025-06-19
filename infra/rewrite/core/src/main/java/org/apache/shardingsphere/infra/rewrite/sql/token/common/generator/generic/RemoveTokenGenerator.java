@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -50,7 +50,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             return true;
         }
-        return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
+        return sqlStatementContext instanceof IndexContextAvailable && !((IndexContextAvailable) sqlStatementContext).getIndexes().isEmpty();
     }
     
     @Override
@@ -64,8 +64,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             result.addAll(generateTableAvailableSQLTokens(sqlStatementContext, sqlStatementContext.getDatabaseType()));
         }
-        if (sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty()) {
-            result.addAll(generateIndexAvailableSQLTokens((IndexAvailable) sqlStatementContext));
+        if (sqlStatementContext instanceof IndexContextAvailable && !((IndexContextAvailable) sqlStatementContext).getIndexes().isEmpty()) {
+            result.addAll(generateIndexAvailableSQLTokens((IndexContextAvailable) sqlStatementContext));
         }
         return result;
     }
@@ -91,9 +91,9 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         return result;
     }
     
-    private Collection<RemoveToken> generateIndexAvailableSQLTokens(final IndexAvailable indexAvailable) {
+    private Collection<RemoveToken> generateIndexAvailableSQLTokens(final IndexContextAvailable indexContextAvailable) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (IndexSegment each : indexAvailable.getIndexes()) {
+        for (IndexSegment each : indexContextAvailable.getIndexes()) {
             if (!each.getOwner().isPresent()) {
                 continue;
             }

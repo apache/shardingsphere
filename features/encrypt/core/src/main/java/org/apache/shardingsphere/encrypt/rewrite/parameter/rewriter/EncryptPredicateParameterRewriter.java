@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
@@ -50,7 +50,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable;
+        return sqlStatementContext instanceof WhereContextAvailable;
     }
     
     @Override
