@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.opengauss;
 
-import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.infra.binder.postgresql.PostgreSQLSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
