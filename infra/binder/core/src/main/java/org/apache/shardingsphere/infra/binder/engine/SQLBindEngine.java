@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.binder.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * SQL bind engine.
@@ -62,6 +65,14 @@ public final class SQLBindEngine {
     }
     
     private SQLStatement bind(final DatabaseType databaseType, final SQLStatement statement) {
+        Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, databaseType);
+        if (dialectSQLBindEngine.isPresent()) {
+            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
+            Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(statement, binderContext);
+            if (boundSQLStatement.isPresent()) {
+                return boundSQLStatement.get();
+            }
+        }
         if (statement instanceof DMLStatement) {
             return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DMLStatement) statement);
         }

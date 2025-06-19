@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dal;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 
 /**
- * Show create table statement binder.
+ * Show create table statement binder for MySQL.
  */
-public final class ShowCreateTableStatementBinder implements SQLStatementBinder<ShowCreateTableStatement> {
+public final class MySQLShowCreateTableStatementBinder implements SQLStatementBinder<ShowCreateTableStatement> {
     
     @Override
     public ShowCreateTableStatement bind(final ShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {

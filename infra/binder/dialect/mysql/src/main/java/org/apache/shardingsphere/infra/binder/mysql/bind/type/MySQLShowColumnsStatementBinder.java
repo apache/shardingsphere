@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dal;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
@@ -33,9 +33,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCol
 import java.util.Optional;
 
 /**
- * Show columns statement binder.
+ * Show columns statement binder for MySQL.
  */
-public final class ShowColumnsStatementBinder implements SQLStatementBinder<ShowColumnsStatement> {
+public final class MySQLShowColumnsStatementBinder implements SQLStatementBinder<ShowColumnsStatement> {
     
     @Override
     public ShowColumnsStatement bind(final ShowColumnsStatement sqlStatement, final SQLStatementBinderContext binderContext) {

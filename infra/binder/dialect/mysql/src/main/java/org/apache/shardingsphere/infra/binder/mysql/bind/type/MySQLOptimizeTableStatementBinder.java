@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dal;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
@@ -29,9 +29,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Optimize table statement binder.
+ * Optimize table statement binder for MySQL.
  */
-public final class OptimizeTableStatementBinder implements SQLStatementBinder<OptimizeTableStatement> {
+public final class MySQLOptimizeTableStatementBinder implements SQLStatementBinder<OptimizeTableStatement> {
     
     @Override
     public OptimizeTableStatement bind(final OptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {

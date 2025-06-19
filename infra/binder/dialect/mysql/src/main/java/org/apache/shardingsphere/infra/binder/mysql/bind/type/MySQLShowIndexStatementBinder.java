@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dal;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
 
 /**
- * Show index statement binder.
+ * Show index statement binder for MySQL.
  */
-public final class ShowIndexStatementBinder implements SQLStatementBinder<ShowIndexStatement> {
+public final class MySQLShowIndexStatementBinder implements SQLStatementBinder<ShowIndexStatement> {
     
     @Override
     public ShowIndexStatement bind(final ShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
