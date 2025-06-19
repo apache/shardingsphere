@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.engine.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.CopyStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder;
@@ -26,9 +25,6 @@ import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadDataState
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadXMLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.UpdateStatementBinder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
@@ -41,25 +37,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateS
 /**
  * DML statement bind engine.
  */
-@RequiredArgsConstructor
 public final class DMLStatementBindEngine {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
-    
-    private final DatabaseType databaseType;
     
     /**
      * Bind DML statement.
      *
      * @param statement to be bound DML statement
+     * @param binderContext binder context
      * @return bound DML statement
      */
-    public DMLStatement bind(final DMLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
+    public DMLStatement bind(final DMLStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof SelectStatement) {
             return new SelectStatementBinder().bind((SelectStatement) statement, binderContext);
         }

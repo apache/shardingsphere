@@ -65,25 +65,25 @@ public final class SQLBindEngine {
     }
     
     private SQLStatement bind(final DatabaseType databaseType, final SQLStatement statement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
         Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, databaseType);
         if (dialectSQLBindEngine.isPresent()) {
-            SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
             Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(statement, binderContext);
             if (boundSQLStatement.isPresent()) {
                 return boundSQLStatement.get();
             }
         }
         if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DMLStatement) statement);
+            return new DMLStatementBindEngine().bind((DMLStatement) statement, binderContext);
         }
         if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DDLStatement) statement);
+            return new DDLStatementBindEngine().bind((DDLStatement) statement, binderContext);
         }
         if (statement instanceof DALStatement) {
-            return new DALStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DALStatement) statement);
+            return new DALStatementBindEngine().bind((DALStatement) statement, binderContext);
         }
         if (statement instanceof DCLStatement) {
-            return new DCLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DCLStatement) statement);
+            return new DCLStatementBindEngine().bind((DCLStatement) statement, binderContext);
         }
         return statement;
     }

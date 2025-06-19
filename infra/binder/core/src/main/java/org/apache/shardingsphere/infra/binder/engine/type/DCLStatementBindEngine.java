@@ -17,37 +17,24 @@
 
 package org.apache.shardingsphere.infra.binder.engine.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dcl.DenyUserStatementBinder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
 /**
  * DCL statement bind engine.
  */
-@RequiredArgsConstructor
 public final class DCLStatementBindEngine {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
-    
-    private final DatabaseType databaseType;
     
     /**
      * Bind DCL statement.
      *
      * @param statement to be bound DCL statement
+     * @param binderContext binder context
      * @return bound DCL statement
      */
-    public DCLStatement bind(final DCLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
+    public DCLStatement bind(final DCLStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof DenyUserStatement) {
             return new DenyUserStatementBinder().bind((DenyUserStatement) statement, binderContext);
         }
