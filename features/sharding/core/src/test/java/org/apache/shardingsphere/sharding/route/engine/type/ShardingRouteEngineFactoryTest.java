@@ -40,7 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
@@ -236,7 +236,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForOptimizeTableWithShardingTable() {
-        OptimizeTableStatement sqlStatement = mock(OptimizeTableStatement.class);
+        MySQLOptimizeTableStatement sqlStatement = mock(MySQLOptimizeTableStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);

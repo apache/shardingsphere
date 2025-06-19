@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStat
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
@@ -249,8 +249,8 @@ public final class DALStatementAssert {
             RestartStatementAssert.assertIs(assertContext, (MySQLRestartStatement) actual, (RestartStatementTestCase) expected);
         } else if (actual instanceof MySQLSetResourceGroupStatement) {
             SetResourceGroupStatementAssert.assertIs(assertContext, (MySQLSetResourceGroupStatement) actual, (SetResourceGroupStatementTestCase) expected);
-        } else if (actual instanceof OptimizeTableStatement) {
-            OptimizeTableStatementAssert.assertIs(assertContext, (OptimizeTableStatement) actual, (OptimizeTableStatementTestCase) expected);
+        } else if (actual instanceof MySQLOptimizeTableStatement) {
+            OptimizeTableStatementAssert.assertIs(assertContext, (MySQLOptimizeTableStatement) actual, (OptimizeTableStatementTestCase) expected);
         } else if (actual instanceof MySQLRepairTableStatement) {
             RepairTableStatementAssert.assertIs(assertContext, (MySQLRepairTableStatement) actual, (RepairTableStatementTestCase) expected);
         } else if (actual instanceof MySQLBinlogStatement) {

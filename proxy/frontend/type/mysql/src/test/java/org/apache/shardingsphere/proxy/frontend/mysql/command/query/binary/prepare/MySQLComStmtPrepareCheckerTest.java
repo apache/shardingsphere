@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
@@ -92,7 +92,7 @@ class MySQLComStmtPrepareCheckerTest {
                 mock(DropTableStatement.class), mock(MySQLCreateUserStatement.class), mock(RenameUserStatement.class), mock(DropUserStatement.class),
                 mock(CreateViewStatement.class), mock(DropViewStatement.class), mock(DeleteStatement.class), mock(DoStatement.class), mock(MySQLFlushStatement.class),
                 mock(MySQLGrantStatement.class), mock(InsertStatement.class), mock(MySQLInstallPluginStatement.class), mock(MySQLKillStatement.class),
-                mock(MySQLLoadIndexInfoStatement.class), mock(OptimizeTableStatement.class), mock(RenameTableStatement.class), mock(MySQLRepairTableStatement.class),
+                mock(MySQLLoadIndexInfoStatement.class), mock(MySQLOptimizeTableStatement.class), mock(RenameTableStatement.class), mock(MySQLRepairTableStatement.class),
                 mock(MySQLResetStatement.class), mock(MySQLRevokeStatement.class), mock(SelectStatement.class), mock(SetStatement.class), mock(MySQLShowWarningsStatement.class),
                 mock(MySQLShowErrorsStatement.class), mock(MySQLShowBinlogEventsStatement.class), mock(MySQLShowCreateProcedureStatement.class), mock(MySQLShowCreateFunctionStatement.class),
                 mock(MySQLShowCreateEventStatement.class), mock(ShowCreateTableStatement.class), mock(MySQLShowCreateViewStatement.class), mock(MySQLShowBinaryLogsStatement.class),

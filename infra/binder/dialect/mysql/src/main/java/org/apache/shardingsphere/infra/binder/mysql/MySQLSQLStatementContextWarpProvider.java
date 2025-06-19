@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.mysql;
 
 import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
@@ -35,7 +35,7 @@ import java.util.Collection;
 public final class MySQLSQLStatementContextWarpProvider implements DialectCommonSQLStatementContextWarpProvider {
     
     private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_SQL_STATEMENT_TYPES = Arrays.asList(
-            ShowCreateTableStatement.class, MySQLFlushStatement.class, OptimizeTableStatement.class, MySQLDescribeStatement.class, LoadDataStatement.class, LoadXMLStatement.class);
+            ShowCreateTableStatement.class, MySQLFlushStatement.class, MySQLOptimizeTableStatement.class, MySQLDescribeStatement.class, LoadDataStatement.class, LoadXMLStatement.class);
     
     @Override
     public Collection<Class<? extends SQLStatement>> getNeedToWarpSQLStatementTypes() {

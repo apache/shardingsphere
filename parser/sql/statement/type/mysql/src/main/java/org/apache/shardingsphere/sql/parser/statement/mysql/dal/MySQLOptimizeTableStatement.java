@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 import java.util.Collection;
 
 /**
- * Optimize table statement.
+ * Optimize table statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OptimizeTableStatement extends AbstractSQLStatement implements DALStatement, TableAvailable {
+public final class MySQLOptimizeTableStatement extends AbstractSQLStatement implements DALStatement, TableAvailable {
     
     private final Collection<SimpleTableSegment> tables;
 }
