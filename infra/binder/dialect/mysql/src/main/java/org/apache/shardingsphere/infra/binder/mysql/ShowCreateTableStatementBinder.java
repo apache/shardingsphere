@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dal;
+package org.apache.shardingsphere.infra.binder.mysql;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
@@ -23,20 +23,20 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 
 /**
- * Show index statement binder.
+ * Show create table statement binder.
  */
-public final class ShowIndexStatementBinder implements SQLStatementBinder<ShowIndexStatement> {
+public final class ShowCreateTableStatementBinder implements SQLStatementBinder<ShowCreateTableStatement> {
     
     @Override
-    public ShowIndexStatement bind(final ShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public ShowCreateTableStatement bind(final ShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        ShowIndexStatement result = new ShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
+    private ShowCreateTableStatement copy(final ShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
+        ShowCreateTableStatement result = new ShowCreateTableStatement(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
