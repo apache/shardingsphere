@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -31,17 +31,17 @@ import java.util.stream.Collectors;
 /**
  * Optimize table statement binder for MySQL.
  */
-public final class MySQLOptimizeTableStatementBinder implements SQLStatementBinder<OptimizeTableStatement> {
+public final class MySQLOptimizeTableStatementBinder implements SQLStatementBinder<MySQLOptimizeTableStatement> {
     
     @Override
-    public OptimizeTableStatement bind(final OptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public MySQLOptimizeTableStatement bind(final MySQLOptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
                 .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
         return copy(sqlStatement, boundTables);
     }
     
-    private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
-        OptimizeTableStatement result = new OptimizeTableStatement(boundTables);
+    private MySQLOptimizeTableStatement copy(final MySQLOptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
+        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement(boundTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
