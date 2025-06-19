@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
