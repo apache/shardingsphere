@@ -37,4 +37,5 @@
     <sql-case id="select_sub_query_with_inner_join" value="SELECT [T1_1].[BusinessEntityID] AS [BusinessEntityID], [T1_1].[AddressID] AS [AddressID] FROM (SELECT [T2_2].[BusinessEntityID] AS [BusinessEntityID], [T2_1].[AddressID] AS [AddressID] FROM [AdventureWorks2022].[Person].[BusinessEntityAddress] AS T2_1 INNER JOIN [AdventureWorks2022].[Person].[BusinessEntity] AS T2_2 ON ([T2_1].[BusinessEntityID] = [T2_2].[BusinessEntityID])) AS T1_1" db-types="SQLServer"/>
     <sql-case id="select_sub_query_with_sum" value="SELECT [T1_1].[col] AS [col] FROM (SELECT SUM([T2_1].[Quantity]) AS [col] FROM [AdventureWorks2022].[Production].[ProductInventory] AS T2_1) AS T1_1" db-types="SQLServer"/>
     <sql-case id="select_sub_query_with_rownumber" value="SELECT * FROM (SELECT col1, ROW_NUMBER () OVER (PARTITION by col1 ORDER BY col1) rn FROM tab1 WHERE col1='XYZ') WHERE rn = 1" db-types="SQLServer"/>
+    <sql-case id="select_sub_query_with_alias" value="SELECT B.* FROM (SELECT A.* FROM (SELECT * FROM ACT_DEPLOY_FORM WHERE FORM_KEY = 1) AS A) AS B" db-types="Oracle"/>
 </sql-cases>
