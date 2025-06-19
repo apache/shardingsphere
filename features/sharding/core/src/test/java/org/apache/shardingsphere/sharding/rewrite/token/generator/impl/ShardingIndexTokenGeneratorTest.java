@@ -50,7 +50,7 @@ class ShardingIndexTokenGeneratorTest {
     private final ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
     
     @Test
-    void assertIsNotGenerateSQLTokenWithNotIndexAvailable() {
+    void assertIsNotGenerateSQLTokenWithNotIndexContextAvailable() {
         assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
@@ -69,7 +69,7 @@ class ShardingIndexTokenGeneratorTest {
     }
     
     @Test
-    void assertGenerateSQLTokensWithNotIndexAvailable() {
+    void assertGenerateSQLTokensWithNotIndexContextAvailable() {
         Collection<SQLToken> actual = generator.generateSQLTokens(mock(SQLStatementContext.class));
         assertTrue(actual.isEmpty());
     }

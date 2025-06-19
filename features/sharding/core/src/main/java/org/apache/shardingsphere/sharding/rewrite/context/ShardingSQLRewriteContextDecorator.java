@@ -46,7 +46,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     @Override
     public void decorate(final ShardingRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
-        if (!isAlterOrDropIndexStatement(sqlStatementContext) && !isCursorAvailableStatement(sqlStatementContext) && !containsShardingTable(rule, sqlStatementContext)) {
+        if (!isAlterOrDropIndexStatement(sqlStatementContext) && !isCursorContextAvailableStatement(sqlStatementContext) && !containsShardingTable(rule, sqlStatementContext)) {
             return;
         }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
@@ -61,7 +61,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
         return sqlStatementContext instanceof AlterIndexStatementContext || sqlStatementContext instanceof DropIndexStatementContext;
     }
     
-    private boolean isCursorAvailableStatement(final SQLStatementContext sqlStatementContext) {
+    private boolean isCursorContextAvailableStatement(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CursorContextAvailable;
     }
     
