@@ -32,7 +32,7 @@ public interface DialectSQLBindEngine extends DatabaseTypedSPI {
     
     /**
      * Bind SQL statement.
-     * 
+     *
      * @param sqlStatement SQL statement
      * @param binderContext binder context
      * @return bound SQL statement
