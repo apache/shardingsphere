@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.sqlserver;
 
-import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
 
