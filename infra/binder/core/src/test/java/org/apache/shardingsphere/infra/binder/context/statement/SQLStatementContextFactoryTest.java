@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement;
 
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.statement;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.provider.DialectCommonSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;

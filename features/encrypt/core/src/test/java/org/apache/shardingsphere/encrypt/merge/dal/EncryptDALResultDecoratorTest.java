@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.merge.dal;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;

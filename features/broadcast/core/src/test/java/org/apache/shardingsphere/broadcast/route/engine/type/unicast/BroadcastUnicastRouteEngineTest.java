@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.broadcast.route.engine.type.unicast;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
