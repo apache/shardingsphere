@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.mysql;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
@@ -23,20 +23,25 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Show index statement binder.
+ * Optimize table statement binder for MySQL.
  */
-public final class ShowIndexStatementBinder implements SQLStatementBinder<ShowIndexStatement> {
+public final class MySQLOptimizeTableStatementBinder implements SQLStatementBinder<OptimizeTableStatement> {
     
     @Override
-    public ShowIndexStatement bind(final ShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
+    public OptimizeTableStatement bind(final OptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
+                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
+        return copy(sqlStatement, boundTables);
     }
     
-    private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        ShowIndexStatement result = new ShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
+    private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
+        OptimizeTableStatement result = new OptimizeTableStatement(boundTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

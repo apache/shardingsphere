@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.binder.mysql.MySQLSQLBindEngine
+org.apache.shardingsphere.infra.binder.mysql.bind.MySQLSQLBindEngine

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.mysql;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
@@ -23,25 +23,20 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 
 /**
- * Optimize table statement binder.
+ * Show create table statement binder for MySQL.
  */
-public final class OptimizeTableStatementBinder implements SQLStatementBinder<OptimizeTableStatement> {
+public final class MySQLShowCreateTableStatementBinder implements SQLStatementBinder<ShowCreateTableStatement> {
     
     @Override
-    public OptimizeTableStatement bind(final OptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
-                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
-        return copy(sqlStatement, boundTables);
+    public ShowCreateTableStatement bind(final ShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private OptimizeTableStatement copy(final OptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
-        OptimizeTableStatement result = new OptimizeTableStatement(boundTables);
+    private ShowCreateTableStatement copy(final ShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
+        ShowCreateTableStatement result = new ShowCreateTableStatement(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
