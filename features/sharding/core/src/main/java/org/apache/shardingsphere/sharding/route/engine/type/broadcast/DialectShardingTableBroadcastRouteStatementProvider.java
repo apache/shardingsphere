@@ -31,7 +31,7 @@ public interface DialectShardingTableBroadcastRouteStatementProvider extends Dat
     
     /**
      * Get broadcast route statement types.
-     * 
+     *
      * @return got statement types
      */
     Collection<Class<? extends SQLStatement>> getBroadcastRouteStatementTypes();
