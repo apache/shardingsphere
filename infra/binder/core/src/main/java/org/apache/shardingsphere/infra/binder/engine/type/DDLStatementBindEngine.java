@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.engine.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterTableStatementBinder;
@@ -31,9 +30,6 @@ import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStat
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
@@ -51,25 +47,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.Truncat
 /**
  * DDL statement bind engine.
  */
-@RequiredArgsConstructor
 public final class DDLStatementBindEngine {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
-    
-    private final DatabaseType databaseType;
     
     /**
      * Bind DDL statement.
      *
      * @param statement to be bound DDL statement
+     * @param binderContext binder context
      * @return bound DDL statement
      */
-    public DDLStatement bind(final DDLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
+    public DDLStatement bind(final DDLStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof CursorStatement) {
             return new CursorStatementBinder().bind((CursorStatement) statement, binderContext);
         }

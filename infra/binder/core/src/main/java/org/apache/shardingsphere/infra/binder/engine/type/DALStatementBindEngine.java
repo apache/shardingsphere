@@ -17,37 +17,24 @@
 
 package org.apache.shardingsphere.infra.binder.engine.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.ExplainStatementBinder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 
 /**
  * DAL statement bind engine.
  */
-@RequiredArgsConstructor
 public final class DALStatementBindEngine {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
-    
-    private final DatabaseType databaseType;
     
     /**
      * Bind DAL statement.
      *
      * @param statement to be bound DAL statement
+     * @param binderContext binder context
      * @return bound DAL statement
      */
-    public DALStatement bind(final DALStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
+    public DALStatement bind(final DALStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof ExplainStatement) {
             return new ExplainStatementBinder().bind((ExplainStatement) statement, binderContext);
         }
