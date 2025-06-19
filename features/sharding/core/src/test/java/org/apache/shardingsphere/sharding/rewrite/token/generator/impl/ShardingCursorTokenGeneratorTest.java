@@ -40,7 +40,7 @@ class ShardingCursorTokenGeneratorTest {
     private final ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
     
     @Test
-    void assertIsNotGenerateSQLTokenWithNotCursorAvailable() {
+    void assertIsNotGenerateSQLTokenWithNotCursorContextAvailable() {
         assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     

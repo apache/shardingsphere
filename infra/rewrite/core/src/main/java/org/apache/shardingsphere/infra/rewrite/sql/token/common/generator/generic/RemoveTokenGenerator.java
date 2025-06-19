@@ -65,7 +65,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
             result.addAll(generateTableAvailableSQLTokens(sqlStatementContext, sqlStatementContext.getDatabaseType()));
         }
         if (sqlStatementContext instanceof IndexContextAvailable && !((IndexContextAvailable) sqlStatementContext).getIndexes().isEmpty()) {
-            result.addAll(generateIndexAvailableSQLTokens((IndexContextAvailable) sqlStatementContext));
+            result.addAll(generateIndexContextAvailableSQLTokens((IndexContextAvailable) sqlStatementContext));
         }
         return result;
     }
@@ -91,7 +91,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         return result;
     }
     
-    private Collection<RemoveToken> generateIndexAvailableSQLTokens(final IndexContextAvailable indexContextAvailable) {
+    private Collection<RemoveToken> generateIndexContextAvailableSQLTokens(final IndexContextAvailable indexContextAvailable) {
         Collection<RemoveToken> result = new LinkedList<>();
         for (IndexSegment each : indexContextAvailable.getIndexes()) {
             if (!each.getOwner().isPresent()) {

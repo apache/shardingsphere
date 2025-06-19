@@ -80,7 +80,7 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceWithCursorAvailableAndIsAllBroadcastTables() {
+    void assertNewInstanceWithCursorContextAvailableAndIsAllBroadcastTables() {
         CloseStatementContext sqlStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class EncryptPredicateColumnSupportedCheckerTest {
     
     @Test
-    void assertIsCheckWithNotWhereAvailable() {
+    void assertIsCheckWithNotWhereContextAvailable() {
         assertFalse(new EncryptPredicateColumnSupportedChecker().isCheck(mock(SQLStatementContext.class)));
     }
     
