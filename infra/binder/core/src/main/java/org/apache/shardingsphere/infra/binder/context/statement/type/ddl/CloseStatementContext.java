@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -38,7 +38,7 @@ import java.util.Optional;
  * Close statement context.
  */
 @Getter
-public final class CloseStatementContext implements SQLStatementContext, CursorAvailable, WhereAvailable, CursorAware {
+public final class CloseStatementContext implements SQLStatementContext, CursorContextAvailable, WhereContextAvailable, CursorAware {
     
     private final DatabaseType databaseType;
     

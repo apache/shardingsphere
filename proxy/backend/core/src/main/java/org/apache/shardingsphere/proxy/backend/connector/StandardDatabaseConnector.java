@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
@@ -133,8 +133,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         checkBackendReady(sqlStatementContext);
         containsDerivedProjections = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
-        if (sqlStatementContext instanceof CursorAvailable) {
-            prepareCursorStatementContext((CursorAvailable) sqlStatementContext);
+        if (sqlStatementContext instanceof CursorContextAvailable) {
+            prepareCursorStatementContext((CursorContextAvailable) sqlStatementContext);
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
         pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
@@ -148,7 +148,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(database.getName()));
     }
     
-    private void prepareCursorStatementContext(final CursorAvailable statementContext) {
+    private void prepareCursorStatementContext(final CursorContextAvailable statementContext) {
         if (statementContext.getCursorName().isPresent()) {
             prepareCursorStatementContext(statementContext, statementContext.getCursorName().get().getIdentifier().getValue().toLowerCase());
         }
@@ -157,7 +157,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         }
     }
     
-    private void prepareCursorStatementContext(final CursorAvailable statementContext, final String cursorName) {
+    private void prepareCursorStatementContext(final CursorContextAvailable statementContext, final String cursorName) {
         CursorConnectionContext cursorContext = databaseConnectionManager.getConnectionSession().getConnectionContext().getCursorContext();
         if (statementContext instanceof CursorStatementContext) {
             cursorContext.getCursorStatementContexts().put(cursorName, (CursorStatementContext) statementContext);

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.NoTablelessRouteInfoException;
@@ -93,7 +93,7 @@ public final class TablelessRouteEngineFactory {
     }
     
     private static TablelessRouteEngine getDDLRouteEngine(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        if (sqlStatementContext instanceof CursorAvailable) {
+        if (sqlStatementContext instanceof CursorContextAvailable) {
             return getCursorRouteEngine(sqlStatementContext.getSqlStatement(), database);
         }
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();

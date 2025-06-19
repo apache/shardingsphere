@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.type;
+package org.apache.shardingsphere.infra.binder.context.available;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 
-import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Index available.
+ * Cursor context available.
  */
-public interface IndexAvailable {
+public interface CursorContextAvailable {
     
     /**
-     * Get index segments.
+     * Get cursor name segment.
      *
-     * @return index segments
+     * @return cursor name segment
      */
-    Collection<IndexSegment> getIndexes();
-    
-    /**
-     * Get index columns.
-     *
-     * @return index columns
-     */
-    Collection<ColumnSegment> getIndexColumns();
+    Optional<CursorNameSegment> getCursorName();
 }

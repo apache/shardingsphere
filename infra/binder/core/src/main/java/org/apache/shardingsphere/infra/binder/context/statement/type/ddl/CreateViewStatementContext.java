@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
@@ -39,7 +39,7 @@ import java.util.List;
  * Create view statement context.
  */
 @Getter
-public final class CreateViewStatementContext implements SQLStatementContext, WhereAvailable {
+public final class CreateViewStatementContext implements SQLStatementContext, WhereContextAvailable {
     
     private final DatabaseType databaseType;
     
