@@ -78,15 +78,15 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (COLUMN_FIELD_INDEX == columnIndex) {
-            String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent()) {
-                return columnName;
-            }
-            Optional<String> logicColumn = encryptTable.get().isCipherColumn(columnName) ? Optional.of(encryptTable.get().getLogicColumnByCipherColumn(columnName)) : Optional.empty();
-            return logicColumn.orElse(columnName);
+            return getColumnNameValue(type);
         }
         return mergedResult.getValue(columnIndex, type);
+    }
+    
+    private String getColumnNameValue(final Class<?> type) throws SQLException {
+        String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, type).toString();
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+        return encryptTable.isPresent() && encryptTable.get().isCipherColumn(columnName) ? encryptTable.get().getLogicColumnByCipherColumn(columnName) : columnName;
     }
     
     @Override
