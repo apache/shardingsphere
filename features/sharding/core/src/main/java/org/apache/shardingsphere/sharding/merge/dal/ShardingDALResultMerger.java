@@ -53,7 +53,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
     
     private final String databaseName;
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext,
@@ -64,16 +64,16 @@ public final class ShardingDALResultMerger implements ResultMerger {
         }
         ShardingSphereSchema schema = getSchema(sqlStatementContext, database);
         if (dalStatement instanceof ShowTablesStatement) {
-            return new ShardingLogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingLogicTablesMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof ShowTableStatusStatement) {
-            return new ShardingShowTableStatusMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingShowTableStatusMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof ShowIndexStatement) {
-            return new ShardingShowIndexMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingShowIndexMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShardingShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingShowCreateTableMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         return new TransparentMergedResult(queryResults.get(0));
     }
