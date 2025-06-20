@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.statement.rql.resource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 
 import java.util.Optional;
 
@@ -27,7 +27,7 @@ import java.util.Optional;
  * Show tables statement.
  */
 @RequiredArgsConstructor
-public abstract class ShowTablesStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
+public abstract class ShowTablesStatement extends ResourceQueryStatement implements FromDatabaseAvailableSQLStatement {
     
     private final FromDatabaseSegment fromDatabase;
     

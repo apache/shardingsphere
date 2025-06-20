@@ -22,9 +22,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import java.util.Collection;
 
 /**
- * Table available.
+ * Table available SQL statement.
  */
-public interface TableAvailable {
+public interface TableAvailableSQLStatement {
     
     /**
      * Get tables.

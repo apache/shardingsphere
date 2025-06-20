@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailableSQLStatement;
 import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -116,8 +116,8 @@ public final class PipelineDDLDecorator {
                     replaceMap.put(each.getIndexName(), logicIndexName);
                 }
             }
-            if (sqlStatementContext.getSqlStatement() instanceof ConstraintAvailable) {
-                for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext.getSqlStatement()).getConstraints()) {
+            if (sqlStatementContext.getSqlStatement() instanceof ConstraintAvailableSQLStatement) {
+                for (ConstraintSegment each : ((ConstraintAvailableSQLStatement) sqlStatementContext.getSqlStatement()).getConstraints()) {
                     String logicConstraint = IndexMetaDataUtils.getLogicIndexName(each.getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
                     replaceMap.put(each, logicConstraint);
                 }

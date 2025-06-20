@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ResourceQueryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ import java.util.Optional;
  * Show status from readwrite-splitting rules statement.
  */
 @RequiredArgsConstructor
-public final class ShowStatusFromReadwriteSplittingRulesStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
+public final class ShowStatusFromReadwriteSplittingRulesStatement extends ResourceQueryStatement implements FromDatabaseAvailableSQLStatement {
     
     private final FromDatabaseSegment fromDatabase;
     

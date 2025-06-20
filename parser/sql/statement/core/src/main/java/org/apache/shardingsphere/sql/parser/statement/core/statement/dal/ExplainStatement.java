@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtrac
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 
 import java.util.Collection;
 
@@ -32,7 +32,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExplainStatement extends AbstractSQLStatement implements DALStatement, TableAvailable {
+public final class ExplainStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
     
     private final SQLStatement explainableSQLStatement;
     

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -30,7 +30,7 @@ import java.util.Optional;
  * Show table meta data statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableMetaDataStatement extends QueryableRALStatement implements FromDatabaseAvailable {
+public final class ShowTableMetaDataStatement extends QueryableRALStatement implements FromDatabaseAvailableSQLStatement {
     
     @Getter
     private final Collection<String> tableNames;

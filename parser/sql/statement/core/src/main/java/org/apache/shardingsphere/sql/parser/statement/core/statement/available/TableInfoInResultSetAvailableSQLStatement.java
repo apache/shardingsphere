@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
-
-import java.util.Collection;
-
 /**
- * Constraint available.
+ * Table info in result set available SQL statement.
  */
-public interface ConstraintAvailable {
+public interface TableInfoInResultSetAvailableSQLStatement {
     
     /**
-     * Get constraint segments.
+     * Get table name result set index.
      *
-     * @return constraint segments
+     * @return table name result set index
      */
-    Collection<ConstraintSegment> getConstraints();
+    int getTableNameResultSetIndex();
 }

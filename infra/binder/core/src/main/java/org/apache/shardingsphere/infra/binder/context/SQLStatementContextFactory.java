@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
@@ -89,7 +89,7 @@ public final class SQLStatementContextFactory {
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         Optional<DialectCommonSQLStatementContextWarpProvider> dialectCommonSQLStatementContextWarpProvider = DatabaseTypedSPILoader.findService(
                 DialectCommonSQLStatementContextWarpProvider.class, databaseType);
-        if (sqlStatement instanceof TableAvailable && dialectCommonSQLStatementContextWarpProvider
+        if (sqlStatement instanceof TableAvailableSQLStatement && dialectCommonSQLStatementContextWarpProvider
                 .map(optional -> dialectCommonSQLStatementContextWarpProvider.get().getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
         }

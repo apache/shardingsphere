@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.statement.rql.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 @Getter
 @RequiredArgsConstructor
-public final class ShowStorageUnitsStatement extends ResourceQueryStatement implements FromDatabaseAvailable {
+public final class ShowStorageUnitsStatement extends ResourceQueryStatement implements FromDatabaseAvailableSQLStatement {
     
     private final FromDatabaseSegment fromDatabase;
     

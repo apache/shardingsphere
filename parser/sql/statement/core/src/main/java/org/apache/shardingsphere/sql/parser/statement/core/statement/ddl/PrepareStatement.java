@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
@@ -37,7 +37,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class PrepareStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
+public final class PrepareStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
     
     private SelectStatement select;
     

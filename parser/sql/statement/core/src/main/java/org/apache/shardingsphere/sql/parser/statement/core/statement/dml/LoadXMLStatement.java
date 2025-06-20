@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +31,7 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Getter
-public final class LoadXMLStatement extends AbstractSQLStatement implements DMLStatement, TableAvailable {
+public final class LoadXMLStatement extends AbstractSQLStatement implements DMLStatement, TableAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
