@@ -35,7 +35,7 @@ public interface DialectShardingDALResultMerger extends DatabaseTypedSPI {
     
     /**
      * Merge DAL statement result set.
-     * 
+     *
      * @param databaseName database name
      * @param rule sharding rule
      * @param sqlStatementContext SQL statement context
