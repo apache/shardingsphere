@@ -35,10 +35,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -124,28 +121,6 @@ class EncryptShowColumnsMergedResultTest {
     void assertGetValueWithOtherIndex() throws SQLException {
         when(mergedResult.getValue(2, String.class)).thenReturn("order_id");
         assertThat(createMergedResult(mergedResult, mock(EncryptRule.class)).getValue(2, String.class), is("order_id"));
-    }
-    
-    @Test
-    void assertWasNull() throws SQLException {
-        assertFalse(createMergedResult(mergedResult, mock(EncryptRule.class)).wasNull());
-    }
-    
-    @SuppressWarnings("UseOfObsoleteDateTimeApi")
-    @Test
-    void assertGetCalendarValue() {
-        assertThrows(SQLFeatureNotSupportedException.class,
-                () -> createMergedResult(mergedResult, mock(EncryptRule.class)).getCalendarValue(1, Date.class, Calendar.getInstance()));
-    }
-    
-    @Test
-    void assertGetInputStream() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> createMergedResult(mergedResult, mock(EncryptRule.class)).getInputStream(1, "asc"));
-    }
-    
-    @Test
-    void assertGetCharacterStream() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> createMergedResult(mergedResult, mock(EncryptRule.class)).getCharacterStream(1));
     }
     
     private EncryptShowColumnsMergedResult createMergedResult(final MergedResult mergedResult, final EncryptRule rule) {
