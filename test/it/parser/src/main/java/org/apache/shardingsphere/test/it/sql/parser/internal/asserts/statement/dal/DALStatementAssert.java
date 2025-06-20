@@ -20,12 +20,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDescribeStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
@@ -211,8 +211,8 @@ public final class DALStatementAssert {
             ShowDatabasesStatementAssert.assertIs(assertContext, (ShowDatabasesStatement) actual, (ShowDatabasesStatementTestCase) expected);
         } else if (actual instanceof ShowTablesStatement) {
             ShowTablesStatementAssert.assertIs(assertContext, (ShowTablesStatement) actual, (ShowTablesStatementTestCase) expected);
-        } else if (actual instanceof ShowColumnsStatement) {
-            ShowColumnsStatementAssert.assertIs(assertContext, (ShowColumnsStatement) actual, (ShowColumnsStatementTestCase) expected);
+        } else if (actual instanceof MySQLShowColumnsStatement) {
+            ShowColumnsStatementAssert.assertIs(assertContext, (MySQLShowColumnsStatement) actual, (ShowColumnsStatementTestCase) expected);
         } else if (actual instanceof ShowCreateTableStatement) {
             ShowCreateTableStatementAssert.assertIs(assertContext, (ShowCreateTableStatement) actual, (ShowCreateTableStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateTriggerStatement) {

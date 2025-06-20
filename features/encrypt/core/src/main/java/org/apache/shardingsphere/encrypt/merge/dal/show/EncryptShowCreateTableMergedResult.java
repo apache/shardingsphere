@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.io.InputStream;
@@ -46,13 +47,13 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     private static final String COMMA = ", ";
     
-    private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
-    
     private final MergedResult mergedResult;
     
     private final EncryptRule rule;
     
     private final String tableName;
+    
+    private final int tableNameResultSetIndex;
     
     private final SQLParserEngine sqlParserEngine;
     
@@ -62,6 +63,7 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
         this.mergedResult = mergedResult;
         this.rule = rule;
         tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        tableNameResultSetIndex = ((TableInfoInResultSetAvailable) sqlStatementContext.getSqlStatement()).getTableNameResultSetIndex();
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
     }
     
@@ -72,10 +74,10 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (CREATE_TABLE_DEFINITION_INDEX != columnIndex) {
+        if (tableNameResultSetIndex != columnIndex) {
             return mergedResult.getValue(columnIndex, type);
         }
-        String createTableSQL = mergedResult.getValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
+        String createTableSQL = mergedResult.getValue(tableNameResultSetIndex, type).toString();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         if (!encryptTable.isPresent() || !createTableSQL.contains("(")) {
             return createTableSQL;

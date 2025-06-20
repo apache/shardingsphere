@@ -28,25 +28,25 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 
 import java.util.Optional;
 
 /**
  * Show columns statement binder for MySQL.
  */
-public final class MySQLShowColumnsStatementBinder implements SQLStatementBinder<ShowColumnsStatement> {
+public final class MySQLShowColumnsStatementBinder implements SQLStatementBinder<MySQLShowColumnsStatement> {
     
     @Override
-    public ShowColumnsStatement bind(final ShowColumnsStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public MySQLShowColumnsStatement bind(final MySQLShowColumnsStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
         Optional<ShowFilterSegment> boundFilter = sqlStatement.getFilter().map(optional -> ShowFilterSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create()));
         return copy(sqlStatement, boundTable, boundFilter.orElse(null));
     }
     
-    private ShowColumnsStatement copy(final ShowColumnsStatement sqlStatement, final SimpleTableSegment boundTable, final ShowFilterSegment boundFilter) {
-        ShowColumnsStatement result = new ShowColumnsStatement(boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
+    private MySQLShowColumnsStatement copy(final MySQLShowColumnsStatement sqlStatement, final SimpleTableSegment boundTable, final ShowFilterSegment boundFilter) {
+        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
