@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
-import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
-import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
-import org.apache.shardingsphere.sharding.merge.dal.show.ShowTableStatusMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingLogicTablesMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingShowCreateTableMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingShowIndexMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingShowTableStatusMergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
@@ -53,7 +53,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
     
     private final String databaseName;
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext,
@@ -64,16 +64,16 @@ public final class ShardingDALResultMerger implements ResultMerger {
         }
         ShardingSphereSchema schema = getSchema(sqlStatementContext, database);
         if (dalStatement instanceof ShowTablesStatement) {
-            return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingLogicTablesMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof ShowTableStatusStatement) {
-            return new ShowTableStatusMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingShowTableStatusMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof ShowIndexStatement) {
-            return new ShowIndexMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingShowIndexMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
+            return new ShardingShowCreateTableMergedResult(rule, sqlStatementContext, schema, queryResults);
         }
         return new TransparentMergedResult(queryResults.get(0));
     }

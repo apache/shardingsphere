@@ -44,7 +44,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShowCreateTableMergedResultTest {
+class ShardingShowCreateTableMergedResultTest {
     
     private ShardingRule rule;
     
@@ -72,17 +72,17 @@ class ShowCreateTableMergedResultTest {
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new ShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextWithTableRule() throws SQLException {
-        assertTrue(new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
+        assertTrue(new ShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
     }
     
     @Test
     void assertGetValueWithTableRule() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
+        ShardingShowCreateTableMergedResult actual = new ShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
@@ -115,7 +115,7 @@ class ShowCreateTableMergedResultTest {
     
     @Test
     void assertGetValueWithoutTableRule() throws SQLException {
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(
+        ShardingShowCreateTableMergedResult actual = new ShardingShowCreateTableMergedResult(
                 mock(ShardingRule.class, RETURNS_DEEP_STUBS), mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithoutTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));

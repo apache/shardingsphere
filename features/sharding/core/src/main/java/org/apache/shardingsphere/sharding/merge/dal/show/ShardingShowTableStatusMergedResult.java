@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Merged result for show table status.
+ * Sharding merged result for show table status.
  */
-public final class ShowTableStatusMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class ShardingShowTableStatusMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public ShowTableStatusMergedResult(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
-                                       final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public ShardingShowTableStatusMergedResult(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+                                               final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     
