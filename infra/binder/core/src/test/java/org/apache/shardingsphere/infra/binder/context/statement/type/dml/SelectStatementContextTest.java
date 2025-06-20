@@ -201,8 +201,8 @@ class SelectStatementContextTest {
     void assertSetWhere() {
         SelectStatement selectStatement = new SelectStatement();
         WhereSegment whereSegment = mock(WhereSegment.class, RETURNS_DEEP_STUBS);
-        selectStatement.setWhere(whereSegment);
         when(whereSegment.getExpr().getText()).thenReturn("");
+        selectStatement.setWhere(whereSegment);
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext actual =
