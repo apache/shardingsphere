@@ -181,7 +181,7 @@ public final class EncryptTable {
     
     /**
      * Whether derived column.
-     * 
+     *
      * @param columnName column name
      * @return is derived column or not
      */
