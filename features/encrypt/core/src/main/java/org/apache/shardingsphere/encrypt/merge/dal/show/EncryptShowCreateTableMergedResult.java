@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -31,23 +32,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Encrypt show create table merged result.
  */
-public final class EncryptShowCreateTableMergedResult implements MergedResult {
+public final class EncryptShowCreateTableMergedResult extends DecoratorMergedResult {
     
     private static final String COMMA = ", ";
-    
-    private final MergedResult mergedResult;
     
     private final EncryptRule rule;
     
@@ -58,9 +53,9 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     private final SQLParserEngine sqlParserEngine;
     
     public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
+        super(mergedResult);
         ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLES"));
-        this.mergedResult = mergedResult;
         this.rule = rule;
         tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         tableNameResultSetIndex = ((TableInfoInResultSetAvailable) sqlStatementContext.getSqlStatement()).getTableNameResultSetIndex();
@@ -68,16 +63,11 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     }
     
     @Override
-    public boolean next() throws SQLException {
-        return mergedResult.next();
-    }
-    
-    @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (tableNameResultSetIndex != columnIndex) {
-            return mergedResult.getValue(columnIndex, type);
+            return getMergedResult().getValue(columnIndex, type);
         }
-        String createTableSQL = mergedResult.getValue(tableNameResultSetIndex, type).toString();
+        String createTableSQL = getMergedResult().getValue(tableNameResultSetIndex, type).toString();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         if (!encryptTable.isPresent() || !createTableSQL.contains("(")) {
             return createTableSQL;
@@ -105,25 +95,5 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
             return Optional.empty();
         }
         return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
-    }
-    
-    @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public boolean wasNull() throws SQLException {
-        return mergedResult.wasNull();
     }
 }
