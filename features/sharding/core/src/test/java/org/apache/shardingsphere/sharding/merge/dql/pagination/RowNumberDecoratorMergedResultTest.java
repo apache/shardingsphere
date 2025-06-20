@@ -65,6 +65,7 @@ class RowNumberDecoratorMergedResultTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, Integer.MAX_VALUE));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
@@ -112,6 +113,7 @@ class RowNumberDecoratorMergedResultTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 2));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
@@ -146,6 +148,7 @@ class RowNumberDecoratorMergedResultTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 2));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
