@@ -202,6 +202,7 @@ class SelectStatementContextTest {
         SelectStatement selectStatement = new SelectStatement();
         WhereSegment whereSegment = mock(WhereSegment.class, RETURNS_DEEP_STUBS);
         selectStatement.setWhere(whereSegment);
+        when(whereSegment.getExpr().getText()).thenReturn("");
         ShardingSphereDatabase database = mockDatabase();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext actual =
@@ -215,7 +216,9 @@ class SelectStatementContextTest {
     @Test
     void assertContainsSubquery() {
         SelectStatement subSelectStatement = new SelectStatement();
-        WhereSegment whereSegment = new WhereSegment(0, 0, mock(BinaryOperationExpression.class, RETURNS_DEEP_STUBS));
+        BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class, RETURNS_DEEP_STUBS);
+        when(binaryOperationExpression.getText()).thenReturn("");
+        WhereSegment whereSegment = new WhereSegment(0, 0, binaryOperationExpression);
         subSelectStatement.setWhere(whereSegment);
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
@@ -235,7 +238,7 @@ class SelectStatementContextTest {
         SelectStatement subSelectStatement = new SelectStatement();
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue("id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 0, 20);
-        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", null);
+        BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, "=", "");
         WhereSegment subWhereSegment = new WhereSegment(0, 0, expression);
         subSelectStatement.setWhere(subWhereSegment);
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(0, 0);
