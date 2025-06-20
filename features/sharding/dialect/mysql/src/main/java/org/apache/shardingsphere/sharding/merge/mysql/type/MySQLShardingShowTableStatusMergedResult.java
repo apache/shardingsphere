@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dal.show;
+package org.apache.shardingsphere.sharding.merge.mysql.type;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Sharding merged result for show table status.
+ * Sharding merged result for show table status for MySQL.
  */
-public final class ShardingShowTableStatusMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class MySQLShardingShowTableStatusMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public ShardingShowTableStatusMergedResult(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
-                                               final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public MySQLShardingShowTableStatusMergedResult(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
+                                                    final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     

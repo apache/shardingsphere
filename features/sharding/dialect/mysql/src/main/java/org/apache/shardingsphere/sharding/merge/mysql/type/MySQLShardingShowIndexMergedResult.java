@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dal.show;
+package org.apache.shardingsphere.sharding.merge.mysql.type;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -32,12 +32,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding merged result for show index.
+ * Sharding merged result for show index for MySQL.
  */
-public final class ShardingShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class MySQLShardingShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public ShardingShowIndexMergedResult(final ShardingRule shardingRule,
-                                         final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public MySQLShardingShowIndexMergedResult(final ShardingRule shardingRule,
+                                              final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dal.show;
+package org.apache.shardingsphere.sharding.merge.mysql.type;
 
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ShardingShowCreateTableMergedResultTest {
+class MySQLShardingShowCreateTableMergedResultTest {
     
     private ShardingRule rule;
     
@@ -72,17 +72,18 @@ class ShardingShowCreateTableMergedResultTest {
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new ShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new MySQLShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextWithTableRule() throws SQLException {
-        assertTrue(new ShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
+        assertTrue(new MySQLShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule())).next());
     }
     
     @Test
     void assertGetValueWithTableRule() throws SQLException {
-        ShardingShowCreateTableMergedResult actual = new ShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
+                rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
@@ -115,7 +116,7 @@ class ShardingShowCreateTableMergedResultTest {
     
     @Test
     void assertGetValueWithoutTableRule() throws SQLException {
-        ShardingShowCreateTableMergedResult actual = new ShardingShowCreateTableMergedResult(
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
                 mock(ShardingRule.class, RETURNS_DEEP_STUBS), mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithoutTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dal.show;
+package org.apache.shardingsphere.sharding.merge.mysql.type;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingShowIndexMergedResultTest {
+class MySQLShardingShowIndexMergedResultTest {
     
     @Mock
     private ShardingRule rule;
@@ -46,12 +46,12 @@ class ShardingShowIndexMergedResultTest {
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new ShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new MySQLShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextForTableRuleIsPresent() throws SQLException {
-        assertTrue(new ShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
+        assertTrue(new MySQLShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
     }
     
     private QueryResult mockQueryResult() throws SQLException {
