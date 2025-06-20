@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,8 +125,8 @@ class EncryptShowColumnsMergedResultTest {
     
     private EncryptShowColumnsMergedResult createMergedResult(final MergedResult mergedResult, final EncryptRule rule) {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        SQLStatement sqlStatement = mock(SQLStatement.class, withSettings().extraInterfaces(ColumnInfoInResultSetAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((ColumnInfoInResultSetAvailable) sqlStatement).getColumnNameResultSetIndex()).thenReturn(1);
+        SQLStatement sqlStatement = mock(SQLStatement.class, withSettings().extraInterfaces(ColumnInfoInResultSetAvailableSQLStatement.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        when(((ColumnInfoInResultSetAvailableSQLStatement) sqlStatement).getColumnNameResultSetIndex()).thenReturn(1);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))));
         return new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);

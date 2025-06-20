@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailable;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequired;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequiredSQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +33,12 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowCreateTableStatement extends AbstractSQLStatement implements DALStatement, TableAvailable, TableInfoInResultSetAvailable, DatabaseSelectRequired {
+public final class ShowCreateTableStatement extends AbstractSQLStatement
+        implements
+            DALStatement,
+            TableAvailableSQLStatement,
+            TableInfoInResultSetAvailableSQLStatement,
+            DatabaseSelectRequiredSQLStatement {
     
     private final SimpleTableSegment table;
     

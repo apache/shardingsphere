@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,7 +32,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
+public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables;
     

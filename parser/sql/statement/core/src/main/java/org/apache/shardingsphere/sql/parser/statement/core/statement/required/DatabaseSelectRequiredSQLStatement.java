@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.required;
 
 /**
- * Database select required.
+ * Database select required SQL statement.
  */
-public interface DatabaseSelectRequired {
+public interface DatabaseSelectRequiredSQLStatement {
 }

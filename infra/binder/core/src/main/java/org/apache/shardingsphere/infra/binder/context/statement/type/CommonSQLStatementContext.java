@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 
 import java.util.Collections;
 
@@ -43,6 +43,6 @@ public final class CommonSQLStatementContext implements SQLStatementContext {
     public CommonSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(sqlStatement instanceof TableAvailable ? ((TableAvailable) sqlStatement).getTables() : Collections.emptyList());
+        tablesContext = new TablesContext(sqlStatement instanceof TableAvailableSQLStatement ? ((TableAvailableSQLStatement) sqlStatement).getTables() : Collections.emptyList());
     }
 }

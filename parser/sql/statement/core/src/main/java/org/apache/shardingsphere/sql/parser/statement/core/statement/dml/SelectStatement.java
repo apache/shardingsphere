@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.WithAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.WithAvailableSQLStatement;
 
 import java.util.Optional;
 
@@ -43,7 +43,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class SelectStatement extends AbstractSQLStatement implements DMLStatement, WithAvailable {
+public final class SelectStatement extends AbstractSQLStatement implements DMLStatement, WithAvailableSQLStatement {
     
     private ProjectionsSegment projections;
     

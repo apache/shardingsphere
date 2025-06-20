@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CommentStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
+public class CommentStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
     
     private SimpleTableSegment table;
     

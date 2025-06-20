@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.R
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement, TableAvailable {
+public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
     
     private FunctionNameSegment functionName;
     

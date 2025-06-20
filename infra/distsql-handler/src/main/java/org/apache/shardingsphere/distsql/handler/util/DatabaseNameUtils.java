@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 
 import java.util.Optional;
 
@@ -40,8 +40,8 @@ public final class DatabaseNameUtils {
      * @return database name
      */
     public static String getDatabaseName(final SQLStatement sqlStatement, final String currentDatabaseName) {
-        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable
-                ? ((FromDatabaseAvailable) sqlStatement).getFromDatabase().map(FromDatabaseSegment::getDatabase)
+        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailableSQLStatement
+                ? ((FromDatabaseAvailableSQLStatement) sqlStatement).getFromDatabase().map(FromDatabaseSegment::getDatabase)
                 : Optional.empty();
         return databaseSegment.map(optional -> optional.getIdentifier().getValue()).orElse(currentDatabaseName);
     }

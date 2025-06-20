@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-
-import java.util.Optional;
-
 /**
- * With available.
+ * Column info in result set available SQL statement.
  */
-public interface WithAvailable {
+public interface ColumnInfoInResultSetAvailableSQLStatement {
     
     /**
-     * Get with segment.
+     * Get column name result set index.
      *
-     * @return with segment
+     * @return column name result set index
      */
-    Optional<WithSegment> getWith();
+    int getColumnNameResultSetIndex();
 }

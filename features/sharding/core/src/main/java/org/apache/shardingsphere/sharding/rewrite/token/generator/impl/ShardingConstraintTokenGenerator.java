@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailableSQLStatement;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
@@ -42,14 +42,15 @@ public final class ShardingConstraintTokenGenerator implements CollectionSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof ConstraintAvailable && !((ConstraintAvailable) sqlStatementContext.getSqlStatement()).getConstraints().isEmpty();
+        return sqlStatementContext.getSqlStatement() instanceof ConstraintAvailableSQLStatement
+                && !((ConstraintAvailableSQLStatement) sqlStatementContext.getSqlStatement()).getConstraints().isEmpty();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        if (sqlStatementContext.getSqlStatement() instanceof ConstraintAvailable) {
-            for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext.getSqlStatement()).getConstraints()) {
+        if (sqlStatementContext.getSqlStatement() instanceof ConstraintAvailableSQLStatement) {
+            for (ConstraintSegment each : ((ConstraintAvailableSQLStatement) sqlStatementContext.getSqlStatement()).getConstraints()) {
                 IdentifierValue constraintIdentifier = each.getIdentifier();
                 // TODO make sure can remove null check here? @duanzhengqiang
                 if (null != constraintIdentifier) {

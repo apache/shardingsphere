@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
 
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 
-import java.util.Optional;
+import java.util.Collection;
 
 /**
- * From database available.
+ * Constraint available SQL statement.
  */
-public interface FromDatabaseAvailable {
+public interface ConstraintAvailableSQLStatement {
     
     /**
-     * Get from database.
+     * Get constraint segments.
      *
-     * @return from database
+     * @return constraint segments
      */
-    Optional<FromDatabaseSegment> getFromDatabase();
+    Collection<ConstraintSegment> getConstraints();
 }

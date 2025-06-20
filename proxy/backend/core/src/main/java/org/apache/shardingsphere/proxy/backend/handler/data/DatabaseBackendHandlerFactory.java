@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequired;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequiredSQLStatement;
 
 /**
  * Database backend handler factory.
@@ -62,7 +62,7 @@ public final class DatabaseBackendHandlerFactory {
     }
     
     private static boolean isNotDatabaseSelectRequiredDALStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DALStatement && !(sqlStatement instanceof DatabaseSelectRequired);
+        return sqlStatement instanceof DALStatement && !(sqlStatement instanceof DatabaseSelectRequiredSQLStatement);
     }
     
     private static boolean isNotContainFromSelectStatement(final SQLStatement sqlStatement) {

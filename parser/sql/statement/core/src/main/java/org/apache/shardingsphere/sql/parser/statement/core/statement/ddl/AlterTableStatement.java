@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Con
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailableSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +48,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class AlterTableStatement extends AbstractSQLStatement implements DDLStatement, ConstraintAvailable {
+public final class AlterTableStatement extends AbstractSQLStatement implements DDLStatement, ConstraintAvailableSQLStatement {
     
     private SimpleTableSegment table;
     

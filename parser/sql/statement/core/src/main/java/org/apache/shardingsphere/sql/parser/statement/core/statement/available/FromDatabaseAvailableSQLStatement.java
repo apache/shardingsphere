@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
 
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
+
+import java.util.Optional;
+
 /**
- * Table info in result set available.
+ * From database available SQL statement.
  */
-public interface TableInfoInResultSetAvailable {
+public interface FromDatabaseAvailableSQLStatement {
     
     /**
-     * Get table name result set index.
+     * Get from database.
      *
-     * @return table name result set index
+     * @return from database
      */
-    int getTableNameResultSetIndex();
+    Optional<FromDatabaseSegment> getFromDatabase();
 }
