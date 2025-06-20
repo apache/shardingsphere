@@ -15,33 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Show columns statement.
+ * Describe statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowColumnsStatement extends AbstractSQLStatement implements DALStatement, TableAvailable, FromDatabaseAvailable {
+public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, TableAvailable, ColumnInfoInResultSetAvailable {
     
     private final SimpleTableSegment table;
     
-    private final FromDatabaseSegment fromDatabase;
+    private final ColumnSegment columnWildcard;
     
-    private final ShowFilterSegment filter;
+    /**
+     * Get column wildcard.
+     *
+     * @return column wildcard
+     */
+    public Optional<ColumnSegment> getColumnWildcard() {
+        return Optional.ofNullable(columnWildcard);
+    }
     
     @Override
     public Collection<SimpleTableSegment> getTables() {
@@ -49,16 +56,7 @@ public final class ShowColumnsStatement extends AbstractSQLStatement implements 
     }
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
-    }
-    
-    /**
-     * Get filter segment.
-     *
-     * @return filter segment
-     */
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
+    public int getColumnNameResultSetIndex() {
+        return 1;
     }
 }

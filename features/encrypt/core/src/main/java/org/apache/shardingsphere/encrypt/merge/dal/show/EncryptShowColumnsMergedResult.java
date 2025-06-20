@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailable;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -36,13 +37,13 @@ import java.util.Optional;
  */
 public final class EncryptShowColumnsMergedResult implements MergedResult {
     
-    private static final int COLUMN_FIELD_INDEX = 1;
-    
     private final MergedResult mergedResult;
     
     private final EncryptRule rule;
     
     private final String tableName;
+    
+    private final int columnNameResultSetIndex;
     
     public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
@@ -50,6 +51,8 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
         this.mergedResult = mergedResult;
         this.rule = rule;
         tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        columnNameResultSetIndex = ((ColumnInfoInResultSetAvailable) sqlStatementContext.getSqlStatement()).getColumnNameResultSetIndex();
+        
     }
     
     @Override
@@ -66,7 +69,7 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     }
     
     private boolean next(final EncryptTable encryptTable) throws SQLException {
-        while (encryptTable.isDerivedColumn(mergedResult.getValue(COLUMN_FIELD_INDEX, String.class).toString())) {
+        while (encryptTable.isDerivedColumn(mergedResult.getValue(columnNameResultSetIndex, String.class).toString())) {
             boolean isFinished = !mergedResult.next();
             if (isFinished) {
                 return false;
@@ -77,14 +80,14 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (COLUMN_FIELD_INDEX == columnIndex) {
+        if (columnNameResultSetIndex == columnIndex) {
             return getColumnNameValue(type);
         }
         return mergedResult.getValue(columnIndex, type);
     }
     
     private String getColumnNameValue(final Class<?> type) throws SQLException {
-        String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, type).toString();
+        String columnName = mergedResult.getValue(columnNameResultSetIndex, type).toString();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         return encryptTable.isPresent() && encryptTable.get().isCipherColumn(columnName) ? encryptTable.get().getLogicColumnByCipherColumn(columnName) : columnName;
     }

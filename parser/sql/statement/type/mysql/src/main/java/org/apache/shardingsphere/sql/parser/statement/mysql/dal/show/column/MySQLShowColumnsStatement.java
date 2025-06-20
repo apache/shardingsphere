@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
@@ -30,27 +33,39 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Describe statement for MySQL.
+ * Show columns statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, TableAvailable {
+public final class MySQLShowColumnsStatement extends AbstractSQLStatement implements DALStatement, TableAvailable, FromDatabaseAvailable, ColumnInfoInResultSetAvailable {
     
     private final SimpleTableSegment table;
     
-    private final ColumnSegment columnWildcard;
+    private final FromDatabaseSegment fromDatabase;
+    
+    private final ShowFilterSegment filter;
     
     /**
-     * Get column wildcard.
+     * Get filter segment.
      *
-     * @return column wildcard
+     * @return filter segment
      */
-    public Optional<ColumnSegment> getColumnWildcard() {
-        return Optional.ofNullable(columnWildcard);
+    public Optional<ShowFilterSegment> getFilter() {
+        return Optional.ofNullable(filter);
     }
     
     @Override
     public Collection<SimpleTableSegment> getTables() {
         return Collections.singleton(table);
+    }
+    
+    @Override
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
+    }
+    
+    @Override
+    public int getColumnNameResultSetIndex() {
+        return 1;
     }
 }
