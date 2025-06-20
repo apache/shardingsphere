@@ -134,7 +134,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) {
         Object result = currentRow.get(columnIndex - 1);
         setWasNull(null == result);
         return result;

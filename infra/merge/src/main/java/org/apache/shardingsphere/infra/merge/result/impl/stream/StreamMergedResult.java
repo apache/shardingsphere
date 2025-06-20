@@ -50,7 +50,7 @@ public abstract class StreamMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) throws SQLException {
         Object result = getCurrentQueryResult().getCalendarValue(columnIndex, type, calendar);
         wasNull = getCurrentQueryResult().wasNull();
         return result;

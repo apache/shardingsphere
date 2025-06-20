@@ -81,7 +81,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     }
     
     @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public final Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) {
         // TODO implement with calendar
         Object result = currentResultSetRow.getCell(columnIndex);
         wasNull = null == result;
