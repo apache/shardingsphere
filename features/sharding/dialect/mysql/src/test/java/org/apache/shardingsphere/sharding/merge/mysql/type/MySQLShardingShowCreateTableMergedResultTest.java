@@ -82,7 +82,8 @@ class MySQLShardingShowCreateTableMergedResultTest {
     
     @Test
     void assertGetValueWithTableRule() throws SQLException {
-        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
+                rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResultWithTableRule()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("foo_tbl"));
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
