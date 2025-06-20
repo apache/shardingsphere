@@ -28,11 +28,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequired;
 
 /**
  * Database backend handler factory.
@@ -57,14 +55,17 @@ public final class DatabaseBackendHandlerFactory {
         if (sqlStatement instanceof SetStatement && null == connectionSession.getUsedDatabaseName()) {
             return () -> new UpdateResponseHeader(sqlStatement);
         }
-        if (sqlStatement instanceof DALStatement && !isDatabaseRequiredDALStatement(sqlStatement)
-                || sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent()) {
+        if (isNotDatabaseSelectRequiredDALStatement(sqlStatement) || isNotContainFromSelectStatement(sqlStatement)) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
         return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
     }
     
-    private static boolean isDatabaseRequiredDALStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof ShowCreateTableStatement;
+    private static boolean isNotDatabaseSelectRequiredDALStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DALStatement && !(sqlStatement instanceof DatabaseSelectRequired);
+    }
+    
+    private static boolean isNotContainFromSelectStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent();
     }
 }

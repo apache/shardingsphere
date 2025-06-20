@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequired;
 
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ import java.util.Optional;
  * Show table status statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailable {
+public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailable, DatabaseSelectRequired {
     
     private final FromDatabaseSegment fromDatabase;
     
