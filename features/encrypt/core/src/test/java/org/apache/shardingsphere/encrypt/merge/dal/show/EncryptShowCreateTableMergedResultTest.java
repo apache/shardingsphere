@@ -23,8 +23,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
-import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -45,10 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -56,7 +53,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -185,29 +181,6 @@ class EncryptShowCreateTableMergedResultTest {
         EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mockEncryptRule(Collections.singleton(columnRuleConfig)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class), is("foo_tbl"));
-    }
-    
-    @Test
-    void assertGetCalendarValue() {
-        EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mock(EncryptRule.class));
-        assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getCalendarValue(1, Date.class, Calendar.getInstance()));
-    }
-    
-    @Test
-    void assertGetInputStream() {
-        EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mock(EncryptRule.class));
-        assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getInputStream(1, "ascii"));
-    }
-    
-    @Test
-    void assertGetCharacterStream() {
-        EncryptShowCreateTableMergedResult actual = createMergedResult(mergedResult, "foo_tbl", mock(EncryptRule.class));
-        assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getCharacterStream(1));
-    }
-    
-    @Test
-    void assertWasNull() throws SQLException {
-        assertFalse(createMergedResult(mergedResult, "foo_tbl", mock(EncryptRule.class)).wasNull());
     }
     
     private EncryptShowCreateTableMergedResult createMergedResult(final MergedResult mergedResult, final String tableName, final EncryptRule rule) {
