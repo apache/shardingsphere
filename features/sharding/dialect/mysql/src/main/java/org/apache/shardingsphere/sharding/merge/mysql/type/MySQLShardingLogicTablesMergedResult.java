@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.dal.show;
+package org.apache.shardingsphere.sharding.merge.mysql.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Sharding logic tables merged result.
+ * Sharding logic tables merged result for MySQL.
  */
-public class ShardingLogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
+public class MySQLShardingLogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public ShardingLogicTablesMergedResult(final ShardingRule rule,
-                                           final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public MySQLShardingLogicTablesMergedResult(final ShardingRule rule,
+                                                final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(rule, schema, sqlStatementContext, queryResults);
     }
     
