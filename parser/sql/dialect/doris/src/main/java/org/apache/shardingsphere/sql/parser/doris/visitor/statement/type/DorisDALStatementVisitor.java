@@ -151,7 +151,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStat
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
@@ -624,7 +624,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
-        return new ShowIndexStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visitFromTable(ctx.fromTable())).getTable(),
+        return new MySQLShowIndexStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visitFromTable(ctx.fromTable())).getTable(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()));
     }
     

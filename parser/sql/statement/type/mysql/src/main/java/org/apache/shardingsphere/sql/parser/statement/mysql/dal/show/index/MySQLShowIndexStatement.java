@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +24,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Show index statement.
+ * Show index statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowIndexStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement, FromDatabaseAvailableSQLStatement {
+public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement, FromDatabaseAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     

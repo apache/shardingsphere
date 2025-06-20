@@ -23,20 +23,20 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 
 /**
  * Show index statement binder for MySQL.
  */
-public final class MySQLShowIndexStatementBinder implements SQLStatementBinder<ShowIndexStatement> {
+public final class MySQLShowIndexStatementBinder implements SQLStatementBinder<MySQLShowIndexStatement> {
     
     @Override
-    public ShowIndexStatement bind(final ShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public MySQLShowIndexStatement bind(final MySQLShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private ShowIndexStatement copy(final ShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        ShowIndexStatement result = new ShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
+    private MySQLShowIndexStatement copy(final MySQLShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
+        MySQLShowIndexStatement result = new MySQLShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
