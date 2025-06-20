@@ -50,9 +50,9 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
     
     private final MergedResult mergedResult;
     
-    private final String tableName;
-    
     private final EncryptRule rule;
+    
+    private final String tableName;
     
     private final SQLParserEngine sqlParserEngine;
     
@@ -60,8 +60,8 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
         ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLES"));
         this.mergedResult = mergedResult;
-        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.rule = rule;
+        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
     }
     
@@ -99,18 +99,14 @@ public final class EncryptShowCreateTableMergedResult implements MergedResult {
             return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
                     + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
         }
-        if (isDerivedColumn(encryptTable, columnName)) {
+        if (encryptTable.isDerivedColumn(columnName)) {
             return Optional.empty();
         }
         return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
     }
     
-    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
-        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
-    }
-    
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     
