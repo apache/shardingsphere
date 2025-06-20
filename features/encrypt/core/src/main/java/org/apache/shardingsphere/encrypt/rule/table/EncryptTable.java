@@ -178,4 +178,14 @@ public final class EncryptTable {
     public Optional<EncryptAlgorithm> findQueryEncryptor(final String columnName) {
         return isEncryptColumn(columnName) ? Optional.of(getEncryptColumn(columnName).getQueryEncryptor()) : Optional.empty();
     }
+    
+    /**
+     * Whether derived column.
+     *
+     * @param columnName column name
+     * @return is derived column or not
+     */
+    public boolean isDerivedColumn(final String columnName) {
+        return isAssistedQueryColumn(columnName) || isLikeQueryColumn(columnName);
+    }
 }

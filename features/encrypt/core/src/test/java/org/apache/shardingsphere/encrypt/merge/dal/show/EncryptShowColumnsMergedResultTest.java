@@ -55,6 +55,7 @@ class EncryptShowColumnsMergedResultTest {
     @Mock
     private MergedResult mergedResult;
     
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     @Test
     void assertNewInstanceWithNotTableAvailableStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -62,6 +63,7 @@ class EncryptShowColumnsMergedResultTest {
         assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, mock(EncryptRule.class)));
     }
     
+    @SuppressWarnings("ResultOfObjectAllocationIgnored")
     @Test
     void assertNewInstanceWithEmptyTable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -77,21 +79,14 @@ class EncryptShowColumnsMergedResultTest {
     }
     
     @Test
-    void assertNextWithAssistedQuery() throws SQLException {
-        when(mergedResult.next()).thenReturn(true).thenReturn(false);
-        when(mergedResult.getValue(1, String.class)).thenReturn("user_id_assisted");
-        assertFalse(createMergedResult(mergedResult, mockEncryptRule()).next());
-    }
-    
-    @Test
-    void assertNextWithLikeQuery() throws SQLException {
+    void assertNextWithDerivedColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(1, String.class)).thenReturn("user_id_like");
         assertFalse(createMergedResult(mergedResult, mockEncryptRule()).next());
     }
     
     @Test
-    void assertNextWithLikeQueryAndMultiColumns() throws SQLException {
+    void assertNextWithDerivedAndMultiColumns() throws SQLException {
         when(mergedResult.next()).thenReturn(true, true, true, false);
         when(mergedResult.getValue(1, String.class)).thenReturn("user_id_like", "order_id", "content");
         EncryptShowColumnsMergedResult actual = createMergedResult(mergedResult, mockEncryptRule());
@@ -110,10 +105,9 @@ class EncryptShowColumnsMergedResultTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.isAssistedQueryColumn("user_id_assisted")).thenReturn(true);
-        when(encryptTable.isLikeQueryColumn("user_id_like")).thenReturn(true);
         when(encryptTable.isCipherColumn("user_id_cipher")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("user_id_cipher")).thenReturn("user_id");
+        when(encryptTable.isDerivedColumn("user_id_like")).thenReturn(true);
         return result;
     }
     
@@ -134,6 +128,7 @@ class EncryptShowColumnsMergedResultTest {
         assertFalse(createMergedResult(mergedResult, mock(EncryptRule.class)).wasNull());
     }
     
+    @SuppressWarnings("UseOfObsoleteDateTimeApi")
     @Test
     void assertGetCalendarValue() {
         assertThrows(SQLFeatureNotSupportedException.class,

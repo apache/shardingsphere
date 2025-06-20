@@ -38,18 +38,18 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     
     private static final int COLUMN_FIELD_INDEX = 1;
     
-    private final String tableName;
-    
     private final MergedResult mergedResult;
     
     private final EncryptRule rule;
     
+    private final String tableName;
+    
     public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
                 () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
-        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
         this.mergedResult = mergedResult;
         this.rule = rule;
+        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     @Override
@@ -62,19 +62,17 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
         if (!hasNext) {
             return false;
         }
-        String columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, String.class).toString();
-        while (isDerivedColumn(encryptTable.get(), columnName)) {
-            hasNext = mergedResult.next();
-            if (!hasNext) {
-                return false;
-            }
-            columnName = mergedResult.getValue(COLUMN_FIELD_INDEX, String.class).toString();
-        }
-        return true;
+        return next(encryptTable.get());
     }
     
-    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
-        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
+    private boolean next(final EncryptTable encryptTable) throws SQLException {
+        while (encryptTable.isDerivedColumn(mergedResult.getValue(COLUMN_FIELD_INDEX, String.class).toString())) {
+            boolean isFinished = !mergedResult.next();
+            if (isFinished) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
@@ -92,7 +90,7 @@ public final class EncryptShowColumnsMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) throws SQLException {
         throw new SQLFeatureNotSupportedException("");
     }
     
