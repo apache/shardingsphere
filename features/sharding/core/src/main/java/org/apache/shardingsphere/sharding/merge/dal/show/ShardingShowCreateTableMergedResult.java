@@ -40,12 +40,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Merged result for show create table.
+ * Sharding merged result for show create table.
  */
-public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
+public final class ShardingShowCreateTableMergedResult extends ShardingLogicTablesMergedResult {
     
-    public ShowCreateTableMergedResult(final ShardingRule rule,
-                                       final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public ShardingShowCreateTableMergedResult(final ShardingRule rule,
+                                               final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(rule, sqlStatementContext, schema, queryResults);
     }
     

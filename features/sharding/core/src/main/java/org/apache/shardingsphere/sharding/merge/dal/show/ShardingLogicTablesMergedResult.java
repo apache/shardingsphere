@@ -34,12 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Logic tables merged result.
+ * Sharding logic tables merged result.
  */
-public class LogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
+public class ShardingLogicTablesMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public LogicTablesMergedResult(final ShardingRule rule,
-                                   final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public ShardingLogicTablesMergedResult(final ShardingRule rule,
+                                           final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(rule, schema, sqlStatementContext, queryResults);
     }
     

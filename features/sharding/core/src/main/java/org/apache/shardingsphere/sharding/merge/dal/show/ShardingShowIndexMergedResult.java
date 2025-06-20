@@ -32,12 +32,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Merged result for show index.
+ * Sharding merged result for show index.
  */
-public final class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
+public final class ShardingShowIndexMergedResult extends MemoryMergedResult<ShardingRule> {
     
-    public ShowIndexMergedResult(final ShardingRule shardingRule,
-                                 final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
+    public ShardingShowIndexMergedResult(final ShardingRule shardingRule,
+                                         final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         super(shardingRule, schema, sqlStatementContext, queryResults);
     }
     

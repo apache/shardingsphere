@@ -39,7 +39,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class LogicTablesMergedResultTest {
+class ShardingLogicTablesMergedResultTest {
     
     private ShardingRule rule;
     
@@ -60,12 +60,12 @@ class LogicTablesMergedResultTest {
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new LogicTablesMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new ShardingLogicTablesMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextForActualTableNameInTableRule() throws SQLException {
-        assertTrue(new LogicTablesMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
+        assertTrue(new ShardingLogicTablesMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
     }
     
     private QueryResult mockQueryResult(final String value) throws SQLException {

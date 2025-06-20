@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShowIndexMergedResultTest {
+class ShardingShowIndexMergedResultTest {
     
     @Mock
     private ShardingRule rule;
@@ -46,12 +46,12 @@ class ShowIndexMergedResultTest {
     
     @Test
     void assertNextForEmptyQueryResult() throws SQLException {
-        assertFalse(new ShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
+        assertFalse(new ShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.emptyList()).next());
     }
     
     @Test
     void assertNextForTableRuleIsPresent() throws SQLException {
-        assertTrue(new ShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
+        assertTrue(new ShardingShowIndexMergedResult(rule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
     }
     
     private QueryResult mockQueryResult() throws SQLException {

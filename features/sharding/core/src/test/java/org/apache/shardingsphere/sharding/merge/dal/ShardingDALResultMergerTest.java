@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.merge.dal.show.LogicTablesMergedResult;
-import org.apache.shardingsphere.sharding.merge.dal.show.ShowCreateTableMergedResult;
-import org.apache.shardingsphere.sharding.merge.dal.show.ShowIndexMergedResult;
-import org.apache.shardingsphere.sharding.merge.dal.show.ShowTableStatusMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingLogicTablesMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingShowCreateTableMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingShowIndexMergedResult;
+import org.apache.shardingsphere.sharding.merge.dal.show.ShardingShowTableStatusMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
@@ -67,25 +67,25 @@ class ShardingDALResultMergerTest {
     @Test
     void assertMergeForShowShowTablesStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowTablesStatement.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(LogicTablesMergedResult.class));
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShardingLogicTablesMergedResult.class));
     }
     
     @Test
     void assertMergeForShowTableStatusStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowTableStatusStatement.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShowTableStatusMergedResult.class));
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShardingShowTableStatusMergedResult.class));
     }
     
     @Test
     void assertMergeForShowIndexStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowIndexStatement.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShowIndexMergedResult.class));
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShardingShowIndexMergedResult.class));
     }
     
     @Test
     void assertMergeForShowCreateTableStatement() throws SQLException {
         SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowCreateTableStatement.class));
-        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShowCreateTableMergedResult.class));
+        assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(ShardingShowCreateTableMergedResult.class));
     }
     
     @Test
