@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowTabl
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 import org.junit.jupiter.api.Test;
@@ -83,7 +83,7 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowIndexStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowIndexStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowIndexStatement.class));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingShowIndexMergedResult.class));

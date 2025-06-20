@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generi
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 
@@ -42,8 +42,8 @@ public final class MySQLToBeRemovedSegmentsProvider implements DialectToBeRemove
         if (sqlStatement instanceof MySQLShowColumnsStatement) {
             ((MySQLShowColumnsStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
         }
-        if (sqlStatement instanceof ShowIndexStatement) {
-            ((ShowIndexStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
+        if (sqlStatement instanceof MySQLShowIndexStatement) {
+            ((MySQLShowIndexStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
         }
         if (sqlStatement instanceof ShowTableStatusStatement) {
             ((ShowTableStatusStatement) sqlStatement).getFromDatabase().ifPresent(result::add);

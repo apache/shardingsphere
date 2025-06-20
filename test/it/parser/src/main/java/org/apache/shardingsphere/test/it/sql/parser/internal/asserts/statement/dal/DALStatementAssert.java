@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStat
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
@@ -221,8 +221,8 @@ public final class DALStatementAssert {
             ShowCreateUserStatementAssert.assertIs(assertContext, (MySQLShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
         } else if (actual instanceof ShowTableStatusStatement) {
             ShowTableStatusStatementAssert.assertIs(assertContext, (ShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
-        } else if (actual instanceof ShowIndexStatement) {
-            ShowIndexStatementAssert.assertIs(assertContext, (ShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
+        } else if (actual instanceof MySQLShowIndexStatement) {
+            ShowIndexStatementAssert.assertIs(assertContext, (MySQLShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
         } else if (actual instanceof MySQLShowRelayLogEventsStatement) {
             ShowRelayLogEventsStatementAssert.assertIs(assertContext, (MySQLShowRelayLogEventsStatement) actual, (ShowRelayLogEventsStatementTestCase) expected);
         } else if (actual instanceof ShowStatement) {

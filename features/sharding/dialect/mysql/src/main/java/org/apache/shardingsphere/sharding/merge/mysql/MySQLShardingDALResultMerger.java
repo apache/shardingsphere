@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
 
@@ -59,7 +59,7 @@ public final class MySQLShardingDALResultMerger implements DialectShardingDALRes
         if (dalStatement instanceof ShowTableStatusStatement) {
             return Optional.of(new MySQLShardingShowTableStatusMergedResult(rule, sqlStatementContext, schema, queryResults));
         }
-        if (dalStatement instanceof ShowIndexStatement) {
+        if (dalStatement instanceof MySQLShowIndexStatement) {
             return Optional.of(new MySQLShardingShowIndexMergedResult(rule, sqlStatementContext, schema, queryResults));
         }
         if (dalStatement instanceof ShowCreateTableStatement) {
