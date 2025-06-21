@@ -40,6 +40,15 @@ public final class ShowTableStatusStatement extends AbstractSQLStatement impleme
     private final ShowFilterSegment filter;
     
     /**
+     * Get from database.
+     *
+     * @return from database
+     */
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
+    }
+    
+    /**
      * Get filter segment.
      *
      * @return filter segment
