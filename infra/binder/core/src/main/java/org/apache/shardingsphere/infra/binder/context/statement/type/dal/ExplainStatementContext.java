@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,7 +47,7 @@ public final class ExplainStatementContext implements SQLStatementContext {
                                    final DatabaseType databaseType, final ExplainStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(sqlStatement.getTables());
+        tablesContext = new TablesContext(sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList()));
         explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
     }
 }

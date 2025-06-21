@@ -21,22 +21,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 /**
  * Load data statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LoadDataStatement extends AbstractSQLStatement implements DMLStatement, TableAvailableSQLStatement {
+public final class LoadDataStatement extends AbstractSQLStatement implements DMLStatement {
     
     private final SimpleTableSegment table;
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return Collections.singleton(table);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
 }

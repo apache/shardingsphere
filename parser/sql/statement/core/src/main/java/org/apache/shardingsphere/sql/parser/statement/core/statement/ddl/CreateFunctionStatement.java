@@ -23,12 +23,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtrac
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +37,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
+public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
     
     private FunctionNameSegment functionName;
     
@@ -65,7 +64,8 @@ public class CreateFunctionStatement extends AbstractSQLStatement implements DDL
     }
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(
+                new TableSQLStatementAttribute(getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList)));
     }
 }

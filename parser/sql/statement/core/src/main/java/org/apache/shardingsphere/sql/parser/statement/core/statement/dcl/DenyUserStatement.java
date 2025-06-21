@@ -22,10 +22,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -33,14 +33,14 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public final class DenyUserStatement extends AbstractSQLStatement implements DCLStatement, TableAvailableSQLStatement {
+public final class DenyUserStatement extends AbstractSQLStatement implements DCLStatement {
     
     private SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return Collections.singleton(table);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
 }

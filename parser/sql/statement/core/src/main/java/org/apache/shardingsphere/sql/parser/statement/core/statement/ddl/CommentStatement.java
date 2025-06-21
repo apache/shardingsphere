@@ -23,10 +23,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CommentStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
+public class CommentStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
     
@@ -55,7 +55,7 @@ public class CommentStatement extends AbstractSQLStatement implements DDLStateme
     }
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return null == table ? Collections.emptyList() : Collections.singletonList(table);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
     }
 }

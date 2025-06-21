@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.single.checker.sql.schema.SingleDropSchemaSupportedChecker;
 import org.apache.shardingsphere.single.exception.DropNotEmptySchemaException;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -77,6 +78,7 @@ class SingleDropSchemaSupportedCheckerTest {
         DropSchemaStatement dropSchemaStatement = mock(DropSchemaStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getSchemaNames()).thenReturn(Collections.singleton(new IdentifierValue(schemaName)));
+        when(dropSchemaStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         return new CommonSQLStatementContext(mock(), dropSchemaStatement);
     }
 }

@@ -42,7 +42,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
@@ -67,7 +67,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateS
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * SQL statement context factory.
@@ -87,10 +86,9 @@ public final class SQLStatementContextFactory {
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        Optional<DialectCommonSQLStatementContextWarpProvider> dialectCommonSQLStatementContextWarpProvider = DatabaseTypedSPILoader.findService(
-                DialectCommonSQLStatementContextWarpProvider.class, databaseType);
-        if (sqlStatement instanceof TableAvailableSQLStatement && dialectCommonSQLStatementContextWarpProvider
-                .map(optional -> dialectCommonSQLStatementContextWarpProvider.get().getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
+        if (sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).isPresent()
+                && DatabaseTypedSPILoader.findService(DialectCommonSQLStatementContextWarpProvider.class, databaseType)
+                        .map(optional -> optional.getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
