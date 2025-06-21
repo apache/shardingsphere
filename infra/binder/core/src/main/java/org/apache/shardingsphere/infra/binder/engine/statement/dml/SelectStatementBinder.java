@@ -68,7 +68,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     @Override
     public SelectStatement bind(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        WithSegment boundWith = sqlStatement.getWith().map(optional ->  WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())).orElse(null);
+        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())).orElse(null);
         Optional<TableSegment> boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts));
         ProjectionsSegment boundProjections = ProjectionsSegmentBinder.bind(sqlStatement.getProjections(), binderContext, boundFrom.orElse(null), tableBinderContexts, outerTableBinderContexts);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
