@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 import java.util.Collection;
 
 /**
- * Constraint available SQL statement.
+ * Constraint SQL statement attribute.
  */
-public interface ConstraintAvailableSQLStatement {
+public interface ConstraintSQLStatementAttribute extends SQLStatementAttribute {
     
     /**
      * Get constraint segments.

@@ -19,12 +19,11 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 
 import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailableSQLStatement;
-import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -36,6 +35,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
 
 import java.util.Collections;
@@ -110,17 +111,16 @@ public final class PipelineDDLDecorator {
         }
         TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName();
         if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
+            SQLStatementAttributes attributes = sqlStatementContext.getSqlStatement().getAttributes();
             if (sqlStatementContext instanceof IndexContextAvailable) {
                 for (IndexSegment each : ((IndexContextAvailable) sqlStatementContext).getIndexes()) {
                     String logicIndexName = IndexMetaDataUtils.getLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
                     replaceMap.put(each.getIndexName(), logicIndexName);
                 }
             }
-            if (sqlStatementContext.getSqlStatement() instanceof ConstraintAvailableSQLStatement) {
-                for (ConstraintSegment each : ((ConstraintAvailableSQLStatement) sqlStatementContext.getSqlStatement()).getConstraints()) {
-                    String logicConstraint = IndexMetaDataUtils.getLogicIndexName(each.getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
-                    replaceMap.put(each, logicConstraint);
-                }
+            for (ConstraintSegment each : attributes.findAttribute(ConstraintSQLStatementAttribute.class).map(ConstraintSQLStatementAttribute::getConstraints).orElse(Collections.emptyList())) {
+                String logicConstraint = IndexMetaDataUtils.getLogicIndexName(each.getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
+                replaceMap.put(each, logicConstraint);
             }
         }
     }
