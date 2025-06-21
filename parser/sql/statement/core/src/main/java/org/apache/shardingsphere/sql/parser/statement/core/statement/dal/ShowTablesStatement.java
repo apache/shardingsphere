@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowTablesStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailableSQLStatement {
+public final class ShowTablesStatement extends AbstractSQLStatement implements DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
@@ -41,7 +41,11 @@ public final class ShowTablesStatement extends AbstractSQLStatement implements D
     
     private final boolean containsFull;
     
-    @Override
+    /**
+     * Get from database.
+     *
+     * @return from database
+     */
     public Optional<FromDatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(fromDatabase);
     }
@@ -57,6 +61,6 @@ public final class ShowTablesStatement extends AbstractSQLStatement implements D
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

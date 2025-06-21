@@ -20,16 +20,17 @@ package org.apache.shardingsphere.distsql.statement.rql.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
 /**
  * Show storage unit statement.
  */
-@Getter
 @RequiredArgsConstructor
-public final class ShowStorageUnitsStatement extends ResourceQueryStatement implements FromDatabaseAvailableSQLStatement {
+@Getter
+public final class ShowStorageUnitsStatement extends ResourceQueryStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
@@ -45,7 +46,7 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement impl
     }
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

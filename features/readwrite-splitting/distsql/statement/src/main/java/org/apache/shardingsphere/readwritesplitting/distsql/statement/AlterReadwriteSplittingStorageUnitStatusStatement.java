@@ -21,16 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 /**
  * Set readwrite-splitting status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterReadwriteSplittingStorageUnitStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailableSQLStatement {
+public final class AlterReadwriteSplittingStorageUnitStatusStatement extends UpdatableRALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
@@ -41,7 +40,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
     private final boolean enable;
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

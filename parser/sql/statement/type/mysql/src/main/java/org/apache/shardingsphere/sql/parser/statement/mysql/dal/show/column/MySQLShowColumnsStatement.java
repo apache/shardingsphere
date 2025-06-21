@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
@@ -38,17 +38,22 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLShowColumnsStatement extends AbstractSQLStatement
-        implements
-            DALStatement,
-            TableAvailableSQLStatement,
-            FromDatabaseAvailableSQLStatement {
+public final class MySQLShowColumnsStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    /**
+     * Get from database.
+     *
+     * @return from database
+     */
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
+    }
     
     /**
      * Get filter segment.
@@ -65,12 +70,7 @@ public final class MySQLShowColumnsStatement extends AbstractSQLStatement
     }
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
-    }
-    
-    @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1));
+        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

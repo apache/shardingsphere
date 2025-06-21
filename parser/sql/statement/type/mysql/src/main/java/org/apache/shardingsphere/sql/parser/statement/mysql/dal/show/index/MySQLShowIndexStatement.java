@@ -22,7 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
@@ -35,11 +36,20 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement, FromDatabaseAvailableSQLStatement {
+public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
+    
+    /**
+     * Get from database.
+     *
+     * @return from database
+     */
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
+    }
     
     @Override
     public Collection<SimpleTableSegment> getTables() {
@@ -47,7 +57,7 @@ public final class MySQLShowIndexStatement extends AbstractSQLStatement implemen
     }
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }
