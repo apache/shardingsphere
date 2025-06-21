@@ -69,12 +69,11 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<WithSegment> withSegment = actual.getWith();
+        WithSegment withSegment = actual.getWith();
         if (null == expected.getWithClause()) {
-            assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
+            assertNull(withSegment, assertContext.getText("Actual with segment should not exist."));
         } else {
-            assertTrue(withSegment.isPresent(), assertContext.getText("Actual with segment should exist."));
-            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
+            WithClauseAssert.assertIs(assertContext, withSegment, expected.getWithClause());
         }
     }
     
