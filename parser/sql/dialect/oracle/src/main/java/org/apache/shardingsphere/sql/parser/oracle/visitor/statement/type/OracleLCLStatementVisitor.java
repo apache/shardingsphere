@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatem
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
 
 import java.util.Collections;
 

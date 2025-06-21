@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantCo
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
 /**
  * DCL statement visitor for SQL92.

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.LiteralGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.ParameterMarkerGeneratedKeyAssignmentToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

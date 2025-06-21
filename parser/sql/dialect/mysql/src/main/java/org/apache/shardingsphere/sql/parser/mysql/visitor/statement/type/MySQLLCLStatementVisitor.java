@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockC
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.UnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.UnlockStatement;
 
 import java.util.Collection;
 import java.util.Collections;

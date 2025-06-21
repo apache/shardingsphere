@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatementType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.SQLStatementType;
 
 /**
  * SQL visitor rule.

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Loc
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
 
 import java.util.Collection;
 import java.util.Collections;

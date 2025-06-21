@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.dal;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Alter resource cost statement for Oracle.
