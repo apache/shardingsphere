@@ -65,7 +65,7 @@ class DistSQLQueryBackendHandlerTest {
     @Test
     void assertExecuteWithNoDatabase() {
         assertThrows(NoDatabaseSelectedException.class,
-                () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+                () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     @Test
@@ -78,12 +78,13 @@ class DistSQLQueryBackendHandlerTest {
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(), mock(PersistRepository.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
+        assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
     }
     
     @Test
     void assertExecuteWithAbstractStatement() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+        assertThrows(ServiceProviderNotFoundException.class,
+                () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class, RETURNS_DEEP_STUBS), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     @Test
