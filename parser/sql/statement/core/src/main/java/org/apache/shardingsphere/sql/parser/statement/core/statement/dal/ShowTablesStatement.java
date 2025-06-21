@@ -22,8 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.DatabaseSelectRequiredSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequiredSQLStatement;
 
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowTablesStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailableSQLStatement, DatabaseSelectRequiredSQLStatement {
+public final class ShowTablesStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailableSQLStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
@@ -52,5 +53,10 @@ public final class ShowTablesStatement extends AbstractSQLStatement implements D
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
     }
 }
