@@ -21,11 +21,11 @@ import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLE
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,13 +40,17 @@ class EncryptWithClauseSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getWith()).thenReturn(Optional.of(mock(WithSegment.class)));
+        WithSQLStatementAttribute withAttribute = mock(WithSQLStatementAttribute.class);
+        when(withAttribute.containsWith()).thenReturn(true);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(withAttribute));
         assertTrue(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     
     @Test
-    void assertIsCheckWithoutWithAvailable() {
-        assertFalse(new EncryptWithClauseSupportedChecker().isCheck(mock(SQLStatementContext.class)));
+    void assertIsCheckWithoutWith() {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertFalse(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     
     @Test
