@@ -81,6 +81,15 @@ public final class DeleteStatement extends AbstractSQLStatement implements DMLSt
     }
     
     /**
+     * Get with.
+     *
+     * @return with
+     */
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
+    }
+    
+    /**
      * Get returning.
      *
      * @return returning

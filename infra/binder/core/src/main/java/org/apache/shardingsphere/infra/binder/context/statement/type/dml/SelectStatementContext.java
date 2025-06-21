@@ -391,7 +391,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SubqueryTableSegment || null != sqlStatement.getWith();
+        return sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SubqueryTableSegment || sqlStatement.getWith().isPresent();
     }
     
     /**

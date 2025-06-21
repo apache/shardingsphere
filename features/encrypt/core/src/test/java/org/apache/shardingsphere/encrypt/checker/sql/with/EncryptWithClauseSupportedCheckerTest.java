@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,7 +40,7 @@ class EncryptWithClauseSupportedCheckerTest {
     @Test
     void assertIsCheck() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement().getWith()).thenReturn(mock(WithSegment.class));
+        when(sqlStatementContext.getSqlStatement().getWith()).thenReturn(Optional.of(mock(WithSegment.class)));
         assertTrue(new EncryptWithClauseSupportedChecker().isCheck(sqlStatementContext));
     }
     

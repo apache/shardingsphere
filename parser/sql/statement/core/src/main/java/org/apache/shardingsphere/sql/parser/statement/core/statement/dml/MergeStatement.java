@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Outpu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -114,5 +116,10 @@ public final class MergeStatement extends AbstractSQLStatement implements DMLSta
      */
     public Optional<OptionHintSegment> getOptionHint() {
         return Optional.ofNullable(optionHint);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

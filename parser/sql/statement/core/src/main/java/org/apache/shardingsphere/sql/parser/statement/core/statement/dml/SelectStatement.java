@@ -131,6 +131,15 @@ public final class SelectStatement extends AbstractSQLStatement implements DMLSt
     }
     
     /**
+     * Get with.
+     *
+     * @return with
+     */
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
+    }
+    
+    /**
      * Get subquery type.
      *
      * @return subquery type

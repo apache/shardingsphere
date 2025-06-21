@@ -141,6 +141,15 @@ public final class InsertStatement extends AbstractSQLStatement implements DMLSt
     }
     
     /**
+     * Get with.
+     *
+     * @return with
+     */
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
+    }
+    
+    /**
      * Get output.
      *
      * @return output

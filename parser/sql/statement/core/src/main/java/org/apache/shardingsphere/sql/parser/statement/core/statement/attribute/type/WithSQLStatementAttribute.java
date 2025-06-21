@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
-import java.util.Optional;
-
 /**
  * With SQL statement attribute.
  */
@@ -32,11 +30,11 @@ public final class WithSQLStatementAttribute implements SQLStatementAttribute {
     private final WithSegment with;
     
     /**
-     * Get with.
+     * Whether to contain with.
      *
-     * @return with
+     * @return contains with or not
      */
-    public Optional<WithSegment> getWith() {
-        return Optional.ofNullable(with);
+    public boolean containsWith() {
+        return null != with;
     }
 }

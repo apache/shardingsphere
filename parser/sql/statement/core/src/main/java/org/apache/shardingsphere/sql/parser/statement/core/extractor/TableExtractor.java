@@ -103,9 +103,7 @@ public final class TableExtractor {
         selectStatement.getGroupBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getGroupByItems()));
         selectStatement.getOrderBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getOrderByItems()));
         selectStatement.getHaving().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
-        if (null != selectStatement.getWith()) {
-            extractTablesFromCTEs(selectStatement.getWith().getCommonTableExpressions());
-        }
+        selectStatement.getWith().ifPresent(optional -> extractTablesFromCTEs(optional.getCommonTableExpressions()));
         selectStatement.getLock().ifPresent(this::extractTablesFromLock);
     }
     

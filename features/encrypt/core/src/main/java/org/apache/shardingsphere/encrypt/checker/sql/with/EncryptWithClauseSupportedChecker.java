@@ -36,7 +36,7 @@ public final class EncryptWithClauseSupportedChecker implements SupportedSQLChec
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(WithSQLStatementAttribute.class).map(optional -> optional.getWith().isPresent()).orElse(false);
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(WithSQLStatementAttribute.class).map(WithSQLStatementAttribute::containsWith).orElse(false);
     }
     
     @Override

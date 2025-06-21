@@ -47,7 +47,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -164,11 +163,12 @@ public final class SelectStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        WithSegment withSegment = actual.getWith();
+        Optional<WithSegment> withSegment = actual.getWith();
         if (null == expected.getWithClause()) {
-            assertNull(withSegment, assertContext.getText("Actual with segment should not exist."));
+            assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
-            WithClauseAssert.assertIs(assertContext, withSegment, expected.getWithClause());
+            assertTrue(withSegment.isPresent(), assertContext.getText("Actual with segment should exist."));
+            WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
         }
     }
     
