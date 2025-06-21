@@ -88,7 +88,7 @@ public final class SQLStatementContextFactory {
                                                   final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).isPresent()
                 && DatabaseTypedSPILoader.findService(DialectCommonSQLStatementContextWarpProvider.class, databaseType)
-                .map(optional -> optional.getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
+                        .map(optional -> optional.getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
             return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
