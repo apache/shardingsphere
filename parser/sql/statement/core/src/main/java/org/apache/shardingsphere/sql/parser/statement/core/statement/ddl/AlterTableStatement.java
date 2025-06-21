@@ -37,7 +37,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Con
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,7 +49,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class AlterTableStatement extends AbstractSQLStatement implements DDLStatement, ConstraintAvailableSQLStatement {
+public final class AlterTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
     
@@ -130,13 +131,21 @@ public final class AlterTableStatement extends AbstractSQLStatement implements D
     }
     
     @Override
-    public Collection<ConstraintSegment> getConstraints() {
-        Collection<ConstraintSegment> result = new LinkedList<>();
-        for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
-            each.getConstraintDefinition().getConstraintName().ifPresent(result::add);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new CreateTableConstraintSQLStatementAttribute());
+    }
+    
+    private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
+        
+        @Override
+        public Collection<ConstraintSegment> getConstraints() {
+            Collection<ConstraintSegment> result = new LinkedList<>();
+            for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
+                each.getConstraintDefinition().getConstraintName().ifPresent(result::add);
+            }
+            validateConstraintDefinitions.stream().map(ValidateConstraintDefinitionSegment::getConstraintName).forEach(result::add);
+            dropConstraintDefinitions.stream().map(DropConstraintDefinitionSegment::getConstraintName).forEach(result::add);
+            return result;
         }
-        validateConstraintDefinitions.stream().map(ValidateConstraintDefinitionSegment::getConstraintName).forEach(result::add);
-        dropConstraintDefinitions.stream().map(DropConstraintDefinitionSegment::getConstraintName).forEach(result::add);
-        return result;
     }
 }

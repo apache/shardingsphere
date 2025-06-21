@@ -26,7 +26,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Cre
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ConstraintAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 
 import java.util.Collection;
@@ -39,7 +40,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class CreateTableStatement extends AbstractSQLStatement implements DDLStatement, ConstraintAvailableSQLStatement {
+public final class CreateTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment table;
     
@@ -85,11 +86,19 @@ public final class CreateTableStatement extends AbstractSQLStatement implements 
     }
     
     @Override
-    public Collection<ConstraintSegment> getConstraints() {
-        Collection<ConstraintSegment> result = new LinkedList<>();
-        for (ConstraintDefinitionSegment each : constraintDefinitions) {
-            each.getConstraintName().ifPresent(result::add);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new CreateTableConstraintSQLStatementAttribute());
+    }
+    
+    private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
+        
+        @Override
+        public Collection<ConstraintSegment> getConstraints() {
+            Collection<ConstraintSegment> result = new LinkedList<>();
+            for (ConstraintDefinitionSegment each : constraintDefinitions) {
+                each.getConstraintName().ifPresent(result::add);
+            }
+            return result;
         }
-        return result;
     }
 }
