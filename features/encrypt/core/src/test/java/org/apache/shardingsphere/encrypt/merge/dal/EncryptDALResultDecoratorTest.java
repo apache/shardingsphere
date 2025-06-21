@@ -61,7 +61,7 @@ class EncryptDALResultDecoratorTest {
     
     @Test
     void assertMergedResultWithShowColumnsStatement() {
-        sqlStatementContext = mockColumnInfoInResultSetAvailableStatementContext();
+        sqlStatementContext = mockColumnInResultSetSQLStatementAttributeContext();
         EncryptDALResultDecorator decorator = new EncryptDALResultDecorator(mock(RuleMetaData.class));
         assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(EncryptShowColumnsMergedResult.class));
     }
@@ -82,7 +82,7 @@ class EncryptDALResultDecoratorTest {
         assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(MergedResult.class));
     }
     
-    private SQLStatementContext mockColumnInfoInResultSetAvailableStatementContext() {
+    private SQLStatementContext mockColumnInResultSetSQLStatementAttributeContext() {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("foo_tbl")));
         when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
