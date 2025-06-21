@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -43,25 +45,34 @@ class ShardingConstraintTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotConstraintAvailable() {
-        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyConstraint() {
-        AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
-        when(alterTableStatementContext.getSqlStatement().getConstraints().isEmpty()).thenReturn(true);
-        assertFalse(generator.isGenerateSQLToken(alterTableStatementContext));
+        AlterTableStatementContext sqlStatementContext = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
+        ConstraintSQLStatementAttribute constraintAttribute = mock(ConstraintSQLStatementAttribute.class);
+        when(constraintAttribute.getConstraints()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(constraintAttribute));
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsGenerateSQLToken() {
-        AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
-        assertTrue(generator.isGenerateSQLToken(alterTableStatementContext));
+        SQLStatementContext sqlStatementContext = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
+        ConstraintSQLStatementAttribute constraintAttribute = mock(ConstraintSQLStatementAttribute.class);
+        when(constraintAttribute.getConstraints()).thenReturn(Collections.singleton(mock(ConstraintSegment.class)));
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(constraintAttribute));
+        assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensWithNotConstraintAvailable() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(mock(SQLStatementContext.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(mock(ConstraintSQLStatementAttribute.class)));
+        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertTrue(actual.isEmpty());
     }
     
@@ -74,7 +85,9 @@ class ShardingConstraintTokenGeneratorTest {
     
     private AlterTableStatementContext mockAlterTableStatementContext() {
         AlterTableStatementContext result = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement().getConstraints()).thenReturn(Collections.singleton(new ConstraintSegment(1, 3, mock(IdentifierValue.class))));
+        ConstraintSQLStatementAttribute constraintAttribute = mock(ConstraintSQLStatementAttribute.class);
+        when(constraintAttribute.getConstraints()).thenReturn(Collections.singleton(new ConstraintSegment(1, 3, mock(IdentifierValue.class))));
+        when(result.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(constraintAttribute));
         return result;
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -88,13 +87,10 @@ public final class CreateTableStatement extends AbstractSQLStatement implements 
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new CreateTableConstraintSQLStatementAttribute(constraintDefinitions));
+        return new SQLStatementAttributes(new CreateTableConstraintSQLStatementAttribute());
     }
     
-    @RequiredArgsConstructor
-    private static class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
-        
-        private final Collection<ConstraintDefinitionSegment> constraintDefinitions;
+    private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
         
         @Override
         public Collection<ConstraintSegment> getConstraints() {
