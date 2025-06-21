@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 import java.util.Optional;
 
 /**
- * With available SQL statement.
+ * With SQL statement attribute.
  */
-public interface WithAvailableSQLStatement {
+@RequiredArgsConstructor
+public final class WithSQLStatementAttribute implements SQLStatementAttribute {
+    
+    private final WithSegment with;
     
     /**
-     * Get with segment.
+     * Get with.
      *
-     * @return with segment
+     * @return with
      */
-    Optional<WithSegment> getWith();
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
+    }
 }
