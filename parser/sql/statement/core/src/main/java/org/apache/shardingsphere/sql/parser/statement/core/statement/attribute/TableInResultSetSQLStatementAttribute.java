@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Table info in result set available SQL statement.
+ * Table in result set SQL statement attribute.
  */
-public interface TableInfoInResultSetAvailableSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class TableInResultSetSQLStatementAttribute implements SQLStatementAttribute {
     
-    /**
-     * Get table name result set index.
-     *
-     * @return table name result set index
-     */
-    int getTableNameResultSetIndex();
+    private final int nameResultSetIndex;
 }

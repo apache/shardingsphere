@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.TableInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailableSQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,11 +34,7 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowCreateTableStatement extends AbstractSQLStatement
-        implements
-            DALStatement,
-            TableAvailableSQLStatement,
-            TableInfoInResultSetAvailableSQLStatement {
+public final class ShowCreateTableStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
@@ -48,12 +44,7 @@ public final class ShowCreateTableStatement extends AbstractSQLStatement
     }
     
     @Override
-    public int getTableNameResultSetIndex() {
-        return 2;
-    }
-    
-    @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2));
     }
 }
