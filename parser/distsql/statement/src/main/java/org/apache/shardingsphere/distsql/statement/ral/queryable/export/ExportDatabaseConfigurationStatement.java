@@ -20,7 +20,8 @@ package org.apache.shardingsphere.distsql.statement.ral.queryable.export;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ import java.util.Optional;
  * Export database configuration statement.
  */
 @RequiredArgsConstructor
-public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromDatabaseAvailableSQLStatement {
+public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement {
     
     private final String filePath;
     
@@ -44,7 +45,7 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
     }
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

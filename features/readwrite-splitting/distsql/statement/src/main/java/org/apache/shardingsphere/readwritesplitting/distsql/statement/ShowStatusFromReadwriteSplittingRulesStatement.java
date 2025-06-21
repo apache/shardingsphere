@@ -20,7 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ResourceQueryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -28,16 +29,11 @@ import java.util.Optional;
  * Show status from readwrite-splitting rules statement.
  */
 @RequiredArgsConstructor
-public final class ShowStatusFromReadwriteSplittingRulesStatement extends ResourceQueryStatement implements FromDatabaseAvailableSQLStatement {
+public final class ShowStatusFromReadwriteSplittingRulesStatement extends ResourceQueryStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
     private final String ruleName;
-    
-    @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
-    }
     
     /**
      * Get rule name.
@@ -46,5 +42,10 @@ public final class ShowStatusFromReadwriteSplittingRulesStatement extends Resour
      */
     public Optional<String> getRuleName() {
         return Optional.ofNullable(ruleName);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

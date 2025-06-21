@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -31,13 +32,18 @@ import java.util.Optional;
  * Show table status statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement, FromDatabaseAvailableSQLStatement {
+@Getter
+public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
     
-    @Override
+    /**
+     * Get from database.
+     *
+     * @return from database
+     */
     public Optional<FromDatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(fromDatabase);
     }
@@ -53,6 +59,6 @@ public final class ShowTableStatusStatement extends AbstractSQLStatement impleme
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

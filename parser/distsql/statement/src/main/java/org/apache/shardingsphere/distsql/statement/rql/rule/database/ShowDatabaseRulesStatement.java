@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.RuleQueryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 /**
  * Show database rules statement.
  */
 @RequiredArgsConstructor
-public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement implements FromDatabaseAvailableSQLStatement {
+@Getter
+public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
     @Override
-    public final Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

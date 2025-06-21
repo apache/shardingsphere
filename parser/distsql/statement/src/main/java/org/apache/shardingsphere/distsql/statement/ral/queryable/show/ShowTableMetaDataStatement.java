@@ -21,24 +21,24 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Show table meta data statement.
  */
 @RequiredArgsConstructor
-public final class ShowTableMetaDataStatement extends QueryableRALStatement implements FromDatabaseAvailableSQLStatement {
+@Getter
+public final class ShowTableMetaDataStatement extends QueryableRALStatement {
     
-    @Getter
     private final Collection<String> tableNames;
     
     private final FromDatabaseSegment fromDatabase;
     
     @Override
-    public Optional<FromDatabaseSegment> getFromDatabase() {
-        return Optional.ofNullable(fromDatabase);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }
