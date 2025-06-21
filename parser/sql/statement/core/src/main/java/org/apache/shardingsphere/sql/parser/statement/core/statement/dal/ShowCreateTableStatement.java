@@ -21,9 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.DatabaseSelectRequiredSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailableSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequiredSQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,8 +38,7 @@ public final class ShowCreateTableStatement extends AbstractSQLStatement
         implements
             DALStatement,
             TableAvailableSQLStatement,
-            TableInfoInResultSetAvailableSQLStatement,
-            DatabaseSelectRequiredSQLStatement {
+            TableInfoInResultSetAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
@@ -50,5 +50,10 @@ public final class ShowCreateTableStatement extends AbstractSQLStatement
     @Override
     public int getTableNameResultSetIndex() {
         return 2;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
     }
 }

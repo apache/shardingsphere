@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.required;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute;
 
 /**
- * Database select required SQL statement.
+ * SQL statement attribute.
  */
-public interface DatabaseSelectRequiredSQLStatement {
+public interface SQLStatementAttribute {
 }

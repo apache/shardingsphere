@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 
 import java.util.Collection;
 
@@ -62,4 +63,13 @@ public interface SQLStatement extends ASTNode {
      * @return comment segments
      */
     Collection<CommentSegment> getComments();
+    
+    /**
+     * Get SQL statement attributes.
+     *
+     * @return SQL statement attributes
+     */
+    default SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes();
+    }
 }

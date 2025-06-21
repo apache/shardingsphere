@@ -26,11 +26,11 @@ import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabase
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.required.DatabaseSelectRequiredSQLStatement;
 
 /**
  * Database backend handler factory.
@@ -62,7 +62,7 @@ public final class DatabaseBackendHandlerFactory {
     }
     
     private static boolean isNotDatabaseSelectRequiredDALStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DALStatement && !(sqlStatement instanceof DatabaseSelectRequiredSQLStatement);
+        return sqlStatement instanceof DALStatement && !sqlStatement.getAttributes().findAttribute(DatabaseSelectRequiredSQLStatementAttribute.class).isPresent();
     }
     
     private static boolean isNotContainFromSelectStatement(final SQLStatement sqlStatement) {
