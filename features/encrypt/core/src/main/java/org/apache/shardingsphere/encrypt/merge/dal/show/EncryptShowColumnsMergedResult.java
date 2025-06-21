@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 
 import java.sql.SQLException;
 import java.util.Optional;
