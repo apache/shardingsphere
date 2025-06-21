@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableInfoInResultSetAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.TableInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
 
 import java.sql.SQLException;
@@ -58,7 +58,8 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
                 () -> new UnsupportedEncryptSQLException("SHOW CREATE TABLE FOR MULTI TABLES"));
         this.rule = rule;
         tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        tableNameResultSetIndex = ((TableInfoInResultSetAvailableSQLStatement) sqlStatementContext.getSqlStatement()).getTableNameResultSetIndex();
+        TableInResultSetSQLStatementAttribute attribute = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(TableInResultSetSQLStatementAttribute.class);
+        tableNameResultSetIndex = attribute.getNameResultSetIndex();
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getDatabaseType());
     }
     
