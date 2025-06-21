@@ -22,7 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
@@ -35,7 +36,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement, ColumnInfoInResultSetAvailableSQLStatement {
+public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
@@ -56,7 +57,7 @@ public final class MySQLDescribeStatement extends AbstractSQLStatement implement
     }
     
     @Override
-    public int getColumnNameResultSetIndex() {
-        return 1;
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1));
     }
 }

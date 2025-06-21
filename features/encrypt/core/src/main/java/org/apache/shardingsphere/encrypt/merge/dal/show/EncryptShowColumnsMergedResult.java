@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.ColumnInResultSetSQLStatementAttribute;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -46,8 +46,8 @@ public final class EncryptShowColumnsMergedResult extends DecoratorMergedResult 
                 () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
         this.rule = rule;
         tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        columnNameResultSetIndex = ((ColumnInfoInResultSetAvailableSQLStatement) sqlStatementContext.getSqlStatement()).getColumnNameResultSetIndex();
-        
+        ColumnInResultSetSQLStatementAttribute attribute = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(ColumnInResultSetSQLStatementAttribute.class);
+        columnNameResultSetIndex = attribute.getNameResultSetIndex();
     }
     
     @Override

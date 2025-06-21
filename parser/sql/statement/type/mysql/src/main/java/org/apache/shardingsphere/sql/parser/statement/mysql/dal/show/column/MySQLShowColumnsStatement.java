@@ -23,7 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.ColumnInfoInResultSetAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
@@ -41,8 +42,7 @@ public final class MySQLShowColumnsStatement extends AbstractSQLStatement
         implements
             DALStatement,
             TableAvailableSQLStatement,
-            FromDatabaseAvailableSQLStatement,
-            ColumnInfoInResultSetAvailableSQLStatement {
+            FromDatabaseAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
@@ -70,7 +70,7 @@ public final class MySQLShowColumnsStatement extends AbstractSQLStatement
     }
     
     @Override
-    public int getColumnNameResultSetIndex() {
-        return 1;
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1));
     }
 }
