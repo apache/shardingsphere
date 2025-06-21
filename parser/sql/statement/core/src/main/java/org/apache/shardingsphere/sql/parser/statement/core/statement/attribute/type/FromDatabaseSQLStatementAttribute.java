@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 import java.util.Optional;
 
 /**
- * From database available SQL statement.
+ * From database SQL statement attribute.
  */
-public interface FromDatabaseAvailableSQLStatement {
+@RequiredArgsConstructor
+public final class FromDatabaseSQLStatementAttribute implements SQLStatementAttribute {
+    
+    private final FromDatabaseSegment fromDatabase;
     
     /**
      * Get from database.
      *
      * @return from database
      */
-    Optional<FromDatabaseSegment> getFromDatabase();
+    public Optional<FromDatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
+    }
 }

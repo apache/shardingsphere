@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.dal;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -31,6 +32,7 @@ import java.util.Optional;
  * Show table status statement.
  */
 @RequiredArgsConstructor
+@Getter
 public final class ShowTableStatusStatement extends AbstractSQLStatement implements DALStatement {
     
     private final FromDatabaseSegment fromDatabase;

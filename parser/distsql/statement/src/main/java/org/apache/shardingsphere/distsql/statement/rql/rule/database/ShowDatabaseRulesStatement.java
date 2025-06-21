@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.RuleQueryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
  * Show database rules statement.
  */
 @RequiredArgsConstructor
+@Getter
 public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement {
     
     private final FromDatabaseSegment fromDatabase;

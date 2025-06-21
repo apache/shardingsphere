@@ -30,9 +30,9 @@ import java.util.Collection;
  * Show table meta data statement.
  */
 @RequiredArgsConstructor
+@Getter
 public final class ShowTableMetaDataStatement extends QueryableRALStatement {
     
-    @Getter
     private final Collection<String> tableNames;
     
     private final FromDatabaseSegment fromDatabase;
