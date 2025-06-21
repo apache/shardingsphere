@@ -42,7 +42,7 @@ public final class MySQLShowColumnsStatement extends AbstractSQLStatement
         implements
             DALStatement,
             TableAvailableSQLStatement,
-            FromDatabaseAvailableSQLStatement{
+            FromDatabaseAvailableSQLStatement {
     
     private final SimpleTableSegment table;
     
