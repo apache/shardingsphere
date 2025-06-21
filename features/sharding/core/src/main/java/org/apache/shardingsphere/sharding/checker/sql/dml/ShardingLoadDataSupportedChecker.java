@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
 
 /**
  * Load data supported checker for sharding.

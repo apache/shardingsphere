@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 
 import java.util.Collections;
 import java.util.List;

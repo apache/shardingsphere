@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

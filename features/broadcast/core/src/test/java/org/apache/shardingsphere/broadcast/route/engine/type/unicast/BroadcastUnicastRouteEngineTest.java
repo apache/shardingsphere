@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.available.CursorContextAva
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DropViewStatement;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

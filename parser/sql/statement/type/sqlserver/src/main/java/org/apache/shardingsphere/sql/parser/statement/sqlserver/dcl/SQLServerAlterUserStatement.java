@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Alter user statement for SQLServer.

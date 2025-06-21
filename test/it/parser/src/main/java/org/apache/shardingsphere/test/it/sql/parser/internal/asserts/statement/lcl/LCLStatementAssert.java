@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.UnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.UnlockStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.lcl.impl.LockStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.lcl.impl.UnlockStatementAssert;

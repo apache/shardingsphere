@@ -28,7 +28,7 @@ import org.apache.shardingsphere.single.checker.sql.schema.SingleDropSchemaSuppo
 import org.apache.shardingsphere.single.exception.DropNotEmptySchemaException;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

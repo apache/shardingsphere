@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.postgresql.handler.transaction;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;

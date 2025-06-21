@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.route.postgresql;
 
 import org.apache.shardingsphere.infra.route.engine.tableless.DialectDALStatementBroadcastRouteDecider;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 

@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitC
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 
 /**
  * TCL statement visitor for SQL92.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateProcedureStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

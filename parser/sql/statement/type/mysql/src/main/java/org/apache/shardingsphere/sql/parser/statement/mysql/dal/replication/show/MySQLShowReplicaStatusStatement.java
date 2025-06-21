@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.sho
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show replica status statement for MySQL.

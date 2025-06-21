@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedS
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
 import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
 import java.util.Arrays;
 import java.util.Collection;

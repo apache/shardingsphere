@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UnlockC
 import org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.UnlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.UnlockStatement;
 
 import java.util.Collection;
 import java.util.Collections;

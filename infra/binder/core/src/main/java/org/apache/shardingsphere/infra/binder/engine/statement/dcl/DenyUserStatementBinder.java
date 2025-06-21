@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DenyUserStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

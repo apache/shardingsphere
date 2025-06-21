@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dcl;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Reassign owned statement for PostgreSQL.

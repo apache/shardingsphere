@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.exception.syntax.SelectMultipleDataSourcesWithCombineException;
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Sharding select route context checker.

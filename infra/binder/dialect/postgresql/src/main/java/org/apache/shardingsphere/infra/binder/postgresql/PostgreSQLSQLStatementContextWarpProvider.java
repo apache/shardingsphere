@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.postgresql;
 
 import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CopyStatement;
 
 import java.util.Collection;
 import java.util.Collections;

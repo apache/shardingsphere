@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.Mul
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;

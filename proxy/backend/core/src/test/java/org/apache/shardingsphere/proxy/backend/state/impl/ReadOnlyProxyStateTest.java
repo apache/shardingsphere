@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.state.impl;
 
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.type.ReadOnlyProxyState;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

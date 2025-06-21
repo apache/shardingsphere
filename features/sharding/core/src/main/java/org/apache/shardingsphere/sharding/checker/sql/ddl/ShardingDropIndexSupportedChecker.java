@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.checker.sql.util.ShardingSupportedChec
 import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DropIndexStatement;
 
 /**
  * Drop index supported checker for sharding.

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateTableStatement;
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterIT;
 import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterITSettings;
 

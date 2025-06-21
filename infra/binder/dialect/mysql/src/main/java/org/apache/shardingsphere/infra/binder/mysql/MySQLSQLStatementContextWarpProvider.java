@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.binder.mysql;
 import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 

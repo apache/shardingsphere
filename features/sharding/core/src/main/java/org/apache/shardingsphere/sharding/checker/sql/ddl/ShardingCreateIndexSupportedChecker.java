@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sharding.checker.sql.common.ShardingSupportedCommonChecker;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateIndexStatement;
 
 import java.util.Collections;
 

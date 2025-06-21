@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTablesStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

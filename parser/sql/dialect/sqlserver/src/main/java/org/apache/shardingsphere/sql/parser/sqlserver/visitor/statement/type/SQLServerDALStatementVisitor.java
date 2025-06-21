@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Exp
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 
 /**
  * DAL statement visitor for SQLServer.

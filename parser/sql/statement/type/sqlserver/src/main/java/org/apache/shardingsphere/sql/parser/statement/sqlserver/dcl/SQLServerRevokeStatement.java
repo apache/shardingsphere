@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

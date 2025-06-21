@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;

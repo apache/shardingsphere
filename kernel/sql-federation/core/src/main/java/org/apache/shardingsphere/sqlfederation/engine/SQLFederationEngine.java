@@ -48,7 +48,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;

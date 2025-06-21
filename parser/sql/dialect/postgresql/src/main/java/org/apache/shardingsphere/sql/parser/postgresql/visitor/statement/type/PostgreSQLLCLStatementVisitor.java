@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Lo
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
 
 import java.util.Collection;
 import java.util.Collections;
