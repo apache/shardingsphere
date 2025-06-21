@@ -40,8 +40,10 @@ public final class ShowTableStatusStatementAssert {
      * @param expected expected show table status statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableStatusStatement actual, final ShowTableStatusStatementTestCase expected) {
-        DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
-        SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
+        if (null != actual.getFromDatabase()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
+        }
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
         }
