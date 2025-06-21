@@ -34,7 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.WithAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -43,7 +44,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class SelectStatement extends AbstractSQLStatement implements DMLStatement, WithAvailableSQLStatement {
+public final class SelectStatement extends AbstractSQLStatement implements DMLStatement {
     
     private ProjectionsSegment projections;
     
@@ -130,6 +131,15 @@ public final class SelectStatement extends AbstractSQLStatement implements DMLSt
     }
     
     /**
+     * Get with.
+     *
+     * @return with
+     */
+    public Optional<WithSegment> getWith() {
+        return Optional.ofNullable(with);
+    }
+    
+    /**
      * Get subquery type.
      *
      * @return subquery type
@@ -193,7 +203,7 @@ public final class SelectStatement extends AbstractSQLStatement implements DMLSt
     }
     
     @Override
-    public Optional<WithSegment> getWith() {
-        return Optional.ofNullable(with);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }
