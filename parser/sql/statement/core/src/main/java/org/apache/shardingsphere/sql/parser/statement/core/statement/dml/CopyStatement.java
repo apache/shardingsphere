@@ -23,7 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +35,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CopyStatement extends AbstractSQLStatement implements DMLStatement, TableAvailableSQLStatement {
+public final class CopyStatement extends AbstractSQLStatement implements DMLStatement {
     
     private final SimpleTableSegment table;
     
@@ -61,7 +62,7 @@ public final class CopyStatement extends AbstractSQLStatement implements DMLStat
     }
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return null == table ? Collections.emptyList() : Collections.singletonList(table);
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
     }
 }

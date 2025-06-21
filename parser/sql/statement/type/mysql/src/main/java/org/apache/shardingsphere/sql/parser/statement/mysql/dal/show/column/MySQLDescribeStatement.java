@@ -22,13 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -36,7 +34,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
+public final class MySQLDescribeStatement extends AbstractSQLStatement implements DALStatement {
     
     private final SimpleTableSegment table;
     
@@ -52,12 +50,7 @@ public final class MySQLDescribeStatement extends AbstractSQLStatement implement
     }
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return Collections.singleton(table);
-    }
-    
-    @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1));
+        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
     }
 }

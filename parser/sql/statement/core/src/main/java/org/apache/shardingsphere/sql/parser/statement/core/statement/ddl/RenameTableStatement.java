@@ -22,7 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,17 +33,17 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
+public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables;
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
+    public SQLStatementAttributes getAttributes() {
+        Collection<SimpleTableSegment> tables = new LinkedList<>();
         for (RenameTableDefinitionSegment each : renameTables) {
-            result.add(each.getTable());
-            result.add(each.getRenameTable());
+            tables.add(each.getTable());
+            tables.add(each.getRenameTable());
         }
-        return result;
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

@@ -20,16 +20,14 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -37,7 +35,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class PrepareStatement extends AbstractSQLStatement implements DDLStatement, TableAvailableSQLStatement {
+public final class PrepareStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SelectStatement select;
     
@@ -84,12 +82,12 @@ public final class PrepareStatement extends AbstractSQLStatement implements DDLS
     }
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
+    public SQLStatementAttributes getAttributes() {
         TableExtractor tableExtractor = new TableExtractor();
         Optional.ofNullable(select).ifPresent(tableExtractor::extractTablesFromSelect);
         Optional.ofNullable(insert).ifPresent(tableExtractor::extractTablesFromInsert);
         Optional.ofNullable(update).ifPresent(tableExtractor::extractTablesFromUpdate);
         Optional.ofNullable(delete).ifPresent(tableExtractor::extractTablesFromDelete);
-        return new LinkedList<>(tableExtractor.getRewriteTables());
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(tableExtractor.getRewriteTables()));
     }
 }

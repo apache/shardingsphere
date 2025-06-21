@@ -21,30 +21,22 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.TableAvailableSQLStatement;
-
-import java.util.Collection;
-import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 /**
  * Show create table statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowCreateTableStatement extends AbstractSQLStatement implements DALStatement, TableAvailableSQLStatement {
+public final class ShowCreateTableStatement extends AbstractSQLStatement implements DALStatement {
     
     private final SimpleTableSegment table;
     
     @Override
-    public Collection<SimpleTableSegment> getTables() {
-        return Collections.singleton(table);
-    }
-    
-    @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2));
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2), new TableSQLStatementAttribute(table));
     }
 }

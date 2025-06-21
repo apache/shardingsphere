@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Table available SQL statement.
+ * Table SQL statement attribute.
  */
-public interface TableAvailableSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class TableSQLStatementAttribute implements SQLStatementAttribute {
     
-    /**
-     * Get tables.
-     *
-     * @return tables
-     */
-    Collection<SimpleTableSegment> getTables();
+    private final Collection<SimpleTableSegment> tables;
+    
+    public TableSQLStatementAttribute(final SimpleTableSegment table) {
+        this(Collections.singleton(table));
+    }
 }
