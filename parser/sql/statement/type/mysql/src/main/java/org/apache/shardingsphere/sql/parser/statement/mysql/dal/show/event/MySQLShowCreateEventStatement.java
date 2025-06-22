@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLShowCreateEventStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLShowCreateEventStatement extends DALStatement {
     
     private final String eventName;
 }

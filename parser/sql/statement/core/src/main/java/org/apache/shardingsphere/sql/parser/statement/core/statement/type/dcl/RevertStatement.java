@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Revert statement.
  */
-public final class RevertStatement extends AbstractSQLStatement implements DCLStatement {
+public final class RevertStatement extends DCLStatement {
 }

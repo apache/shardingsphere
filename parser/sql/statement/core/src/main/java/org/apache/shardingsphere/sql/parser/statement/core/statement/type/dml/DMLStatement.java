@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 /**
  * Data manipulation statement.
  */
-public interface DMLStatement extends SQLStatement {
+public abstract class DMLStatement extends SQLStatement {
 }

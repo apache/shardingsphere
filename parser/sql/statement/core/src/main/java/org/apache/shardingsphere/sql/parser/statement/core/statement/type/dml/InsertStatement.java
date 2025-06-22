@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.Mul
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
@@ -50,7 +49,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class InsertStatement extends AbstractSQLStatement implements DMLStatement {
+public final class InsertStatement extends DMLStatement {
     
     private SimpleTableSegment table;
     

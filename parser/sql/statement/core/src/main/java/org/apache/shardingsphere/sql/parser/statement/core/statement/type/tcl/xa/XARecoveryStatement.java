@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * XA recovery statement.
  */
-public final class XARecoveryStatement extends AbstractSQLStatement implements XAStatement {
+public final class XARecoveryStatement extends XAStatement {
 }

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Create loadable function statement for MySQL.
  */
-public final class MySQLCreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLCreateLoadableFunctionStatement extends DALStatement {
 }

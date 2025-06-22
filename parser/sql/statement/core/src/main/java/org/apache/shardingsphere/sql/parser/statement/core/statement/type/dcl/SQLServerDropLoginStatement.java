@@ -20,14 +20,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Drop login statement for SQLServer.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLServerDropLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SQLServerDropLoginStatement extends DCLStatement {
     
     private final LoginSegment loginSegment;
 }

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter database dictionary statement for Oracle.
  */
-public final class OracleAlterDatabaseDictionaryStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OracleAlterDatabaseDictionaryStatement extends DDLStatement {
 }

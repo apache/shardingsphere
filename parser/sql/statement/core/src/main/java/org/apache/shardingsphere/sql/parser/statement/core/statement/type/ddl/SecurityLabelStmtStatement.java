@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Security label statement.
  */
-public final class SecurityLabelStmtStatement extends AbstractSQLStatement implements DDLStatement {
+public final class SecurityLabelStmtStatement extends DDLStatement {
 }

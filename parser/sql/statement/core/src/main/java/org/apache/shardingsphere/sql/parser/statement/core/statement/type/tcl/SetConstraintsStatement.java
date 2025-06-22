@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Set constraints statement.
  */
-public final class SetConstraintsStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SetConstraintsStatement extends TCLStatement {
 }

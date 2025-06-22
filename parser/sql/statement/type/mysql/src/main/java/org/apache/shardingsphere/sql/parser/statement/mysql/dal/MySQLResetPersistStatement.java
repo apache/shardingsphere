@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLResetPersistStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLResetPersistStatement extends DALStatement {
     
     private final boolean ifExists;
     

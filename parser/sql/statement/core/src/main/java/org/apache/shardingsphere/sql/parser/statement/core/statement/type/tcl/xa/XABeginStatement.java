@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.x
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * XA begin statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class XABeginStatement extends AbstractSQLStatement implements XAStatement {
+public final class XABeginStatement extends XAStatement {
     
     private final String xid;
 }

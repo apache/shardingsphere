@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ import java.util.Optional;
  * Cluster statement.
  */
 @RequiredArgsConstructor
-public final class ClusterStatement extends AbstractSQLStatement implements DDLStatement {
+public final class ClusterStatement extends DDLStatement {
     
     private final SimpleTableSegment simpleTable;
     

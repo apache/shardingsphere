@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtrac
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
@@ -37,7 +36,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CreateFunctionStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateFunctionStatement extends DDLStatement {
     
     private FunctionNameSegment functionName;
     

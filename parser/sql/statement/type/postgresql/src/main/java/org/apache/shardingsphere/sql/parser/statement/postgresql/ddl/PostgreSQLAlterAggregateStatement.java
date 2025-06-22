@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter aggregate statement for PostgreSQL.
  */
-public final class PostgreSQLAlterAggregateStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PostgreSQLAlterAggregateStatement extends DDLStatement {
 }

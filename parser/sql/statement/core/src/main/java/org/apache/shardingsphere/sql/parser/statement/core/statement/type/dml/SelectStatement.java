@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Model
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
 
@@ -44,7 +43,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class SelectStatement extends AbstractSQLStatement implements DMLStatement {
+public final class SelectStatement extends DMLStatement {
     
     private ProjectionsSegment projections;
     

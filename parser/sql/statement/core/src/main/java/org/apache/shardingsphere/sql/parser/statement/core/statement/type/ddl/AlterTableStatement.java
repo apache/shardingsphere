@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Alg
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 
@@ -49,7 +48,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class AlterTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterTableStatement extends DDLStatement {
     
     private SimpleTableSegment table;
     

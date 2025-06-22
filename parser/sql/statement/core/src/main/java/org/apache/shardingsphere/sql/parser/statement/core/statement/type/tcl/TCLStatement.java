@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 /**
  * Transaction control statement.
  */
-public interface TCLStatement extends SQLStatement {
+public abstract class TCLStatement extends SQLStatement {
 }

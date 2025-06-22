@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Optional;
 
@@ -29,7 +28,7 @@ import java.util.Optional;
  * Set transaction statement.
  */
 @RequiredArgsConstructor
-public final class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SetTransactionStatement extends TCLStatement {
     
     private final OperationScope scope;
     

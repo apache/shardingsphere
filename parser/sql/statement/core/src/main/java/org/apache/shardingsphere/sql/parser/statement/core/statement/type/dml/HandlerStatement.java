@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Handler statement.
  */
-public final class HandlerStatement extends AbstractSQLStatement implements DMLStatement {
+public final class HandlerStatement extends DMLStatement {
 }

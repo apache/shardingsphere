@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.error;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLShowWarningsStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLShowWarningsStatement extends DALStatement {
     
     private final LimitSegment limit;
 }

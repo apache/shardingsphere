@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -32,7 +31,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLCacheIndexStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLCacheIndexStatement extends DALStatement {
     
     private final IdentifierValue name;
     

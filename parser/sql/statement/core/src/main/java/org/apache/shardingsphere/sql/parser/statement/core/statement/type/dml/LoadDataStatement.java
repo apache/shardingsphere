@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
@@ -29,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
  */
 @RequiredArgsConstructor
 @Getter
-public final class LoadDataStatement extends AbstractSQLStatement implements DMLStatement {
+public final class LoadDataStatement extends DMLStatement {
     
     private final SimpleTableSegment table;
     

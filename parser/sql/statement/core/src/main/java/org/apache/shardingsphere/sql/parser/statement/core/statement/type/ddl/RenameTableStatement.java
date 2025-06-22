@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
@@ -33,7 +32,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class RenameTableStatement extends DDLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables;
     

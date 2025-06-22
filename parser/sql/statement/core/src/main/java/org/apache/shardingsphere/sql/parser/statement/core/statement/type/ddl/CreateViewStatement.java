@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
  */
 @Getter
 @Setter
-public final class CreateViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateViewStatement extends DDLStatement {
     
     private boolean replaceView;
     

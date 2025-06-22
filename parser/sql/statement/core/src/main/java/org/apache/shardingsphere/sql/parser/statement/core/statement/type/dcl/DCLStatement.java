@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 /**
  * Data control statement.
  */
-public interface DCLStatement extends SQLStatement {
+public abstract class DCLStatement extends SQLStatement {
 }

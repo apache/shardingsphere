@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TC
 /**
  * XA statement.
  */
-public interface XAStatement extends TCLStatement {
+public abstract class XAStatement extends TCLStatement {
 }

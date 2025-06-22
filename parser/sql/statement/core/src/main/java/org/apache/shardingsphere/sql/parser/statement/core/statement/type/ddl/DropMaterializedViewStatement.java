@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Drop materialized view statement.
  */
-public final class DropMaterializedViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropMaterializedViewStatement extends DDLStatement {
 }

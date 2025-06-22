@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLResetStatement extends DALStatement {
     
     private final List<ResetOptionSegment> options;
 }

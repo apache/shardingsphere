@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 
@@ -28,7 +27,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
+public final class DropUserStatement extends DCLStatement {
     
     private final Collection<String> users;
 }

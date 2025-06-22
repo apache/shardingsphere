@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Set auto commit statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SetAutoCommitStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SetAutoCommitStatement extends TCLStatement {
     
     private final boolean autoCommit;
 }
