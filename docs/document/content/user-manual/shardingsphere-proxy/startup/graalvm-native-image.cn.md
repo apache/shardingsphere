@@ -46,7 +46,7 @@ ShardingSphere Proxy Native 的默认端口为 `3307`，配置文件从 `/opt/sh
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -66,7 +66,7 @@ services:
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-mostly
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-mostly
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -84,7 +84,7 @@ services:
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-static
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-static
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:

@@ -288,41 +288,8 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 </project>
 ```
 
-7. 受 https://github.com/grpc/grpc-java/issues/10601 影响，用户如果在项目中引入了 `org.apache.hive:hive-jdbc`，
-则需要在项目的 classpath 的 `META-INF/native-image/io.grpc/grpc-netty-shaded` 文件夹下创建包含如下内容的文件 `native-image.properties`，
-
-```properties
-Args=--initialize-at-run-time=\
-    io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
-    io.grpc.netty.shaded.io.netty.channel.nio.AbstractNioChannel,\
-    io.grpc.netty.shaded.io.netty.channel.socket.nio.SelectorProviderUtil,\
-    io.grpc.netty.shaded.io.netty.util.concurrent.DefaultPromise,\
-    io.grpc.netty.shaded.io.netty.util.internal.MacAddressUtil,\
-    io.grpc.netty.shaded.io.netty.util.internal.SystemPropertyUtil,\
-    io.grpc.netty.shaded.io.netty.util.NetUtilInitializations,\
-    io.grpc.netty.shaded.io.netty.channel.AbstractChannel,\
-    io.grpc.netty.shaded.io.netty.util.NetUtil,\
-    io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent,\
-    io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0,\
-    io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline,\
-    io.grpc.netty.shaded.io.netty.channel.DefaultChannelId,\
-    io.grpc.netty.shaded.io.netty.util.ResourceLeakDetector,\
-    io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext,\
-    io.grpc.netty.shaded.io.netty.channel.ChannelOutboundBuffer,\
-    io.grpc.netty.shaded.io.netty.util.internal.InternalThreadLocalMap,\
-    io.grpc.netty.shaded.io.netty.util.internal.CleanerJava9,\
-    io.grpc.netty.shaded.io.netty.util.internal.StringUtil,\
-    io.grpc.netty.shaded.io.netty.util.internal.CleanerJava6,\
-    io.grpc.netty.shaded.io.netty.buffer.ByteBufUtil$HexUtil,\
-    io.grpc.netty.shaded.io.netty.buffer.AbstractByteBufAllocator,\
-    io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalThread,\
-    io.grpc.netty.shaded.io.netty.buffer.PoolArena,\
-    io.grpc.netty.shaded.io.netty.buffer.EmptyByteBuf,\
-    io.grpc.netty.shaded.io.netty.buffer.PoolThreadCache,\
-    io.grpc.netty.shaded.io.netty.util.AttributeKey
-```
-
-ShardingSphere 的单元测试仅使用 Maven 模块 `io.github.linghengqian:hive-server2-jdbc-driver-thin` 来在 GraalVM Native Image 下验证可用性。
+7. ShardingSphere 的单元测试仅使用 Maven 模块 `io.github.linghengqian:hive-server2-jdbc-driver-thin` 来在 GraalVM Native Image 下验证 HiveServer2 集成的可用性。
+如果开发者直接使用 `org.apache.hive:hive-jdbc`，则应自行处理依赖冲突和提供额外的 GraalVM Reachability Metadata 。
 
 8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
 对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。

@@ -48,7 +48,7 @@ developers can test ShardingSphere Proxy Native in the form of `dynamically link
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -68,7 +68,7 @@ Just add the `-mostly` suffix to the Docker Image Tag corresponding to the speci
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-mostly
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-mostly
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -86,7 +86,7 @@ Just add the `-static` suffix to the Docker Image Tag corresponding to the speci
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-static
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-static
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:

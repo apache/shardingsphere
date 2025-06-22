@@ -301,42 +301,8 @@ Possible configuration examples are as follows,
 </project>
 ```
 
-7. Affected by https://github.com/grpc/grpc-java/issues/10601 , should users incorporate `org.apache.hive:hive-jdbc` into their project,
-it is imperative to create a file named `native-image.properties` within the directory `META-INF/native-image/io.grpc/grpc-netty-shaded` of the classpath,
-containing the following content,
-
-```properties
-Args=--initialize-at-run-time=\
-    io.grpc.netty.shaded.io.netty.channel.ChannelHandlerMask,\
-    io.grpc.netty.shaded.io.netty.channel.nio.AbstractNioChannel,\
-    io.grpc.netty.shaded.io.netty.channel.socket.nio.SelectorProviderUtil,\
-    io.grpc.netty.shaded.io.netty.util.concurrent.DefaultPromise,\
-    io.grpc.netty.shaded.io.netty.util.internal.MacAddressUtil,\
-    io.grpc.netty.shaded.io.netty.util.internal.SystemPropertyUtil,\
-    io.grpc.netty.shaded.io.netty.util.NetUtilInitializations,\
-    io.grpc.netty.shaded.io.netty.channel.AbstractChannel,\
-    io.grpc.netty.shaded.io.netty.util.NetUtil,\
-    io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent,\
-    io.grpc.netty.shaded.io.netty.util.internal.PlatformDependent0,\
-    io.grpc.netty.shaded.io.netty.channel.DefaultChannelPipeline,\
-    io.grpc.netty.shaded.io.netty.channel.DefaultChannelId,\
-    io.grpc.netty.shaded.io.netty.util.ResourceLeakDetector,\
-    io.grpc.netty.shaded.io.netty.channel.AbstractChannelHandlerContext,\
-    io.grpc.netty.shaded.io.netty.channel.ChannelOutboundBuffer,\
-    io.grpc.netty.shaded.io.netty.util.internal.InternalThreadLocalMap,\
-    io.grpc.netty.shaded.io.netty.util.internal.CleanerJava9,\
-    io.grpc.netty.shaded.io.netty.util.internal.StringUtil,\
-    io.grpc.netty.shaded.io.netty.util.internal.CleanerJava6,\
-    io.grpc.netty.shaded.io.netty.buffer.ByteBufUtil$HexUtil,\
-    io.grpc.netty.shaded.io.netty.buffer.AbstractByteBufAllocator,\
-    io.grpc.netty.shaded.io.netty.util.concurrent.FastThreadLocalThread,\
-    io.grpc.netty.shaded.io.netty.buffer.PoolArena,\
-    io.grpc.netty.shaded.io.netty.buffer.EmptyByteBuf,\
-    io.grpc.netty.shaded.io.netty.buffer.PoolThreadCache,\
-    io.grpc.netty.shaded.io.netty.util.AttributeKey
-```
-
-ShardingSphere's unit test only uses the Maven module `io.github.linghengqian:hive-server2-jdbc-driver-thin` to verify the availability under GraalVM Native Image.
+7. ShardingSphere's unit test only uses the Maven module `io.github.linghengqian:hive-server2-jdbc-driver-thin` to verify the availability of HiveServer2 integration under GraalVM Native Image. 
+If developers use `org.apache.hive:hive-jdbc` directly, they should handle dependency conflicts and provide additional GraalVM Reachability Metadata by themselves.
 
 8. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
