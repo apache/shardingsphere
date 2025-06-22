@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**

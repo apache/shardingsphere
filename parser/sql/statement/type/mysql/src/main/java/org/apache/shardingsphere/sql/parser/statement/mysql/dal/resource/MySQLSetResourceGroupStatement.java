@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**

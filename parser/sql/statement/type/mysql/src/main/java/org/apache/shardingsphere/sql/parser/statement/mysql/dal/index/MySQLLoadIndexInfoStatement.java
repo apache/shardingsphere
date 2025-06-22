@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.index;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.Collection;

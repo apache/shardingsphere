@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
