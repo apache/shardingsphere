@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 /**
  * Data definition statement.
  */
-public interface DDLStatement extends SQLStatement {
+public abstract class DDLStatement extends SQLStatement {
 }

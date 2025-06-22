@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create rule statement for PostgreSQL.
  */
-public final class PostgreSQLCreateRuleStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PostgreSQLCreateRuleStatement extends DDLStatement {
 }

@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Set default role statement.
  */
-public final class SetDefaultRoleStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SetDefaultRoleStatement extends DCLStatement {
 }

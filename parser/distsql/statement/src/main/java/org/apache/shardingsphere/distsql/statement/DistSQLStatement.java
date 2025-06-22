@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.statement;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * DistSQL statement.
  */
-public abstract class DistSQLStatement extends AbstractSQLStatement {
+public abstract class DistSQLStatement extends SQLStatement {
 }

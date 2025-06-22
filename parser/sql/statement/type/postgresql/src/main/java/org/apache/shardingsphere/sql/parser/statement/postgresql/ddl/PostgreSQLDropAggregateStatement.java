@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop aggregate statement for PostgreSQL.
  */
-public final class PostgreSQLDropAggregateStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PostgreSQLDropAggregateStatement extends DDLStatement {
 }

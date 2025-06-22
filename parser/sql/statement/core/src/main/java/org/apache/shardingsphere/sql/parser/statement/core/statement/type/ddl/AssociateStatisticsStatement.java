@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class AssociateStatisticsStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AssociateStatisticsStatement extends DDLStatement {
     
     private List<IndexSegment> indexes = new LinkedList<>();
     

@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Create database statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDatabaseStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateDatabaseStatement extends DDLStatement {
     
     private final String databaseName;
     

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DoStatement extends AbstractSQLStatement implements DMLStatement {
+public final class DoStatement extends DMLStatement {
     
     private final List<ExpressionSegment> parameters;
 }

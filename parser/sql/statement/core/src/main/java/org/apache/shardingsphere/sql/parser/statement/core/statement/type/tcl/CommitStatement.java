@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Commit statement.
  */
-public final class CommitStatement extends AbstractSQLStatement implements TCLStatement {
+public final class CommitStatement extends TCLStatement {
 }

@@ -20,14 +20,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Open statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class OpenStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OpenStatement extends DDLStatement {
     
     private final CursorNameSegment cursorName;
 }

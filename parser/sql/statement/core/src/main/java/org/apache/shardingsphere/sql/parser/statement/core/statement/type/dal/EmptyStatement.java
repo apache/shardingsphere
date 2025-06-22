@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Empty statement.
  */
-public final class EmptyStatement extends AbstractSQLStatement implements DALStatement {
+public final class EmptyStatement extends DALStatement {
 }

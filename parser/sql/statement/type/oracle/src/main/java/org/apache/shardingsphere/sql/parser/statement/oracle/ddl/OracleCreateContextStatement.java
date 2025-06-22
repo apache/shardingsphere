@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create context statement for Oracle.
  */
-public final class OracleCreateContextStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OracleCreateContextStatement extends DDLStatement {
 }

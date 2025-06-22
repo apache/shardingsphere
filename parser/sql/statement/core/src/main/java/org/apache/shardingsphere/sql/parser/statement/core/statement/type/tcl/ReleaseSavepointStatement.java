@@ -19,14 +19,13 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Release savepoint statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReleaseSavepointStatement extends AbstractSQLStatement implements TCLStatement {
+public final class ReleaseSavepointStatement extends TCLStatement {
     
     private final String savepointName;
 }

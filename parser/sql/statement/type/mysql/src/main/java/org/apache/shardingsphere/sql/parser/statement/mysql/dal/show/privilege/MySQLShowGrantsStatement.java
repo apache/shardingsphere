@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show grants statement for MySQL.
  */
-public final class MySQLShowGrantsStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLShowGrantsStatement extends DALStatement {
 }

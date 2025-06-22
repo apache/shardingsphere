@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Begin transaction statement.
  */
-public final class BeginTransactionStatement extends AbstractSQLStatement implements TCLStatement {
+public final class BeginTransactionStatement extends TCLStatement {
 }

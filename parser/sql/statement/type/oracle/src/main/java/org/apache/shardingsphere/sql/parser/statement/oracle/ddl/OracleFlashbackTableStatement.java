@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
  */
 @RequiredArgsConstructor
 @Getter
-public final class OracleFlashbackTableStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OracleFlashbackTableStatement extends DDLStatement {
     
     private final SimpleTableSegment table;
     

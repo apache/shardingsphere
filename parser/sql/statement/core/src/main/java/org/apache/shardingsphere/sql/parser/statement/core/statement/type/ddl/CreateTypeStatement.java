@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Create type statement.
  */
-public class CreateTypeStatement extends AbstractSQLStatement implements DDLStatement {
+public class CreateTypeStatement extends DDLStatement {
 }

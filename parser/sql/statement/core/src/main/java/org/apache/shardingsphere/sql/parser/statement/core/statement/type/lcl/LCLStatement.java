@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 /**
  * Lock control statement.
  */
-public interface LCLStatement extends SQLStatement {
+public abstract class LCLStatement extends SQLStatement {
 }

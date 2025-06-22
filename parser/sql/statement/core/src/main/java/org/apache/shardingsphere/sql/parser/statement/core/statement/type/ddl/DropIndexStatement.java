@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropIndexStatement extends DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();
     

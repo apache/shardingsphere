@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * PLSQL block statement for Oracle.
  */
-public final class OraclePLSQLBlockStatement extends AbstractSQLStatement implements DDLStatement {
+public final class OraclePLSQLBlockStatement extends DDLStatement {
 }

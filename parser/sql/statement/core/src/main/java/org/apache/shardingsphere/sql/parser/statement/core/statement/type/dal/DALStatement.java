@@ -22,5 +22,5 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 /**
  * Database administration statement.
  */
-public interface DALStatement extends SQLStatement {
+public abstract class DALStatement extends SQLStatement {
 }

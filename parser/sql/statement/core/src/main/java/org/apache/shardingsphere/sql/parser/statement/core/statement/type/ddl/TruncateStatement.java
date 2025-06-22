@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
@@ -30,7 +29,7 @@ import java.util.LinkedList;
  * Truncate table statement.
  */
 @Getter
-public final class TruncateStatement extends AbstractSQLStatement implements DDLStatement {
+public final class TruncateStatement extends DDLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     

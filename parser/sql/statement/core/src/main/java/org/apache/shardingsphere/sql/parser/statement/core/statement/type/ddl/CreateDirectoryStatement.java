@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Create directory statement.
  */
-public final class CreateDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateDirectoryStatement extends DDLStatement {
 }

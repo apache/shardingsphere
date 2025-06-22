@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Drop synonym statement.
  */
-public final class DropSynonymStatement extends AbstractSQLStatement implements DDLStatement {
+public final class DropSynonymStatement extends DDLStatement {
 }

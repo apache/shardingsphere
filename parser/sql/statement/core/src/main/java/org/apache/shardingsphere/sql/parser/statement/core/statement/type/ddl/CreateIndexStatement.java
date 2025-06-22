@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Alg
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,7 +34,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class CreateIndexStatement extends AbstractSQLStatement implements DDLStatement {
+public final class CreateIndexStatement extends DDLStatement {
     
     private IndexSegment index;
     

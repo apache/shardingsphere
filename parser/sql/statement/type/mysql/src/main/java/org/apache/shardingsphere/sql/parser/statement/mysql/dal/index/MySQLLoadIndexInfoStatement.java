@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dal.index;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadTableIndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.Collection;
@@ -30,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLLoadIndexInfoStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLLoadIndexInfoStatement extends DALStatement {
     
     private final Collection<LoadTableIndexSegment> tableIndexes;
 }

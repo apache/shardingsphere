@@ -21,14 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 /**
  * Purge statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PurgeStatement extends AbstractSQLStatement implements DDLStatement {
+public final class PurgeStatement extends DDLStatement {
     
     private final SimpleTableSegment table;
     

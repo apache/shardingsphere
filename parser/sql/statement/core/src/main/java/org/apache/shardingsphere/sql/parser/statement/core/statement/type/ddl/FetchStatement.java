@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public final class FetchStatement extends AbstractSQLStatement implements DDLStatement {
+public final class FetchStatement extends DDLStatement {
     
     private final CursorNameSegment cursorName;
     

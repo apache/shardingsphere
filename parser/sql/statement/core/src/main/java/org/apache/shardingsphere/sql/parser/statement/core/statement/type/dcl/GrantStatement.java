@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
@@ -30,7 +29,7 @@ import java.util.LinkedList;
  * Grant statement.
  */
 @Getter
-public class GrantStatement extends AbstractSQLStatement implements DCLStatement {
+public class GrantStatement extends DCLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     

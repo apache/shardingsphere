@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Optional;
@@ -31,7 +30,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public final class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
+public final class AlterViewStatement extends DDLStatement {
     
     private SimpleTableSegment view;
     

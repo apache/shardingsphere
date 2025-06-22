@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 
 import java.util.Collection;
@@ -28,7 +27,7 @@ import java.util.LinkedList;
  * Create user statement.
  */
 @Getter
-public class CreateUserStatement extends AbstractSQLStatement implements DCLStatement {
+public class CreateUserStatement extends DCLStatement {
     
     private final Collection<UserSegment> users = new LinkedList<>();
 }

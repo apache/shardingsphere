@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
@@ -30,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExplainStatement extends AbstractSQLStatement implements DALStatement {
+public final class ExplainStatement extends DALStatement {
     
     private final SQLStatement explainableSQLStatement;
     

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DC
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLServerAlterLoginStatement extends AbstractSQLStatement implements DCLStatement {
+public final class SQLServerAlterLoginStatement extends DCLStatement {
     
     private final LoginSegment loginSegment;
 }

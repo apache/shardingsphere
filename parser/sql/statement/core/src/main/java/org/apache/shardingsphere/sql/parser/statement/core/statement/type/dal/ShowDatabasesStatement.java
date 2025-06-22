@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ import java.util.Optional;
  * Show databases statement.
  */
 @RequiredArgsConstructor
-public final class ShowDatabasesStatement extends AbstractSQLStatement implements DALStatement {
+public final class ShowDatabasesStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     

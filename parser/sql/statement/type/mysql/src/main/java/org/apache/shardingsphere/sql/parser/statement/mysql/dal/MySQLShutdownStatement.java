@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Shutdown statement for MySQL.
  */
-public final class MySQLShutdownStatement extends AbstractSQLStatement implements DALStatement {
+public final class MySQLShutdownStatement extends DALStatement {
 }

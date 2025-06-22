@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
-
 /**
  * Import statement.
  */
-public final class ImportStatement extends AbstractSQLStatement implements DMLStatement {
+public final class ImportStatement extends DMLStatement {
 }
