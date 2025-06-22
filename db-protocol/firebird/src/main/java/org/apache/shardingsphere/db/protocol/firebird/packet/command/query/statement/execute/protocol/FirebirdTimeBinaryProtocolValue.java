@@ -40,4 +40,9 @@ public final class FirebirdTimeBinaryProtocolValue implements FirebirdBinaryProt
         LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(((Time) value).getTime()), ZoneId.systemDefault());
         payload.writeInt4(FirebirdDateTimeUtil.getEncodedTime(localDateTime));
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 4;
+    }
 }

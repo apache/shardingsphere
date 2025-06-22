@@ -41,4 +41,9 @@ public final class FirebirdInt4BinaryProtocolValue implements FirebirdBinaryProt
             payload.writeInt4(((Long) value).intValue());
         }
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 4;
+    }
 }

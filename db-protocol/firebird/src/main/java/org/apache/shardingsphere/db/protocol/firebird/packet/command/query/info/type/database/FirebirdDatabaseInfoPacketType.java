@@ -166,6 +166,7 @@ public enum FirebirdDatabaseInfoPacketType implements FirebirdInfoPacketType {
     /**
      * Creates info packet of this type.
      *
+     * @param payload Firebird packet payload
      * @return Firebird database info packet
      */
     public static FirebirdInfoPacket createPacket(FirebirdPacketPayload payload) {

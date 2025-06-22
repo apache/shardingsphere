@@ -51,8 +51,9 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
             return new ArrayList<>(0);
         }
         blrBuffer.skipBytes(4);
-        List<FirebirdBinaryColumnType> result = new ArrayList<>(blrBuffer.readUnsignedByte() / 2);
-        blrBuffer.skipBytes(1);
+        int length = blrBuffer.readUnsignedByte();
+        length += 256 * blrBuffer.readUnsignedByte();
+        List<FirebirdBinaryColumnType> result = new ArrayList<>(length / 2);
         int blrType = blrBuffer.readUnsignedByte();
         while (blrType != BlrConstants.blr_end) {
             FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
@@ -87,4 +88,16 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
 
     @Override
     protected void write(final FirebirdPacketPayload payload) {}
+    
+    /**
+     * Get length of packet
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getLength(FirebirdPacketPayload payload) {
+        int length = 8;
+        length += payload.getBufferLength(length);
+        return length + 8;
+    }
 }

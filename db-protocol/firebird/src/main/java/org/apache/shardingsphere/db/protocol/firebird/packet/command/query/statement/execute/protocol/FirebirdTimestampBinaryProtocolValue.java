@@ -40,4 +40,9 @@ public final class FirebirdTimestampBinaryProtocolValue implements FirebirdBinar
         payload.writeInt4(FirebirdDateTimeUtil.getEncodedDate(localDateTime));
         payload.writeInt4(FirebirdDateTimeUtil.getEncodedTime(localDateTime));
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 8;
+    }
 }

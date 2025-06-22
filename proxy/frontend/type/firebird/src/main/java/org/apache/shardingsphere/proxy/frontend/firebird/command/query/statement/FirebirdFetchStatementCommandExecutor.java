@@ -23,11 +23,10 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdFet
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdStatementQueryCache;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Firebird fetch statement command executor
@@ -40,11 +39,12 @@ public final class FirebirdFetchStatementCommandExecutor implements CommandExecu
 
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        Collection<DatabasePacket> result = new ArrayList<>(FirebirdStatementQueryCache.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId()));
+//        Collection<DatabasePacket> result = new ArrayList<>(FirebirdStatementQueryCache.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId()));
 //        if (result.size() > packet.getFetchSize()) {
 //            result = new ArrayList<>(FirebirdStatementQueryCache.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId()).subList(0, packet.getFetchSize()));
 //        }
-        result.add(new FirebirdFetchResponsePacket());
-        return result;
+//        result.add(new FirebirdFetchResponsePacket());
+//        return result;
+        return Collections.singleton(new FirebirdFetchResponsePacket());
     }
 }

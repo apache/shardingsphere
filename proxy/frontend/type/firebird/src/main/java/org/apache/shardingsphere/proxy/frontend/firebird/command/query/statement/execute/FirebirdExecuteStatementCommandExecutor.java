@@ -123,9 +123,10 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
     public FirebirdPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
         BinaryRow row = createBinaryRow(queryResponseRow);
-        FirebirdStatementQueryCache.getInstance().add(connectionSession.getConnectionId(), packet.getStatementId(), new FirebirdFetchResponsePacket(row, packet.getPayload()));
-        //we send packets back only if fetch statement packet is sent
-        return null;
+//        FirebirdStatementQueryCache.getInstance().add(connectionSession.getConnectionId(), packet.getStatementId(), new FirebirdFetchResponsePacket(row, packet.getPayload()));
+//        //we send packets back only if fetch statement packet is sent
+//        return null;
+        return new FirebirdFetchResponsePacket(row, packet.getPayload());
     }
 
     @Override

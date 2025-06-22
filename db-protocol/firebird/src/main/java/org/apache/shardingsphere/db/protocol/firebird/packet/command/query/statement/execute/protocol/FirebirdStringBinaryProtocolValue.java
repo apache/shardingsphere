@@ -37,4 +37,9 @@ public final class FirebirdStringBinaryProtocolValue implements FirebirdBinaryPr
             payload.writeString(value != null ? value.toString() : "");
         }
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return payload.getBufferLength(payload.getByteBuf().readerIndex());
+    }
 }

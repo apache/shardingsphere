@@ -33,4 +33,9 @@ public final class FirebirdNullBinaryProtocolValue implements FirebirdBinaryProt
     public void write(final FirebirdPacketPayload payload, final Object value) {
         payload.writeBuffer(new byte[0]);
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 0;
+    }
 }

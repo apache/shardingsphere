@@ -33,4 +33,9 @@ public final class FirebirdDoubleBinaryProtocolValue implements FirebirdBinaryPr
     public void write(final FirebirdPacketPayload payload, final Object value) {
         payload.getByteBuf().writeDouble(Double.parseDouble(value.toString()));
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 8;
+    }
 }

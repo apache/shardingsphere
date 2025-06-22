@@ -33,4 +33,9 @@ public final class FirebirdFloatBinaryProtocolValue implements FirebirdBinaryPro
     public void write(final FirebirdPacketPayload payload, final Object value) {
         payload.getByteBuf().writeFloat(Float.parseFloat(value.toString()));
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 4;
+    }
 }

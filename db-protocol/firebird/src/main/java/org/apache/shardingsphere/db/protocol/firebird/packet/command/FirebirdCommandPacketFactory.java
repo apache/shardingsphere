@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
@@ -71,6 +72,44 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdFreeStatementPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
+        }
+    }
+    
+    /**
+     * Create new instance of command packet.
+     *
+     * @param commandPacketType command packet type for Firebird
+     * @param payload packet payload for Firebird
+     * @return created instance
+     */
+    public static boolean isValidLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final int capacity, final FirebirdProtocolVersion protocolVersion) {
+        try {
+            switch (commandPacketType) {
+                case INFO_DATABASE:
+                case INFO_SQL:
+                    return FirebirdInfoPacket.getLength(payload) <= capacity;
+                case TRANSACTION:
+                     return FirebirdStartTransactionPacket.getLength(payload) <= capacity;
+                case ALLOCATE_STATEMENT:
+                    return FirebirdAllocateStatementPacket.getLength(payload) <= capacity;
+                case PREPARE_STATEMENT:
+                    return FirebirdPrepareStatementPacket.getLength(payload) <= capacity;
+                case EXECUTE:
+                case EXECUTE2:
+                    return FirebirdExecuteStatementPacket.getLength(payload, protocolVersion) <= capacity;
+                case FETCH:
+                    return FirebirdFetchStatementPacket.getLength(payload) <= capacity;
+                case COMMIT:
+                    return FirebirdCommitTransactionPacket.getLength(payload) <= capacity;
+                case ROLLBACK:
+                    return FirebirdRollbackTransactionPacket.getLength(payload) <= capacity;
+                case FREE_STATEMENT:
+                    return FirebirdFreeStatementPacket.getLength(payload) <= capacity;
+                default:
+                    return true;
+            }
+        } catch (IndexOutOfBoundsException ignored) {
+            return false;
         }
     }
 }

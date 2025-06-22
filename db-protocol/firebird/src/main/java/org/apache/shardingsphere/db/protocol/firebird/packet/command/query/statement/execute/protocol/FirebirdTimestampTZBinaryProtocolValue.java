@@ -41,4 +41,9 @@ public final class FirebirdTimestampTZBinaryProtocolValue implements FirebirdBin
         payload.writeInt4(FirebirdDateTimeUtil.getEncodedTime(localDateTime));
         payload.writeInt4(((OffsetDateTime) value).getOffset().getTotalSeconds() / 60);
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 12;
+    }
 }

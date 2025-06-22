@@ -19,8 +19,6 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.stat
 
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.sql.SQLException;
-
 /**
  * Binary protocol value for Firebird.
  */
@@ -31,7 +29,6 @@ public interface FirebirdBinaryProtocolValue {
      *
      * @param payload payload operation for Firebird packet
      * @return binary value result
-     * @throws SQLException SQL exception
      */
     Object read(FirebirdPacketPayload payload);
     
@@ -42,4 +39,12 @@ public interface FirebirdBinaryProtocolValue {
      * @param value value to be written
      */
     void write(FirebirdPacketPayload payload, Object value);
+    
+    /**
+     * Get type length
+     *
+     * @param payload payload operation for Firebird packet
+     * @return type length
+     */
+    int getLength(FirebirdPacketPayload payload);
 }

@@ -36,4 +36,14 @@ public final class FirebirdAllocateStatementPacket extends FirebirdCommandPacket
 
     @Override
     protected void write(final FirebirdPacketPayload payload) {}
+    
+    /**
+     * Get length of packet
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getLength(FirebirdPacketPayload payload) {
+        return 8;
+    }
 }

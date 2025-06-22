@@ -86,4 +86,17 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
+    
+    /**
+     * Get length of packet
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getLength(FirebirdPacketPayload payload) {
+        int length = 16;
+        length += payload.getBufferLength(length);
+        length += payload.getBufferLength(length);
+        return length + 4;
+    }
 }

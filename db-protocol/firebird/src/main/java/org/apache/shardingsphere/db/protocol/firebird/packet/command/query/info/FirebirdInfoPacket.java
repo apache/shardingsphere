@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Unsupported command packet for Firebird.
+ * Information command packet for Firebird.
  */
 @RequiredArgsConstructor
 @Getter
@@ -67,4 +67,16 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
 
     @Override
     protected void write(final FirebirdPacketPayload payload) {}
+    
+    /**
+     * Get length of packet
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getLength(FirebirdPacketPayload payload) {
+        int length = 12;
+        length += payload.getBufferLength(length);
+        return length + 4;
+    }
 }

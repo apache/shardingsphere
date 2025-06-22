@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Firebird allocate statement packet.
+ * Firebird execute statement packet.
  */
 @Getter
 public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket {
@@ -111,8 +111,9 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             return new ArrayList<>(0);
         }
         blrBuffer.skipBytes(4);
-        List<FirebirdBinaryColumnType> result = new ArrayList<>(blrBuffer.readUnsignedByte() / 2);
-        blrBuffer.skipBytes(1);
+        int length = blrBuffer.readUnsignedByte();
+        length += 256 * blrBuffer.readUnsignedByte();
+        List<FirebirdBinaryColumnType> result = new ArrayList<>(length / 2);
         int blrType = blrBuffer.readUnsignedByte();
         while (blrType != BlrConstants.blr_end) {
             FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
@@ -207,5 +208,19 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
+    }
+    
+    /**
+     * Get length of packet
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getLength(FirebirdPacketPayload payload, FirebirdProtocolVersion protocolVersion) {
+        //because parameter type is send without length it is easier to just parse whole packet
+        new FirebirdExecuteStatementPacket(payload, protocolVersion);
+        int length = payload.getByteBuf().readerIndex();
+        payload.getByteBuf().resetReaderIndex();
+        return length;
     }
 }

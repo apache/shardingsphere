@@ -217,45 +217,6 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
-     * Bytes before zero.
-     *
-     * @return the number of bytes before zero
-     */
-    public int bytesBeforeZero() {
-        return byteBuf.bytesBefore((byte) 0);
-    }
-    
-    /**
-     * Read null terminated string from byte buffers.
-     *
-     * @return null terminated string
-     */
-    public String readStringNul() {
-        String result = byteBuf.readCharSequence(byteBuf.bytesBefore((byte) 0), charset).toString();
-        byteBuf.skipBytes(1);
-        return result;
-    }
-    
-    /**
-     * Write null terminated string to byte buffers.
-     *
-     * @param value null terminated string
-     */
-    public void writeStringNul(final String value) {
-        byteBuf.writeBytes(value.getBytes(charset));
-        byteBuf.writeByte(0);
-    }
-    
-    /**
-     * Write rest of packet string to byte buffers.
-     *
-     * @param value rest of packet string
-     */
-    public void writeStringEOF(final String value) {
-        byteBuf.writeBytes(value.getBytes(charset));
-    }
-    
-    /**
      * Skip reserved from byte buffers.
      *
      * @param length length of reserved
@@ -270,6 +231,25 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @param length length of byte array that may have padding
      */
     public void skipPadding(final int length) {
-        byteBuf.skipBytes((4 - length) & 3);
+        byteBuf.skipBytes(getPadding(length));
+    }
+    
+    /**
+     * Get padding from byte buffers.
+     *
+     * @param length length of byte array that may have padding
+     */
+    public int getPadding(final int length) {
+        return (4 - length) & 3;
+    }
+    
+    /**
+     * Get padding from byte buffers.
+     *
+     * @param index index of buffer length
+     */
+    public int getBufferLength(final int index) {
+        int length = byteBuf.getInt(index);
+        return length + getPadding(length);
     }
 }

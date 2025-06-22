@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.handshake;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdAuthenticationMethod;
@@ -47,15 +46,13 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
 
     public FirebirdAcceptPacket(final List<FirebirdProtocol> userProtocols) {
         opCode = FirebirdCommandPacketType.ACCEPT;
-        boolean accepted = false;
+        protocol = userProtocols.remove(0);
         for (FirebirdProtocol protocol : userProtocols) {
             if (FirebirdArchType.isValid(protocol.getArch()) &&
-                    (!accepted || protocol.getWeight() >= this.protocol.getWeight())) {
-                accepted = true;
+                    (protocol.getWeight() >= this.protocol.getWeight())) {
                 this.protocol = protocol;
             }
         }
-        Preconditions.checkNotNull(this.protocol, "None of client protocols is accepted");
     }
 
     public void setAcceptDataPacket(final byte[] salt,

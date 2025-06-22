@@ -50,4 +50,9 @@ public final class FirebirdInt16BinaryProtocolValue implements FirebirdBinaryPro
             payload.writeInt8((Long) value);
         }
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return 16;
+    }
 }

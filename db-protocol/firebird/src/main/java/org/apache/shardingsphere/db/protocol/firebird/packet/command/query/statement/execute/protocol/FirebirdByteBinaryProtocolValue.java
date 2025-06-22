@@ -38,4 +38,9 @@ public final class FirebirdByteBinaryProtocolValue implements FirebirdBinaryProt
             payload.writeBuffer((byte[]) value);
         }
     }
+    
+    @Override
+    public int getLength(FirebirdPacketPayload payload) {
+        return payload.getBufferLength(payload.getByteBuf().readerIndex());
+    }
 }
