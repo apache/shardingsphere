@@ -132,7 +132,15 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService"},
+  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
+  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -598,6 +606,10 @@
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
   "name":"java.lang.constant.ConstantDesc",
   "queryAllDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
+  "name":"java.lang.invoke.VarHandle"
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
@@ -1975,6 +1987,10 @@
   "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getColumns","parameterTypes":[] }, {"name":"getConstraints","parameterTypes":[] }, {"name":"getIndexes","parameterTypes":[] }, {"name":"getName","parameterTypes":[] }, {"name":"getType","parameterTypes":[] }, {"name":"setColumns","parameterTypes":["java.util.Map"] }, {"name":"setIndexes","parameterTypes":["java.util.Map"] }, {"name":"setName","parameterTypes":["java.lang.String"] }, {"name":"setType","parameterTypes":["org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType"] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine"},
+  "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher"},
   "name":"org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
 },
@@ -2769,6 +2785,10 @@
   "name":"org.apache.shardingsphere.proxy.backend.mysql.response.header.query.MySQLQueryHeaderBuilder"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
+  "name":"org.apache.shardingsphere.proxy.backend.mysql.state.MySQLProxyStateSupportedSQLProvider"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement"},
   "name":"org.apache.shardingsphere.proxy.backend.opengauss.connector.jdbc.statement.OpenGaussStatementMemoryStrictlyFetchSizeSetter"
 },
@@ -3295,10 +3315,6 @@
   "name":"org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.metadata.statistics.collector.shardingsphere.ShardingSphereStatisticsCollector"},
-  "name":"org.apache.shardingsphere.sharding.metadata.data.ShardingTableStatisticsCollector"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry"},
   "name":"org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator"
 },
@@ -3769,76 +3785,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

@@ -52,6 +52,11 @@ class SQLServerTest {
         ContainerDatabaseDriver.killContainers();
     }
     
+    /**
+     * TODO `shardingsphere-parser-sql-sqlserver` module does not support `DROP TABLE IF EXISTS t_order` statements yet.
+     *
+     * @throws SQLException SQL exception
+     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
@@ -61,7 +66,6 @@ class SQLServerTest {
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
-        testShardingService.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {

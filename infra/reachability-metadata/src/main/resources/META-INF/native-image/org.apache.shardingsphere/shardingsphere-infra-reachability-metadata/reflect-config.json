@@ -328,11 +328,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -378,21 +373,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.function.mysql.MySQLFunctionRegister"},
   "name":"org.apache.shardingsphere.sqlfederation.compiler.function.mysql.impl.MySQLBinFunction",
   "allPublicMethods": true
@@ -425,16 +405,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
