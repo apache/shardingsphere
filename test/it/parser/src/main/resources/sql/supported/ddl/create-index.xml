@@ -61,4 +61,21 @@
     <sql-case id="create_index_on_local_parallel_nologging" value="CREATE INDEX from_number_ix ON call_detail_records(from_number) LOCAL PARALLEL NOLOGGING" db-types="Oracle" />
     <sql-case id="create_bitmap_index_on_local_parallel_nologging" value="CREATE BITMAP INDEX is_active_bix ON credit_card_accounts(is_active) LOCAL PARALLEL NOLOGGING" db-types="Oracle" />
     <sql-case id="create_index_with_engine_attribute" value="CREATE INDEX i1 ON t1 (c1) ENGINE_ATTRIBUTE='{&quot;key&quot;:&quot;value&quot;}';" db-types="MySQL"/>
+    <sql-case id="create_index_with_partitions" value="CREATE INDEX &quot;IDX_ORDER_ID&quot; ON &quot;T_ORDER&quot; (&quot;ORDER_ID&quot;)
+    PCTFREE 10 INITRANS 2 MAXTRANS 255
+    STORAGE(
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT) LOCAL
+    (PARTITION &quot;PARTITION1&quot;
+    PCTFREE 10 INITRANS 2 MAXTRANS 255 LOGGING
+    STORAGE(INITIAL 4096 NEXT 4096 MINEXTENTS 1 MAXEXTENTS 40960
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TS_CHNLMGR_BUSI_IDX&quot; ,
+    PARTITION &quot;PARTITION2&quot;
+    PCTFREE 10 INITRANS 2 MAXTRANS 255 LOGGING
+    STORAGE(INITIAL 4096 NEXT 4096 MINEXTENTS 1 MAXEXTENTS 40960
+    PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+    BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+    TABLESPACE &quot;TS_CHNLMGR_BUSI_IDX&quot;
+    );" db-types="Oracle"/>
 </sql-cases>

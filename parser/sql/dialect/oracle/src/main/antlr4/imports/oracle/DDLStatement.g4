@@ -466,11 +466,11 @@ localPartitionedIndex
     ;
 
 onRangePartitionedTable
-    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?) RP_
+    : LP_ partitionedTable (COMMA_ partitionedTable)* RP_
     ;
 
 onListPartitionedTable
-    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?) RP_
+    : LP_ partitionedTable (COMMA_ partitionedTable)* RP_
     ;
 
 onHashPartitionedTable
@@ -478,7 +478,11 @@ onHashPartitionedTable
     ;
 
 onCompPartitionedTable
-    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? indexSubpartitionClause RP_
+    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ partitionedTable indexSubpartitionClause RP_
+    ;
+    
+partitionedTable
+    : PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?
     ;
 
 domainIndexClause

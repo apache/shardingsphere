@@ -277,4 +277,12 @@
         </table>
         <column name="c1" start-index="23" stop-index="24"/>
     </create-index>
+    
+    <create-index sql-case-id="create_index_with_partitions">
+        <index name="IDX_ORDER_ID" start-index="13" stop-index="26" start-delimiter="&quot;" end-delimiter="&quot;" />
+        <table>
+            <simple-table name="T_ORDER" start-index="31" stop-index="39" start-delimiter="&quot;" end-delimiter="&quot;" />
+        </table>
+        <column name="ORDER_ID" start-index="42" stop-index="51" start-delimiter="&quot;" end-delimiter="&quot;" />
+    </create-index>
 </sql-parser-test-cases>
