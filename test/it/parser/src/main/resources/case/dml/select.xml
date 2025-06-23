@@ -10240,4 +10240,43 @@
             <simple-table name="RDB$AUTH_MAPPING" start-index="25" stop-index="40"/>
         </from>
     </select>
+    <select sql-case-id="select_with_string_literal">
+        <from start-index="87" stop-index="87">
+            <simple-table name="t" start-index="87" stop-index="87"/>
+        </from>
+        <projections start-index="7" stop-index="80">
+            <expression-projection text="translate(t.order_no, '\1234567890', '\', '\\', '', '\\\', '''', '\n\t\b')" start-index="7" stop-index="80">
+                <expr start-index="7" stop-index="80">
+                    <function function-name="translate" text="translate(t.order_no, '\1234567890', '\', '\\', '', '\\\', '''', '\n\t\b')" start-index="7" stop-index="80">
+                        <parameter start-index="17" stop-index="26">
+                            <column name="order_no" start-index="17" stop-index="26">
+                                <owner name="t" start-index="17" stop-index="17"/>
+                            </column>
+                        </parameter>
+                        <parameter start-index="29" stop-index="41">
+                            <literal-expression value="\1234567890" start-index="29" stop-index="41"/>
+                        </parameter>
+                        <parameter start-index="44" stop-index="46">
+                            <literal-expression value="\" start-index="44" stop-index="46"/>
+                        </parameter>
+                        <parameter start-index="49" stop-index="52">
+                            <literal-expression value="\\" start-index="49" stop-index="52"/>
+                        </parameter>
+                        <parameter start-index="55" stop-index="56">
+                            <literal-expression value="" start-index="55" stop-index="56"/>
+                        </parameter>
+                        <parameter start-index="59" stop-index="63">
+                            <literal-expression value="\\\" start-index="59" stop-index="63"/>
+                        </parameter>
+                        <parameter start-index="66" stop-index="69">
+                            <literal-expression value="''" start-index="66" stop-index="69"/>
+                        </parameter>
+                        <parameter start-index="72" stop-index="79">
+                            <literal-expression value="\n\t\b" start-index="72" stop-index="79"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

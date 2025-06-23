@@ -321,4 +321,5 @@
     <sql-case id="select_with_oracle_v1_keyword" value="SELECT * FROM dual v1" db-types="Oracle" />
     <sql-case id="select_in_literal" value="select * from t_order where ORDER_ID in 'test'" db-types="Oracle" />
     <sql-case id="select_system_table_firebird" value="SELECT RDB$MAP_NAME FROM RDB$AUTH_MAPPING" db-types="Firebird"/>
+    <sql-case id="select_with_string_literal" value="select translate(t.order_no, '\1234567890', '\', '\\', '', '\\\', '''', '\n\t\b') from t" db-types="Oracle" />
 </sql-cases>
