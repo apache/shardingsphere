@@ -2894,4 +2894,12 @@
             <column name="c" />
         </column-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_with_storage_and_lob">
+        <table name="TEST" start-index="13" stop-index="16"/>
+        <column-definition type="NUMBER" primary-key="false" auto-increment="false" not-null="false" start-index="19" stop-index="29">
+            <column name="ID" start-index="19" stop-index="22" />
+            <dataType value="NUMBER" start-index="24" stop-index="29" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

@@ -684,6 +684,7 @@ columnProperties
 columnProperty
     : objectTypeColProperties
     | xmlTypeColProperties
+    | lobStorageClause
     ;
 
 xmlTypeColProperties
@@ -1180,9 +1181,9 @@ lobStorageParameters
 
 lobParameters
     : ( (ENABLE | DISABLE) STORAGE IN ROW
-        | CHUNK NUMBER_
-        | PCTVERSION NUMBER_
-        | FREEPOOLS NUMBER_
+        | CHUNK INTEGER_
+        | PCTVERSION INTEGER_
+        | FREEPOOLS INTEGER_
         | lobRetentionClause
         | lobDeduplicateClause
         | lobCompressionClause
