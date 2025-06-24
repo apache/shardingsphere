@@ -65,10 +65,6 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private final EqualsBuilder equalsBuilder = new EqualsBuilder();
     
-    public RecordSingleTableInventoryCalculator(final int chunkSize) {
-        this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, StreamingRangeType.SMALL);
-    }
-    
     public RecordSingleTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
         this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
