@@ -195,9 +195,9 @@ class RecordSingleTableInventoryCalculatorTest {
     }
     
     @ParameterizedTest
-    @CsvSource({"100", "2", "3"})
-    void assertCalculateOfRangeQueryAllWithOrderIdUniqueKeyWith3x(final int streamingChunkCount) {
-        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3, streamingChunkCount);
+    @CsvSource({"100,SMALL", "2,SMALL", "3,SMALL", "100,LARGE", "2,LARGE", "3,LARGE"})
+    void assertCalculateOfRangeQueryAllWithOrderIdUniqueKeyWith3x(final int streamingChunkCount, final String streamingRangeType) {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildOrderIdUniqueKey(), QueryType.RANGE_QUERY);
         param.setQueryRange(new QueryRange(null, false, null));
@@ -232,9 +232,10 @@ class RecordSingleTableInventoryCalculatorTest {
         QuietlyCloser.close(param.getCalculationContext());
     }
     
-    @Test
-    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith50x100() {
-        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(50, 100);
+    @ParameterizedTest
+    @CsvSource({"SMALL", "LARGE"})
+    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith50x100(final String streamingRangeType) {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(50, 100, StreamingRangeType.valueOf(streamingRangeType));
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY);
         param.setQueryRange(new QueryRange(null, false, null));
@@ -258,9 +259,9 @@ class RecordSingleTableInventoryCalculatorTest {
     }
     
     @ParameterizedTest
-    @CsvSource({"100", "2", "3"})
-    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith3x(final int streamingChunkCount) {
-        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3, streamingChunkCount);
+    @CsvSource({"100,SMALL", "2,SMALL", "3,SMALL", "100,LARGE", "2,LARGE", "3,LARGE"})
+    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith3x(final int streamingChunkCount, final String streamingRangeType) {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(3, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY);
         param.setQueryRange(new QueryRange(null, false, null));
@@ -296,9 +297,9 @@ class RecordSingleTableInventoryCalculatorTest {
     }
     
     @ParameterizedTest
-    @CsvSource({"100", "3", "4"})
-    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith2x(final int streamingChunkCount) {
-        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(2, streamingChunkCount);
+    @CsvSource({"100,SMALL", "3,SMALL", "4,SMALL", "100,LARGE", "3,LARGE", "4,LARGE"})
+    void assertCalculateOfRangeQueryAllWithMultiColumnUniqueKeysWith2x(final int streamingChunkCount, final String streamingRangeType) {
+        RecordSingleTableInventoryCalculator calculator = new RecordSingleTableInventoryCalculator(2, streamingChunkCount, StreamingRangeType.valueOf(streamingRangeType));
         SingleTableInventoryCalculateParameter param = new SingleTableInventoryCalculateParameter(dataSource, new QualifiedTable(null, "t_order"),
                 Collections.emptyList(), buildMultiColumnUniqueKeys(), QueryType.RANGE_QUERY);
         param.setQueryRange(new QueryRange(null, false, null));
