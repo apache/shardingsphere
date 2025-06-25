@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -72,7 +72,7 @@ class ShowDatabasesExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
-        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new ShowDatabasesStatement(null));
+        ShowDatabasesExecutor executor = new ShowDatabasesExecutor(new MySQLShowDatabasesStatement(null));
         executor.execute(mockConnectionSession());
         QueryResultMetaData queryResultMetaData = executor.getQueryResultMetaData();
         assertThat(queryResultMetaData.getColumnCount(), is(1));
@@ -87,7 +87,7 @@ class ShowDatabasesExecutorTest {
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
         showFilterSegment.setLike(showLikeSegment);
-        ShowDatabasesStatement showDatabasesStatement = new ShowDatabasesStatement(showFilterSegment);
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
@@ -119,7 +119,7 @@ class ShowDatabasesExecutorTest {
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
         showFilterSegment.setLike(showLikeSegment);
-        ShowDatabasesStatement showDatabasesStatement = new ShowDatabasesStatement(showFilterSegment);
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
@@ -139,7 +139,7 @@ class ShowDatabasesExecutorTest {
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
         showFilterSegment.setLike(showLikeSegment);
-        ShowDatabasesStatement showDatabasesStatement = new ShowDatabasesStatement(showFilterSegment);
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
@@ -159,7 +159,7 @@ class ShowDatabasesExecutorTest {
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
         showFilterSegment.setLike(showLikeSegment);
-        ShowDatabasesStatement showDatabasesStatement = new ShowDatabasesStatement(showFilterSegment);
+        MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement(showFilterSegment);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));

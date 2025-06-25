@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowInde
 import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowTableStatusMergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTableStatusStatement;
@@ -50,7 +50,7 @@ public final class MySQLShardingDALResultMerger implements DialectShardingDALRes
     public Optional<MergedResult> merge(final String databaseName, final ShardingRule rule,
                                         final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
-        if (dalStatement instanceof ShowDatabasesStatement) {
+        if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return Optional.of(new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(databaseName))));
         }
         if (dalStatement instanceof MySQLShowTablesStatement) {

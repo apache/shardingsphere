@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.Optional;
 
 /**
- * Show databases statement.
+ * Show databases statement for MySQL.
  */
 @RequiredArgsConstructor
-public final class ShowDatabasesStatement extends DALStatement {
+public final class MySQLShowDatabasesStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
