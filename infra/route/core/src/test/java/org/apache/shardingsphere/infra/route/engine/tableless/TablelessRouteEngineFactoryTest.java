@@ -32,9 +32,10 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.Table
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateSchemaStatement;
@@ -90,8 +91,18 @@ class TablelessRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceForDALShow() {
-        DALStatement dalStatement = mock(ShowDatabasesStatement.class);
+    void assertNewInstanceForSetStatement() {
+        SetStatement setStatement = mock(SetStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
+    }
+    
+    @Test
+    void assertNewInstanceForTablelessDataSourceBroadcastRouteSQLStatementAttribute() {
+        DALStatement dalStatement = mock(DALStatement.class);
+        when(dalStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
@@ -108,17 +119,9 @@ class TablelessRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceForSetStatement() {
-        SetStatement setStatement = mock(SetStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
-        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
-    }
-    
-    @Test
     void assertNewInstanceForDataSourceBroadcastRoute() {
         DALStatement sqlStatement = mock(DALStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         DialectDALStatementBroadcastRouteDecider dialectDALStatementBroadcastRouteDecider = mock(DialectDALStatementBroadcastRouteDecider.class);
         when(dialectDALStatementBroadcastRouteDecider.isDataSourceBroadcastRoute(sqlStatement)).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType)).thenReturn(Optional.of(dialectDALStatementBroadcastRouteDecider));
@@ -131,6 +134,7 @@ class TablelessRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForInstanceBroadcastRoute() {
         DALStatement sqlStatement = mock(DALStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         DialectDALStatementBroadcastRouteDecider dialectDALStatementBroadcastRouteDecider = mock(DialectDALStatementBroadcastRouteDecider.class);
         when(dialectDALStatementBroadcastRouteDecider.isInstanceBroadcastRoute(sqlStatement)).thenReturn(true);
         when(DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType)).thenReturn(Optional.of(dialectDALStatementBroadcastRouteDecider));
