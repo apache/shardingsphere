@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilte
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -58,6 +59,7 @@ public final class ShowTableStatusStatement extends DALStatement {
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase));
+        return new SQLStatementAttributes(
+                new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase), new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
 }

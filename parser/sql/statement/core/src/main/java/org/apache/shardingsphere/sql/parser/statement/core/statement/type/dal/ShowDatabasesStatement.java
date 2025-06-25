@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -37,5 +39,10 @@ public final class ShowDatabasesStatement extends DALStatement {
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
 }

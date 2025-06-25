@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.route.engine.tableless;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.NoTablelessRouteInfoException;
@@ -31,11 +31,9 @@ import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.Tab
 import org.apache.shardingsphere.infra.route.engine.tableless.type.unicast.TablelessDataSourceUnicastRouteEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterTablespaceStatement;
@@ -122,8 +120,7 @@ public final class TablelessRouteEngineFactory {
     }
     
     private static TablelessRouteEngine getDALRouteEngine(final DALStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
-        if (sqlStatement instanceof ShowTablesStatement || sqlStatement instanceof ShowTableStatusStatement || sqlStatement instanceof ShowDatabasesStatement
-                || sqlStatement instanceof SetStatement) {
+        if (sqlStatement instanceof SetStatement || sqlStatement.getAttributes().findAttribute(TablelessDataSourceBroadcastRouteSQLStatementAttribute.class).isPresent()) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
         Optional<DialectDALStatementBroadcastRouteDecider> dialectDALStatementBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType);
