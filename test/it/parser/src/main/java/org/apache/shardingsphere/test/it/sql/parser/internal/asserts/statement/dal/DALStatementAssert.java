@@ -25,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Ex
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLDelimiterStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
@@ -66,6 +64,8 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.M
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowOpenTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger.MySQLShowCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger.MySQLShowTriggersStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.variable.MySQLShowVariablesStatement;
@@ -209,8 +209,8 @@ public final class DALStatementAssert {
             DescribeStatementAssert.assertIs(assertContext, (MySQLDescribeStatement) actual, (DescribeStatementTestCase) expected);
         } else if (actual instanceof ShowDatabasesStatement) {
             ShowDatabasesStatementAssert.assertIs(assertContext, (ShowDatabasesStatement) actual, (ShowDatabasesStatementTestCase) expected);
-        } else if (actual instanceof ShowTablesStatement) {
-            ShowTablesStatementAssert.assertIs(assertContext, (ShowTablesStatement) actual, (ShowTablesStatementTestCase) expected);
+        } else if (actual instanceof MySQLShowTablesStatement) {
+            ShowTablesStatementAssert.assertIs(assertContext, (MySQLShowTablesStatement) actual, (ShowTablesStatementTestCase) expected);
         } else if (actual instanceof MySQLShowColumnsStatement) {
             ShowColumnsStatementAssert.assertIs(assertContext, (MySQLShowColumnsStatement) actual, (ShowColumnsStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateTableStatement) {
@@ -219,8 +219,8 @@ public final class DALStatementAssert {
             ShowCreateTriggerStatementAssert.assertIs(assertContext, (MySQLShowCreateTriggerStatement) actual, (ShowCreateTriggerStatementTestCase) expected);
         } else if (actual instanceof MySQLShowCreateUserStatement) {
             ShowCreateUserStatementAssert.assertIs(assertContext, (MySQLShowCreateUserStatement) actual, (ShowCreateUserStatementTestCase) expected);
-        } else if (actual instanceof ShowTableStatusStatement) {
-            ShowTableStatusStatementAssert.assertIs(assertContext, (ShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
+        } else if (actual instanceof MySQLShowTableStatusStatement) {
+            ShowTableStatusStatementAssert.assertIs(assertContext, (MySQLShowTableStatusStatement) actual, (ShowTableStatusStatementTestCase) expected);
         } else if (actual instanceof MySQLShowIndexStatement) {
             ShowIndexStatementAssert.assertIs(assertContext, (MySQLShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
         } else if (actual instanceof MySQLShowRelayLogEventsStatement) {

@@ -31,10 +31,10 @@ import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowInde
 import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowTableStatusMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -67,7 +67,7 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowShowTablesStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowTablesStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowTablesStatement.class));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingLogicTablesMergedResult.class));
@@ -75,7 +75,7 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowTableStatusStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(ShowTableStatusStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowTableStatusStatement.class));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingShowTableStatusMergedResult.class));

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +25,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.Optional;
 
 /**
- * Show table status statement.
+ * Show table status statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowTableStatusStatement extends DALStatement {
+public final class MySQLShowTableStatusStatement extends DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
