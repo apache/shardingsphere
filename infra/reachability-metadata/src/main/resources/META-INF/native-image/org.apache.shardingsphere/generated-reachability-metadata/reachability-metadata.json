@@ -793,6 +793,21 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"
+      },
+      "type": "java.net.Socket",
+      "methods": [
+        {
+          "name": "setOption",
+          "parameterTypes": [
+            "java.net.SocketOption",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "type": "java.net.Socket"
@@ -12293,12 +12308,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"
-      },
-      "glob": "META-INF/services/javax.xml.datatype.DatatypeFactory"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
       },
       "glob": "META-INF/services/javax.xml.parsers.DocumentBuilderFactory"
@@ -12746,6 +12755,12 @@
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "glob": "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.xa.narayana.manager.NarayanaXATransactionManagerProvider"
+      },
+      "glob": "META-INF/services/org.jboss.logging.LoggerProvider"
     },
     {
       "condition": {
@@ -16247,6 +16262,12 @@
     }
   ],
   "bundles": [
+    {
+      "name": "com.microsoft.sqlserver.jdbc.SQLServerResource",
+      "locales": [
+        "zh-CN"
+      ]
+    },
     {
       "name": "com.sun.org.apache.xml.internal.serializer.XMLEntities",
       "locales": [
