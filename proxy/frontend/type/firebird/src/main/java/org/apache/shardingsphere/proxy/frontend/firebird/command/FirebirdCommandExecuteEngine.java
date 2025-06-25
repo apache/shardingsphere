@@ -23,20 +23,17 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.err.FirebirdErrorPacketFactory;
 
 import java.sql.SQLException;
 
@@ -52,8 +49,9 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     
     @Override
     public FirebirdCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
-        return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type, (FirebirdPacketPayload) payload, FirebirdConnectionProtocolVersion.getInstance()
-                .getProtocolVersion(connectionSession.getConnectionId()));
+        return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type,
+                (FirebirdPacketPayload) payload, FirebirdConnectionProtocolVersion.getInstance()
+                        .getProtocolVersion(connectionSession.getConnectionId()));
     }
     
     @Override
@@ -63,29 +61,28 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     
     @Override
     public FirebirdPacket getErrorPacket(final Exception cause) {
-        //TODO send proper exception packet
-        return new FirebirdGenericResponsePacket();
+        return FirebirdErrorPacketFactory.newInstance(cause);
     }
-
+    
     @Override
     public void writeQueryData(final ChannelHandlerContext context,
                                final ProxyDatabaseConnectionManager databaseConnectionManager, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (ResponseType.QUERY != queryCommandExecutor.getResponseType() || !context.channel().isActive()) {
             return;
         }
-        int count = 0;
-        int flushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        // int count = 0;
+        // int flushThreshold =
+        // ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
-            count++;
-            databaseConnectionManager.getConnectionResourceLock().doAwait(context);
-            DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
-            context.write(dataValue);
-            if (flushThreshold == count) {
-                context.flush();
-                count = 0;
-            }
+            // count++;
+            // databaseConnectionManager.getConnectionResourceLock().doAwait(context);
+            queryCommandExecutor.getQueryRowPacket();
+            // context.write(dataValue);
+            // if (flushThreshold == count) {
+            // context.flush();
+            // count = 0;
+            // }
         }
         context.flush();
     }
 }
-
