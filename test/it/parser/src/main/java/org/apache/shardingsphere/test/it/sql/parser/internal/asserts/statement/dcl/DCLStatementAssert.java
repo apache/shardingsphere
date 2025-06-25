@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.Dr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
@@ -119,10 +119,10 @@ public final class DCLStatementAssert {
             DropRoleStatementAssert.assertIs(assertContext, (DropRoleStatement) actual, (DropRoleStatementTestCase) expected);
         } else if (actual instanceof SetRoleStatement) {
             SetRoleStatementAssert.assertIs(assertContext, (SetRoleStatement) actual, (SetRoleStatementTestCase) expected);
-        } else if (actual instanceof SetDefaultRoleStatement) {
-            SetDefaultRoleStatementAssert.assertIs(assertContext, (SetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
-        } else if (actual instanceof SetPasswordStatement) {
-            SetPasswordStatementAssert.assertIs(assertContext, (SetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetDefaultRoleStatement) {
+            SetDefaultRoleStatementAssert.assertIs(assertContext, (MySQLSetDefaultRoleStatement) actual, (SetDefaultRoleStatementTestCase) expected);
+        } else if (actual instanceof MySQLSetPasswordStatement) {
+            SetPasswordStatementAssert.assertIs(assertContext, (MySQLSetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
         } else if (actual instanceof SQLServerSetUserStatement) {
             SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SetUserStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLReassignOwnedStatement) {

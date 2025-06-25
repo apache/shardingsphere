@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
- * Set default role statement.
+ * Set default role statement for MySQL.
  */
-public final class SetDefaultRoleStatement extends DCLStatement {
+public final class MySQLSetDefaultRoleStatement extends DCLStatement {
 }

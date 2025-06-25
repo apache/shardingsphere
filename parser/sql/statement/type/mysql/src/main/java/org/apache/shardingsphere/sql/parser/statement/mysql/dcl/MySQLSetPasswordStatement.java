@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
- * Set password statement.
+ * Set password statement for MySQL.
  */
-public final class SetPasswordStatement extends DCLStatement {
+public final class MySQLSetPasswordStatement extends DCLStatement {
 }
