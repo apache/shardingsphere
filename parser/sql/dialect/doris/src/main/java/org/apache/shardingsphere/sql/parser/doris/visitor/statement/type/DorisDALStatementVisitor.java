@@ -146,7 +146,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
@@ -195,6 +194,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.character.M
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLDescribeStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.engine.MySQLShowEngineStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.error.MySQLShowErrorsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.error.MySQLShowWarningsStatement;
@@ -560,7 +560,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        ShowDatabasesStatement result = new ShowDatabasesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }

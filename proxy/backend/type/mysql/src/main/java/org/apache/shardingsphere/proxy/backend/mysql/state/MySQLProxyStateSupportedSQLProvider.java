@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.backend.mysql.state;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +34,7 @@ public final class MySQLProxyStateSupportedSQLProvider implements DialectProxySt
     
     private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES_ON_READY_STATE = Arrays.asList(MySQLFlushStatement.class, MySQLShowCreateUserStatement.class);
     
-    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENT_TYPES_ON_UNAVAILABLE_STATE = Arrays.asList(ShowDatabasesStatement.class, MySQLUseStatement.class);
+    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENT_TYPES_ON_UNAVAILABLE_STATE = Arrays.asList(MySQLShowDatabasesStatement.class, MySQLUseStatement.class);
     
     @Override
     public Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypesOnReadyState() {
