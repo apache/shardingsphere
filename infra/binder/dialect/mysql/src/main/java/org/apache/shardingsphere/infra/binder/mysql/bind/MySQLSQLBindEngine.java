@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.binder.mysql.bind.type.MySQLShowIndexStat
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 
 import java.util.Optional;
 
@@ -41,8 +41,8 @@ public final class MySQLSQLBindEngine implements DialectSQLBindEngine {
         if (sqlStatement instanceof MySQLOptimizeTableStatement) {
             return Optional.of(new MySQLOptimizeTableStatementBinder().bind((MySQLOptimizeTableStatement) sqlStatement, binderContext));
         }
-        if (sqlStatement instanceof ShowCreateTableStatement) {
-            return Optional.of(new MySQLShowCreateTableStatementBinder().bind((ShowCreateTableStatement) sqlStatement, binderContext));
+        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
+            return Optional.of(new MySQLShowCreateTableStatementBinder().bind((MySQLShowCreateTableStatement) sqlStatement, binderContext));
         }
         if (sqlStatement instanceof MySQLShowColumnsStatement) {
             return Optional.of(new MySQLShowColumnsStatementBinder().bind((MySQLShowColumnsStatement) sqlStatement, binderContext));
