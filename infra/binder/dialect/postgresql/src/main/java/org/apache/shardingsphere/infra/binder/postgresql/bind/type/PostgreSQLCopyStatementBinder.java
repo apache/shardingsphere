@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dml;
+package org.apache.shardingsphere.infra.binder.postgresql.bind.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
@@ -38,9 +38,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Copy statement binder.
+ * Copy statement binder for PostgreSQL.
  */
-public final class CopyStatementBinder implements SQLStatementBinder<CopyStatement> {
+public final class PostgreSQLCopyStatementBinder implements SQLStatementBinder<CopyStatement> {
     
     @Override
     public CopyStatement bind(final CopyStatement sqlStatement, final SQLStatementBinderContext binderContext) {
