@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dcl;
+package org.apache.shardingsphere.infra.binder.sqlserver.bind.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
@@ -29,27 +29,27 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Deny user statement binder.
+ * Deny user statement binder for SQLServer.
  */
-public final class DenyUserStatementBinder implements SQLStatementBinder<DenyUserStatement> {
+public final class SQLServerDenyUserStatementBinder implements SQLStatementBinder<SQLServerDenyUserStatement> {
     
     @Override
-    public DenyUserStatement bind(final DenyUserStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public SQLServerDenyUserStatement bind(final SQLServerDenyUserStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts);
-        Collection<ColumnSegment> columns = sqlStatement.getColumns().stream()
+        Collection<ColumnSegment> boundColumns = sqlStatement.getColumns().stream()
                 .map(each -> ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, tableBinderContexts, LinkedHashMultimap.create())).collect(Collectors.toList());
-        return copy(sqlStatement, boundTable, columns);
+        return copy(sqlStatement, boundTable, boundColumns);
     }
     
-    private DenyUserStatement copy(final DenyUserStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
-        DenyUserStatement result = new DenyUserStatement();
+    private SQLServerDenyUserStatement copy(final SQLServerDenyUserStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
+        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
         result.setTable(boundTable);
         sqlStatement.getColumns().addAll(boundColumns);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
