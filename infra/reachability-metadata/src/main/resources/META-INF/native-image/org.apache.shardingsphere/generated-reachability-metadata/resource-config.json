@@ -10,7 +10,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
     "pattern":"\\QMETA-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/maven/com.atomikos/atomikos-util/pom.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
@@ -61,16 +61,16 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\QMETA-INF/seata/org.apache.seata.sqlparser.util.DbTypeParser\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.icatch.TransactionServicePlugin\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.icatch.event.EventListener\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.icatch.provider.Assembler\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\QMETA-INF/services/com.atomikos.recovery.OltpLogFactory\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -129,9 +129,6 @@
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/java.time.zone.ZoneRulesProvider\\E"
-  }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
-    "pattern":"\\QMETA-INF/services/javax.xml.datatype.DatatypeFactory\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"},
     "pattern":"\\QMETA-INF/services/javax.xml.parsers.DocumentBuilderFactory\\E"
@@ -208,7 +205,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
@@ -334,6 +331,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.sharding.checker.sql.dml.ShardingTableSupportedChecker"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sharding.checker.sql.dml.DialectUnsupportedShardingSQLStatementProvider\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder\\E"
   }, {
@@ -346,17 +346,20 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.spi.TransactionHook\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.xa.jta.connection.XAConnectionWrapper\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.XAConnectionWrapper\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.XADataSourceDefinition\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
-    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider\\E"
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.transaction.xa.jakarta.spi.XATransactionManagerProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
     "pattern":"\\QMETA-INF/services/org.codehaus.groovy.runtime.ExtensionModule\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.narayana.manager.NarayanaXATransactionManagerProvider"},
+    "pattern":"\\QMETA-INF/services/org.jboss.logging.LoggerProvider\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\QMETA-INF/services/org.testcontainers.containers.JdbcDatabaseContainerProvider\\E"
@@ -385,13 +388,13 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
     "pattern":"\\Q\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/jta.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions-defaults.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qcom/atomikos/icatch/provider/imp/transactions.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
@@ -430,7 +433,7 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
     "pattern":"\\Qjndi.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qjta.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"},
@@ -2080,10 +2083,10 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
     "pattern":"\\Qtestcontainers.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qtransactions-defaults.properties\\E"
   }, {
-    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider"},
+    "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider"},
     "pattern":"\\Qtransactions.properties\\E"
   }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository"},
@@ -2114,6 +2117,9 @@
     "pattern":"java.xml:\\Qcom/sun/org/apache/xml/internal/serializer/XMLEntities_zh_Hans_CN.properties\\E"
   }]},
   "bundles":[{
+    "name":"com.microsoft.sqlserver.jdbc.SQLServerResource",
+    "locales":["zh-CN"]
+  }, {
     "name":"com.sun.org.apache.xml.internal.serializer.XMLEntities",
     "locales":["zh-CN"]
   }, {

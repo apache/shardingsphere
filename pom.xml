@@ -127,7 +127,7 @@
         
         <postgresql.version>42.7.5</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
-        <mssql.version>6.1.7.jre8-preview</mssql.version>
+        <mssql.version>12.10.1.jre8</mssql.version>
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
@@ -137,6 +137,7 @@
         <hadoop.version>3.3.6</hadoop.version>
         <presto.version>0.292</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
+        <ojdbc8.version>23.6.0.24.10</ojdbc8.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
@@ -516,6 +517,13 @@
                 <artifactId>jaybird</artifactId>
                 <version>${jaybird.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>${ojdbc8.version}</version>
+                <scope>test</scope>
+                <optional>true</optional>
             </dependency>
             
             <dependency>
