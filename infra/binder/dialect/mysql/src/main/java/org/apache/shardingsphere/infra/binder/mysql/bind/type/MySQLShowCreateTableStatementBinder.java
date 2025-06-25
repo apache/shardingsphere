@@ -23,20 +23,20 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 
 /**
  * Show create table statement binder for MySQL.
  */
-public final class MySQLShowCreateTableStatementBinder implements SQLStatementBinder<ShowCreateTableStatement> {
+public final class MySQLShowCreateTableStatementBinder implements SQLStatementBinder<MySQLShowCreateTableStatement> {
     
     @Override
-    public ShowCreateTableStatement bind(final ShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public MySQLShowCreateTableStatement bind(final MySQLShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
-    private ShowCreateTableStatement copy(final ShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
-        ShowCreateTableStatement result = new ShowCreateTableStatement(boundTable);
+    private MySQLShowCreateTableStatement copy(final MySQLShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
+        MySQLShowCreateTableStatement result = new MySQLShowCreateTableStatement(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
