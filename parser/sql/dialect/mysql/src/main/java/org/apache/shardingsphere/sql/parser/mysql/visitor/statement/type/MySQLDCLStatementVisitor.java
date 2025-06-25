@@ -101,8 +101,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.Al
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
@@ -111,6 +109,8 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserS
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetPasswordStatement;
 
 import java.util.stream.Collectors;
 
@@ -727,7 +727,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new SetDefaultRoleStatement();
+        return new MySQLSetDefaultRoleStatement();
     }
     
     @Override
@@ -737,6 +737,6 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new SetPasswordStatement();
+        return new MySQLSetPasswordStatement();
     }
 }
