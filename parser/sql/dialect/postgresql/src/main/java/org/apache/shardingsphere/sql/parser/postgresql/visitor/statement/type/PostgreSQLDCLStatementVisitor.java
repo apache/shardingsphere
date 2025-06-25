@@ -34,15 +34,15 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.Postgre
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLCreateGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -116,6 +116,6 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateGroup(final CreateGroupContext ctx) {
-        return new CreateGroupStatement();
+        return new PostgreSQLCreateGroupStatement();
     }
 }
