@@ -20,16 +20,26 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-transaction</artifactId>
+        <artifactId>shardingsphere-transaction-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-transaction-type</artifactId>
+    <artifactId>shardingsphere-transaction-xa-jakarta</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>xa</module>
-        <module>xa-jakarta</module>
-        <module>base</module>
+        <module>spi</module>
+        <module>provider</module>
+        <module>core</module>
     </modules>
+    
+    <properties>
+        <!--
+        As a workaround for https://github.com/apache/shardingsphere/issues/26041 ,
+        versions of Jakarta EE Spec dependencies are maintained separately in this module and its submodules.
+        -->
+        <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
+        <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
+        <jboss-logging.version>3.4.3.Final</jboss-logging.version>
+    </properties>
 </project>
