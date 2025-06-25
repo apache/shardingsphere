@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.An
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateIndexStatement;
@@ -74,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLCheck
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 
 import java.util.Arrays;
@@ -94,7 +94,7 @@ public final class MySQLComStmtPrepareChecker {
         ALLOWED_SQL_STATEMENTS.addAll(Arrays.asList(AlterTableStatement.class, AlterUserStatement.class, AnalyzeTableStatement.class,
                 MySQLCacheIndexStatement.class, CallStatement.class, MySQLChangeMasterStatement.class, MySQLChecksumTableStatement.class, CommitStatement.class,
                 CreateIndexStatement.class, DropIndexStatement.class, CreateDatabaseStatement.class, DropDatabaseStatement.class,
-                CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, RenameUserStatement.class, DropUserStatement.class,
+                CreateTableStatement.class, DropTableStatement.class, MySQLCreateUserStatement.class, MySQLRenameUserStatement.class, DropUserStatement.class,
                 CreateViewStatement.class, DropViewStatement.class, DeleteStatement.class, DoStatement.class, MySQLFlushStatement.class,
                 MySQLGrantStatement.class, InsertStatement.class, MySQLInstallPluginStatement.class, MySQLKillStatement.class, MySQLLoadIndexInfoStatement.class,
                 MySQLOptimizeTableStatement.class, RenameTableStatement.class, MySQLRepairTableStatement.class, MySQLResetStatement.class,

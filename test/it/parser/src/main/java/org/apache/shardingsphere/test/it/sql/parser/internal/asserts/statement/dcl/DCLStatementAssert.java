@@ -27,11 +27,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DC
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
@@ -101,8 +101,8 @@ public final class DCLStatementAssert {
             AlterUserStatementAssert.assertIs(assertContext, (AlterUserStatement) actual, (AlterUserStatementTestCase) expected);
         } else if (actual instanceof DropUserStatement) {
             DropUserStatementAssert.assertIs(assertContext, (DropUserStatement) actual, (DropUserStatementTestCase) expected);
-        } else if (actual instanceof RenameUserStatement) {
-            RenameUserStatementAssert.assertIs(assertContext, (RenameUserStatement) actual, (RenameUserStatementTestCase) expected);
+        } else if (actual instanceof MySQLRenameUserStatement) {
+            RenameUserStatementAssert.assertIs(assertContext, (MySQLRenameUserStatement) actual, (RenameUserStatementTestCase) expected);
         } else if (actual instanceof SQLServerDenyUserStatement) {
             DenyUserStatementAssert.assertIs(assertContext, (SQLServerDenyUserStatement) actual, (DenyUserStatementTestCase) expected);
         } else if (actual instanceof SQLServerCreateLoginStatement) {

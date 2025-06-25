@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.An
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateIndexStatement;
@@ -72,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLCheck
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +89,7 @@ class MySQLComStmtPrepareCheckerTest {
                 mock(AlterTableStatement.class), mock(AlterUserStatement.class), mock(AnalyzeTableStatement.class), mock(MySQLCacheIndexStatement.class),
                 mock(CallStatement.class), mock(MySQLChangeMasterStatement.class), mock(MySQLChecksumTableStatement.class), mock(CommitStatement.class),
                 mock(CreateIndexStatement.class), mock(DropIndexStatement.class), mock(CreateDatabaseStatement.class), mock(DropDatabaseStatement.class), mock(CreateTableStatement.class),
-                mock(DropTableStatement.class), mock(MySQLCreateUserStatement.class), mock(RenameUserStatement.class), mock(DropUserStatement.class),
+                mock(DropTableStatement.class), mock(MySQLCreateUserStatement.class), mock(MySQLRenameUserStatement.class), mock(DropUserStatement.class),
                 mock(CreateViewStatement.class), mock(DropViewStatement.class), mock(DeleteStatement.class), mock(DoStatement.class), mock(MySQLFlushStatement.class),
                 mock(MySQLGrantStatement.class), mock(InsertStatement.class), mock(MySQLInstallPluginStatement.class), mock(MySQLKillStatement.class),
                 mock(MySQLLoadIndexInfoStatement.class), mock(MySQLOptimizeTableStatement.class), mock(RenameTableStatement.class), mock(MySQLRepairTableStatement.class),

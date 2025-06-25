@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
- * Rename user statement.
+ * Rename user statement for MySQL.
  */
-public final class RenameUserStatement extends DCLStatement {
+public final class MySQLRenameUserStatement extends DCLStatement {
 }
