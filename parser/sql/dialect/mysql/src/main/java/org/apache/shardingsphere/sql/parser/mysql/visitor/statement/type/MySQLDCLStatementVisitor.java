@@ -101,7 +101,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.Al
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetRoleStatement;
@@ -110,6 +109,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
 
 import java.util.stream.Collectors;
@@ -712,7 +712,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new RenameUserStatement();
+        return new MySQLRenameUserStatement();
     }
     
     @Override
