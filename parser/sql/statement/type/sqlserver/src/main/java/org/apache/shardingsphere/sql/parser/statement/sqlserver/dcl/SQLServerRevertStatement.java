@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
- * Revert statement.
+ * Revert statement for SQLServer.
  */
-public final class RevertStatement extends DCLStatement {
+public final class SQLServerRevertStatement extends DCLStatement {
 }
