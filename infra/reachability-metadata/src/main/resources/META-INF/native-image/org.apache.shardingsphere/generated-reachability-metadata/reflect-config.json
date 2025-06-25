@@ -607,6 +607,11 @@
   "name":"java.net.ServerSocket"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
+  "name":"java.net.Socket",
+  "methods":[{"name":"setOption","parameterTypes":["java.net.SocketOption","java.lang.Object"] }]
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.net.Socket"
 },
@@ -1216,6 +1221,10 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"},
+  "name":"org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdProtocolDefaultVersionProvider"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"},
   "name":"org.apache.shardingsphere.db.protocol.mysql.constant.MySQLProtocolDefaultVersionProvider"
 },
 {
@@ -1659,7 +1668,7 @@
   "name":"org.apache.shardingsphere.infra.database.firebird.type.FirebirdDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.h2.checker.H2DatabasePrivilegeChecker"
 },
 {
@@ -1691,7 +1700,7 @@
   "name":"org.apache.shardingsphere.infra.database.hive.type.HiveDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"
 },
 {
@@ -1715,7 +1724,7 @@
   "name":"org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.opengauss.checker.OpenGaussDatabasePrivilegeChecker"
 },
 {
@@ -1747,7 +1756,7 @@
   "name":"org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.postgresql.checker.PostgreSQLDatabasePrivilegeChecker"
 },
 {
@@ -2776,6 +2785,26 @@
   "name":"org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfigurationCustomizer"
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement"},
+  "name":"org.apache.shardingsphere.proxy.backend.firebird.connector.jdbc.statement.FirebirdStatementMemoryStrictlyFetchSizeSetter"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
+  "name":"org.apache.shardingsphere.proxy.backend.firebird.handler.admin.FirebirdAdminExecutorCreator"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor"},
+  "name":"org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdSetCharsetExecutor"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
+  "name":"org.apache.shardingsphere.proxy.backend.firebird.handler.transaction.FirebirdTransactionalErrorAllowedSQLStatementHandler"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine"},
+  "name":"org.apache.shardingsphere.proxy.backend.firebird.response.header.query.FirebirdQueryHeaderBuilder"
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory"},
   "name":"org.apache.shardingsphere.proxy.backend.handler.checker.AuditSQLExecutionChecker"
 },
@@ -2878,6 +2907,11 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine"},
   "name":"org.apache.shardingsphere.proxy.backend.postgresql.response.header.query.PostgreSQLQueryHeaderBuilder"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"},
+  "name":"org.apache.shardingsphere.proxy.frontend.firebird.FirebirdFrontendEngine",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"},
@@ -3693,12 +3727,12 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type.FirebirdDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type.FirebirdDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
@@ -3733,32 +3767,32 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDALStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"},
   "name":"org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTCLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
@@ -3778,12 +3812,12 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
@@ -3818,17 +3852,17 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
@@ -3848,7 +3882,7 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"},
@@ -3873,12 +3907,12 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDDLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
   "name":"org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "methods":[{"name":"<init>","parameterTypes":["org.apache.shardingsphere.infra.database.core.type.DatabaseType"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
@@ -4133,77 +4167,77 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine"},
-  "name":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager",
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
-  "name":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider",
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.FirebirdXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.FirebirdXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.H2XAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MariaDBXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.MariaDBXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.MySQLXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OpenGaussXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.OpenGaussXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OracleXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.OracleXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.PostgreSQLXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.FirebirdXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.FirebirdXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.H2XADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.MySQLXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OpenGaussXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.OpenGaussXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.OracleXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
-  "name":"org.apache.shardingsphere.transaction.xa.narayana.manager.NarayanaXATransactionManagerProvider",
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.narayana.manager.NarayanaXATransactionManagerProvider",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

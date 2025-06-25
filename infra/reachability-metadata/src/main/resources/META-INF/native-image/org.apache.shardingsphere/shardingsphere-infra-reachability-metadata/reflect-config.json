@@ -325,17 +325,17 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"},
@@ -350,7 +350,7 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor"},
@@ -405,7 +405,7 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder"},

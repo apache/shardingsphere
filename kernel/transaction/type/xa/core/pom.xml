@@ -25,9 +25,6 @@
     </parent>
     <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <name>${project.artifactId}</name>
-    <properties>
-        <ojdbc8.version>23.6.0.24.10</ojdbc8.version>
-    </properties>
     
     <dependencies>
         <dependency>
@@ -108,9 +105,6 @@
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-            <version>${ojdbc8.version}</version>
-            <scope>test</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
