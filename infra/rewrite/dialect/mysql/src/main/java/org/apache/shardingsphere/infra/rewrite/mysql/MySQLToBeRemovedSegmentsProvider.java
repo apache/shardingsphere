@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTableStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTableStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,8 +36,8 @@ public final class MySQLToBeRemovedSegmentsProvider implements DialectToBeRemove
     @Override
     public Collection<SQLSegment> getToBeRemovedSQLSegments(final SQLStatement sqlStatement) {
         Collection<SQLSegment> result = new LinkedList<>();
-        if (sqlStatement instanceof ShowTablesStatement) {
-            ((ShowTablesStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
+        if (sqlStatement instanceof MySQLShowTablesStatement) {
+            ((MySQLShowTablesStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
         }
         if (sqlStatement instanceof MySQLShowColumnsStatement) {
             ((MySQLShowColumnsStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
@@ -45,8 +45,8 @@ public final class MySQLToBeRemovedSegmentsProvider implements DialectToBeRemove
         if (sqlStatement instanceof MySQLShowIndexStatement) {
             ((MySQLShowIndexStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
         }
-        if (sqlStatement instanceof ShowTableStatusStatement) {
-            ((ShowTableStatusStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
+        if (sqlStatement instanceof MySQLShowTableStatusStatement) {
+            ((MySQLShowTableStatusStatement) sqlStatement).getFromDatabase().ifPresent(result::add);
         }
         return result;
     }
