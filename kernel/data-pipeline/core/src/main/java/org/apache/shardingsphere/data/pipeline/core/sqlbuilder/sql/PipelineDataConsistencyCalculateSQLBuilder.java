@@ -51,12 +51,14 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
      * @param columnNames column names
      * @param uniqueKeys unique keys, it may be primary key, not null
      * @param queryRange query range
+     * @param pageQuery whether it is page query
      * @param shardingColumnsNames sharding columns names
      * @return built SQL
      */
     public String buildQueryRangeOrderingSQL(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,
-                                             final List<String> shardingColumnsNames) {
-        return dialectSQLBuilder.wrapWithPageQuery(buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, queryRange, shardingColumnsNames));
+                                             final boolean pageQuery, final List<String> shardingColumnsNames) {
+        String result = buildQueryRangeOrderingSQL0(qualifiedTable, columnNames, uniqueKeys, queryRange, shardingColumnsNames);
+        return pageQuery ? dialectSQLBuilder.wrapWithPageQuery(result) : result;
     }
     
     private String buildQueryRangeOrderingSQL0(final QualifiedTable qualifiedTable, final Collection<String> columnNames, final List<String> uniqueKeys, final QueryRange queryRange,

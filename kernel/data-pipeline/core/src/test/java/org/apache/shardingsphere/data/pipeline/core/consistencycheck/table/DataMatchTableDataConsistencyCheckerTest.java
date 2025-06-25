@@ -33,26 +33,48 @@ class DataMatchTableDataConsistencyCheckerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @Test
-    void assertInitSuccess() {
+    void assertChunkSizeInitSuccess() {
         for (String each : Arrays.asList("1", "1000")) {
             DataMatchTableDataConsistencyChecker checker = new DataMatchTableDataConsistencyChecker();
-            checker.init(buildAlgorithmProperties(each));
+            checker.init(buildChunkSizeProperties(each));
             String actual = Plugins.getMemberAccessor().get(DataMatchTableDataConsistencyChecker.class.getDeclaredField("chunkSize"), checker).toString();
             assertThat(actual, is(each));
         }
     }
     
     @Test
-    void assertInitFailure() {
-        assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildAlgorithmProperties("xyz")));
+    void assertChunkSizeInitFailure() {
+        assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildChunkSizeProperties("xyz")));
         for (String each : Arrays.asList("0", "-1")) {
-            assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildAlgorithmProperties(each)));
+            assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildChunkSizeProperties(each)));
         }
     }
     
-    private Properties buildAlgorithmProperties(final String chunkSize) {
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertStreamingRangeTypeInitSuccess() {
+        for (String each : Arrays.asList("small", "large", "SMALL", "LARGE")) {
+            DataMatchTableDataConsistencyChecker checker = new DataMatchTableDataConsistencyChecker();
+            checker.init(buildStreamingRangeTypeProperties(each));
+            String actual = Plugins.getMemberAccessor().get(DataMatchTableDataConsistencyChecker.class.getDeclaredField("streamingRangeType"), checker).toString();
+            assertThat(actual, is(each.toUpperCase()));
+        }
+    }
+    
+    @Test
+    void assertStreamingRangeTypeInitFailure() {
+        assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildStreamingRangeTypeProperties("xyz")));
+    }
+    
+    private Properties buildChunkSizeProperties(final String chunkSize) {
         Properties result = new Properties();
         result.put("chunk-size", chunkSize);
+        return result;
+    }
+    
+    private Properties buildStreamingRangeTypeProperties(final String streamingRangeType) {
+        Properties result = new Properties();
+        result.put("streaming-range-type", streamingRangeType);
         return result;
     }
 }

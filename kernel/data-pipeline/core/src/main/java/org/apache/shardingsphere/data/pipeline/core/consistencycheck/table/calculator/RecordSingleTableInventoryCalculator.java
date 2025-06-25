@@ -55,15 +55,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class RecordSingleTableInventoryCalculator extends AbstractStreamingSingleTableInventoryCalculator {
     
+    private static final int DEFAULT_STREAMING_CHUNK_COUNT = 100;
+    
     private final int chunkSize;
     
     private final int streamingChunkCount;
     
+    private final StreamingRangeType streamingRangeType;
+    
     private final EqualsBuilder equalsBuilder = new EqualsBuilder();
     
-    public RecordSingleTableInventoryCalculator(final int chunkSize) {
-        this.chunkSize = chunkSize;
-        streamingChunkCount = 100;
+    public RecordSingleTableInventoryCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
+        this(chunkSize, DEFAULT_STREAMING_CHUNK_COUNT, streamingRangeType);
     }
     
     @Override
@@ -84,6 +87,9 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
         try {
             if (QueryType.POINT_QUERY == param.getQueryType()) {
                 return pointQuery(param, columnValueReaderEngine);
+            }
+            if (StreamingRangeType.LARGE == streamingRangeType) {
+                return allQuery(param, columnValueReaderEngine);
             }
             if (param.getUniqueKeys().size() <= 1) {
                 return rangeQueryWithSingleColumUniqueKey(param, columnValueReaderEngine, 1);
@@ -108,6 +114,26 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
             Map<String, Object> record = readRecord(columnValueReaderEngine, resultSet, resultSetMetaData);
             result.add(record);
+        }
+        return result;
+    }
+    
+    private List<Map<String, Object>> allQuery(final SingleTableInventoryCalculateParameter param,
+                                               final InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException {
+        List<Map<String, Object>> result = new LinkedList<>();
+        CalculationContext calculationContext = prepareCalculationContext(param);
+        prepareDatabaseResources(calculationContext, param);
+        ResultSet resultSet = calculationContext.getResultSet();
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        while (resultSet.next()) {
+            ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
+            result.add(readRecord(columnValueReaderEngine, resultSet, resultSetMetaData));
+            if (result.size() == chunkSize) {
+                break;
+            }
+        }
+        if (result.isEmpty()) {
+            QuietlyCloser.close(calculationContext);
         }
         return result;
     }
@@ -231,13 +257,14 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     }
     
     private String getQuerySQL(final SingleTableInventoryCalculateParameter param) {
-        ShardingSpherePreconditions.checkState(param.getUniqueKeys() != null && !param.getUniqueKeys().isEmpty() && null != param.getFirstUniqueKey(),
+        ShardingSpherePreconditions.checkState(null != param.getUniqueKeys() && !param.getUniqueKeys().isEmpty() && null != param.getFirstUniqueKey(),
                 () -> new UnsupportedOperationException("Record inventory calculator does not support table without unique key and primary key now."));
         PipelineDataConsistencyCalculateSQLBuilder pipelineSQLBuilder = new PipelineDataConsistencyCalculateSQLBuilder(param.getDatabaseType());
         Collection<String> columnNames = param.getColumnNames().isEmpty() ? Collections.singleton("*") : param.getColumnNames();
         switch (param.getQueryType()) {
             case RANGE_QUERY:
-                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(), param.getShardingColumnsNames());
+                return pipelineSQLBuilder.buildQueryRangeOrderingSQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getQueryRange(),
+                        StreamingRangeType.SMALL == streamingRangeType, param.getShardingColumnsNames());
             case POINT_QUERY:
                 return pipelineSQLBuilder.buildPointQuerySQL(param.getTable(), columnNames, param.getUniqueKeysNames(), param.getShardingColumnsNames());
             default:
@@ -258,7 +285,9 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
             if (null != queryRange.getUpper()) {
                 preparedStatement.setObject(parameterIndex++, queryRange.getUpper());
             }
-            preparedStatement.setObject(parameterIndex, chunkSize * streamingChunkCount);
+            if (StreamingRangeType.SMALL == streamingRangeType) {
+                preparedStatement.setObject(parameterIndex, chunkSize * streamingChunkCount);
+            }
         } else if (queryType == QueryType.POINT_QUERY) {
             Collection<Object> uniqueKeysValues = param.getUniqueKeysValues();
             ShardingSpherePreconditions.checkNotNull(uniqueKeysValues,
