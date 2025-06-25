@@ -55,7 +55,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.Cr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
@@ -65,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCre
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDropLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerGrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerRevertStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerRevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
 
@@ -266,6 +266,6 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitRevert(final RevertContext ctx) {
-        return new RevertStatement();
+        return new SQLServerRevertStatement();
     }
 }
