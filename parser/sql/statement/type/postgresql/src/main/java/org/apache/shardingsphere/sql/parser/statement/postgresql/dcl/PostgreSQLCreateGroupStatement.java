@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.dcl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
- * Create group statement.
+ * Create group statement for PostgreSQL.
  */
-public final class CreateGroupStatement extends DCLStatement {
+public final class PostgreSQLCreateGroupStatement extends DCLStatement {
 }
