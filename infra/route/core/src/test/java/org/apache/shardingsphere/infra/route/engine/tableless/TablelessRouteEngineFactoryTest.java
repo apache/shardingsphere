@@ -91,6 +91,15 @@ class TablelessRouteEngineFactoryTest {
     }
     
     @Test
+    void assertNewInstanceForSetStatement() {
+        SetStatement setStatement = mock(SetStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
+    }
+    
+    @Test
     void assertNewInstanceForTablelessDataSourceBroadcastRouteSQLStatementAttribute() {
         DALStatement dalStatement = mock(DALStatement.class);
         when(dalStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute()));
@@ -104,15 +113,6 @@ class TablelessRouteEngineFactoryTest {
     void assertNewInstanceForTCL() {
         TCLStatement tclStatement = mock(TCLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(tclStatement);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
-        assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
-    }
-    
-    @Test
-    void assertNewInstanceForSetStatement() {
-        SetStatement setStatement = mock(SetStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
         assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));
