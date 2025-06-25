@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,16 +23,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Deny user statement.
+ * Deny user statement for SQLServer.
  */
 @Getter
 @Setter
-public final class DenyUserStatement extends DCLStatement {
+public final class SQLServerDenyUserStatement extends DCLStatement {
     
     private SimpleTableSegment table;
     

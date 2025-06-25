@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.sqlserver;
+package org.apache.shardingsphere.infra.binder.sqlserver.bind;
 
-import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.infra.binder.engine.DialectSQLBindEngine;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.sqlserver.bind.type.SQLServerDenyUserStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Optional;
 
 /**
- * Common SQL Statement context warp provider for SQLServer.
+ * SQL bind engine for SQLServer.
  */
-public final class SQLServerSQLStatementContextWarpProvider implements DialectCommonSQLStatementContextWarpProvider {
-    
-    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_SQL_STATEMENT_TYPES = Collections.singleton(SQLServerDenyUserStatement.class);
+public final class SQLServerSQLBindEngine implements DialectSQLBindEngine {
     
     @Override
-    public Collection<Class<? extends SQLStatement>> getNeedToWarpSQLStatementTypes() {
-        return NEED_TO_WARP_SQL_STATEMENT_TYPES;
+    public Optional<SQLStatement> bind(final SQLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        if (sqlStatement instanceof SQLServerDenyUserStatement) {
+            return Optional.of(new SQLServerDenyUserStatementBinder().bind((SQLServerDenyUserStatement) sqlStatement, binderContext));
+        }
+        return Optional.empty();
     }
     
     @Override
