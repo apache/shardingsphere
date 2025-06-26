@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.engine.DialectSQLBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.postgresql.bind.type.PostgreSQLCopyStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 
 import java.util.Optional;
 
@@ -32,8 +32,8 @@ public final class PostgreSQLSQLBindEngine implements DialectSQLBindEngine {
     
     @Override
     public Optional<SQLStatement> bind(final SQLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        if (sqlStatement instanceof CopyStatement) {
-            return Optional.of(new PostgreSQLCopyStatementBinder().bind((CopyStatement) sqlStatement, binderContext));
+        if (sqlStatement instanceof PostgreSQLCopyStatement) {
+            return Optional.of(new PostgreSQLCopyStatementBinder().bind((PostgreSQLCopyStatement) sqlStatement, binderContext));
         }
         return Optional.empty();
     }

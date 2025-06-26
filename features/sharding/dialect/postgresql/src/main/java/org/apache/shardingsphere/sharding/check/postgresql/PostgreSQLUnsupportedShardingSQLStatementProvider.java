@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.postgresql;
+package org.apache.shardingsphere.sharding.check.postgresql;
 
-import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
+import org.apache.shardingsphere.sharding.checker.sql.dml.DialectUnsupportedShardingSQLStatementProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 
@@ -25,15 +25,15 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Common SQL Statement context warp provider for PostgreSQL.
+ * Unsupported sharding SQL statement provider for PostgreSQL.
  */
-public final class PostgreSQLSQLStatementContextWarpProvider implements DialectCommonSQLStatementContextWarpProvider {
+public final class PostgreSQLUnsupportedShardingSQLStatementProvider implements DialectUnsupportedShardingSQLStatementProvider {
     
-    private static final Collection<Class<? extends SQLStatement>> NEED_TO_WARP_SQL_STATEMENT_TYPES = Collections.singleton(PostgreSQLCopyStatement.class);
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Collections.singleton(PostgreSQLCopyStatement.class);
     
     @Override
-    public Collection<Class<? extends SQLStatement>> getNeedToWarpSQLStatementTypes() {
-        return NEED_TO_WARP_SQL_STATEMENT_TYPES;
+    public Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypes() {
+        return UNSUPPORTED_SQL_STATEMENT_TYPES;
     }
     
     @Override

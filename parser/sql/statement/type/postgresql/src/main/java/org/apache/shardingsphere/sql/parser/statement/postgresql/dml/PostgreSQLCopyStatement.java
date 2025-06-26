@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.dml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +24,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.P
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Copy statement.
+ * Copy statement for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CopyStatement extends DMLStatement {
+public final class PostgreSQLCopyStatement extends DMLStatement {
     
     private final SimpleTableSegment table;
     

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CopyStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.prepare.PrepareStatementQueryAssert;
@@ -47,13 +47,13 @@ public final class CopyStatementAssert {
      * @param actual actual copy statement
      * @param expected expected copy statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLCopyStatement actual, final CopyStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumns(assertContext, actual, expected);
         assertPrepareStatementQuerySegment(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final PostgreSQLCopyStatement actual, final CopyStatementTestCase expected) {
         if (null == expected.getTable()) {
             assertFalse(actual.getTable().isPresent(), assertContext.getText("Actual table should not exist."));
         } else {
@@ -62,7 +62,7 @@ public final class CopyStatementAssert {
         }
     }
     
-    private static void assertColumns(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final PostgreSQLCopyStatement actual, final CopyStatementTestCase expected) {
         Collection<ColumnSegment> columnSegments = actual.getColumns();
         if (expected.getColumns().isEmpty()) {
             assertTrue(columnSegments.isEmpty(), assertContext.getText("Actual column segments should not exist."));
@@ -72,7 +72,7 @@ public final class CopyStatementAssert {
         }
     }
     
-    private static void assertPrepareStatementQuerySegment(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
+    private static void assertPrepareStatementQuerySegment(final SQLCaseAssertContext assertContext, final PostgreSQLCopyStatement actual, final CopyStatementTestCase expected) {
         Optional<PrepareStatementQuerySegment> prepareStatementQuerySegment = actual.getPrepareStatementQuery();
         if (null == expected.getQuery()) {
             assertFalse(prepareStatementQuerySegment.isPresent(), assertContext.getText("Actual prepare statement query segment should not exist."));
