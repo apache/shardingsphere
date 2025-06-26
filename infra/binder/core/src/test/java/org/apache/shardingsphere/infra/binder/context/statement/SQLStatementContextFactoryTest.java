@@ -38,11 +38,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;

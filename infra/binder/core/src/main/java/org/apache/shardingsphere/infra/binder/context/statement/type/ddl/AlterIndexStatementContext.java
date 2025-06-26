@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 
 import java.util.Collection;
 import java.util.Collections;

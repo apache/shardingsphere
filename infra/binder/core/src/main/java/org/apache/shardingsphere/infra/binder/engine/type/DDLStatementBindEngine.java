@@ -30,19 +30,19 @@ import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStat
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 
 /**
  * DDL statement bind engine.

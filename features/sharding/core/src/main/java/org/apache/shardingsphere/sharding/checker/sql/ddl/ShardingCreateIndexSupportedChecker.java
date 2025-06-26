@@ -21,12 +21,12 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.checker.sql.common.ShardingSupportedCommonChecker;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 
 import java.util.Collections;
 

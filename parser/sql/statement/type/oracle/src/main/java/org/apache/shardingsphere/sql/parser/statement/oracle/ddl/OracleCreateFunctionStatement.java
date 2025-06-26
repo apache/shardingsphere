@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
 
 import java.util.List;
 
