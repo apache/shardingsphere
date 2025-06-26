@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.checker.sql.dml;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -27,18 +28,18 @@ import org.apache.shardingsphere.sharding.checker.sql.common.ShardingSupportedCo
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 /**
- * Update supported checker for sharding.
+ * Multiple tables supported checker for sharding.
  */
 @HighFrequencyInvocation
-public final class ShardingUpdateSupportedChecker implements SupportedSQLChecker<UpdateStatementContext, ShardingRule> {
+public final class ShardingMultipleTablesSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof UpdateStatementContext;
+        return sqlStatementContext instanceof UpdateStatementContext || sqlStatementContext instanceof DeleteStatementContext;
     }
     
     @Override
-    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final UpdateStatementContext sqlStatementContext) {
+    public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         ShardingSupportedCommonChecker.checkMultipleTable(rule, sqlStatementContext);
     }
 }
