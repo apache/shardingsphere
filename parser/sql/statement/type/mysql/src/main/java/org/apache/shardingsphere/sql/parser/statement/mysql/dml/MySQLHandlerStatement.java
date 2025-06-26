@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
- * Import statement.
+ * Handler statement for MySQL.
  */
-public final class ImportStatement extends DMLStatement {
+public final class MySQLHandlerStatement extends DMLStatement {
 }
