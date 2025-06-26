@@ -30,11 +30,9 @@ import org.apache.shardingsphere.sharding.checker.sql.ddl.ShardingCreateViewSupp
 import org.apache.shardingsphere.sharding.checker.sql.ddl.ShardingDropIndexSupportedChecker;
 import org.apache.shardingsphere.sharding.checker.sql.ddl.ShardingDropTableSupportedChecker;
 import org.apache.shardingsphere.sharding.checker.sql.ddl.ShardingRenameTableSupportedChecker;
-import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingCopySupportedChecker;
 import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingInsertSupportedChecker;
-import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingLoadDataSupportedChecker;
-import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingLoadXmlSupportedChecker;
 import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingMultipleTablesSupportedChecker;
+import org.apache.shardingsphere.sharding.checker.sql.dml.ShardingTableSupportedChecker;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -60,10 +58,8 @@ public final class ShardingSupportedSQLCheckersBuilder implements SupportedSQLCh
                 new ShardingDropIndexSupportedChecker(),
                 new ShardingDropTableSupportedChecker(),
                 new ShardingRenameTableSupportedChecker(),
-                new ShardingCopySupportedChecker(),
                 new ShardingInsertSupportedChecker(),
-                new ShardingLoadDataSupportedChecker(),
-                new ShardingLoadXmlSupportedChecker(),
+                new ShardingTableSupportedChecker(),
                 new ShardingMultipleTablesSupportedChecker());
     }
     
