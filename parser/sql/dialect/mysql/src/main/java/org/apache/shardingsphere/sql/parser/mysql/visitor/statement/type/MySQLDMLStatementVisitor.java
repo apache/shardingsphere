@@ -49,11 +49,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.HandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.ImportStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -79,7 +79,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitHandlerStatement(final HandlerStatementContext ctx) {
-        return new HandlerStatement();
+        return new MySQLHandlerStatement();
     }
     
     @Override
