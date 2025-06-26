@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingUpdateSupportedCheckerTest {
+class ShardingMultipleTablesSupportedCheckerTest {
     
     @Mock
     private ShardingRule rule;
@@ -58,7 +58,7 @@ class ShardingUpdateSupportedCheckerTest {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.isAllShardingTables(tableNames)).thenReturn(true);
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingUpdateSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
+        assertDoesNotThrow(() -> new ShardingMultipleTablesSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
     @Test
@@ -71,7 +71,7 @@ class ShardingUpdateSupportedCheckerTest {
         UpdateStatementContext sqlStatementContext = new UpdateStatementContext(mock(), updateStatement);
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(rule.containsShardingTable(tableNames)).thenReturn(true);
-        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingUpdateSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
+        assertThrows(DMLWithMultipleShardingTablesException.class, () -> new ShardingMultipleTablesSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
     
     private UpdateStatement createUpdateStatement() {
