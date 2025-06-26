@@ -66,19 +66,21 @@ public final class StatisticsStorageEngine {
     }
     
     private TableStatistics getCurrentTableStatistics() {
+        TableStatistics result = new TableStatistics(tableName);
         ShardingSphereStatistics currentStatistics = contextManager.getMetaDataContexts().getStatistics();
         if (!currentStatistics.containsDatabaseStatistics(databaseName)) {
-            return new TableStatistics(tableName);
+            return result;
         }
         DatabaseStatistics databaseStatistics = currentStatistics.getDatabaseStatistics(databaseName);
         if (!databaseStatistics.containsSchemaStatistics(schemaName)) {
-            return new TableStatistics(tableName);
+            return result;
         }
         SchemaStatistics schemaStatistics = databaseStatistics.getSchemaStatistics(schemaName);
         if (!schemaStatistics.containsTableStatistics(tableName)) {
-            return new TableStatistics(tableName);
+            return result;
         }
-        return schemaStatistics.getTableStatistics(tableName);
+        result.getRows().addAll(schemaStatistics.getTableStatistics(tableName).getRows());
+        return result;
     }
     
     private AlteredDatabaseStatistics createAlteredDatabaseStatistics(final ShardingSphereTable table, final TableStatistics currentTableStatistics, final TableStatistics changedTableStatistics) {
