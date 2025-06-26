@@ -99,7 +99,7 @@ public final class GeneratedKeyContextEngine {
         return result;
     }
     
-    private static Optional<Comparable<?>> getGeneratedValue(final List<Object> params, final ExpressionSegment expression) {
+    private Optional<Comparable<?>> getGeneratedValue(final List<Object> params, final ExpressionSegment expression) {
         if (expression instanceof ParameterMarkerExpressionSegment) {
             if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
                     && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
