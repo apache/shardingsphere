@@ -94,17 +94,7 @@ public final class GeneratedKeyContextEngine {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
         for (InsertValueContext each : insertValueContexts) {
             ExpressionSegment expression = each.getValueExpressions().get(findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName));
-            if (expression instanceof ParameterMarkerExpressionSegment) {
-                if (params.isEmpty()) {
-                    continue;
-                }
-                if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
-                        && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
-                    result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
-                }
-            } else if (expression instanceof LiteralExpressionSegment) {
-                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
-            }
+            getGeneratedValue(params, expression).ifPresent(optional -> result.getGeneratedValues().add(optional));
         }
         return result;
     }
@@ -112,5 +102,20 @@ public final class GeneratedKeyContextEngine {
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnAndIndexMap(tableName).get(generateKeyColumnName) : insertColumnNamesAndIndexes.get(generateKeyColumnName);
+    }
+    
+    private Optional<Comparable<?>> getGeneratedValue(final List<Object> params, final ExpressionSegment expression) {
+        if (expression instanceof ParameterMarkerExpressionSegment) {
+            if (params.isEmpty()) {
+                return Optional.empty();
+            }
+            if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
+                    && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
+                return Optional.of((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
+            }
+        } else if (expression instanceof LiteralExpressionSegment) {
+            return Optional.of((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
+        }
+        return Optional.empty();
     }
 }
