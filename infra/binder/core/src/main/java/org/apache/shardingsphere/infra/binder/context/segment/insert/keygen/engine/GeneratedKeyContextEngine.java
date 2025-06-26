@@ -103,7 +103,9 @@ public final class GeneratedKeyContextEngine {
                     result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
                 }
             } else if (expression instanceof LiteralExpressionSegment) {
-                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
+                if (null != ((LiteralExpressionSegment) expression).getLiterals()) {
+                    result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
+                }
             }
         }
         return result;
