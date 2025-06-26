@@ -52,6 +52,11 @@ public final class DeleteMultiTableSegment implements TableSegment {
     }
     
     @Override
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.empty();
+    }
+    
+    @Override
     public void setAlias(final AliasSegment alias) {
     }
 }
