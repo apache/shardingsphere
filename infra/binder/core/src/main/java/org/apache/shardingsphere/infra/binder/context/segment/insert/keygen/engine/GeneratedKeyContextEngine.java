@@ -94,12 +94,13 @@ public final class GeneratedKeyContextEngine {
     private GeneratedKeyContext findGeneratedKey(final Map<String, Integer> insertColumnNamesAndIndexes, final List<InsertValueContext> insertValueContexts,
                                                  final List<Object> params, final String generateKeyColumnName) {
         int generateKeyIndex = findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName);
+        boolean generated = false;
         Collection<Comparable<?>> generatedValues = new LinkedList<>();
         for (InsertValueContext each : insertValueContexts) {
             ExpressionSegment expression = each.getValueExpressions().get(generateKeyIndex);
             getGeneratedValue(params, expression).ifPresent(generatedValues::add);
         }
-        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
+        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, generated);
         result.getGeneratedValues().addAll(generatedValues);
         return result;
     }
