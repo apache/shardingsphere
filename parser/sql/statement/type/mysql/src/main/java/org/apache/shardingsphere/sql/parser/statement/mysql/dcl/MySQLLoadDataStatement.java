@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
+package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
- * Load data statement.
+ * Load data statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LoadDataStatement extends DMLStatement {
+public final class MySQLLoadDataStatement extends DMLStatement {
     
     private final SimpleTableSegment table;
     

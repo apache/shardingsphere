@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.check.mysql;
 import org.apache.shardingsphere.sharding.checker.sql.dml.DialectUnsupportedShardingSQLStatementProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CopyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Collection;
  */
 public final class MySQLUnsupportedShardingSQLStatementProvider implements DialectUnsupportedShardingSQLStatementProvider {
     
-    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Arrays.asList(CopyStatement.class, LoadDataStatement.class, LoadXMLStatement.class);
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Arrays.asList(CopyStatement.class, MySQLLoadDataStatement.class, MySQLLoadXMLStatement.class);
     
     @Override
     public Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypes() {

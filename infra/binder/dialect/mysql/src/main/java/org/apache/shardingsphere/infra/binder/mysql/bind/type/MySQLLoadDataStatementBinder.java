@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dml;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -26,21 +26,21 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
 
 /**
- * Load data statement binder.
+ * Load data statement binder for MySQL.
  */
-public final class LoadDataStatementBinder implements SQLStatementBinder<LoadDataStatement> {
+public final class MySQLLoadDataStatementBinder implements SQLStatementBinder<MySQLLoadDataStatement> {
     
     @Override
-    public LoadDataStatement bind(final LoadDataStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+    public MySQLLoadDataStatement bind(final MySQLLoadDataStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
     }
     
-    private LoadDataStatement copy(final LoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
-        LoadDataStatement result = new LoadDataStatement(boundTableSegment);
+    private MySQLLoadDataStatement copy(final MySQLLoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
+        MySQLLoadDataStatement result = new MySQLLoadDataStatement(boundTableSegment);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

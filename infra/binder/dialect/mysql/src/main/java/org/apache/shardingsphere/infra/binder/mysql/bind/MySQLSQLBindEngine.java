@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.binder.mysql.bind;
 
 import org.apache.shardingsphere.infra.binder.engine.DialectSQLBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.mysql.bind.type.MySQLLoadDataStatementBinder;
+import org.apache.shardingsphere.infra.binder.mysql.bind.type.MySQLLoadXMLStatementBinder;
 import org.apache.shardingsphere.infra.binder.mysql.bind.type.MySQLOptimizeTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.mysql.bind.type.MySQLShowColumnsStatementBinder;
 import org.apache.shardingsphere.infra.binder.mysql.bind.type.MySQLShowCreateTableStatementBinder;
@@ -28,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTab
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
 
 import java.util.Optional;
 
@@ -38,6 +42,12 @@ public final class MySQLSQLBindEngine implements DialectSQLBindEngine {
     
     @Override
     public Optional<SQLStatement> bind(final SQLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        if (sqlStatement instanceof MySQLLoadDataStatement) {
+            return Optional.of(new MySQLLoadDataStatementBinder().bind((MySQLLoadDataStatement) sqlStatement, binderContext));
+        }
+        if (sqlStatement instanceof MySQLLoadXMLStatement) {
+            return Optional.of(new MySQLLoadXMLStatementBinder().bind((MySQLLoadXMLStatement) sqlStatement, binderContext));
+        }
         if (sqlStatement instanceof MySQLOptimizeTableStatement) {
             return Optional.of(new MySQLOptimizeTableStatementBinder().bind((MySQLOptimizeTableStatement) sqlStatement, binderContext));
         }
