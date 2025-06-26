@@ -28,6 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,12 +93,20 @@ public final class GeneratedKeyContextEngine {
     
     private GeneratedKeyContext findGeneratedKey(final Map<String, Integer> insertColumnNamesAndIndexes, final List<InsertValueContext> insertValueContexts,
                                                  final List<Object> params, final String generateKeyColumnName) {
-        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
+        int generateKeyIndex = findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName);
+        Collection<Comparable<?>> generatedValues = new LinkedList<>();
         for (InsertValueContext each : insertValueContexts) {
-            ExpressionSegment expression = each.getValueExpressions().get(findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName));
-            getGeneratedValue(params, expression).ifPresent(optional -> result.getGeneratedValues().add(optional));
+            ExpressionSegment expression = each.getValueExpressions().get(generateKeyIndex);
+            getGeneratedValue(params, expression).ifPresent(generatedValues::add);
         }
+        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
+        result.getGeneratedValues().addAll(generatedValues);
         return result;
+    }
+    
+    private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
+        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnAndIndexMap(tableName).get(generateKeyColumnName) : insertColumnNamesAndIndexes.get(generateKeyColumnName);
     }
     
     private Optional<Comparable<?>> getGeneratedValue(final List<Object> params, final ExpressionSegment expression) {
@@ -113,10 +123,5 @@ public final class GeneratedKeyContextEngine {
             }
         }
         return Optional.empty();
-    }
-    
-    private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
-        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-        return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnAndIndexMap(tableName).get(generateKeyColumnName) : insertColumnNamesAndIndexes.get(generateKeyColumnName);
     }
 }
