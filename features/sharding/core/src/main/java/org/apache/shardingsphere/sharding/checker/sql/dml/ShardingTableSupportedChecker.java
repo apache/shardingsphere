@@ -20,27 +20,33 @@ package org.apache.shardingsphere.sharding.checker.sql.dml;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 /**
- * Load xml supported checker for sharding.
+ * Table supported checker for sharding.
  */
 @HighFrequencyInvocation
-public final class ShardingLoadXmlSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
+public final class ShardingTableSupportedChecker implements SupportedSQLChecker<SQLStatementContext, ShardingRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getSqlStatement() instanceof LoadXMLStatement;
+        return DatabaseTypedSPILoader.findService(DialectUnsupportedShardingSQLStatementProvider.class, sqlStatementContext.getDatabaseType())
+                .map(optional -> optional.getUnsupportedSQLStatementTypes().contains(sqlStatementContext.getSqlStatement().getClass())).orElse(false);
     }
     
     @Override
     public void check(final ShardingRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
-        String tableName = ((LoadXMLStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
-        ShardingSpherePreconditions.checkState(!rule.isShardingTable(tableName), () -> new UnsupportedShardingOperationException("LOAD XML", tableName));
+        for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getAttributes().getAttribute(TableSQLStatementAttribute.class).getTables()) {
+            String tableName = each.getTableName().getIdentifier().getValue();
+            ShardingSpherePreconditions.checkState(
+                    !rule.isShardingTable(tableName), () -> new UnsupportedShardingOperationException(sqlStatementContext.getSqlStatement().getClass().getSimpleName(), tableName));
+        }
     }
 }

@@ -22,10 +22,11 @@ import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOp
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -37,27 +38,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ShardingLoadXmlSupportedCheckerTest {
+class ShardingTableSupportedCheckerTest {
+    
+    @Mock
+    private SQLStatement sqlStatement;
     
     @Mock
     private ShardingRule rule;
     
+    @BeforeEach
+    void setUp() {
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TableSQLStatementAttribute(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))));
+    }
+    
     @Test
-    void assertCheckWithSingleTable() {
-        LoadXMLStatement sqlStatement = mock(LoadXMLStatement.class);
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        when(sqlStatement.getTable()).thenReturn(table);
-        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TableSQLStatementAttribute(table)));
-        assertDoesNotThrow(() -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
+    void assertCheckWithoutShardingTable() {
+        assertDoesNotThrow(() -> new ShardingTableSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
     }
     
     @Test
     void assertCheckWithShardingTable() {
-        LoadXMLStatement sqlStatement = mock(LoadXMLStatement.class);
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        when(sqlStatement.getTable()).thenReturn(table);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
-        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TableSQLStatementAttribute(table)));
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadXmlSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingTableSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
     }
 }
