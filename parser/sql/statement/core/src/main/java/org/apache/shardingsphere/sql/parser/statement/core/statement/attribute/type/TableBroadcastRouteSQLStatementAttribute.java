@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 /**
- * Dialect sharding table broadcast route statement provider.
+ * Table broadcast route SQL statement attribute.
  */
-@SingletonSPI
-public interface DialectShardingTableBroadcastRouteStatementProvider extends DatabaseTypedSPI {
-    
-    /**
-     * Get broadcast route statement types.
-     *
-     * @return got statement types
-     */
-    Collection<Class<? extends SQLStatement>> getBroadcastRouteStatementTypes();
+public final class TableBroadcastRouteSQLStatementAttribute implements SQLStatementAttribute {
 }

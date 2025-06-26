@@ -22,14 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.type.broadcast.DialectShardingTableBroadcastRouteStatementProvider;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRouteEngine;
@@ -39,7 +37,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingSta
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterProcedureStatement;
@@ -49,7 +47,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Dr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Sharding routing engine factory.
@@ -107,13 +104,7 @@ public final class ShardingRouteEngineFactory {
     
     private static ShardingRouteEngine getDALRouteEngine(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                          final ConnectionContext connectionContext, final Collection<String> logicTableNames) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        Optional<DialectShardingTableBroadcastRouteStatementProvider> dialectBroadcastRouteStatementProvider = DatabaseTypedSPILoader.findService(
-                DialectShardingTableBroadcastRouteStatementProvider.class, sqlStatementContext.getDatabaseType());
-        if (dialectBroadcastRouteStatementProvider.map(optional -> optional.getBroadcastRouteStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
-            return new ShardingTableBroadcastRouteEngine(database, sqlStatementContext, logicTableNames);
-        }
-        if (sqlStatement instanceof AnalyzeTableStatement) {
+        if (sqlStatementContext.getSqlStatement().getAttributes().findAttribute(TableBroadcastRouteSQLStatementAttribute.class).isPresent()) {
             return new ShardingTableBroadcastRouteEngine(database, sqlStatementContext, logicTableNames);
         }
         return new ShardingUnicastRouteEngine(sqlStatementContext, logicTableNames, connectionContext);
