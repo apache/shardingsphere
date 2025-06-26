@@ -94,21 +94,25 @@ public final class GeneratedKeyContextEngine {
         GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
         for (InsertValueContext each : insertValueContexts) {
             ExpressionSegment expression = each.getValueExpressions().get(findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName));
-            if (expression instanceof ParameterMarkerExpressionSegment) {
-                if (params.isEmpty()) {
-                    continue;
-                }
-                if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
-                        && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
-                    result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
-                }
-            } else if (expression instanceof LiteralExpressionSegment) {
-                if (null != ((LiteralExpressionSegment) expression).getLiterals()) {
-                    result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
-                }
-            }
+            getGeneratedValue(params, expression).ifPresent(optional -> result.getGeneratedValues().add(optional));
         }
         return result;
+    }
+    
+    private static Optional<Comparable<?>> getGeneratedValue(final List<Object> params, final ExpressionSegment expression) {
+        if (expression instanceof ParameterMarkerExpressionSegment) {
+            if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
+                    && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
+                return Optional.of((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
+            }
+            return Optional.empty();
+        }
+        if (expression instanceof LiteralExpressionSegment) {
+            if (null != ((LiteralExpressionSegment) expression).getLiterals()) {
+                return Optional.of((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
+            }
+        }
+        return Optional.empty();
     }
     
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
