@@ -31,7 +31,7 @@ public interface DialectUnsupportedShardingSQLStatementProvider extends Database
     
     /**
      * Get unsupported SQL statement types.
-     * 
+     *
      * @return unsupported SQL statement types
      */
     Collection<Class<? extends SQLStatement>> getUnsupportedSQLStatementTypes();
