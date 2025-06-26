@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.Returning
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 
 import java.util.Collections;
 
@@ -50,7 +50,7 @@ public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
-        return new CopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
+        return new PostgreSQLCopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override
