@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -35,7 +35,7 @@ public final class LoadXMLStatementBinder implements SQLStatementBinder<LoadXMLS
     
     @Override
     public LoadXMLStatement bind(final LoadXMLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
     }
     
