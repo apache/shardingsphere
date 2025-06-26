@@ -51,9 +51,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Ca
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.HandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.ImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -94,12 +94,12 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new LoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
+        return new MySQLLoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        return new LoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
+        return new MySQLLoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

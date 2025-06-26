@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.engine.statement.dml;
+package org.apache.shardingsphere.infra.binder.mysql.bind.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
@@ -26,21 +26,21 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
 
 /**
- * Load data statement binder.
+ * Load XML statement binder for MySQL.
  */
-public final class LoadDataStatementBinder implements SQLStatementBinder<LoadDataStatement> {
+public final class MySQLLoadXMLStatementBinder implements SQLStatementBinder<MySQLLoadXMLStatement> {
     
     @Override
-    public LoadDataStatement bind(final LoadDataStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+    public MySQLLoadXMLStatement bind(final MySQLLoadXMLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts));
     }
     
-    private LoadDataStatement copy(final LoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
-        LoadDataStatement result = new LoadDataStatement(boundTableSegment);
+    private MySQLLoadXMLStatement copy(final MySQLLoadXMLStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
+        MySQLLoadXMLStatement result = new MySQLLoadXMLStatement(boundTableSegment);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

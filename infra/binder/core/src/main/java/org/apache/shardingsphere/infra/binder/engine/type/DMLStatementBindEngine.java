@@ -20,15 +20,11 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.InsertStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadDataStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.dml.LoadXMLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.UpdateStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.LoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
@@ -56,12 +52,6 @@ public final class DMLStatementBindEngine {
         }
         if (statement instanceof DeleteStatement) {
             return new DeleteStatementBinder().bind((DeleteStatement) statement, binderContext);
-        }
-        if (statement instanceof LoadDataStatement) {
-            return new LoadDataStatementBinder().bind((LoadDataStatement) statement, binderContext);
-        }
-        if (statement instanceof LoadXMLStatement) {
-            return new LoadXMLStatementBinder().bind((LoadXMLStatement) statement, binderContext);
         }
         return statement;
     }
