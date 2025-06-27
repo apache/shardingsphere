@@ -65,16 +65,19 @@ public final class EncryptBinaryCondition implements EncryptCondition {
         putPositionMap(0, expressionSegment);
     }
     
-    private void putPositionMap(final int index, final ExpressionSegment expressionSegment) {
+    private int putPositionMap(final int index, final ExpressionSegment expressionSegment) {
+        int parameterIndex = index;
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            positionIndexMap.put(index, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            positionIndexMap.put(parameterIndex, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            return parameterIndex + 1;
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
-            positionValueMap.put(index, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            positionValueMap.put(parameterIndex, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            return parameterIndex + 1;
         } else if (expressionSegment instanceof FunctionSegment && "CONCAT".equalsIgnoreCase(((FunctionSegment) expressionSegment).getFunctionName())) {
-            int parameterIndex = index;
             for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
-                putPositionMap(parameterIndex++, each);
+                parameterIndex = putPositionMap(parameterIndex, each);
             }
         }
+        return parameterIndex;
     }
 }
