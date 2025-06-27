@@ -78,7 +78,7 @@ public final class CommonTableExpressionSegmentBinder {
                     new SimpleTableSegmentBinderContext(segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList()), TableSourceType.TEMPORARY_TABLE));
         }
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getSubquery());
-        subqueryTableSegment.setAlias(segment.getAliasSegment());
+        segment.getAliasSegment().ifPresent(subqueryTableSegment::setAlias);
         SubqueryTableSegment boundSubquerySegment =
                 SubqueryTableSegmentBinder.bind(subqueryTableSegment, binderContext, LinkedHashMultimap.create(), binderContext.getExternalTableBinderContexts(), true);
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(
