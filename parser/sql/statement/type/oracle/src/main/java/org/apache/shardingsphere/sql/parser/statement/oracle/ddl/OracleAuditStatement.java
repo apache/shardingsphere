@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Audit statement.
+ * Audit statement for Oracle.
  */
-public final class AuditStatement extends DDLStatement {
+public final class OracleAuditStatement extends DDLStatement {
 }

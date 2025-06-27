@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AuditStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class AuditStatementAssert {
      * @param actual actual audit statement
      * @param expected expected audit statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AuditStatement actual, final AuditStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAuditStatement actual, final AuditStatementTestCase expected) {
     }
 }
