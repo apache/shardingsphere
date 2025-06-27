@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,16 +26,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Disassociate statistics statement.
+ * Disassociate statistics statement for Oracle.
  */
 @Getter
 @Setter
-public final class DisassociateStatisticsStatement extends DDLStatement {
+public final class OracleDisassociateStatisticsStatement extends DDLStatement {
     
     private List<IndexSegment> indexes = new LinkedList<>();
     
