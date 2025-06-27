@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
- * Declare statement.
+ * Declare statement for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DeclareStatement extends DDLStatement {
+public final class PostgreSQLDeclareStatement extends DDLStatement {
     
     private final CursorNameSegment cursorName;
     

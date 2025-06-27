@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.OpenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLOpenStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
@@ -38,11 +38,11 @@ public final class OpenStatementAssert {
      * @param actual actual declare statement
      * @param expected expected declare statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OpenStatement actual, final OpenStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLOpenStatement actual, final OpenStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
     }
     
-    private static void assertCursorName(final SQLCaseAssertContext assertContext, final OpenStatement actual, final OpenStatementTestCase expected) {
+    private static void assertCursorName(final SQLCaseAssertContext assertContext, final PostgreSQLOpenStatement actual, final OpenStatementTestCase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Cursor");
         SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
     }
