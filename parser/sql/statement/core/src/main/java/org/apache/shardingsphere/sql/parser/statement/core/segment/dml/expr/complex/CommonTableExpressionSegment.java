@@ -57,6 +57,11 @@ public final class CommonTableExpressionSegment implements TableSegment {
     }
     
     @Override
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(aliasSegment);
+    }
+    
+    @Override
     public void setAlias(final AliasSegment alias) {
         this.aliasSegment = alias;
     }

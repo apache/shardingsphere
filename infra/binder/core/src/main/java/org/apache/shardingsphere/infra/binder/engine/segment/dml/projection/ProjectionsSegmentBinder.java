@@ -107,7 +107,7 @@ public final class ProjectionsSegmentBinder {
                     ((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(
                     projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), ((ExpressionProjectionSegment) projectionSegment).getText(), boundExpressionSegment);
-            result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
+            ((ExpressionProjectionSegment) projectionSegment).getAliasSegment().ifPresent(result::setAlias);
             return result;
         }
         if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
