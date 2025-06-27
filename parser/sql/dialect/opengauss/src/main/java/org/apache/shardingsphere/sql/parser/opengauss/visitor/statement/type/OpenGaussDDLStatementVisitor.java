@@ -172,7 +172,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Cl
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
@@ -223,6 +222,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussAlterDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterDefaultPrivilegesStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropDomainStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.aggregate.PostgreSQLAlterAggregateStatement;
@@ -974,7 +974,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        return new DeclareStatement((CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
+        return new PostgreSQLDeclareStatement((CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
     }
     
     @Override

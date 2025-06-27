@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.An
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
@@ -68,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Sa
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -126,7 +126,7 @@ public enum PostgreSQLCommand {
     RELEASE(ReleaseSavepointStatement.class),
     SET(SetStatement.class, SetTransactionStatement.class),
     RESET(PostgreSQLResetParameterStatement.class),
-    DECLARE_CURSOR(CursorStatement.class, DeclareStatement.class),
+    DECLARE_CURSOR(CursorStatement.class, PostgreSQLDeclareStatement.class),
     MOVE(MoveStatement.class),
     CLOSE_CURSOR(CloseStatement.class),
     SUCCESS(DistSQLStatement.class);

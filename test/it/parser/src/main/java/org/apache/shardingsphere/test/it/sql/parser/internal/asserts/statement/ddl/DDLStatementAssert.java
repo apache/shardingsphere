@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Cl
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
@@ -55,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.Oracl
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -182,8 +182,8 @@ public final class DDLStatementAssert {
             NoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (NoAuditStatementTestCase) expected);
         } else if (actual instanceof CursorStatement) {
             CursorStatementAssert.assertIs(assertContext, (CursorStatement) actual, (CursorStatementTestCase) expected);
-        } else if (actual instanceof DeclareStatement) {
-            DeclareStatementAssert.assertIs(assertContext, (DeclareStatement) actual, (DeclareStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLDeclareStatement) {
+            DeclareStatementAssert.assertIs(assertContext, (PostgreSQLDeclareStatement) actual, (DeclareStatementTestCase) expected);
         } else if (actual instanceof CloseStatement) {
             CloseStatementAssert.assertIs(assertContext, (CloseStatement) actual, (CloseStatementTestCase) expected);
         } else if (actual instanceof MoveStatement) {
