@@ -30,8 +30,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function.OracleCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.procedure.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.parameter.ParameterMarkerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.comment.CommentAssert;
