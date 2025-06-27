@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ListenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLListenStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ListenStatementTestCase;
 
@@ -36,7 +36,7 @@ public final class ListenStatementAssert {
      * @param actual actual listen statement
      * @param expected expected listen statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ListenStatement actual, final ListenStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLListenStatement actual, final ListenStatementTestCase expected) {
         assertThat(assertContext.getText("Listen name assertion error."), actual.getChannelName(), is(expected.getChannelName()));
     }
 }

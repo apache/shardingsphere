@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.An
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
@@ -64,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -322,7 +322,7 @@ class PostgreSQLCommandTest {
     @Test
     void assertValueOfCursorStatement() {
         assertThat(PostgreSQLCommand.valueOf(CursorStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
-        assertThat(PostgreSQLCommand.valueOf(DeclareStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
+        assertThat(PostgreSQLCommand.valueOf(PostgreSQLDeclareStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
         assertThat(PostgreSQLCommand.DECLARE_CURSOR.getTag(), is("DECLARE CURSOR"));
     }
     

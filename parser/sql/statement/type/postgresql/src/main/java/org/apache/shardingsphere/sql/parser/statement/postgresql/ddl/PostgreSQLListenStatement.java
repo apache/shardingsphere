@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Listen statement.
+ * Listen statement for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ListenStatement extends DDLStatement {
+public final class PostgreSQLListenStatement extends DDLStatement {
     
     private final String channelName;
 }
