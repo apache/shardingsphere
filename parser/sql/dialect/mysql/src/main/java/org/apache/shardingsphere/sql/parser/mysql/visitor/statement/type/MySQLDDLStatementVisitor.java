@@ -184,14 +184,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterInstanceStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterLogfileGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateLogfileGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLCreateServerStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropEventStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLDropLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLAlterLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLCreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLDropLogfileGroupStatement;
 
 import java.util.Collection;
 import java.util.Collections;
