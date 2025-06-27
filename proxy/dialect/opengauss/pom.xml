@@ -63,11 +63,5 @@
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>org.opengauss</groupId>
-            <artifactId>opengauss-jdbc</artifactId>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 </project>
