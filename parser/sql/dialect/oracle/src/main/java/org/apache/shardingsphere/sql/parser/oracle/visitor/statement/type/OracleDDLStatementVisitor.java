@@ -232,7 +232,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AnalyzeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
@@ -287,6 +286,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateVar
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropPackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePLSQLBlockStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleRenameStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSystemActionStatement;
@@ -1016,7 +1016,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitPurge(final PurgeContext ctx) {
-        return new PurgeStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
+        return new OraclePurgeStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override
