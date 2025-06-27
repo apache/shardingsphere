@@ -218,7 +218,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -235,6 +234,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1690,7 +1690,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 indexSegments.add((IndexSegment) visit(indexNameContext));
             }
         }
-        return new UpdateStatisticsStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+        return new SQLServerUpdateStatisticsStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
                 indexSegments, null == ctx.statisticsWithClause() ? null : (StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
     }
     

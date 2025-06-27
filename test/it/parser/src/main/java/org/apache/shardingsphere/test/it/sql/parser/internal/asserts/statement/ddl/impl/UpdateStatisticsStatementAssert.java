@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.statistics.StatisticsStrategyAssert;
@@ -43,13 +43,13 @@ public final class UpdateStatisticsStatementAssert {
      * @param actual actual update statistics statement
      * @param expected expected update statistics statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerUpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
         assertStrategy(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerUpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
         if (null == expected.getTable()) {
             assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
@@ -58,7 +58,7 @@ public final class UpdateStatisticsStatementAssert {
         }
     }
     
-    private static void assertIndex(final SQLCaseAssertContext assertContext, final UpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
+    private static void assertIndex(final SQLCaseAssertContext assertContext, final SQLServerUpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
         if (null == expected.getIndexes()) {
             assertNull(actual.getIndexes(), assertContext.getText("Actual index segment should not exist."));
         } else {
@@ -71,7 +71,7 @@ public final class UpdateStatisticsStatementAssert {
         }
     }
     
-    private static void assertStrategy(final SQLCaseAssertContext assertContext, final UpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
+    private static void assertStrategy(final SQLCaseAssertContext assertContext, final SQLServerUpdateStatisticsStatement actual, final UpdateStatisticsStatementTestCase expected) {
         if (null == expected.getStrategy()) {
             assertNull(actual.getStrategy(), assertContext.getText("Actual strategy segment should not exist."));
         } else {

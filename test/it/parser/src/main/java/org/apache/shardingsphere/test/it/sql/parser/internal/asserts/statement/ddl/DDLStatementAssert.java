@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Re
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.SecurityLabelStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UnlistenStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
@@ -57,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.Oracl
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterIndexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterSessionStatementAssert;
@@ -216,8 +216,8 @@ public final class DDLStatementAssert {
             AlterTablespaceStatementAssert.assertIs(assertContext, (AlterTablespaceStatement) actual, (AlterTablespaceStatementTestCase) expected);
         } else if (actual instanceof CreateSequenceStatement) {
             CreateSequenceStatementAssert.assertIs(assertContext, (CreateSequenceStatement) actual, (CreateSequenceStatementTestCase) expected);
-        } else if (actual instanceof UpdateStatisticsStatement) {
-            UpdateStatisticsStatementAssert.assertIs(assertContext, (UpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
+        } else if (actual instanceof SQLServerUpdateStatisticsStatement) {
+            UpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
         } else if (actual instanceof OpenStatement) {
             OpenStatementAssert.assertIs(assertContext, (OpenStatement) actual, (OpenStatementTestCase) expected);
         } else if (actual instanceof OracleFlashbackTableStatement) {
