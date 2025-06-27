@@ -212,10 +212,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ReindexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.SecurityLabelStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UnlistenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.AlterDomainStatement;
@@ -276,6 +273,9 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLD
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLOpenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLReindexStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.accessmethod.PostgreSQLCreateAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.accessmethod.PostgreSQLDropAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.aggregate.PostgreSQLAlterAggregateStatement;
@@ -1321,7 +1321,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitUnlisten(final UnlistenContext ctx) {
-        return new UnlistenStatement();
+        return new PostgreSQLUnlistenStatement();
     }
     
     @Override
@@ -1341,12 +1341,12 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitReindex(final ReindexContext ctx) {
-        return new ReindexStatement();
+        return new PostgreSQLReindexStatement();
     }
     
     @Override
     public ASTNode visitSecurityLabelStmt(final SecurityLabelStmtContext ctx) {
-        return new SecurityLabelStmtStatement();
+        return new PostgreSQLSecurityLabelStmtStatement();
     }
     
     @Override

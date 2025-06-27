@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.SecurityLabelStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.SecurityLabelStmtStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class SecurityLabelStmtStatementAssert {
      * @param actual actual security label statement
      * @param expected expected security label statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SecurityLabelStmtStatement actual, final SecurityLabelStmtStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLSecurityLabelStmtStatement actual, final SecurityLabelStmtStatementTestCase expected) {
     }
 }

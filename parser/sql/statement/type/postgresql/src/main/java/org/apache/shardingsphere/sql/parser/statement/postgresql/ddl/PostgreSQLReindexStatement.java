@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Security label statement.
+ * Reindex statement for PostgreSQL.
  */
-public final class SecurityLabelStmtStatement extends DDLStatement {
+public final class PostgreSQLReindexStatement extends DDLStatement {
 }

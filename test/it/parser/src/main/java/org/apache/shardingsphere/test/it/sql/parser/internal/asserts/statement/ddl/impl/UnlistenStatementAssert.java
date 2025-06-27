@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UnlistenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UnlistenStatementTestCase;
 
@@ -33,6 +33,6 @@ public final class UnlistenStatementAssert {
      * @param actual actual unlisten statement
      * @param expected expected unlisten statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UnlistenStatement actual, final UnlistenStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLUnlistenStatement actual, final UnlistenStatementTestCase expected) {
     }
 }
