@@ -33,12 +33,5 @@
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>com.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <classifier>http</classifier>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 </project>

@@ -33,11 +33,5 @@
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-jdbc</artifactId>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 </project>
