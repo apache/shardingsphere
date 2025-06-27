@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Create service statement for SQLServer.
+ * Alter service statement for SQLServer.
  */
-public final class SQLServerCreateServiceStatement extends DDLStatement {
+public final class SQLServerAlterServiceStatement extends DDLStatement {
 }

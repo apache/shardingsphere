@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 

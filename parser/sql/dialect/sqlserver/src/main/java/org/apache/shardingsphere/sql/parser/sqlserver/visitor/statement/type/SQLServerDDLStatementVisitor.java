@@ -116,9 +116,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerAlterServiceStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateServiceStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropServiceStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLServerAlterServiceStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLServerCreateServiceStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLServerDropServiceStatement;
 
 import java.util.Collection;
 import java.util.Collections;

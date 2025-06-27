@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.statistics.StatisticsStrategySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Update statistics statement.
+ * Create service statement for SQLServer.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UpdateStatisticsStatement extends DDLStatement {
-    
-    private final SimpleTableSegment table;
-    
-    private final List<IndexSegment> indexes;
-    
-    private final StatisticsStrategySegment strategy;
+public final class SQLServerCreateServiceStatement extends DDLStatement {
 }
