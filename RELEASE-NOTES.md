@@ -68,6 +68,7 @@
 1. Parser: Refactor pivot and unpivot clause handling to support multiple column names - [35586](https://github.com/apache/shardingsphere/pull/35586)
 1. JDBC: Resolve statement manager leaks when creating multiple statements - [#35665](https://github.com/apache/shardingsphere/pull/35665)
 1. Kernel: Fix not return generate key when id set null - [35783](https://github.com/apache/shardingsphere/pull/35783)
+1. Encrypt: Resolve rewrite issue in nested concat function - [35815](https://github.com/apache/shardingsphere/pull/35815)
 
 ### Change Logs
 
