@@ -19,8 +19,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AnalyzeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AuditStatement;
@@ -54,6 +52,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.RefreshMatViewStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSessionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
@@ -166,10 +166,10 @@ public final class DDLStatementAssert {
             DropIndexStatementAssert.assertIs(assertContext, (DropIndexStatement) actual, (DropIndexStatementTestCase) expected);
         } else if (actual instanceof AlterSynonymStatement) {
             AlterSynonymStatementAssert.assertIs(assertContext, (AlterSynonymStatement) actual, (AlterSynonymStatementTestCase) expected);
-        } else if (actual instanceof AlterSessionStatement) {
-            AlterSessionStatementAssert.assertIs(assertContext, (AlterSessionStatement) actual, (AlterSessionStatementTestCase) expected);
-        } else if (actual instanceof AlterSystemStatement) {
-            AlterSystemStatementAssert.assertIs(assertContext, (AlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
+        } else if (actual instanceof OracleAlterSessionStatement) {
+            AlterSessionStatementAssert.assertIs(assertContext, (OracleAlterSessionStatement) actual, (AlterSessionStatementTestCase) expected);
+        } else if (actual instanceof OracleAlterSystemStatement) {
+            AlterSystemStatementAssert.assertIs(assertContext, (OracleAlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
         } else if (actual instanceof AnalyzeStatement) {
             AnalyzeStatementAssert.assertIs(assertContext, (AnalyzeStatement) actual, (AnalyzeStatementTestCase) expected);
         } else if (actual instanceof AssociateStatisticsStatement) {

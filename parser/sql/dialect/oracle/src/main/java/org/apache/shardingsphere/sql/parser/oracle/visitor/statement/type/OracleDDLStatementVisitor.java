@@ -230,8 +230,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.Pro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterPackageStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AnalyzeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AuditStatement;
@@ -301,6 +299,8 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterOutl
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterPluggableDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSessionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateClusterStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateContextStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateControlFileStatement;
@@ -880,7 +880,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterSession(final AlterSessionContext ctx) {
-        return new AlterSessionStatement();
+        return new OracleAlterSessionStatement();
     }
     
     @Override
@@ -890,7 +890,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterSystem(final AlterSystemContext ctx) {
-        return new AlterSystemStatement();
+        return new OracleAlterSystemStatement();
     }
     
     @Override

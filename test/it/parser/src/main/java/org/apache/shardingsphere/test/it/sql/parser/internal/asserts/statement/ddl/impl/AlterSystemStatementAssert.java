@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSystemStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class AlterSystemStatementAssert {
      * @param actual actual alter system statement
      * @param expected expected alter system statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterSystemStatement actual, final AlterSystemStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAlterSystemStatement actual, final AlterSystemStatementTestCase expected) {
     }
 }

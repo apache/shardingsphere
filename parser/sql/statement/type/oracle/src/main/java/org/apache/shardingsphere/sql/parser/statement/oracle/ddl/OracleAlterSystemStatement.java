@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Alter session statement.
+ * Alter system statement for Oracle.
  */
-public final class AlterSessionStatement extends DDLStatement {
+public final class OracleAlterSystemStatement extends DDLStatement {
 }
