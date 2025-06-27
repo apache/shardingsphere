@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.util.Optional;
 
 /**
- * Cluster statement.
+ * Cluster statement for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class ClusterStatement extends DDLStatement {
+public final class PostgreSQLClusterStatement extends DDLStatement {
     
     private final SimpleTableSegment simpleTable;
     
