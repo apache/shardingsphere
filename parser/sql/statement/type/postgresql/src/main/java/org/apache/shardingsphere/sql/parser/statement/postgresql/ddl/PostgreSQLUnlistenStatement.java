@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
+
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Reindex statement.
+ * Unlisten statement for PostgreSQL.
  */
-public final class ReindexStatement extends DDLStatement {
+public final class PostgreSQLUnlistenStatement extends DDLStatement {
 }

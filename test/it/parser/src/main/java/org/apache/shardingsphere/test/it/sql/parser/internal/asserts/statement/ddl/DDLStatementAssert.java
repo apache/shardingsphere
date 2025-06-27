@@ -26,11 +26,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ReindexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.RenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.SecurityLabelStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.UnlistenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
@@ -57,6 +54,9 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLD
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLOpenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLReindexStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterIndexStatementAssert;
@@ -199,16 +199,16 @@ public final class DDLStatementAssert {
             CommentStatementAssert.assertIs(assertContext, (CommentStatement) actual, (CommentStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLListenStatement) {
             ListenStatementAssert.assertIs(assertContext, (PostgreSQLListenStatement) actual, (ListenStatementTestCase) expected);
-        } else if (actual instanceof UnlistenStatement) {
-            UnlistenStatementAssert.assertIs(assertContext, (UnlistenStatement) actual, (UnlistenStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLUnlistenStatement) {
+            UnlistenStatementAssert.assertIs(assertContext, (PostgreSQLUnlistenStatement) actual, (UnlistenStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLNotifyStmtStatement) {
             NotifyStmtStatementAssert.assertIs(assertContext, (PostgreSQLNotifyStmtStatement) actual, (NotifyStmtStatementTestCase) expected);
         } else if (actual instanceof RefreshMatViewStmtStatement) {
             RefreshMatViewStmtStatementAssert.assertIs(assertContext, (RefreshMatViewStmtStatement) actual, (RefreshMatViewStmtStatementTestCase) expected);
-        } else if (actual instanceof ReindexStatement) {
-            ReindexStatementAssert.assertIs(assertContext, (ReindexStatement) actual, (ReindexStatementTestCase) expected);
-        } else if (actual instanceof SecurityLabelStmtStatement) {
-            SecurityLabelStmtStatementAssert.assertIs(assertContext, (SecurityLabelStmtStatement) actual, (SecurityLabelStmtStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLReindexStatement) {
+            ReindexStatementAssert.assertIs(assertContext, (PostgreSQLReindexStatement) actual, (ReindexStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLSecurityLabelStmtStatement) {
+            SecurityLabelStmtStatementAssert.assertIs(assertContext, (PostgreSQLSecurityLabelStmtStatement) actual, (SecurityLabelStmtStatementTestCase) expected);
         } else if (actual instanceof CreateViewStatement) {
             CreateViewStatementAssert.assertIs(assertContext, (CreateViewStatement) actual, (CreateViewStatementTestCase) expected);
         } else if (actual instanceof AlterViewStatement) {
