@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Alter logfile group statement for MySQL.
+ * Alter event statement for MySQL.
  */
-public final class MySQLAlterLogfileGroupStatement extends DDLStatement {
+public final class MySQLAlterEventStatement extends DDLStatement {
 }

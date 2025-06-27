@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event;
 
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
