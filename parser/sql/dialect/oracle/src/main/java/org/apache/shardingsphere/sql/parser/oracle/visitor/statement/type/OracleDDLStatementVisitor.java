@@ -231,10 +231,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQL
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AnalyzeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
@@ -347,6 +345,8 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.restore.OracleD
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.rollback.OracleAlterRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.rollback.OracleCreateRollbackSegmentStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.rollback.OracleDropRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleAlterAnalyticViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleAlterMaterializedViewLogStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleCreateMaterializedViewLogStatement;
@@ -900,7 +900,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAssociateStatistics(final AssociateStatisticsContext ctx) {
-        AssociateStatisticsStatement result = new AssociateStatisticsStatement();
+        OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement();
         if (null != ctx.columnAssociation()) {
             for (TableNameContext each : ctx.columnAssociation().tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
@@ -931,7 +931,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDisassociateStatistics(final DisassociateStatisticsContext ctx) {
-        DisassociateStatisticsStatement result = new DisassociateStatisticsStatement();
+        OracleDisassociateStatisticsStatement result = new OracleDisassociateStatisticsStatement();
         if (null != ctx.tableName()) {
             for (TableNameContext each : ctx.tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));

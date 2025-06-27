@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AnalyzeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.AuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ClusterStatement;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
@@ -56,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSess
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterIndexStatementAssert;
@@ -172,10 +172,10 @@ public final class DDLStatementAssert {
             AlterSystemStatementAssert.assertIs(assertContext, (OracleAlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
         } else if (actual instanceof AnalyzeStatement) {
             AnalyzeStatementAssert.assertIs(assertContext, (AnalyzeStatement) actual, (AnalyzeStatementTestCase) expected);
-        } else if (actual instanceof AssociateStatisticsStatement) {
-            AssociateStatisticsStatementAssert.assertIs(assertContext, (AssociateStatisticsStatement) actual, (AssociateStatisticsStatementTestCase) expected);
-        } else if (actual instanceof DisassociateStatisticsStatement) {
-            DisassociateStatisticsStatementAssert.assertIs(assertContext, (DisassociateStatisticsStatement) actual, (DisassociateStatisticsStatementTestCase) expected);
+        } else if (actual instanceof OracleAssociateStatisticsStatement) {
+            AssociateStatisticsStatementAssert.assertIs(assertContext, (OracleAssociateStatisticsStatement) actual, (AssociateStatisticsStatementTestCase) expected);
+        } else if (actual instanceof OracleDisassociateStatisticsStatement) {
+            DisassociateStatisticsStatementAssert.assertIs(assertContext, (OracleDisassociateStatisticsStatement) actual, (DisassociateStatisticsStatementTestCase) expected);
         } else if (actual instanceof AuditStatement) {
             AuditStatementAssert.assertIs(assertContext, (AuditStatement) actual, (AuditStatementTestCase) expected);
         } else if (actual instanceof OracleNoAuditStatement) {
