@@ -522,9 +522,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        TruncateStatement result = new TruncateStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
-        return result;
+        return new TruncateStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
     }
     
     @SuppressWarnings("unchecked")
