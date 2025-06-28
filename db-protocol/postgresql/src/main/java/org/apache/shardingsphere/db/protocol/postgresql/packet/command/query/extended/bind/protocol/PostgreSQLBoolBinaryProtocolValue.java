@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
 /**
  * Binary protocol value for bool for PostgreSQL.
@@ -39,6 +38,6 @@ public final class PostgreSQLBoolBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedSQLOperationException("PostgreSQLBoolBinaryProtocolValue.write()");
+        payload.getByteBuf().writeBoolean("t".equals(value.toString()));
     }
 }
