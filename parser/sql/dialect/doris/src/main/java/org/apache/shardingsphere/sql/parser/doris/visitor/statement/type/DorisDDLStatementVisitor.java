@@ -669,9 +669,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        TruncateStatement result = new TruncateStatement();
-        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new TruncateStatement(Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

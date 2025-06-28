@@ -134,6 +134,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
         return null == ctx.createTableClause() ? visit(ctx.createTableAsSelectClause()) : visit(ctx.createTableClause());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
         CreateTableStatement result = new CreateTableStatement();
@@ -317,11 +318,10 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        TruncateStatement result = new TruncateStatement();
-        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new TruncateStatement(Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         CreateIndexStatement result = new CreateIndexStatement();
