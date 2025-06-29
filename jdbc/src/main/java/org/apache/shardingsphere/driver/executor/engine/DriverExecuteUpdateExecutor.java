@@ -44,8 +44,6 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class DriverExecuteUpdateExecutor {
     
-    private final ShardingSphereConnection connection;
-    
     private final ShardingSphereMetaData metaData;
     
     private final DriverJDBCPushDownExecuteUpdateExecutor jdbcPushDownExecutor;
@@ -53,7 +51,6 @@ public final class DriverExecuteUpdateExecutor {
     private final DriverRawPushDownExecuteUpdateExecutor rawPushDownExecutor;
     
     public DriverExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor) {
-        this.connection = connection;
         this.metaData = metaData;
         jdbcPushDownExecutor = new DriverJDBCPushDownExecuteUpdateExecutor(connection, metaData, jdbcExecutor);
         rawPushDownExecutor = new DriverRawPushDownExecuteUpdateExecutor(connection, metaData, rawExecutor);
