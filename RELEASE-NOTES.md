@@ -18,6 +18,7 @@
 ### New Features
 
 1. Decouple database types as pluggable [#35346](https://github.com/apache/shardingsphere/pull/35346)
+1. Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec [#35810](https://github.com/apache/shardingsphere/pull/35810)
 
 ### Enhancements
 

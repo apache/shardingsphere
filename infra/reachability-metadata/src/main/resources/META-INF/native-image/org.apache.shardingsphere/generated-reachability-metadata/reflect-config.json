@@ -132,19 +132,15 @@
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService"},
-  "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"},
   "name":"[Lcom.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry;"
 },
 {
@@ -637,6 +633,11 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
   "name":"java.net.ServerSocket"
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"},
+  "name":"java.net.Socket",
+  "methods":[{"name":"setOption","parameterTypes":["java.net.SocketOption","java.lang.Object"] }]
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"},
@@ -1637,7 +1638,7 @@
   "name":"org.apache.shardingsphere.infra.database.firebird.type.FirebirdDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.h2.checker.H2DatabasePrivilegeChecker"
 },
 {
@@ -1669,7 +1670,7 @@
   "name":"org.apache.shardingsphere.infra.database.hive.type.HiveDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"
 },
 {
@@ -1693,7 +1694,7 @@
   "name":"org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.opengauss.checker.OpenGaussDatabasePrivilegeChecker"
 },
 {
@@ -1713,7 +1714,7 @@
   "name":"org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
   "name":"org.apache.shardingsphere.infra.database.postgresql.checker.PostgreSQLDatabasePrivilegeChecker"
 },
 {
@@ -4010,77 +4011,77 @@
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine"},
-  "name":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager",
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
-  "name":"org.apache.shardingsphere.transaction.xa.atomikos.manager.AtomikosTransactionManagerProvider",
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.atomikos.manager.AtomikosTransactionManagerProvider",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.FirebirdXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.FirebirdXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.H2XAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.H2XAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MariaDBXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.MariaDBXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.MySQLXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OpenGaussXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.OpenGaussXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.OracleXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.OracleXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.connection.dialect.PostgreSQLXAConnectionWrapper"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.connection.dialect.PostgreSQLXAConnectionWrapper"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.FirebirdXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.FirebirdXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.H2XADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.H2XADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.MariaDBXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.MySQLXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.MySQLXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OpenGaussXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.OpenGaussXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.OracleXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.OracleXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.PostgreSQLXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource"},
-  "name":"org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition"
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.XATransactionDataSource"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.jta.datasource.properties.dialect.SQLServerXADataSourceDefinition"
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"},
-  "name":"org.apache.shardingsphere.transaction.xa.narayana.manager.NarayanaXATransactionManagerProvider",
+  "condition":{"typeReachable":"org.apache.shardingsphere.transaction.xa.jakarta.XAShardingSphereTransactionManager"},
+  "name":"org.apache.shardingsphere.transaction.xa.jakarta.narayana.manager.NarayanaXATransactionManagerProvider",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
