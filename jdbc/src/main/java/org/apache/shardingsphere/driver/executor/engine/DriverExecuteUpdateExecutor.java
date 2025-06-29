@@ -72,6 +72,13 @@ public final class DriverExecuteUpdateExecutor {
     public int executeUpdate(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                              final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
+        return executeUpdatePushDown(database, prepareEngine, updateCallback, addCallback, replayCallback, executionContext);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private int executeUpdatePushDown(final ShardingSphereDatabase database, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                      final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback,
+                                      final ExecutionContext executionContext) throws SQLException {
         return database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()
                 ? jdbcPushDownExecutor.executeUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback)
                 : rawPushDownExecutor.executeUpdate(database, executionContext);
