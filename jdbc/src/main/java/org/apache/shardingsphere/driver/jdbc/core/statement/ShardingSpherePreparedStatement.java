@@ -51,7 +51,6 @@ import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageConnectorRe
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
@@ -168,7 +167,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+            handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
             currentResultSet =
                     driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, columnLabelAndIndexMap, (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
@@ -184,12 +183,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         } finally {
             executeBatchExecutor.clear();
             clearParameters();
-        }
-    }
-    
-    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connection.beginTransactionIfNeededWhenAutoCommitFalse();
         }
     }
     
@@ -211,7 +204,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+            handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             int result = driverExecutorFacade.executeUpdate(usedDatabase, metaData, queryContext,
                     (sql, statement) -> ((PreparedStatement) statement).executeUpdate(), (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
@@ -235,7 +228,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             QueryContext queryContext = createQueryContext();
-            handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+            handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
             boolean result = driverExecutorFacade.execute(usedDatabase, metaData, queryContext, (sql, statement) -> ((PreparedStatement) statement).execute(),
                     (StatementAddCallback<PreparedStatement>) this::addStatements, this::replay);
             findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
