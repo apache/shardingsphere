@@ -48,7 +48,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -263,18 +262,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
-        handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+        handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
         sqlStatementContext = queryContext.getSqlStatementContext();
         ShardingSpherePreconditions.checkNotNull(sqlStatementContext, () -> new IllegalStateException("Statement context can not be null"));
         usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         clearStatements();
-    }
-    
-    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connection.beginTransactionIfNeededWhenAutoCommitFalse();
-        }
     }
     
     private void clearStatements() throws SQLException {

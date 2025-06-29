@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,6 +55,18 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private boolean closeOnCompletion;
     
     private boolean closed;
+    
+    protected final void handleAutoCommitBeforeExecution(final SQLStatement sqlStatement, final ShardingSphereConnection connection) throws SQLException {
+        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
+            connection.beginTransactionIfNeededWhenAutoCommitFalse();
+        }
+    }
+    
+    protected final void handleAutoCommitAfterExecution(final ShardingSphereConnection connection) throws SQLException {
+        if (connection.getAutoCommit()) {
+            connection.getDatabaseConnectionManager().clearCachedConnections();
+        }
+    }
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
         if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
@@ -222,7 +236,9 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
                 getStatementManager().close();
                 Connection connection = getConnection();
                 if (connection instanceof ShardingSphereConnection) {
-                    ((ShardingSphereConnection) connection).getStatementManagers().remove(getStatementManager());
+                    ShardingSphereConnection logicalConnection = (ShardingSphereConnection) connection;
+                    logicalConnection.getStatementManagers().remove(getStatementManager());
+                    handleAutoCommitAfterExecution(logicalConnection);
                 }
             }
         } finally {
