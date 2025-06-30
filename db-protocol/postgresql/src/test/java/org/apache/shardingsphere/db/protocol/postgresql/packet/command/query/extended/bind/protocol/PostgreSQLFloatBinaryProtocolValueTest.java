@@ -39,7 +39,7 @@ class PostgreSQLFloatBinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThat(new PostgreSQLFloatBinaryProtocolValue().getColumnLength(""), is(4));
+        assertThat(new PostgreSQLFloatBinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), ""), is(4));
     }
     
     @Test

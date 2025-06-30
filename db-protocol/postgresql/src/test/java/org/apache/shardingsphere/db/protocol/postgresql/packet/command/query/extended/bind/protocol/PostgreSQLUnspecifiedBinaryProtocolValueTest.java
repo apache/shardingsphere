@@ -36,7 +36,7 @@ class PostgreSQLUnspecifiedBinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLUnspecifiedBinaryProtocolValue().getColumnLength("val"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLUnspecifiedBinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
     }
     
     @Test

@@ -28,7 +28,7 @@ public final class PostgreSQLBoolArrayBinaryProtocolValue implements PostgreSQLB
     private static final PostgreSQLArrayParameterDecoder ARRAY_PARAMETER_DECODER = new PostgreSQLArrayParameterDecoder();
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         throw new UnsupportedSQLOperationException("PostgreSQLBoolArrayBinaryProtocolValue.getColumnLength()");
     }
     

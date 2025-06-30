@@ -30,7 +30,7 @@ import java.sql.Date;
 public final class PostgreSQLDateBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         return 4;
     }
     

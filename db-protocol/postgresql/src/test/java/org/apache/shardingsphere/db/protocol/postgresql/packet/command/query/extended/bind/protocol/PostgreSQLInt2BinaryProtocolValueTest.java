@@ -30,7 +30,7 @@ class PostgreSQLInt2BinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThat(new PostgreSQLInt2BinaryProtocolValue().getColumnLength(null), is(2));
+        assertThat(new PostgreSQLInt2BinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), null), is(2));
     }
     
     @Test
