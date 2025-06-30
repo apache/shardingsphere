@@ -49,9 +49,9 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     private final List<Object> parameterValues = new ArrayList<>();
     private final List<FirebirdBinaryColumnType> returnColumns = new ArrayList<>();
     private int outputMessageNumber;
-    private int statementTimeout;
-    private int cursorFlags;
-    private int maxBlobSize;
+    private long statementTimeout;
+    private long cursorFlags;
+    private long maxBlobSize;
     private final FirebirdPacketPayload payload;
     
     public FirebirdExecuteStatementPacket(FirebirdPacketPayload payload, FirebirdProtocolVersion protocolVersion) {
@@ -87,15 +87,15 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             outputMessageNumber = payload.readInt4();
         }
         
-        if (protocolVersion.getCode() > FirebirdProtocolVersion.PROTOCOL_VERSION16.getCode()) {
+        if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION16.getCode()) {
             statementTimeout = payload.readInt4Unsigned();
         }
         
-        if (protocolVersion.getCode() > FirebirdProtocolVersion.PROTOCOL_VERSION18.getCode()) {
+        if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION18.getCode()) {
             cursorFlags = payload.readInt4Unsigned();
         }
         
-        if (protocolVersion.getCode() > FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
+        if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }
         

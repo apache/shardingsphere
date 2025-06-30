@@ -114,8 +114,8 @@ public final class FirebirdPacketPayload implements PacketPayload {
      *
      * @return 4 byte fixed length integer
      */
-    public int readInt4Unsigned() {
-        return byteBuf.readUnsignedByte();
+    public long readInt4Unsigned() {
+        return byteBuf.readUnsignedInt();
     }
     
     /**
