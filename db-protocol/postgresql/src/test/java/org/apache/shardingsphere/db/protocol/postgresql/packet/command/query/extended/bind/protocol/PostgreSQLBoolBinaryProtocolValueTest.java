@@ -42,7 +42,7 @@ class PostgreSQLBoolBinaryProtocolValueTest {
     @Test
     void assertNewInstance() {
         PostgreSQLBoolBinaryProtocolValue actual = new PostgreSQLBoolBinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), is(1));
+        assertThat(actual.getColumnLength(payload, null), is(1));
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readBoolean()).thenReturn(true);
         assertTrue((boolean) actual.read(payload, 1));

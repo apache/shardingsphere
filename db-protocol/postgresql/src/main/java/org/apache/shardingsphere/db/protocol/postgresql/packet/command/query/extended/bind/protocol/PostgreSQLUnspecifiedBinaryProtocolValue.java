@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         throw new UnsupportedSQLOperationException("getColumnLength");
     }
     

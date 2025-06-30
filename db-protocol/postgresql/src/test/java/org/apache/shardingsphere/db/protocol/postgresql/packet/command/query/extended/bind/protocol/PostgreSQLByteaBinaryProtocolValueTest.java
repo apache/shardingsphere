@@ -31,7 +31,7 @@ class PostgreSQLByteaBinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThat(new PostgreSQLByteaBinaryProtocolValue().getColumnLength(new byte[10]), is(10));
+        assertThat(new PostgreSQLByteaBinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), new byte[10]), is(10));
     }
     
     @Test

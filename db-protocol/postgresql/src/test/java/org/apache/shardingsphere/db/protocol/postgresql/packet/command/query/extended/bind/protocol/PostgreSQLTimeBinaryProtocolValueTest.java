@@ -40,7 +40,7 @@ class PostgreSQLTimeBinaryProtocolValueTest {
     @Test
     void assertNewInstance() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), is(8));
+        assertThat(actual.getColumnLength(payload, null), is(8));
         when(payload.readInt8()).thenReturn(1L);
         assertThat(actual.read(payload, 8), is(1L));
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

@@ -40,7 +40,7 @@ public final class PostgreSQLTextArrayBinaryProtocolValue implements PostgreSQLB
     private static final int ARRAY_HEADER_LENGTH = 20;
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         throw new UnsupportedSQLOperationException("PostgreSQLTextArrayBinaryProtocolValue.getColumnLength()");
     }
     
