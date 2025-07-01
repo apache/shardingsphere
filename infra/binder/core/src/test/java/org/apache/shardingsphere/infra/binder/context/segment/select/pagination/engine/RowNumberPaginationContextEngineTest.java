@@ -21,8 +21,10 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -32,7 +34,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -43,20 +49,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class RowNumberPaginationContextEngineTest {
     
     private static final String ROW_NUMBER_COLUMN_NAME = "rownum";
     
     private static final String ROW_NUMBER_COLUMN_ALIAS = "predicateRowNumberAlias";
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    private RowNumberPaginationContextEngine paginationContextEngine;
+    
+    @BeforeEach
+    void setUp() {
+        DatabaseType databaseType = mock(DatabaseType.class);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getPaginationOption()).thenReturn(new DialectPaginationOption(true, "ROWNUM"));
+        when(DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+        paginationContextEngine = new RowNumberPaginationContextEngine(databaseType);
+    }
     
     @Test
     void assertCreatePaginationContextWhenRowNumberAliasNotPresent() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        PaginationContext paginationContext =
-                new RowNumberPaginationContextEngine(databaseType).createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -65,8 +82,7 @@ class RowNumberPaginationContextEngineTest {
     void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesIsEmpty() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS, mock(DatabaseType.class));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
-        PaginationContext paginationContext =
-                new RowNumberPaginationContextEngine(databaseType).createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -99,7 +115,7 @@ class RowNumberPaginationContextEngineTest {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
         BinaryOperationExpression predicateSegment = new BinaryOperationExpression(0, 0, left, null, null, null);
         andPredicate.getPredicates().add(predicateSegment);
-        PaginationContext paginationContext = new RowNumberPaginationContextEngine(databaseType).createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -111,8 +127,7 @@ class RowNumberPaginationContextEngineTest {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 10, 0);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, ">", null);
-        PaginationContext paginationContext = new RowNumberPaginationContextEngine(databaseType)
-                .createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.singletonList(1));
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.singletonList(1));
         Optional<PaginationValueSegment> offSetSegmentPaginationValue = paginationContext.getOffsetSegment();
         assertTrue(offSetSegmentPaginationValue.isPresent());
         assertThat(offSetSegmentPaginationValue.get(), instanceOf(ParameterMarkerRowNumberValueSegment.class));
@@ -125,8 +140,7 @@ class RowNumberPaginationContextEngineTest {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, 100);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
-        PaginationContext paginationContext = new RowNumberPaginationContextEngine(databaseType)
-                .createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         Optional<PaginationValueSegment> paginationValueSegment = paginationContext.getRowCountSegment();
         assertTrue(paginationValueSegment.isPresent());
@@ -142,8 +156,7 @@ class RowNumberPaginationContextEngineTest {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, 100);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
-        PaginationContext rowNumberPaginationContextEngine = new RowNumberPaginationContextEngine(databaseType)
-                .createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
+        PaginationContext rowNumberPaginationContextEngine = paginationContextEngine.createPaginationContext(Collections.singletonList(expression), projectionsContext, Collections.emptyList());
         Optional<PaginationValueSegment> paginationValueSegment = rowNumberPaginationContextEngine.getOffsetSegment();
         assertTrue(paginationValueSegment.isPresent());
         PaginationValueSegment actualPaginationValueSegment = paginationValueSegment.get();

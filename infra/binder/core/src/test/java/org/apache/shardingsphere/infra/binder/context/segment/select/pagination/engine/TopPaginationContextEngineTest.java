@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -42,17 +41,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TopPaginationContextEngineTest {
     
-    private TopPaginationContextEngine topPaginationContextEngine;
-    
-    @BeforeEach
-    void setUp() {
-        topPaginationContextEngine = new TopPaginationContextEngine();
-    }
+    private final TopPaginationContextEngine paginationContextEngine = new TopPaginationContextEngine();
     
     @Test
     void assertCreatePaginationContextWhenRowNumberPredicateNotPresent() {
         TopProjectionSegment topProjectionSegment = new TopProjectionSegment(0, 10, null, "rowNumberAlias");
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(topProjectionSegment, Collections.emptyList(), Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(topProjectionSegment, Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -72,7 +66,7 @@ class TopPaginationContextEngineTest {
         String name = "rowNumberAlias";
         ColumnSegment columnSegment = new ColumnSegment(0, 10, new IdentifierValue(name));
         InExpression inExpression = new InExpression(0, 0, columnSegment, new ListExpression(0, 0), false);
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(
                 new TopProjectionSegment(0, 10, null, name), Collections.singletonList(inExpression), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
@@ -84,7 +78,7 @@ class TopPaginationContextEngineTest {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
         ParameterMarkerExpressionSegment right = new ParameterMarkerExpressionSegment(0, 10, 0);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, ">", null);
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(
                 new TopProjectionSegment(0, 10, null, name), Collections.singletonList(expression), Collections.singletonList(1));
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
@@ -101,7 +95,7 @@ class TopPaginationContextEngineTest {
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(name));
         LiteralExpressionSegment right = new LiteralExpressionSegment(0, 10, 100);
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, left, right, operator, null);
-        PaginationContext paginationContext = topPaginationContextEngine.createPaginationContext(
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(
                 new TopProjectionSegment(0, 10, null, name), Collections.singletonList(expression), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
