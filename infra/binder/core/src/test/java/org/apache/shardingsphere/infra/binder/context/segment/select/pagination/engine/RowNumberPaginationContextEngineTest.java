@@ -21,9 +21,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -34,11 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -49,26 +43,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(DatabaseTypedSPILoader.class)
 class RowNumberPaginationContextEngineTest {
     
     private static final String ROW_NUMBER_COLUMN_NAME = "rownum";
     
     private static final String ROW_NUMBER_COLUMN_ALIAS = "predicateRowNumberAlias";
     
-    private RowNumberPaginationContextEngine paginationContextEngine;
-    
-    @BeforeEach
-    void setUp() {
-        DatabaseType databaseType = mock(DatabaseType.class);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getPaginationOption()).thenReturn(new DialectPaginationOption(true, "ROWNUM"));
-        when(DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-        paginationContextEngine = new RowNumberPaginationContextEngine(databaseType);
-    }
+    private final RowNumberPaginationContextEngine paginationContextEngine = new RowNumberPaginationContextEngine(new DialectPaginationOption(true, "ROWNUM"));
     
     @Test
     void assertCreatePaginationContextWhenRowNumberAliasNotPresent() {

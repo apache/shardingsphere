@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine;
 
 import com.google.common.base.Strings;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -43,13 +42,10 @@ import java.util.stream.Collectors;
 /**
  * Pagination context engine for row number.
  */
+@RequiredArgsConstructor
 public final class RowNumberPaginationContextEngine {
     
     private final DialectPaginationOption paginationOption;
-    
-    public RowNumberPaginationContextEngine(final DatabaseType databaseType) {
-        paginationOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption();
-    }
     
     /**
      * Create pagination context.

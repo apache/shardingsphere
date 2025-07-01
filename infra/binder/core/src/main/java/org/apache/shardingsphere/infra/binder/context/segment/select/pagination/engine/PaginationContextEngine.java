@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.pagination
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -68,8 +69,11 @@ public final class PaginationContextEngine {
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
-        if (!expressions.isEmpty() && new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption().isContainsRowNumber()) {
-            return new RowNumberPaginationContextEngine(databaseType).createPaginationContext(expressions, projectionsContext, params);
+        if (!expressions.isEmpty()) {
+            DialectPaginationOption paginationOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption();
+            if (paginationOption.isContainsRowNumber()) {
+                return new RowNumberPaginationContextEngine(paginationOption).createPaginationContext(expressions, projectionsContext, params);
+            }
         }
         return new PaginationContext(null, null, params);
     }
