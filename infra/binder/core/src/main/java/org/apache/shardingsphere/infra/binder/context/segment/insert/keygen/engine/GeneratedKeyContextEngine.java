@@ -118,10 +118,8 @@ public final class GeneratedKeyContextEngine {
             }
             return Optional.empty();
         }
-        if (expression instanceof LiteralExpressionSegment) {
-            if (null != ((LiteralExpressionSegment) expression).getLiterals()) {
-                return Optional.of((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
-            }
+        if (expression instanceof LiteralExpressionSegment && null != ((LiteralExpressionSegment) expression).getLiterals()) {
+            return Optional.of((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
         }
         return Optional.empty();
     }
