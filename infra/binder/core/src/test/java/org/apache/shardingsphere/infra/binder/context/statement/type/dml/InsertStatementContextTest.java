@@ -217,7 +217,7 @@ class InsertStatementContextTest {
     }
     
     @Test
-    void assertContainsInsertColumnsWithSetAssignmentForMySQL() {
+    void assertContainsInsertColumnsWithSetAssignment() {
         InsertStatement insertStatement = mock(InsertStatement.class);
         when(insertStatement.getSetAssignment()).thenReturn(Optional.of(new SetAssignmentSegment(0, 0, Collections.emptyList())));
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
