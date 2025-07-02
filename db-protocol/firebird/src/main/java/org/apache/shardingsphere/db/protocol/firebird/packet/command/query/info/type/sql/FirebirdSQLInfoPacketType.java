@@ -58,17 +58,17 @@ public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
     STMT_TIMEOUT_USER(28),
     STMT_TIMEOUT_RUN(29),
     STMT_BLOB_ALIGN(30);
-
+    
     private static final Map<Integer, FirebirdSQLInfoPacketType> FIREBIRD_DATABASE_INFO_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     static {
         for (FirebirdSQLInfoPacketType each : values()) {
             FIREBIRD_DATABASE_INFO_TYPE_CACHE.put(each.code, each);
         }
     }
-
+    
     /**
      * Value of.
      *
@@ -80,7 +80,7 @@ public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
         Preconditions.checkNotNull(result, "Cannot find code '%d' in database info type", code);
         return result;
     }
-
+    
     /**
      * Creates info packet of this type.
      *
@@ -90,7 +90,7 @@ public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
     public static FirebirdInfoPacket createPacket(final FirebirdPacketPayload payload) {
         return new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
     }
-
+    
     @Override
     public boolean isCommon() {
         return false;

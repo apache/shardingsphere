@@ -97,13 +97,13 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class FirebirdPrepareStatementCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdPrepareStatementPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     private ReturningSegment returningSegment;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -118,7 +118,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 .addPreparedStatement(getStatementId(), serverPreparedStatement);
         return createResponse(sqlStatementContext, metaDataContexts);
     }
-
+    
     private int getStatementId() {
         if (packet.isValidStatementHandle()) {
             return packet.getStatementId();
@@ -174,7 +174,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         buffer.writeShortLE(valueBytes.length);
         buffer.writeBytes(valueBytes);
     }
-
+    
     private int getFirebirdStatementType(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             return FirebirdSQLInfoReturnValue.SELECT.getCode();
@@ -224,9 +224,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, 0, buffer);
     }
-
+    
     private void processDescribe(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final ByteBuf buffer, final boolean returnAll) {
-        //TODO add exception if the first item is not DESCRIBE_VARS
+        // TODO add exception if the first item is not DESCRIBE_VARS
         packet.nextItem();
         List<FirebirdSQLInfoPacketType> requestedItems = new ArrayList<>(11);
         while (packet.nextItem()) {
@@ -277,7 +277,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (subquery.isEmpty()) {
                 return expandProjections;
             }
-            //workaround for SubqueryTableBindUtils transform Expression and Aggregation projections to Column projection
+            // workaround for SubqueryTableBindUtils transform Expression and Aggregation projections to Column projection
             TableSegment from = ((SelectStatement) sqlStatementContext.getSqlStatement()).getFrom().orElse(null);
             if (!(from instanceof SubqueryTableSegment)) {
                 return expandProjections;
@@ -376,7 +376,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         return affectedColumns;
     }
-
+    
     private Collection<String> getTableNames(final SQLStatementContext sqlStatementContext) {
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (tablesContext != null) {
@@ -384,7 +384,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         return Collections.emptyList();
     }
-
+    
     private List<ColumnSegment> findAffectedColumns(final SQLStatementContext sqlStatementContext) {
         List<ColumnSegment> affectedColumns = new ArrayList<>(sqlStatementContext.getSqlStatement().getParameterCount());
         if (sqlStatementContext instanceof UpdateStatementContext) {
@@ -402,7 +402,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         return affectedColumns;
     }
-
+    
     private boolean processExpr(final ExpressionSegment expr, final List<ColumnSegment> affectedColumns) {
         if (!(expr instanceof BinaryOperationExpression)) {
             return expr instanceof ParameterMarkerExpressionSegment;
@@ -415,7 +415,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         return false;
     }
-
+    
     private void processExpressionProjection(final ExpressionProjection expr, final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         final ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
@@ -442,7 +442,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private int getFunctionType(final String functionName) {
-        //TODO add proper coalesce and other conditional functions return types
+        // TODO add proper coalesce and other conditional functions return types
         switch (functionName) {
             case "substring":
             case "current_role":
@@ -485,7 +485,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processColumn(final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems, final ShardingSphereTable table, final ShardingSphereColumn column,
                                final Optional<IdentifierValue> tableAlias, final Optional<IdentifierValue> columnAlias, final int idx) {
-        //SQLDA_SEQ uses 1-based index
+        // SQLDA_SEQ uses 1-based index
         for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
             switch (requestedItem) {
                 case SQLDA_SEQ:

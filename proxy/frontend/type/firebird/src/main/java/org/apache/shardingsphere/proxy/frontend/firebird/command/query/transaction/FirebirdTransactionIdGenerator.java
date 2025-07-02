@@ -61,7 +61,7 @@ public final class FirebirdTransactionIdGenerator {
     public int nextTransactionId(final int connectionId) {
         return connectionRegistry.get(connectionId).incrementAndGet();
     }
-
+    
     /**
      * Get current transaction ID for connection.
      *

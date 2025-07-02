@@ -33,8 +33,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdBinaryColumnType implements BinaryColumnType {
-
-    //TODO add different varying length based on a row length
+    
+    // TODO add different varying length based on a row length
     TEXT(452, 255),
     VARYING(448, 255),
     LEGACY_TEXT(452, 255),
@@ -62,19 +62,19 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
     DEC34(32762, 4),
     BOOLEAN(32764, 1),
     NULL(32766, 0);
-
+    
     private static final Map<Integer, FirebirdBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private static final Map<Integer, FirebirdBinaryColumnType> BLR_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private static final Map<Integer, FirebirdBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
-
+    
     private final int value;
-
+    
     private final int length;
-
+    
     private final int subtype;
-
+    
     static {
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, SHORT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SMALLINT, SHORT);
@@ -88,17 +88,17 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         // replace VARYING with TEXT when add proper length
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.CHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARCHAR, VARYING);
-        //temp fix for blobs
+        // temp fix for blobs
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARCHAR, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.DATE, DATE);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIME, TIME);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TIMESTAMP, TIMESTAMP);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BINARY, TEXT);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.VARBINARY, VARYING);
-        //temp fix for blobs
+        // temp fix for blobs
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.LONGVARBINARY, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.NULL, NULL);
-        //temp fix for blobs
+        // temp fix for blobs
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BLOB, VARYING);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BOOLEAN, BOOLEAN);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.ARRAY, ARRAY);
@@ -160,7 +160,7 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         Preconditions.checkArgument(BLR_TYPE_AND_COLUMN_TYPE_MAP.containsKey(blrType), "Can not find BLR type `%d` in column type", blrType);
         return BLR_TYPE_AND_COLUMN_TYPE_MAP.get(blrType);
     }
-
+    
     /**
      * Value of.
      *

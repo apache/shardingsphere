@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBufferType {
-
+    
     CDD_PATHNAME(1),
     ALLOCATION(2),
     JOURNAL(3),
@@ -59,7 +59,7 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     QUIT_LOG(26),
     NO_RESERVE(27, FirebirdValueFormat.INT),
     USER_NAME(28),
-    //USER(USER_NAME.getCode()),
+    // USER(USER_NAME.getCode()),
     PASSWORD(29),
     PASSWORD_ENC(30),
     SYS_USER_NAME_ENC(31),
@@ -100,7 +100,7 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     GFIX_ATTACH(66),
     GSTAT_ATTACH(67),
     SET_DB_CHARSET(68),
-
+    
     // Firebird 2.1 constants
     GSEC_ATTACH(69),
     ADDRESS_PATH(70),
@@ -108,13 +108,13 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     NO_DB_TRIGGERS(72, FirebirdValueFormat.INT),
     TRUSTED_AUTH(73),
     PROCESS_NAME(74),
-
+    
     // Firebird 2.5 constants
     TRUSTED_ROLE(75),
     ORG_FILENAME(76),
     UTF8_FILENAME(77),
     EXT_CALL_DEPTH(78, FirebirdValueFormat.INT),
-
+    
     // Firebird 3.0 constants
     AUTH_BLOCK(79),
     CLIENT_VERSION(80),
@@ -128,7 +128,7 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     NOLINGER(88, FirebirdValueFormat.BOOLEAN),
     RESET_ICU(89, FirebirdValueFormat.BOOLEAN),
     MAP_ATTACH(90),
-
+    
     // Firebird 4 constants
     SESSION_TIME_ZONE(91),
     SET_DB_REPLICA(92, FirebirdValueFormat.INT),
@@ -136,27 +136,27 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     DECFLOAT_ROUND(94),
     DECFLOAT_TRAPS(95),
     CLEAR_MAP(96, FirebirdValueFormat.BOOLEAN),
-
+    
     // Firebird 5 constants
     PARALLEL_WORKERS(100, FirebirdValueFormat.INT),
     WORKER_ATTACH(101, FirebirdValueFormat.BOOLEAN);
-
+    
     private static final Map<Integer, FirebirdDatabaseParameterBufferType> FIREBIRD_DPB_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     private final FirebirdValueFormat format;
-
+    
     static {
         for (FirebirdDatabaseParameterBufferType each : values()) {
             FIREBIRD_DPB_TYPE_CACHE.put(each.code, each);
         }
     }
-
+    
     FirebirdDatabaseParameterBufferType(final int code) {
         this(code, FirebirdValueFormat.STRING);
     }
-
+    
     /**
      * Value of.
      *
@@ -178,7 +178,7 @@ public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBuff
     public static boolean isTraditionalType(final int version) {
         return version == 1;
     }
-
+    
     /**
      * Creates parameter buffer of this type.
      *

@@ -36,7 +36,7 @@ import java.util.List;
  * Database packet codec for Firebird.
  */
 public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngine {
-
+    
     private static final int MESSAGE_TYPE_LENGTH = 4;
     
     private static final int ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 4;
@@ -67,7 +67,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
         addToBuffer(context, in, out);
     }
-
+    
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
         out.add(in.readRetainedSlice(firstPacketLength));
         if (in.readableBytes() > MESSAGE_TYPE_LENGTH) {
@@ -115,11 +115,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // TODO send error packet
         }
     }
-
+    
     @Override
     public FirebirdPacketPayload createPacketPayload(final ByteBuf message, final Charset charset) {
         return new FirebirdPacketPayload(message, charset);
     }
 }
-
-

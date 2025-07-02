@@ -140,17 +140,17 @@ public enum FirebirdDatabaseInfoPacketType implements FirebirdInfoPacketType {
     REPLICA_MODE(146),
     USERNAME(147),
     SQLROLE(148);
-
+    
     private static final Map<Integer, FirebirdDatabaseInfoPacketType> FIREBIRD_DATABASE_INFO_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     static {
         for (FirebirdDatabaseInfoPacketType each : values()) {
             FIREBIRD_DATABASE_INFO_TYPE_CACHE.put(each.code, each);
         }
     }
-
+    
     /**
      * Value of.
      *
@@ -162,7 +162,7 @@ public enum FirebirdDatabaseInfoPacketType implements FirebirdInfoPacketType {
         Preconditions.checkNotNull(result, "Cannot find code '%d' in database info type", code);
         return result;
     }
-
+    
     /**
      * Creates info packet of this type.
      *

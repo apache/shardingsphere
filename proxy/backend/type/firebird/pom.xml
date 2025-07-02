@@ -25,7 +25,7 @@
     </parent>
     <artifactId>shardingsphere-proxy-backend-firebird</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -42,7 +42,7 @@
             <artifactId>shardingsphere-parser-sql-firebird</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>

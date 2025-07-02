@@ -29,25 +29,25 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsol
  */
 @Getter
 public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket {
-
+    
     private final int handle;
-
+    
     private final FirebirdParameterBuffer tpb = FirebirdTransactionParameterBufferType.createBuffer();
-
+    
     public FirebirdStartTransactionPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         handle = payload.readInt4();
         tpb.parseBuffer(payload.readBuffer());
     }
-
+    
     public boolean getAutocommit() {
         return tpb.getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT) != null;
     }
-
+    
     public boolean getReadOnly() {
         return tpb.getValue(FirebirdTransactionParameterBufferType.READ) != null;
     }
-
+    
     /**
      * Get transaction isolation level based on the transaction parameter buffer.
      *
@@ -65,10 +65,10 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
         }
         return TransactionIsolationLevel.NONE;
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-
+        
     }
     
     /**

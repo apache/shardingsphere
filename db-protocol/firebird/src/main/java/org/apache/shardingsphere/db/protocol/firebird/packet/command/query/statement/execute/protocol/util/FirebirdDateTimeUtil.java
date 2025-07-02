@@ -26,29 +26,29 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public final class FirebirdDateTimeUtil {
-
+    
     static final int NANOSECONDS_PER_FRACTION = 100 * 1000;
-
+    
     static final int FRACTIONS_PER_MILLISECOND = 10;
-
+    
     static final int FRACTIONS_PER_SECOND = 1000 * FRACTIONS_PER_MILLISECOND;
-
+    
     static final int FRACTIONS_PER_MINUTE = 60 * FRACTIONS_PER_SECOND;
-
+    
     static final int FRACTIONS_PER_HOUR = 60 * FRACTIONS_PER_MINUTE;
     
     private int year;
-
+    
     private int month;
-
+    
     private int day;
-
+    
     private int hour;
-
+    
     private int minute;
-
+    
     private int second;
-
+    
     private int fractions;
     
     public FirebirdDateTimeUtil(final LocalDateTime localDateTime) {
@@ -70,7 +70,7 @@ public final class FirebirdDateTimeUtil {
         second = 0;
         fractions = 0;
     }
-
+    
     /**
      * Get encoded date value.
      *
@@ -89,7 +89,7 @@ public final class FirebirdDateTimeUtil {
         int ya = cpYear - 100 * c;
         return convertDate(c, ya, cpMonth);
     }
-
+    
     /**
      * Encode {@link LocalDateTime} to an integer date representation.
      *
@@ -106,7 +106,7 @@ public final class FirebirdDateTimeUtil {
                 + (153 * cpMonth + 2) / 5
                 + day + 1721119 - 2400001;
     }
-
+    
     /**
      * Decode encoded date and set internal year, month, and day fields.
      *
@@ -133,14 +133,14 @@ public final class FirebirdDateTimeUtil {
         }
         return this;
     }
-
+    
     public int getEncodedTime() {
         return hour * FRACTIONS_PER_HOUR
                 + minute * FRACTIONS_PER_MINUTE
                 + second * FRACTIONS_PER_SECOND
                 + fractions;
     }
-
+    
     /**
      * Decode encoded time and set internal hour, minute, second, and fraction fields.
      *
@@ -157,7 +157,7 @@ public final class FirebirdDateTimeUtil {
         fractions = fractionsInDay - second * FRACTIONS_PER_SECOND;
         return this;
     }
-
+    
     /**
      * Convert the internal date-time fields to a {@link Timestamp}.
      *
@@ -166,7 +166,7 @@ public final class FirebirdDateTimeUtil {
     public Timestamp asTimestamp() {
         return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractions));
     }
-
+    
     /**
      * Convert encoded date value to {@link Timestamp}.
      *
@@ -176,7 +176,7 @@ public final class FirebirdDateTimeUtil {
     public static Timestamp getDate(final int encodedDate) {
         return new FirebirdDateTimeUtil().setDate(encodedDate).asTimestamp();
     }
-
+    
     /**
      * Convert encoded time value to {@link Timestamp}.
      *
@@ -186,7 +186,7 @@ public final class FirebirdDateTimeUtil {
     public static Timestamp getTime(final int encodedTime) {
         return new FirebirdDateTimeUtil().setTime(encodedTime).asTimestamp();
     }
-
+    
     /**
      * Convert encoded date and time values to {@link Timestamp}.
      *
@@ -197,7 +197,7 @@ public final class FirebirdDateTimeUtil {
     public static Timestamp getDateTime(final int encodedDate, final int encodedTime) {
         return new FirebirdDateTimeUtil().setDate(encodedDate).setTime(encodedTime).asTimestamp();
     }
-
+    
     /**
      * Convert encoded date and time values with offset to {@link Timestamp}.
      *
@@ -211,4 +211,3 @@ public final class FirebirdDateTimeUtil {
         return new FirebirdDateTimeUtil().setDate(encodedDate).setTime(encodedTime).asTimestamp();
     }
 }
-

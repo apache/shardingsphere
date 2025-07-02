@@ -20,14 +20,14 @@ package org.apache.shardingsphere.db.protocol.firebird.constant.buffer;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdValueFormat;
 
 public interface FirebirdParameterBufferType {
-
+    
     /**
      * Get code of the parameter buffer type.
      *
      * @return numeric code representing the parameter buffer type
      */
     int getCode();
-
+    
     /**
      * Get value format of the parameter buffer type.
      *
@@ -35,4 +35,3 @@ public interface FirebirdParameterBufferType {
      */
     FirebirdValueFormat getFormat();
 }
-

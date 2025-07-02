@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdArchType {
-
+    
     ARCH_GENERIC(1, ""),
     ARCH_SUN(3, "SO"),
     ARCH_SUN4(8, "S4"),
@@ -48,20 +48,20 @@ public enum FirebirdArchType {
     ARCH_DARWIN_PPC64(42, "UP"),
     ARCH_ARM(43, "NP"),
     ARCH_MAX(44, "");
-
+    
     public static final FirebirdArchType ARCHITECTURE;
-
+    
     private static final Map<Integer, FirebirdArchType> FIREBIRD_ARCH_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     private final String identifier;
-
+    
     static {
         for (FirebirdArchType each : values()) {
             FIREBIRD_ARCH_TYPE_CACHE.put(each.code, each);
         }
-        //setup user architecture
+        // setup user architecture
         if (SystemUtils.IS_OS_SUN_OS) {
             switch (SystemUtils.OS_ARCH.toLowerCase()) {
                 case "sparc":
@@ -115,7 +115,7 @@ public enum FirebirdArchType {
             ARCHITECTURE = ARCH_GENERIC;
         }
     }
-
+    
     /**
      * Value of.
      *
@@ -127,7 +127,7 @@ public enum FirebirdArchType {
         Preconditions.checkNotNull(result, "Cannot find '%d' in arch type", code);
         return result;
     }
-
+    
     /**
      * Determines if the architecture is valid.
      *

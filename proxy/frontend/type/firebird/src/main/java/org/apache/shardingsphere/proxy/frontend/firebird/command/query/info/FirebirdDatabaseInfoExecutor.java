@@ -39,21 +39,21 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
-
+    
     private static final int SQL_DIALECT = 3;
-
+    
     private static final String BUILD_TYPE = "V";
-
+    
     private static final int MAJOR_VERSION = 5;
-
+    
     private static final int MINOR_VERSION = 0;
-
+    
     private static final int REV_NO = 0;
-
+    
     private static final int BUILD_NO = 0;
-
+    
     private static final String SERVER_NAME = String.format("Firebird %d.%d (ShardingSphere-Proxy)", MAJOR_VERSION, MINOR_VERSION);
-
+    
     private static final String FB_VERSION = String.format("%s-%s%d.%d.%d.%d %s",
             FirebirdArchType.ARCHITECTURE.getIdentifier(),
             BUILD_TYPE,
@@ -62,11 +62,11 @@ public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
             REV_NO,
             BUILD_NO,
             SERVER_NAME);
-
+    
     private final FirebirdInfoPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         ByteBuf data = packet.getPayload().getByteBuf().alloc().buffer();
@@ -81,7 +81,7 @@ public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
     }
     
     private void parseDatabaseInfo(final ByteBuf data, final FirebirdDatabaseInfoPacketType type) {
-        //TODO implement other request types handle
+        // TODO implement other request types handle
         switch (type) {
             case DB_SQL_DIALECT:
                 data.writeByte(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode());

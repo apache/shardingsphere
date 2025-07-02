@@ -27,9 +27,9 @@ import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
  * @see <a href=https://github.com/FirebirdSQL/jaybird/blob/Branch_5_0/src/main/org/firebirdsql/gds/ng/wire/auth/legacy/LegacyAuthenticationPlugin.java>Jaybird implementation</a>
  */
 public final class FirebirdLegacyAuthenticator implements FirebirdAuthenticator {
-
+    
     private static final String LEGACY_PASSWORD_SALT = "9z";
-
+    
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         // TODO update when version 6 of jaybird comes out
@@ -37,7 +37,7 @@ public final class FirebirdLegacyAuthenticator implements FirebirdAuthenticator 
         String expectedPassword = UnixCrypt.crypt(user.getPassword(), LEGACY_PASSWORD_SALT).substring(2, 13);
         return expectedPassword.equals(password);
     }
-
+    
     @Override
     public String getAuthenticationMethodName() {
         return FirebirdAuthenticationMethod.LEGACY_AUTH.getMethodName();

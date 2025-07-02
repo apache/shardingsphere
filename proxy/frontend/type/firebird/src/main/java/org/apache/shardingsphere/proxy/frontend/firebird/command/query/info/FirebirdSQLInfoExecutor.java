@@ -38,11 +38,11 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdSQLInfoExecutor implements CommandExecutor {
-
+    
     private final FirebirdInfoPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         ByteBuf data = packet.getPayload().getByteBuf().alloc().buffer();
@@ -57,10 +57,10 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     }
     
     private void parseSQLInfo(final ByteBuf data, final FirebirdSQLInfoPacketType type) {
-        //TODO implement other request types handle
+        // TODO implement other request types handle
         switch (type) {
             case RECORDS:
-                //TODO handle actual update count
+                // TODO handle actual update count
                 data.writeByte(FirebirdSQLInfoPacketType.RECORDS.getCode());
                 data.writeShortLE(0);
                 data.writeByte(FirebirdSQLInfoReturnValue.SELECT.getCode());

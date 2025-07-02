@@ -34,17 +34,17 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 @Getter
 public final class FirebirdInfoPacket extends FirebirdCommandPacket {
-
+    
     private final int handle;
-
+    
     private final int incarnation;
-
+    
     private final List<FirebirdInfoPacketType> infoItems = new ArrayList<>();
-
+    
     private final int maxLength;
     
     private final FirebirdPacketPayload payload;
-
+    
     public FirebirdInfoPacket(final FirebirdPacketPayload payload, final Function<Integer, FirebirdInfoPacketType> valueOf) {
         payload.skipReserved(4);
         handle = payload.readInt4();
@@ -53,7 +53,7 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
         maxLength = payload.readInt4();
         this.payload = payload;
     }
-
+    
     private void parseInfo(final ByteBuf buffer, final Function<Integer, FirebirdInfoPacketType> valueOf) {
         while (buffer.isReadable()) {
             int code = buffer.readByte();
@@ -64,10 +64,10 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
             }
         }
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-
+        
     }
     
     /**

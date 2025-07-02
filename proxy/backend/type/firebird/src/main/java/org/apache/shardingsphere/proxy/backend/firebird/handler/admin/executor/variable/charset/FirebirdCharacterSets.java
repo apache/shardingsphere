@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * Character sets defined in Firebird.
  */
 public enum FirebirdCharacterSets {
-
+    
     ASCII(() -> StandardCharsets.US_ASCII),
     BIG_5(() -> Charset.forName("BIG5")),
     // CYRL(() -> Charset.forName("CYRL")),
@@ -65,11 +65,11 @@ public enum FirebirdCharacterSets {
     KOI8U(() -> Charset.forName("KOI8-U")),
     KSC_5601(() -> Charset.forName("EUC-KR")),
     // NEXT(() -> Charset.forName("NEXT")),
-
-    //default jvm value as described here: https://www.firebirdsql.org/file/documentation/drivers_documentation/java/faq.html#how-can-i-specify-the-connection-character-set
+    
+    // default jvm value as described here: https://www.firebirdsql.org/file/documentation/drivers_documentation/java/faq.html#how-can-i-specify-the-connection-character-set
     NONE(Charset::defaultCharset),
     OCTETS(Charset::defaultCharset, "BINARY"),
-
+    
     SJIS_0208(() -> Charset.forName("ISO-2022-JP")),
     UNICODE_FSS(() -> StandardCharsets.UTF_8),
     UTF8(() -> StandardCharsets.UTF_8),
@@ -82,7 +82,7 @@ public enum FirebirdCharacterSets {
     WIN1256(() -> Charset.forName("windows-1256")),
     WIN1257(() -> Charset.forName("windows-1257")),
     WIN1258(() -> Charset.forName("windows-1258"));
-
+    
     private static final Map<String, FirebirdCharacterSets> CHARACTER_SETS_MAP;
     
     static {

@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdTransactionParameterBufferType implements FirebirdParameterBufferType {
-
+    
     CONSISTENCY(1),
     CONCURRENCY(2),
     SHARED(3),
@@ -54,23 +54,23 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
     LOCK_TIMEOUT(21, FirebirdValueFormat.INT),
     READ_CONSISTENCY(22),
     AT_SNAPSHOT_NUMBER(23);
-
+    
     private static final Map<Integer, FirebirdTransactionParameterBufferType> FIREBIRD_TPB_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     private final FirebirdValueFormat format;
-
+    
     static {
         for (FirebirdTransactionParameterBufferType each : values()) {
             FIREBIRD_TPB_TYPE_CACHE.put(each.code, each);
         }
     }
-
+    
     FirebirdTransactionParameterBufferType(final int code) {
         this(code, FirebirdValueFormat.BOOLEAN);
     }
-
+    
     /**
      * Value of.
      *
@@ -92,7 +92,7 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
     public static boolean isTraditionalType(final int version) {
         return true;
     }
-
+    
     /**
      * Creates parameter buffer of this type.
      *

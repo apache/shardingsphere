@@ -27,7 +27,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdUserDataType {
-
+    
     CNCT_USER(1),
     CNCT_PASSWD(2),
     CNCT_HOST(4),
@@ -38,17 +38,17 @@ public enum FirebirdUserDataType {
     CNCT_LOGIN(9),
     CNCT_PLUGIN_LIST(10),
     CNCT_CLIENT_CRYPT(11);
-
+    
     private static final Map<Integer, FirebirdUserDataType> FIREBIRD_USER_DATA_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     static {
         for (FirebirdUserDataType each : values()) {
             FIREBIRD_USER_DATA_TYPE_CACHE.put(each.code, each);
         }
     }
-
+    
     /**
      * Value of.
      *

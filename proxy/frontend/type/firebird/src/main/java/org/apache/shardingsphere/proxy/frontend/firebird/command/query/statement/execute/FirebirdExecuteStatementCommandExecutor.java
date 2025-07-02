@@ -56,16 +56,16 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 public final class FirebirdExecuteStatementCommandExecutor implements QueryCommandExecutor {
-
+    
     private final FirebirdExecuteStatementPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     private ProxyBackendHandler proxyBackendHandler;
-
+    
     @Getter
     private ResponseType responseType;
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
@@ -92,7 +92,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
         result.add(new FirebirdGenericResponsePacket());
         return result;
     }
-
+    
     private FirebirdServerPreparedStatement updateAndGetPreparedStatement() {
         FirebirdServerPreparedStatement result = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         if (!packet.getParameterTypes().isEmpty()) {
@@ -115,25 +115,24 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
         }
         return new BinaryRow(result);
     }
-
+    
     @Override
     public boolean next() throws SQLException {
         return proxyBackendHandler.next();
     }
-
+    
     @Override
     public FirebirdPacket getQueryRowPacket() throws SQLException {
         QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
         BinaryRow row = createBinaryRow(queryResponseRow);
-        //        FirebirdStatementQueryCache.getInstance().add(connectionSession.getConnectionId(), packet.getStatementId(), new FirebirdFetchResponsePacket(row, packet.getPayload()));
-        //        //we send packets back only if fetch statement packet is sent
-        //        return null;
+        // FirebirdStatementQueryCache.getInstance().add(connectionSession.getConnectionId(), packet.getStatementId(), new FirebirdFetchResponsePacket(row, packet.getPayload()));
+        // //we send packets back only if fetch statement packet is sent
+        // return null;
         return new FirebirdFetchResponsePacket(row, packet.getPayload());
     }
-
+    
     @Override
     public void close() throws SQLException {
         proxyBackendHandler.close();
     }
 }
-

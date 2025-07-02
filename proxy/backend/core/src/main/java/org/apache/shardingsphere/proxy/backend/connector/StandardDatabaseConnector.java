@@ -255,7 +255,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     
     private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, database.getProtocolType());
-        return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement && dialectDatabaseMetaData.getTransactionOption().isDDLNeedImplicitCommit();
+        return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement
+                && dialectDatabaseMetaData.getTransactionOption().isDDLNeedImplicitCommit();
     }
     
     private ResultSet doExecuteFederation() {

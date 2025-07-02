@@ -31,7 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdCommandPacketType implements CommandPacketType {
-
+    
     /* Operation (packet) types */
     VOID(0),
     CONNECT(1),
@@ -43,7 +43,7 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     CREDIT(7),
     CONTINUATION(8),
     RESPONSE(9),
-
+    
     /* Page server operations */
     OPEN_FILE(10),
     CREATE_FILE(11),
@@ -54,12 +54,12 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     CONVERT_LOCK(16),
     RELEASE_LOCK(17),
     BLOCKING(18),
-
+    
     /* Full context server operations */
     ATTACH(19),
     CREATE(20),
     DETACH(21),
-
+    
     /* Request based operations */
     COMPILE(22),
     START(23),
@@ -68,14 +68,14 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     RECEIVE(26),
     UNWIND(27),
     RELEASE(28),
-
+    
     /* Transaction operations */
     TRANSACTION(29),
     COMMIT(30),
     ROLLBACK(31),
     PREPARE(32),
     RECONNECT(33),
-
+    
     /* Blob operations */
     CREATE_BLOB(34),
     OPEN_BLOB(35),
@@ -83,13 +83,13 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     PUT_SEGMENT(37),
     CANCEL_BLOB(38),
     CLOSE_BLOB(39),
-
+    
     /* Information services */
     INFO_DATABASE(40),
     INFO_REQUEST(41),
     INFO_TRANSACTION(42),
     INFO_BLOB(43),
-
+    
     BATCH_SEGMENTS(44),
     MGR_SET_AFFINITY(45),
     MGR_CLEAR_AFFINITY(46),
@@ -108,7 +108,7 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     PUT_SLICE(59),
     SLICE(60),
     SEEK_BLOB(61),
-
+    
     /* DSQL operations */
     ALLOCATE_STATEMENT(62),
     EXECUTE(63),
@@ -127,42 +127,42 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     EXECUTE2(76),
     INSERT(77),
     SQL_RESPONSE(78),
-
+    
     TRANSACT(79),
     TRANSACT_RESPONSE(80),
-
+    
     DRDATABASE(81),
-
+    
     SERVICE_ATTACH(82),
     SERVICE_DETACH(83),
     SERVICE_INFO(84),
     SERVICE_START(85),
-
+    
     ROLLBACK_RETAINING(86),
-
-    /* Two following opcode are used in vulcan.
-       No plans to implement them completely for a while, but to
-       support protocol 11, where they are used, have them here. */
+    
+    /*
+     * Two following opcode are used in vulcan. No plans to implement them completely for a while, but to support protocol 11, where they are used, have them here.
+     */
     UPDATE_ACCOUNT_INFO(87),
     AUTHENTICATE_USER(88),
-
+    
     PARTIAL(89),
     TRUSTED_AUTH(90),
-
+    
     CANCEL(91),
-
+    
     CONT_AUTH(92),
-
+    
     PING(93),
-
+    
     ACCEPT_DATA(94),
-
+    
     ABORT_AUX_CONNECTION(95),
-
+    
     CRYPT(96),
     CRYPT_KEY_CALLBACK(97),
     COND_ACCEPT(98),
-
+    
     BATCH_CREATE(99),
     BATCH_MSG(100),
     BATCH_EXEC(101),
@@ -171,27 +171,27 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     BATCH_REGBLOB(104),
     BATCH_BLOB_STREAM(105),
     BATCH_SET_BPB(106),
-
+    
     REPL_DATA(107),
     REPL_REQ(108),
-
+    
     BATCH_CANCEL(109),
     BATCH_SYNC(110),
     INFO_BATCH(111),
-
+    
     FETCH_SCROLL(112),
     INFO_CURSOR(113);
-
+    
     private static final Map<Integer, FirebirdCommandPacketType> FIREBIRD_COMMAND_PACKET_TYPE_CACHE = new HashMap<>();
-
+    
     private final int value;
-
+    
     static {
         for (FirebirdCommandPacketType each : values()) {
             FIREBIRD_COMMAND_PACKET_TYPE_CACHE.put(each.value, each);
         }
     }
-
+    
     /**
      * Value of integer.
      *

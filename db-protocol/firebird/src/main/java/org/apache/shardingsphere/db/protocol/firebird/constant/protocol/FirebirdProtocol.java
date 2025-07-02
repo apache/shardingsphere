@@ -23,17 +23,17 @@ import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdArchType;
 
 @Getter
 public final class FirebirdProtocol {
-
+    
     private final FirebirdProtocolVersion version;
-
+    
     private final FirebirdArchType arch;
-
+    
     private final int minType;
-
+    
     private final int maxType;
-
+    
     private final int weight;
-
+    
     public FirebirdProtocol(final ByteBuf buffer) {
         version = FirebirdProtocolVersion.valueOf(buffer.readInt());
         arch = FirebirdArchType.valueOf(buffer.readInt());

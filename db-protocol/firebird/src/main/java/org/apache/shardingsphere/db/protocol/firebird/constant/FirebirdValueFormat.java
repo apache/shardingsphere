@@ -31,11 +31,11 @@ public enum FirebirdValueFormat {
     TEXT(0),
     
     BINARY(1),
-
+    
     BOOLEAN(2),
-
+    
     INT(3),
-
+    
     STRING(4);
     
     private final int code;

@@ -28,9 +28,9 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
  */
 @Getter
 public final class FirebirdSQLResponsePacket extends FirebirdPacket {
-
+    
     private final int messageCount;
-
+    
     private final ByteBuf data;
     
     public FirebirdSQLResponsePacket() {

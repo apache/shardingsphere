@@ -31,20 +31,20 @@ import java.nio.charset.StandardCharsets;
 @Getter
 @RequiredArgsConstructor
 public final class FirebirdAcceptDataPacket extends FirebirdPacket {
-
+    
     private final byte[] salt;
-
+    
     private final String publicKey;
-
+    
     private final FirebirdAuthenticationMethod plugin;
-
+    
     private final int authenticated;
-
+    
     private final String keys;
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        //auth data
+        // auth data
         if (salt.length != 0 && !publicKey.isEmpty()) {
             payload.writeInt4(salt.length + publicKey.length() + 4);
             payload.writeInt2LE(salt.length);

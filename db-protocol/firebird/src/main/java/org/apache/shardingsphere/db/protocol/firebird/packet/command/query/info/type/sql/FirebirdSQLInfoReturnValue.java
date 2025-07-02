@@ -44,15 +44,15 @@ public enum FirebirdSQLInfoReturnValue {
     SELECT_FOR_UPD(12),
     SET_GENERATOR(13),
     SAVEPOINT(14);
-
+    
     private static final Map<Integer, FirebirdSQLInfoReturnValue> FIREBIRD_DATABASE_INFO_RETURN_VALUES_CACHE = new HashMap<>();
     
     private static final List<FirebirdSQLInfoReturnValue> FIREBIRD_DESCRIBE_SELECT_OPERATIONS = new ArrayList<>();
     
     private static final List<FirebirdSQLInfoReturnValue> FIREBIRD_DESCRIBE_BIND_OPERATIONS = new ArrayList<>();
-
+    
     private final int code;
-
+    
     static {
         for (FirebirdSQLInfoReturnValue each : values()) {
             FIREBIRD_DATABASE_INFO_RETURN_VALUES_CACHE.put(each.code, each);
@@ -65,7 +65,7 @@ public enum FirebirdSQLInfoReturnValue {
         FIREBIRD_DESCRIBE_BIND_OPERATIONS.add(UPDATE);
         FIREBIRD_DESCRIBE_BIND_OPERATIONS.add(DELETE);
     }
-
+    
     /**
      * Value of.
      *
@@ -98,4 +98,3 @@ public enum FirebirdSQLInfoReturnValue {
         return FIREBIRD_DESCRIBE_BIND_OPERATIONS.contains(valueOf(code));
     }
 }
-

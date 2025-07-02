@@ -35,15 +35,15 @@ import java.util.Arrays;
 @Getter
 @NoArgsConstructor
 public final class FirebirdGenericResponsePacket extends FirebirdPacket {
-
+    
     private int handle;
-
+    
     private long id;
-
+    
     private ByteBuf data;
-
+    
     private byte[] statusVector = getEmptyStatusVector();
-
+    
     /**
      * Set handle value.
      *
@@ -54,7 +54,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         handle = objectHandle;
         return this;
     }
-
+    
     /**
      * Set ID value.
      *
@@ -65,7 +65,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         id = objectId;
         return this;
     }
-
+    
     /**
      * Set data buffer.
      *
@@ -76,7 +76,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         data = buffer;
         return this;
     }
-
+    
     /**
      * Set status vector.
      *
@@ -87,7 +87,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         statusVector = buffer;
         return this;
     }
-
+    
     /**
      * Set error status vector based on the given SQL exception.
      *
@@ -100,7 +100,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         if (!isFirebirdCode) {
             gdsCode = 335544382;
         }
-
+        
         String rawMessage = ex.getMessage();
         int idx = rawMessage.indexOf(';');
         String message = idx >= 0 ? rawMessage.substring(idx + 1).trim() : rawMessage;
@@ -108,7 +108,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         if (stateIdx >= 0) {
             message = message.substring(0, stateIdx).trim();
         }
-
+        
         ByteBuf buf = Unpooled.buffer();
         buf.writeInt(1);
         buf.writeInt(gdsCode);
@@ -121,14 +121,13 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
             buf.writeZero(pad);
         }
         buf.writeInt(0);
-
+        
         byte[] vec = new byte[buf.readableBytes()];
         buf.readBytes(vec);
         this.statusVector = vec;
         return this;
     }
-
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
@@ -141,13 +140,13 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         }
         payload.writeBytes(statusVector);
     }
-
+    
     private static byte[] getEmptyStatusVector() {
         byte[] statusVector = new byte[4];
         Arrays.fill(statusVector, (byte) 0);
         return statusVector;
     }
-
+    
     public static FirebirdGenericResponsePacket getPacket() {
         return new FirebirdGenericResponsePacket();
     }

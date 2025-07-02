@@ -42,27 +42,27 @@ import java.util.Set;
 public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket {
     
     private final FirebirdCommandPacketType type;
-
+    
     private final int statementId;
-
+    
     private final int transactionId;
-
+    
     private final List<FirebirdBinaryColumnType> parameterTypes;
-
+    
     private final int message;
-
+    
     private final List<Object> parameterValues = new ArrayList<>();
-
+    
     private final List<FirebirdBinaryColumnType> returnColumns = new ArrayList<>();
-
+    
     private int outputMessageNumber;
-
+    
     private long statementTimeout;
-
+    
     private long cursorFlags;
-
+    
     private long maxBlobSize;
-
+    
     private final FirebirdPacketPayload payload;
     
     public FirebirdExecuteStatementPacket(final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
@@ -110,9 +110,9 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         }
         
         this.payload = payload;
-        //        while (msgCount-- != 0) {
-        //            paramsValues.add(payload.readBuffer());
-        //        }
+        // while (msgCount-- != 0) {
+        // paramsValues.add(payload.readBuffer());
+        // }
         
     }
     
@@ -165,17 +165,17 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
      * @throws SQLException SQL exception
      */
     public List<Object> readParameters(final List<FirebirdBinaryColumnType> paramTypes, final Set<Integer> longDataIndexes) throws SQLException {
-        //        List<Object> result = new ArrayList<>(paramTypes.size());
-        //        for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
-        //            if (longDataIndexes.contains(paramIndex)) {
-        //                result.add(null);
-        //                continue;
-        //            }
-        //            FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex));
-        //            Object value = binaryProtocolValue.read(payload);
-        //            result.add(value);
-        //        }
-        //        return result;
+        // List<Object> result = new ArrayList<>(paramTypes.size());
+        // for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
+        // if (longDataIndexes.contains(paramIndex)) {
+        // result.add(null);
+        // continue;
+        // }
+        // FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex));
+        // Object value = binaryProtocolValue.read(payload);
+        // result.add(value);
+        // }
+        // return result;
         return parameterValues;
     }
     
@@ -219,7 +219,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *
@@ -235,4 +235,3 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         return length;
     }
 }
-

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdCommandPacketFactory {
-
+    
     /**
      * Create new instance of command packet.
      *
@@ -75,7 +75,7 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
     }
-
+    
     /**
      * Validate length of command packet.
      *

@@ -41,7 +41,7 @@ import java.util.Optional;
  * Database admin executor creator for Firebird.
  */
 public final class FirebirdAdminExecutorCreator implements DatabaseAdminExecutorCreator {
-
+    
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();

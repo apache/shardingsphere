@@ -33,11 +33,11 @@ import org.firebirdsql.gds.ISCConstants;
  */
 @Getter
 public final class FirebirdFetchResponsePacket extends FirebirdPacket {
-
+    
     private final int status;
-
+    
     private final int count;
-
+    
     private final ByteBuf data;
     
     public FirebirdFetchResponsePacket(final BinaryRow row, final FirebirdPacketPayload payload) {

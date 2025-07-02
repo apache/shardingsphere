@@ -44,9 +44,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FirebirdAdminExecutorCreatorTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-
+    
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
         assertThat(new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new InsertStatement())), is(Optional.empty()));
@@ -73,7 +73,7 @@ class FirebirdAdminExecutorCreatorTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(FirebirdSetVariableAdminExecutor.class));
     }
-
+    
     @Test
     void assertCreateWithDMLStatement() {
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new DeleteStatement());

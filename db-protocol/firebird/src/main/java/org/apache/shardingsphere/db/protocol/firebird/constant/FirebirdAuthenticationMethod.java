@@ -29,18 +29,18 @@ import org.apache.shardingsphere.db.protocol.constant.AuthenticationMethod;
 public enum FirebirdAuthenticationMethod implements AuthenticationMethod {
     
     SRP("Srp", "SHA-1"),
-
+    
     SRP224("Srp224", "SHA-224"),
-
+    
     SRP256("Srp256", "SHA-256"),
-
+    
     SRP384("Srp384", "SHA-384"),
-
+    
     SRP512("Srp512", "SHA-512"),
     
     LEGACY_AUTH("Legacy_Auth", null);
-
+    
     private final String methodName;
-
+    
     private final String hashAlgorithm;
 }

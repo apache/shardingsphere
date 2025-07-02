@@ -35,9 +35,9 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdFreeStatementPacket packet;
-
+    
     private final ConnectionSession connectionSession;
     
     @Override
@@ -58,4 +58,3 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }
-

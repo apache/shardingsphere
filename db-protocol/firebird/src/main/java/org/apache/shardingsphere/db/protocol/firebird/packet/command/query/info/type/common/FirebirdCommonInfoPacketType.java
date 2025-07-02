@@ -37,17 +37,17 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
     DATA_NOT_READY(4),
     LENGTH(126),
     FLAG_END(127);
-
+    
     private static final Map<Integer, FirebirdCommonInfoPacketType> FIREBIRD_INFO_COMMON_TYPE_CACHE = new HashMap<>();
-
+    
     private final int code;
-
+    
     static {
         for (FirebirdCommonInfoPacketType each : values()) {
             FIREBIRD_INFO_COMMON_TYPE_CACHE.put(each.code, each);
         }
     }
-
+    
     /**
      * Value of.
      *
@@ -59,7 +59,7 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
         Preconditions.checkNotNull(result, "Cannot find code '%d' in common info type", code);
         return result;
     }
-
+    
     /**
      * Parse and write Firebird common information packet based on the given type.
      *
@@ -68,7 +68,7 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
      * @throws FirebirdProtocolException if the common info packet type is unknown
      */
     public static void parseCommonInfo(final ByteBuf data, final FirebirdCommonInfoPacketType type) {
-        //TODO implement other request types handle
+        // TODO implement other request types handle
         switch (type) {
             case END:
                 data.writeByte(END.getCode());

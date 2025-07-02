@@ -39,40 +39,40 @@ import java.util.Locale;
  */
 @Getter
 public final class FirebirdSRPAuthenticationData {
-
+    
     private static final int SRP_KEY_SIZE = 128;
-
+    
     private static final int SRP_SALT_SIZE = 32;
-
+    
     private static final int EXPECTED_AUTH_DATA_LENGTH = (SRP_SALT_SIZE + SRP_KEY_SIZE + 2) * 2;
-
+    
     private static final BigInteger N = new BigInteger("E67D2E994B2F900C3F41F08F5BB2627ED0D49EE1FE767A52EFCD565CD6E768812C3E1E9CE8F0A8BEA6CB13CD29DDEBF7A96D4A93B55D488DF"
             + "099A15C89DCB0640738EB2CBDD9A8F7BAB561AB1B0DC1C6CDABF303264A08D1BCA932D1F1EE428B619D970F342ABA9A65793B8B2F041AE5364350C16F735F56ECBCA87BD57B29E7", 16);
-
+    
     private static final BigInteger G = new BigInteger("2");
-
+    
     private static final BigInteger K = new BigInteger("1277432915985975349439481660349303019122249719989");
-
+    
     private static final SecureRandom RANDOM = new SecureRandom();
-
+    
     private static final byte SEPARATOR_BYTE = (byte) ':';
-
+    
     private final MessageDigest sha1Md;
-
+    
     private final String clientProofHashAlgorithm;
-
+    
     private final BigInteger clientPublicKey;
-
+    
     private final BigInteger publicKey;
-
+    
     private final BigInteger privateKey;
-
+    
     private final byte[] salt;
-
+    
     private final BigInteger verifier;
-
+    
     private byte[] sessionKey;
-
+    
     @SneakyThrows
     public FirebirdSRPAuthenticationData(final String hashAlgorithm, final String username, final String password, final String userPublicKey) {
         sha1Md = MessageDigest.getInstance("SHA-1");
@@ -83,15 +83,15 @@ public final class FirebirdSRPAuthenticationData {
         verifier = G.modPow(getUserHash(normalizeLogin(username), password, salt), N);
         publicKey = computePublicKey();
     }
-
+    
     private static BigInteger fromBigByteArray(final byte[] bytes) {
         return new BigInteger(1, bytes);
     }
-
+    
     private static byte[] toBigByteArray(final BigInteger n) {
         return stripLeadingZeroes(n.toByteArray());
     }
-
+    
     private static byte[] stripLeadingZeroes(final byte[] bytes) {
         if (bytes[0] != 0) {
             return bytes;
@@ -102,11 +102,11 @@ public final class FirebirdSRPAuthenticationData {
         }
         return Arrays.copyOfRange(bytes, i, bytes.length);
     }
-
+    
     private static String padHexBinary(final String hexString) {
         return (hexString.length() % 2 != 0) ? '0' + hexString : hexString;
     }
-
+    
     private byte[] sha1(final byte[] bytes) {
         try {
             return sha1Md.digest(bytes);
@@ -114,7 +114,7 @@ public final class FirebirdSRPAuthenticationData {
             sha1Md.reset();
         }
     }
-
+    
     private byte[] sha1(final byte[] bytes1, final byte[] bytes2) {
         try {
             sha1Md.update(bytes1);
@@ -123,7 +123,7 @@ public final class FirebirdSRPAuthenticationData {
             sha1Md.reset();
         }
     }
-
+    
     private static byte[] pad(final BigInteger n) {
         final byte[] byteArray = toBigByteArray(n);
         if (byteArray.length > SRP_KEY_SIZE) {
@@ -131,27 +131,27 @@ public final class FirebirdSRPAuthenticationData {
         }
         return byteArray;
     }
-
+    
     private BigInteger getScramble(final BigInteger x, final BigInteger y) {
         return fromBigByteArray(sha1(pad(x), pad(y)));
     }
-
+    
     private static BigInteger generateSecret() {
         return new BigInteger(SRP_KEY_SIZE, RANDOM);
     }
-
+    
     private static byte[] generateSalt() {
         byte[] saltBytes = new byte[SRP_SALT_SIZE];
         RANDOM.nextBytes(saltBytes);
         return saltBytes;
     }
-
+    
     private BigInteger computePublicKey() {
         BigInteger gb = G.modPow(privateKey, N);
         BigInteger kv = K.multiply(verifier).mod(N);
         return kv.add(gb).mod(N);
     }
-
+    
     private BigInteger getUserHash(final String user, final String password, final byte[] salt) {
         final byte[] hash1;
         try {
@@ -164,7 +164,7 @@ public final class FirebirdSRPAuthenticationData {
         final byte[] hash2 = sha1(salt, hash1);
         return fromBigByteArray(hash2);
     }
-
+    
     private byte[] computeServerSessionKey() {
         BigInteger u = getScramble(clientPublicKey, publicKey);
         BigInteger vu = verifier.modPow(u, N);
@@ -172,7 +172,7 @@ public final class FirebirdSRPAuthenticationData {
         BigInteger sessionSecret = avu.modPow(privateKey, N);
         return sha1(toBigByteArray(sessionSecret));
     }
-
+    
     /**
      * Generate server proof for SRP (Secure Remote Password) authentication.
      *
@@ -193,11 +193,11 @@ public final class FirebirdSRPAuthenticationData {
         sessionKey = serverSessionKey;
         return clientProof;
     }
-
+    
     public String getPublicKeyHex() {
         return ByteArrayHelper.toHexString(pad(publicKey));
     }
-
+    
     private byte[] clientProofHash(final byte[]... arrays) throws FirebirdProtocolException {
         try {
             MessageDigest md = MessageDigest.getInstance(clientProofHashAlgorithm);
@@ -209,7 +209,7 @@ public final class FirebirdSRPAuthenticationData {
             throw new FirebirdProtocolException("Unrecognised hash algorithm `%s`.", clientProofHashAlgorithm);
         }
     }
-
+    
     /**
      * Normalizes a login by uppercasing unquoted usernames, or stripping and unescaping (double) quoted user names.
      *
@@ -225,7 +225,7 @@ public final class FirebirdSRPAuthenticationData {
         }
         return login.toUpperCase(Locale.ROOT);
     }
-
+    
     private static String normalizeQuotedLogin(final String login) {
         final StringBuilder sb = new StringBuilder(login.length() - 2);
         sb.append(login, 1, login.length() - 1);

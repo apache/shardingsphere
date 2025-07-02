@@ -26,17 +26,17 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
  */
 @Getter
 public final class FirebirdAllocateStatementPacket extends FirebirdCommandPacket {
-
+    
     private final int databaseId;
-
+    
     public FirebirdAllocateStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         databaseId = payload.readInt4();
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-
+        
     }
     
     /**

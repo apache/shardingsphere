@@ -28,24 +28,24 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 public final class FirebirdFreeStatementPacket extends FirebirdCommandPacket {
     
     public static final int CLOSE = 1;
-
+    
     public static final int DROP = 2;
-
+    
     public static final int UNPREPARE = 4;
-
+    
     private final int statementId;
-
+    
     private final int option;
-
+    
     public FirebirdFreeStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         statementId = payload.readInt4();
         option = payload.readInt4();
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-
+        
     }
     
     /**
@@ -58,5 +58,3 @@ public final class FirebirdFreeStatementPacket extends FirebirdCommandPacket {
         return 12;
     }
 }
-
-

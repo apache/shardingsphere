@@ -32,23 +32,23 @@ import java.util.List;
  */
 @Getter
 public final class FirebirdAcceptPacket extends FirebirdPacket {
-
+    
     private static final int BATCH_SEND = 3;
-
+    
     private static final int COMPRESS = 0x100;
-
+    
     private static final int LAZY_SEND = 5;
-
+    
     private static final int MASK = 0xFF;
-
+    
     private static final int OUT_OF_BAND = 4;
-
+    
     private FirebirdCommandPacketType opCode;
-
+    
     private FirebirdProtocol protocol;
-
+    
     private FirebirdAcceptDataPacket acceptDataPacket;
-
+    
     public FirebirdAcceptPacket(final List<FirebirdProtocol> userProtocols) {
         opCode = FirebirdCommandPacketType.ACCEPT;
         protocol = userProtocols.remove(0);
@@ -59,7 +59,7 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
             }
         }
     }
-
+    
     /**
      * Set accept data packet.
      *
@@ -77,20 +77,20 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
         acceptDataPacket = new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys);
         opCode = FirebirdCommandPacketType.ACCEPT_DATA;
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        //Operation code
+        // Operation code
         payload.writeInt4(opCode.getValue());
-        //Protocol version
+        // Protocol version
         payload.writeInt4(protocol.getVersion().getCode());
-        //Architecture type
+        // Architecture type
         payload.writeInt4(protocol.getArch().getCode());
-        //Minimum type
+        // Minimum type
         int type = Math.min(protocol.getMaxType() & MASK, LAZY_SEND);
         int compress = protocol.getMaxType() & COMPRESS;
         payload.writeInt4(type | compress);
-
+        
         if (acceptDataPacket != null) {
             acceptDataPacket.write(payload);
         }

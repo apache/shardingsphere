@@ -36,19 +36,19 @@ import java.util.List;
 public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket implements SQLReceivedPacket {
     
     private final int transactionId;
-
+    
     private final int statementId;
-
+    
     private final int sqlDialect;
-
+    
     private final HintValueContext hintValueContext;
-
+    
     private final String sql;
-
+    
     private final List<FirebirdSQLInfoPacketType> infoItems = new ArrayList<>();
-
+    
     private int currentItemIdx = -1;
-
+    
     private final int maxLength;
     
     private final FirebirdPacketPayload payload;
@@ -75,7 +75,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     public boolean isValidStatementHandle() {
         return statementId != 0xFFFF;
     }
-
+    
     /**
      * Move to the next info item in the list.
      *
@@ -85,7 +85,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         ++currentItemIdx;
         return currentItemIdx < infoItems.size();
     }
-
+    
     public FirebirdSQLInfoPacketType getCurrentItem() {
         return infoItems.get(currentItemIdx);
     }
@@ -112,4 +112,3 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         return length + 4;
     }
 }
-

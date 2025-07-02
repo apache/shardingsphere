@@ -42,17 +42,17 @@ import java.util.TreeMap;
 public final class FirebirdConnectPacket extends FirebirdPacket {
     
     private final FirebirdCommandPacketType opCode;
-
+    
     private final int connectVersion;
-
+    
     private final FirebirdArchType archType;
-
+    
     private final String database;
-
+    
     private final int protocolsCount;
     
     private final Map<FirebirdUserDataType, String> userInfoMap = new HashMap<>();
-
+    
     private final List<FirebirdProtocol> userProtocols = new ArrayList<>();
     
     public FirebirdConnectPacket(final FirebirdPacketPayload payload) {
@@ -72,7 +72,7 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
             int length = userInfo.readUnsignedByte();
             ByteBuf data = userInfo.readRetainedSlice(length);
             if (type == FirebirdUserDataType.CNCT_SPECIFIC_DATA) {
-                //specific data can be split into chunks and (i think) can be in payload in random order
+                // specific data can be split into chunks and (i think) can be in payload in random order
                 int step = data.readUnsignedByte();
                 pendingData.put(step, data.toString(StandardCharsets.US_ASCII));
             } else {

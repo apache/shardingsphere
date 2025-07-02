@@ -32,15 +32,15 @@ import java.util.List;
  */
 @Getter
 public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
-
+    
     private final int statementId;
-
+    
     private final List<FirebirdBinaryColumnType> parameterTypes;
-
+    
     private final int message;
-
+    
     private final int fetchSize;
-
+    
     public FirebirdFetchStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         statementId = payload.readInt4();
@@ -88,10 +88,10 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
                 return 0;
         }
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-
+        
     }
     
     /**
@@ -106,5 +106,3 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
         return length + 8;
     }
 }
-
-

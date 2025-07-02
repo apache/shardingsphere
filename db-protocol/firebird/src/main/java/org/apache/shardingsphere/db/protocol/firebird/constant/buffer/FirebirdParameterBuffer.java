@@ -29,16 +29,16 @@ import java.util.function.Function;
 
 @RequiredArgsConstructor
 public final class FirebirdParameterBuffer {
-
+    
     @Getter
     private int version;
-
+    
     private final Map<FirebirdParameterBufferType, Object> parameterBuffer = new HashMap<>();
-
+    
     private final Function<Integer, FirebirdParameterBufferType> valueOf;
-
+    
     private final Function<Integer, Boolean> isTraditionalType;
-
+    
     /**
      * Parse parameter buffer from the given {@link ByteBuf}.
      *
@@ -51,7 +51,7 @@ public final class FirebirdParameterBuffer {
             parameterBuffer.put(type, parseValue(buffer, type));
         }
     }
-
+    
     private Object parseValue(final ByteBuf parameterBuffer, final FirebirdParameterBufferType type) {
         boolean traditionalStyle = isTraditionalType.apply(version);
         switch (type.getFormat()) {
@@ -71,7 +71,7 @@ public final class FirebirdParameterBuffer {
                 throw new FirebirdProtocolException("Unsupported format type %s", type.getFormat().name());
         }
     }
-
+    
     /**
      * Get property value.
      *

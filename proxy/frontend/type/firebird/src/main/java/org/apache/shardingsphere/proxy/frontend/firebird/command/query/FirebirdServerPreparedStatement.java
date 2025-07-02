@@ -41,8 +41,8 @@ public final class FirebirdServerPreparedStatement implements ServerPreparedStat
     private final SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext;
-
+    
     private final List<FirebirdBinaryColumnType> parameterTypes = new CopyOnWriteArrayList<>();
-
+    
     private final Map<Integer, byte[]> longData = new ConcurrentHashMap<>();
 }

@@ -28,37 +28,37 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
  */
 @Getter
 public final class FirebirdAttachPacket extends FirebirdPacket {
-
+    
     private final int id;
-
+    
     private final String database;
-
+    
     private final FirebirdParameterBuffer dpb = FirebirdDatabaseParameterBufferType.createBuffer();
-
+    
     public FirebirdAttachPacket(final FirebirdPacketPayload payload) {
         id = payload.readInt4();
         database = payload.readString();
         dpb.parseBuffer(payload.readBuffer());
     }
-
+    
     public String getEncoding() {
         return dpb.getValue(FirebirdDatabaseParameterBufferType.LC_CTYPE);
     }
-
+    
     public String getAuthData() {
         return dpb.getValue(FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA);
     }
-
+    
     public String getUsername() {
         return dpb.getValue(FirebirdDatabaseParameterBufferType.USER_NAME);
     }
-
+    
     public String getEncPassword() {
         return dpb.getValue(FirebirdDatabaseParameterBufferType.PASSWORD_ENC);
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-
+        
     }
 }
