@@ -72,7 +72,7 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
-        return new ShowStatement(null);
+        return new ShowStatement("");
     }
     
     @Override

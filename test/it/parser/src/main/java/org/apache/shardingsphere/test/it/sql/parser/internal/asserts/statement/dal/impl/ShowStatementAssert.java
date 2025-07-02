@@ -25,8 +25,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show statement assert.
@@ -42,11 +40,6 @@ public final class ShowStatementAssert {
      * @param expected expected show statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStatement actual, final ShowStatementTestCase expected) {
-        if (null == expected.getName()) {
-            assertFalse(actual.getName().isPresent(), assertContext.getText("Name should not exist."));
-        } else {
-            assertTrue(actual.getName().isPresent(), assertContext.getText("Name should exist."));
-            assertThat(assertContext.getText("Name assertion error: "), actual.getName().get(), is(expected.getName()));
-        }
+        assertThat(assertContext.getText("Name assertion error: "), actual.getName(), is(expected.getName()));
     }
 }

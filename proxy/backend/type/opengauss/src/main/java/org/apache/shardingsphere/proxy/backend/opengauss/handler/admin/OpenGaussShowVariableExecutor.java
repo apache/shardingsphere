@@ -65,7 +65,7 @@ public final class OpenGaussShowVariableExecutor implements DatabaseAdminQueryEx
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String name = showStatement.getName().orElse("").toLowerCase(Locale.ROOT);
+        String name = showStatement.getName().toLowerCase(Locale.ROOT);
         if (VARIABLE_ROW_DATA_GENERATORS.containsKey(name)) {
             queryResultMetaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", "", name, Types.VARCHAR, "VARCHAR", -1, 0)));
             OpenGaussShowVariableExecutor.VariableRowDataGenerator variableRowDataGenerator = VARIABLE_ROW_DATA_GENERATORS.getOrDefault(name, unused -> new String[]{"", "", ""});
