@@ -21,8 +21,10 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Optional;
 
 /**
  * Query result.
@@ -91,4 +93,13 @@ public interface QueryResult extends ExecuteResult, AutoCloseable {
      * @return query result meta data
      */
     QueryResultMetaData getMetaData();
+    
+    /**
+     * Get JDBC result set.
+     *
+     * @return JDBC result set
+     */
+    default Optional<ResultSet> getJDBCResultSet() {
+        return Optional.empty();
+    }
 }
