@@ -707,7 +707,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+        return new AlterUserStatement(null);
     }
     
     @Override

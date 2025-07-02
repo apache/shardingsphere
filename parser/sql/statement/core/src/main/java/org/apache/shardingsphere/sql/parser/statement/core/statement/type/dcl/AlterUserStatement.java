@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
+
 /**
  * Alter user statement.
  */
-public class AlterUserStatement extends DCLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterUserStatement extends DCLStatement {
+    
+    private final UserSegment user;
 }
