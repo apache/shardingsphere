@@ -31,5 +31,5 @@ import javax.xml.bind.annotation.XmlAttribute;
 public final class ShowStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute
-    private String name;
+    private String name = "";
 }
