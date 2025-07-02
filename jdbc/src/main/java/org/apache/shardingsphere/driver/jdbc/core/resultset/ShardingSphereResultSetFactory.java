@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * ShardingSphere result set factory.
@@ -64,16 +65,23 @@ public final class ShardingSphereResultSetFactory {
      */
     public ResultSet newInstance(final ShardingSphereDatabase database, final QueryContext queryContext, final List<QueryResult> queryResults,
                                  final Statement statement, final Map<String, Integer> columnLabelAndIndexMap) throws SQLException {
-        List<ResultSet> resultSets = getResultSets();
+        List<ResultSet> resultSets = getResultSets(queryResults);
         MergedResult mergedResult = new MergeEngine(metaData, database, props, connectionContext).merge(queryResults, queryContext.getSqlStatementContext());
         return new ShardingSphereResultSet(resultSets, mergedResult, statement, queryContext.getSqlStatementContext(),
                 null == columnLabelAndIndexMap
                         ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), resultSets.get(0).getMetaData())
                         : columnLabelAndIndexMap);
     }
-    
-    private List<ResultSet> getResultSets() throws SQLException {
+
+    private List<ResultSet> getResultSets(final Collection<QueryResult> queryResults) throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
+        for (QueryResult each : queryResults) {
+            Optional<ResultSet> jdbcResultSet = each.getJDBCResultSet();
+            jdbcResultSet.ifPresent(result::add);
+        }
+        if (!result.isEmpty()) {
+            return result;
+        }
         for (Statement each : statements) {
             ResultSet resultSet = each.getResultSet();
             if (null != resultSet) {

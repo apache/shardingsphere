@@ -43,7 +43,7 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     @Override
     protected final QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
         ResultSet resultSet = executeQuery(sql, statement);
-        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet, storageType);
+        return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet, true) : new JDBCMemoryQueryResult(resultSet, storageType, true);
     }
     
     @Override

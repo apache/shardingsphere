@@ -36,6 +36,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Optional;
 
 /**
  * JDBC query result for stream loading.
@@ -45,9 +46,16 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     
     private final ResultSet resultSet;
     
+    private final boolean containsJDBCResultSet;
+    
     public JDBCStreamQueryResult(final ResultSet resultSet) throws SQLException {
+        this(resultSet, false);
+    }
+    
+    public JDBCStreamQueryResult(final ResultSet resultSet, final boolean containsJDBCResultSet) throws SQLException {
         super(new JDBCQueryResultMetaData(resultSet.getMetaData()));
         this.resultSet = resultSet;
+        this.containsJDBCResultSet = containsJDBCResultSet;
     }
     
     @Override
@@ -148,6 +156,11 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     @Override
     public boolean wasNull() throws SQLException {
         return resultSet.wasNull();
+    }
+    
+    @Override
+    public Optional<ResultSet> getJDBCResultSet() {
+        return containsJDBCResultSet ? Optional.of(resultSet) : Optional.empty();
     }
     
     @Override
