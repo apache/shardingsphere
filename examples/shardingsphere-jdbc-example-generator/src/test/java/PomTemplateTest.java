@@ -28,11 +28,12 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Test case for pom template generation.
  */
-public class PomTemplateTest {
+public final class PomTemplateTest {
 
     private Configuration templateConfig;
 
@@ -43,7 +44,7 @@ public class PomTemplateTest {
     }
 
     @Test
-    public void testStandaloneJdbcRepository() throws IOException, TemplateException {
+    public void assertStandaloneJdbcRepository() throws IOException, TemplateException {
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("mode", "standalone");
         dataModel.put("repository", "JDBC");
@@ -51,17 +52,15 @@ public class PomTemplateTest {
         dataModel.put("framework", "spring-boot-starter-jdbc");
         dataModel.put("transaction", "local");
         dataModel.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
-        
         Template template = templateConfig.getTemplate("pom.ftl");
         StringWriter writer = new StringWriter();
         template.process(dataModel, writer);
-        
         String result = writer.toString();
         assertThat(result, containsString("shardingsphere-standalone-mode-repository-jdbc"));
     }
 
     @Test
-    public void testNoStandaloneJdbcRepository() throws IOException, TemplateException {
+    public void assertNoStandaloneJdbcRepository() throws IOException, TemplateException {
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("mode", "standalone");
         dataModel.put("repository", "File");
@@ -69,12 +68,10 @@ public class PomTemplateTest {
         dataModel.put("framework", "spring-boot-starter-jdbc");
         dataModel.put("transaction", "local");
         dataModel.put("shardingsphereVersion", "5.5.3-SNAPSHOT");
-        
         Template template = templateConfig.getTemplate("pom.ftl");
         StringWriter writer = new StringWriter();
         template.process(dataModel, writer);
-        
         String result = writer.toString();
-        assertThat(result, !containsString("shardingsphere-standalone-mode-repository-jdbc"));
+        assertThat(result, not(containsString("shardingsphere-standalone-mode-repository-jdbc")));
     }
 }
