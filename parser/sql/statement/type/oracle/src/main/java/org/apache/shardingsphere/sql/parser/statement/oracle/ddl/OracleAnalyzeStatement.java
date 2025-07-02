@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
+package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle analyze statement.
+ * Analyze statement for Oracle.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AnalyzeStatement extends DDLStatement {
+public final class OracleAnalyzeStatement extends DDLStatement {
     
     private final SimpleTableSegment table;
     
