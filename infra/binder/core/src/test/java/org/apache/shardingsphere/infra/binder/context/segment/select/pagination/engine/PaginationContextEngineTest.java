@@ -52,7 +52,7 @@ class PaginationContextEngineTest {
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(11, 20, 200L)));
         PaginationContext paginationContext = new PaginationContextEngine(
-                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
+                new DialectPaginationOption(false, "", false)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         assertThat(paginationContext.getOffsetSegment().get(), instanceOf(LimitValueSegment.class));
         assertTrue(paginationContext.getRowCountSegment().isPresent());
@@ -68,7 +68,7 @@ class PaginationContextEngineTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
         PaginationContext paginationContext = new PaginationContextEngine(
-                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
+                new DialectPaginationOption(false, "", true)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -83,7 +83,7 @@ class PaginationContextEngineTest {
         selectStatement.setWhere(where);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(
-                new DialectPaginationOption(true, "ROW_NUMBER")).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
+                new DialectPaginationOption(true, "ROW_NUMBER", false)).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertTrue(paginationContext.getRowCountSegment().isPresent());
         assertThat(paginationContext.getRowCountSegment().get(), instanceOf(NumberLiteralRowNumberValueSegment.class));
@@ -99,7 +99,7 @@ class PaginationContextEngineTest {
         selectStatement.setWhere(where);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(
-                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
+                new DialectPaginationOption(false, "", false)).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
@@ -110,7 +110,7 @@ class PaginationContextEngineTest {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(
-                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList());
+                new DialectPaginationOption(false, "", false)).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
