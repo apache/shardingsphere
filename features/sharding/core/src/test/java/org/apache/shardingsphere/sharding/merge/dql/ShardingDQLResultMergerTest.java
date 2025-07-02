@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedR
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
-import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
@@ -52,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -136,9 +134,6 @@ class ShardingDQLResultMergerTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -147,8 +142,7 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
+        assertThat(actual, instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
@@ -207,9 +201,6 @@ class ShardingDQLResultMergerTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -221,8 +212,7 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(oracleDatabaseType,
                 selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
+        assertThat(actual, instanceOf(OrderByStreamMergedResult.class));
     }
     
     @Test
@@ -284,9 +274,6 @@ class ShardingDQLResultMergerTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -299,8 +286,7 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(actual, instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
@@ -361,9 +347,6 @@ class ShardingDQLResultMergerTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -376,8 +359,7 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(actual, instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
@@ -439,9 +421,6 @@ class ShardingDQLResultMergerTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -454,8 +433,7 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(actual, instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
