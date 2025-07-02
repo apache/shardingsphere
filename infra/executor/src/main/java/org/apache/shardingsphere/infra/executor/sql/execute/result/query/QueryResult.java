@@ -58,7 +58,7 @@ public interface QueryResult extends ExecuteResult, AutoCloseable {
      * @return calendar value
      * @throws SQLException SQL exception
      */
-    Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
+    Object getCalendarValue(int columnIndex, Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") Calendar calendar) throws SQLException;
     
     /**
      * Get input stream.
