@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.RowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -63,14 +64,16 @@ class PaginationContextEngineTest {
     void assertCreatePaginationContextWithTopSegment() {
         SelectStatement subquerySelectStatement = new SelectStatement();
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, null, ""));
+        RowNumberValueSegment topValueSegment = new NumberLiteralRowNumberValueSegment(0, 0, 100L, false);
+        subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, topValueSegment, ""));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", true)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
-        assertFalse(paginationContext.getRowCountSegment().isPresent());
+        assertTrue(paginationContext.getRowCountSegment().isPresent());
+        assertThat(paginationContext.getRowCountSegment().get(), instanceOf(NumberLiteralRowNumberValueSegment.class));
     }
     
     @Test
