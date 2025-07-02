@@ -72,7 +72,7 @@ public final class ShardingSphereResultSetFactory {
                         ? ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(queryContext.getSqlStatementContext(), resultSets.get(0).getMetaData())
                         : columnLabelAndIndexMap);
     }
-
+    
     private List<ResultSet> getResultSets(final Collection<QueryResult> queryResults) throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (QueryResult each : queryResults) {
