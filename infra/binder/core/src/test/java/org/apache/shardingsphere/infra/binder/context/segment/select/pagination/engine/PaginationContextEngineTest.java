@@ -19,16 +19,21 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.pagination
 
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -42,53 +47,71 @@ import static org.mockito.Mockito.mock;
 class PaginationContextEngineTest {
     
     @Test
-    void assertCreatePaginationContextWhenLimitSegmentIsPresent() {
+    void assertCreatePaginationContextWithLimitSegment() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
-                new NumberLiteralLimitValueSegment(0, 10, 100L)));
-        PaginationContext paginationContext = new PaginationContextEngine(getDatabaseType("SQL92")).createPaginationContext(
-                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
+                new NumberLiteralLimitValueSegment(11, 20, 200L)));
+        PaginationContext paginationContext = new PaginationContextEngine(
+                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
+        assertThat(paginationContext.getOffsetSegment().get(), instanceOf(LimitValueSegment.class));
         assertTrue(paginationContext.getRowCountSegment().isPresent());
+        assertThat(paginationContext.getRowCountSegment().get(), instanceOf(LimitValueSegment.class));
     }
     
     @Test
-    void assertCreatePaginationContextWhenLimitSegmentAbsentAndTopSegmentPresent() {
+    void assertCreatePaginationContextWithTopSegment() {
         SelectStatement subquerySelectStatement = new SelectStatement();
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
-        subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, null, "rowNumberAlias"));
+        subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, null, ""));
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
-        PaginationContext paginationContext = new PaginationContextEngine(getDatabaseType("SQLServer")).createPaginationContext(
-                selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine(
+                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
     @Test
-    void assertCreatePaginationContextWhenLimitSegmentTopSegmentAbsentAndWhereSegmentPresent() {
+    void assertCreatePaginationContextWithWhereAndRowNumberSegment() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        WhereSegment where = new WhereSegment(0, 10, null);
+        BinaryOperationExpression binaryOperationExpr = new BinaryOperationExpression(
+                0, 5, new ColumnSegment(0, 5, new IdentifierValue("ROW_NUMBER")), new LiteralExpressionSegment(5, 10, 100), "<", "");
+        WhereSegment where = new WhereSegment(0, 10, binaryOperationExpr);
         selectStatement.setWhere(where);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        PaginationContext paginationContext = new PaginationContextEngine(getDatabaseType("SQLServer")).createPaginationContext(
-                selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
+        PaginationContext paginationContext = new PaginationContextEngine(
+                new DialectPaginationOption(true, "ROW_NUMBER")).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertTrue(paginationContext.getRowCountSegment().isPresent());
+        assertThat(paginationContext.getRowCountSegment().get(), instanceOf(NumberLiteralRowNumberValueSegment.class));
+    }
+    
+    @Test
+    void assertCreatePaginationContextWithWhereAndWithoutRowNumberSegment() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        BinaryOperationExpression binaryOperationExpr = new BinaryOperationExpression(
+                0, 5, new ColumnSegment(0, 5, new IdentifierValue("ROW_NUMBER")), new LiteralExpressionSegment(5, 10, 100), "<", "");
+        WhereSegment where = new WhereSegment(0, 10, binaryOperationExpr);
+        selectStatement.setWhere(where);
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
+        PaginationContext paginationContext = new PaginationContextEngine(
+                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
         assertFalse(paginationContext.getOffsetSegment().isPresent());
         assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
     
     @Test
-    void assertCreatePaginationContextWhenResultIsPaginationContext() {
+    void assertCreatePaginationContextWithEmpty() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
-        assertThat(new PaginationContextEngine(getDatabaseType("SQL92")).createPaginationContext(
-                selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList()), instanceOf(PaginationContext.class));
-    }
-    
-    private DatabaseType getDatabaseType(final String databaseType) {
-        return TypedSPILoader.getService(DatabaseType.class, databaseType);
+        PaginationContext paginationContext = new PaginationContextEngine(
+                new DialectPaginationOption(false, "")).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList());
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
     }
 }

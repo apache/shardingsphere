@@ -21,10 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -44,7 +43,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class PaginationContextEngine {
     
-    private final DatabaseType databaseType;
+    private final DialectPaginationOption paginationOption;
     
     /**
      * Create pagination context.
@@ -61,24 +60,35 @@ public final class PaginationContextEngine {
         if (limitSegment.isPresent()) {
             return new LimitPaginationContextEngine().createPaginationContext(limitSegment.get(), params);
         }
-        Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         Collection<ExpressionSegment> expressions = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
             expressions.add(each.getExpr());
         }
+        Optional<TopProjectionSegment> topProjectionSegment = findTopProjection(selectStatement);
         if (topProjectionSegment.isPresent()) {
             return new TopPaginationContextEngine().createPaginationContext(topProjectionSegment.get(), expressions, params);
         }
-        if (!expressions.isEmpty()) {
-            DialectPaginationOption paginationOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption();
-            if (paginationOption.isContainsRowNumber()) {
-                return new RowNumberPaginationContextEngine(paginationOption).createPaginationContext(expressions, projectionsContext, params);
-            }
+        if (!expressions.isEmpty() && paginationOption.isContainsRowNumber()) {
+            return new RowNumberPaginationContextEngine(paginationOption).createPaginationContext(expressions, projectionsContext, params);
         }
         return new PaginationContext(null, null, params);
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof SubqueryProjectionSegment) {
+                return findTopProjection0(((SubqueryProjectionSegment) each).getSubquery().getSelect());
+            }
+        }
+        return findTopProjection0(selectStatement);
+    }
+    
+    private Optional<TopProjectionSegment> findTopProjection0(final SelectStatement selectStatement) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof TopProjectionSegment) {
+                return Optional.of((TopProjectionSegment) each);
+            }
+        }
         List<SubqueryTableSegment> subqueryTableSegments = selectStatement.getFrom().map(SQLUtils::getSubqueryTableSegmentFromTableSegment).orElse(Collections.emptyList());
         for (SubqueryTableSegment subquery : subqueryTableSegments) {
             SelectStatement subquerySelect = subquery.getSubquery().getSelect();

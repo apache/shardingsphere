@@ -39,7 +39,9 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
@@ -130,7 +132,8 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine(databaseType).createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(databaseType).createProjectionsContext(sqlStatement.getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine(databaseType).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        DialectPaginationOption paginationOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption();
+        paginationContext = new PaginationContextEngine(paginationOption).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
         containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), currentDatabaseName);
     }
     
@@ -420,6 +423,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
     
     @Override
     public void setUpParameters(final List<Object> params) {
-        paginationContext = new PaginationContextEngine(getDatabaseType()).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        DialectPaginationOption paginationOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getPaginationOption();
+        paginationContext = new PaginationContextEngine(paginationOption).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
     }
 }
