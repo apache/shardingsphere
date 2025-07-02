@@ -74,6 +74,16 @@ class PaginationContextEngineTest {
     }
     
     @Test
+    void assertCreatePaginationContextWithoutTopSegment() {
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        PaginationContext paginationContext = new PaginationContextEngine(
+                new DialectPaginationOption(false, "", true)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
+        assertFalse(paginationContext.getOffsetSegment().isPresent());
+        assertFalse(paginationContext.getRowCountSegment().isPresent());
+    }
+    
+    @Test
     void assertCreatePaginationContextWithWhereAndRowNumberSegment() {
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
