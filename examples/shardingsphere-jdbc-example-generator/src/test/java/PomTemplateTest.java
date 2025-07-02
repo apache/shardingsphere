@@ -34,18 +34,18 @@ import static org.hamcrest.Matchers.not;
  * Test case for pom template generation.
  */
 public final class PomTemplateTest {
-
+    
     private Configuration templateConfig;
-
+    
     @BeforeEach
     public void setUp() {
         templateConfig = new Configuration(Configuration.VERSION_2_3_31);
         templateConfig.setClassLoaderForTemplateLoading(getClass().getClassLoader(), "/template");
     }
-
+    
     @Test
     public void assertStandaloneJdbcRepository() throws IOException, TemplateException {
-        Map<String, Object> dataModel = new HashMap<>();
+        Map<String, Object> dataModel = new HashMap<>(6, 1F);
         dataModel.put("mode", "standalone");
         dataModel.put("repository", "JDBC");
         dataModel.put("feature", "sharding");
@@ -58,10 +58,10 @@ public final class PomTemplateTest {
         String result = writer.toString();
         assertThat(result, containsString("shardingsphere-standalone-mode-repository-jdbc"));
     }
-
+    
     @Test
     public void assertNoStandaloneJdbcRepository() throws IOException, TemplateException {
-        Map<String, Object> dataModel = new HashMap<>();
+        Map<String, Object> dataModel = new HashMap<>(6, 1F);
         dataModel.put("mode", "standalone");
         dataModel.put("repository", "File");
         dataModel.put("feature", "sharding");
