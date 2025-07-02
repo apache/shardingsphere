@@ -60,7 +60,7 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        LocalDateTime dateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
+        LocalDateTime dateTime = getLocalDateTime(value);
         int year = dateTime.getYear();
         int month = dateTime.getMonthValue();
         int dayOfMonth = dateTime.getDayOfMonth();
@@ -85,6 +85,16 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
         writeDate(payload, year, month, dayOfMonth);
         writeTime(payload, hours, minutes, seconds);
         writeNanos(payload, nanos);
+    }
+    
+    private LocalDateTime getLocalDateTime(final Object value) {
+        if (value instanceof LocalDate) {
+            return ((LocalDate) value).atStartOfDay();
+        }
+        if (value instanceof LocalDateTime) {
+            return (LocalDateTime) value;
+        }
+        return new Timestamp(((Date) value).getTime()).toLocalDateTime();
     }
     
     private void writeDate(final MySQLPacketPayload payload, final int year, final int month, final int dayOfMonth) {
