@@ -74,7 +74,7 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     
     @Override
     public DialectPaginationOption getPaginationOption() {
-        return new DialectPaginationOption(true, "ROWNUM");
+        return new DialectPaginationOption(true, "ROWNUM", false);
     }
     
     @Override

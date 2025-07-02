@@ -30,4 +30,6 @@ public final class DialectPaginationOption {
     private final boolean containsRowNumber;
     
     private final String rowNumberColumnName;
+    
+    private final boolean containsTop;
 }
