@@ -50,7 +50,7 @@ class RowNumberPaginationContextEngineTest {
     
     private static final String ROW_NUMBER_COLUMN_ALIAS = "predicateRowNumberAlias";
     
-    private final RowNumberPaginationContextEngine paginationContextEngine = new RowNumberPaginationContextEngine(new DialectPaginationOption(true, "ROWNUM"));
+    private final RowNumberPaginationContextEngine paginationContextEngine = new RowNumberPaginationContextEngine(new DialectPaginationOption(true, "ROWNUM", false));
     
     @Test
     void assertCreatePaginationContextWhenRowNumberAliasNotPresent() {
