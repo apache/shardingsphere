@@ -51,10 +51,10 @@ public final class AlterIndexStatementContext implements SQLStatementContext, In
     @Override
     public Collection<IndexSegment> getIndexes() {
         Collection<IndexSegment> result = new LinkedList<>();
-        if (getSqlStatement().getIndex().isPresent()) {
-            result.add(getSqlStatement().getIndex().get());
+        if (sqlStatement.getIndex().isPresent()) {
+            result.add(sqlStatement.getIndex().get());
         }
-        getSqlStatement().getRenameIndex().ifPresent(result::add);
+        sqlStatement.getRenameIndex().ifPresent(result::add);
         return result;
     }
     

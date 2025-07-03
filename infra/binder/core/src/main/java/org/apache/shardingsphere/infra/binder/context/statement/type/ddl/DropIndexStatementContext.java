@@ -49,7 +49,7 @@ public final class DropIndexStatementContext implements SQLStatementContext, Ind
     
     @Override
     public Collection<IndexSegment> getIndexes() {
-        return getSqlStatement().getIndexes();
+        return sqlStatement.getIndexes();
     }
     
     @Override

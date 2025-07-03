@@ -68,7 +68,7 @@ public final class CreateTableStatementContext implements SQLStatementContext, I
     @Override
     public Collection<IndexSegment> getIndexes() {
         Collection<IndexSegment> result = new LinkedList<>();
-        for (ConstraintDefinitionSegment each : getSqlStatement().getConstraintDefinitions()) {
+        for (ConstraintDefinitionSegment each : sqlStatement.getConstraintDefinitions()) {
             each.getIndexName().ifPresent(result::add);
         }
         return result;
@@ -76,6 +76,6 @@ public final class CreateTableStatementContext implements SQLStatementContext, I
     
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
-        return getSqlStatement().getConstraintDefinitions().stream().flatMap(each -> each.getIndexColumns().stream()).collect(Collectors.toList());
+        return sqlStatement.getConstraintDefinitions().stream().flatMap(each -> each.getIndexColumns().stream()).collect(Collectors.toList());
     }
 }
