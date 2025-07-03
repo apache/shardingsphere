@@ -34,8 +34,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -79,7 +77,7 @@ class ShardingDDLResultMergerTest {
     }
     
     private FetchStatementContext createFetchStatementContext(final ShardingSphereDatabase database) {
-        FetchStatementContext result = new FetchStatementContext(databaseType, mockFetchStatement());
+        FetchStatementContext result = new FetchStatementContext(databaseType, new FetchStatement(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }
@@ -116,16 +114,6 @@ class ShardingDDLResultMergerTest {
         when(result.getMetaData().getColumnCount()).thenReturn(1);
         when(result.getMetaData().getColumnLabel(1)).thenReturn("count(*)");
         when(result.getValue(1, Object.class)).thenReturn(0);
-        return result;
-    }
-    
-    private FetchStatement mockFetchStatement() {
-        FetchStatement result = mock(FetchStatement.class);
-        when(result.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")));
-        when(result.getDirection()).thenReturn(Optional.empty());
-        CursorSQLStatementAttribute cursorSQLStatementAttribute = mock(CursorSQLStatementAttribute.class);
-        when(cursorSQLStatementAttribute.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor"))));
-        when(result.getAttributes()).thenReturn(new SQLStatementAttributes(cursorSQLStatementAttribute));
         return result;
     }
 }

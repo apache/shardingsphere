@@ -28,8 +28,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,10 +89,8 @@ class ShardingUnicastRouteEngineTest {
     
     @Test
     void assertRoutingForBroadcastTableWithCursorStatement() {
-        CursorStatement sqlStatement = mock(CursorStatement.class);
-        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(mock(CursorSQLStatementAttribute.class)));
         CursorStatementContext sqlStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new CursorStatement(null, null));
         RouteContext actual = new ShardingUnicastRouteEngine(sqlStatementContext, Collections.singleton("t_config"), new ConnectionContext(Collections::emptySet)).route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));

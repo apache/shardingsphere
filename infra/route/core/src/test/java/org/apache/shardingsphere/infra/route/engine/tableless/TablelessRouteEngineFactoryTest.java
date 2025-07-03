@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
@@ -148,11 +147,8 @@ class TablelessRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCloseAllStatement() {
         CloseStatementContext closeStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
-        CloseStatement closeStatement = mock(CloseStatement.class);
-        when(closeStatement.isCloseAll()).thenReturn(true);
-        when(closeStatement.getAttributes()).thenReturn(new SQLStatementAttributes(mock(CursorSQLStatementAttribute.class)));
         when(closeStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
-        when(closeStatementContext.getSqlStatement()).thenReturn(closeStatement);
+        when(closeStatementContext.getSqlStatement()).thenReturn(new CloseStatement(null, true));
         QueryContext queryContext = new QueryContext(closeStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
         assertThat(actual, instanceOf(TablelessDataSourceBroadcastRouteEngine.class));

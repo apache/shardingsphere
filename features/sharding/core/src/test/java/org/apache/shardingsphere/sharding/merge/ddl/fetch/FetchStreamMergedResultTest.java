@@ -34,8 +34,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Di
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -99,21 +97,12 @@ class FetchStreamMergedResultTest {
     }
     
     private static FetchStatement createFetchStatement(final boolean containsAllDirectionType) {
-        FetchStatement result = mock(FetchStatement.class);
-        when(result.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")));
-        if (containsAllDirectionType) {
-            when(result.getDirection()).thenReturn(Optional.of(new DirectionSegment(0, 0, DirectionType.ALL)));
-        }
-        CursorSQLStatementAttribute cursorSQLStatementAttribute = mock(CursorSQLStatementAttribute.class);
-        when(cursorSQLStatementAttribute.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor"))));
-        when(result.getAttributes()).thenReturn(new SQLStatementAttributes(cursorSQLStatementAttribute));
-        return result;
+        return new FetchStatement(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), containsAllDirectionType ? new DirectionSegment(0, 0, DirectionType.ALL) : null);
     }
     
     private static CursorStatementContext mockCursorStatementContext() {
-        CursorStatement cursorStatement = mock(CursorStatement.class);
         SelectStatement selectStatement = mockSelectStatement();
-        when(cursorStatement.getSelect()).thenReturn(selectStatement);
+        CursorStatement cursorStatement = new CursorStatement(null, selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), DATABASE_TYPE, Collections.emptyList(), cursorStatement, "foo_db");

@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 
-import java.util.Optional;
-
 /**
  * Close statement.
  */
@@ -35,15 +33,6 @@ public final class CloseStatement extends DDLStatement {
     private final CursorNameSegment cursorName;
     
     private final boolean closeAll;
-    
-    /**
-     * Get cursor name.
-     *
-     * @return cursor name
-     */
-    public Optional<CursorNameSegment> getCursorName() {
-        return Optional.ofNullable(cursorName);
-    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

@@ -42,7 +42,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
@@ -230,9 +229,7 @@ class ShardingRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCursorStatementWithShardingTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        CursorStatement cursorStatement = mock(CursorStatement.class);
-        when(cursorStatement.getAttributes()).thenReturn(new SQLStatementAttributes(mock(CursorSQLStatementAttribute.class)));
-        when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
+        when(cursorStatementContext.getSqlStatement()).thenReturn(new CursorStatement(null, null));
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);
@@ -248,9 +245,7 @@ class ShardingRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCursorStatementWithSingleTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        CursorStatement cursorStatement = mock(CursorStatement.class);
-        when(cursorStatement.getAttributes()).thenReturn(new SQLStatementAttributes(mock(CursorSQLStatementAttribute.class)));
-        when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
+        when(cursorStatementContext.getSqlStatement()).thenReturn(new CursorStatement(null, null));
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);
         when(cursorStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());

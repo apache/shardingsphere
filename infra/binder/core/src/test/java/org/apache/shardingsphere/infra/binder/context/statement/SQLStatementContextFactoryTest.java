@@ -88,11 +88,9 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertNewInstanceForCursorStatement() {
-        CursorStatement cursorStatement = mock(CursorStatement.class, RETURNS_DEEP_STUBS);
         SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        when(cursorStatement.getSelect()).thenReturn(selectStatement);
-        when(cursorStatement.getComments()).thenReturn(Collections.emptyList());
+        CursorStatement cursorStatement = new CursorStatement(null, selectStatement);
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }
