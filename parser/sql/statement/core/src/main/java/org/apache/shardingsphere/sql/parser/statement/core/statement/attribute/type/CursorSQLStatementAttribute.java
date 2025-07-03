@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 import java.util.Optional;
 
 /**
- * Cursor context available.
+ * Cursor SQL statement attribute.
  */
-public interface CursorContextAvailable {
+@RequiredArgsConstructor
+public final class CursorSQLStatementAttribute implements SQLStatementAttribute {
+    
+    private final CursorNameSegment cursorName;
     
     /**
      * Get cursor name segment.
      *
      * @return cursor name segment
      */
-    Optional<CursorNameSegment> getCursorName();
+    public Optional<CursorNameSegment> getCursorName() {
+        return Optional.ofNullable(cursorName);
+    }
 }

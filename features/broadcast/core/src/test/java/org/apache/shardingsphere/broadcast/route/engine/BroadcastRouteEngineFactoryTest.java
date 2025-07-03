@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
@@ -82,6 +83,7 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithCursorContextAvailableAndIsAllBroadcastTables() {
         CloseStatementContext sqlStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new CloseStatement(mock(), false));
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastUnicastRouteEngine.class));
@@ -90,7 +92,7 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithDDLStatementAndIsAllBroadcastTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class, RETURNS_DEEP_STUBS));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(SQLStatementContextExtractor.getTableNames(database, sqlStatementContext)).thenReturn(Collections.singleton("foo_tbl"));
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastTableBroadcastRouteEngine.class));

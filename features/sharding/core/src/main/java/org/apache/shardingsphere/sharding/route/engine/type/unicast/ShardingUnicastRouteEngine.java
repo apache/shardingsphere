@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.sharding.exception.syntax.DataSourceIntersectio
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 
 import java.util.ArrayList;
@@ -78,7 +78,9 @@ public final class ShardingUnicastRouteEngine implements ShardingRouteEngine {
     }
     
     private String getDataSourceName(final Collection<String> dataSourceNames) {
-        return sqlStatementContext instanceof CursorContextAvailable || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent() || isViewStatementContext(sqlStatementContext)
+                ? dataSourceNames.iterator().next()
+                : getRandomDataSourceName(dataSourceNames);
     }
     
     private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {

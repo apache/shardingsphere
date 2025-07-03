@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 
 /**
  * Close statement.
@@ -34,12 +34,8 @@ public final class CloseStatement extends DDLStatement {
     
     private final boolean closeAll;
     
-    /**
-     * Get cursor name.
-     *
-     * @return cursor name
-     */
-    public Optional<CursorNameSegment> getCursorName() {
-        return Optional.ofNullable(cursorName);
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }
