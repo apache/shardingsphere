@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Alter table statement context.
@@ -77,11 +78,11 @@ public final class AlterTableStatementContext implements SQLStatementContext, In
     @Override
     public Collection<IndexSegment> getIndexes() {
         Collection<IndexSegment> result = new LinkedList<>();
-        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
+        for (AddConstraintDefinitionSegment each : sqlStatement.getAddConstraintDefinitions()) {
             each.getConstraintDefinition().getIndexName().ifPresent(result::add);
         }
-        getSqlStatement().getDropIndexDefinitions().stream().map(DropIndexDefinitionSegment::getIndexSegment).forEach(result::add);
-        for (RenameIndexDefinitionSegment each : getSqlStatement().getRenameIndexDefinitions()) {
+        sqlStatement.getDropIndexDefinitions().stream().map(DropIndexDefinitionSegment::getIndexSegment).forEach(result::add);
+        for (RenameIndexDefinitionSegment each : sqlStatement.getRenameIndexDefinitions()) {
             result.add(each.getIndexSegment());
             result.add(each.getRenameIndexSegment());
         }
@@ -90,10 +91,6 @@ public final class AlterTableStatementContext implements SQLStatementContext, In
     
     @Override
     public Collection<ColumnSegment> getIndexColumns() {
-        Collection<ColumnSegment> result = new LinkedList<>();
-        for (AddConstraintDefinitionSegment each : getSqlStatement().getAddConstraintDefinitions()) {
-            result.addAll(each.getConstraintDefinition().getIndexColumns());
-        }
-        return result;
+        return sqlStatement.getAddConstraintDefinitions().stream().flatMap(each -> each.getConstraintDefinition().getIndexColumns().stream()).collect(Collectors.toList());
     }
 }
