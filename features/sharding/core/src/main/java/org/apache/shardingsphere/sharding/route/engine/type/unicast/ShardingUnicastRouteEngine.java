@@ -78,8 +78,9 @@ public final class ShardingUnicastRouteEngine implements ShardingRouteEngine {
     }
     
     private String getDataSourceName(final Collection<String> dataSourceNames) {
-        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
-                || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent() || isViewStatementContext(sqlStatementContext)
+                ? dataSourceNames.iterator().next()
+                : getRandomDataSourceName(dataSourceNames);
     }
     
     private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {
