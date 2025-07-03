@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
-import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -78,7 +78,7 @@ public final class CursorStatementContext implements SQLStatementContext, Cursor
     
     @Override
     public Optional<CursorNameSegment> getCursorName() {
-        return Optional.of(getSqlStatement().getCursorName());
+        return Optional.of(sqlStatement.getCursorName());
     }
     
     @Override
