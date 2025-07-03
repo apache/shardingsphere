@@ -57,7 +57,7 @@ public final class CreateIndexStatementContext implements SQLStatementContext, I
     public Collection<IndexSegment> getIndexes() {
         if (null == sqlStatement.getIndex()) {
             return sqlStatement.getGeneratedIndexStartIndex().map(each -> Collections.singletonList(new IndexSegment(each, each,
-                    new IndexNameSegment(each, each, new IdentifierValue(IndexMetaDataUtils.getGeneratedLogicIndexName(getSqlStatement().getColumns())))))).orElseGet(Collections::emptyList);
+                    new IndexNameSegment(each, each, new IdentifierValue(IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())))))).orElseGet(Collections::emptyList);
         }
         return Collections.singleton(sqlStatement.getIndex());
     }
