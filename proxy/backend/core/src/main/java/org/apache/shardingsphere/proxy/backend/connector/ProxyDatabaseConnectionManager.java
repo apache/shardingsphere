@@ -22,6 +22,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
@@ -53,6 +54,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Database connection manager of ShardingSphere-Proxy.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Getter
 public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
@@ -70,6 +72,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
+    
+    private final Object closeLock = new Object();
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
@@ -259,7 +263,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @throws BackendConnectionException backend connection exception
      */
     public void closeExecutionResources() throws BackendConnectionException {
-        synchronized (this) {
+        synchronized (closeLock) {
             Collection<Exception> result = new LinkedList<>(closeHandlers(false));
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext()))) {
                 result.addAll(closeHandlers(true));
@@ -277,12 +281,16 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     /**
      * Close all resources.
+     *
+     * @return exceptions occurred during closing resources
      */
-    public void closeAllResources() {
-        synchronized (this) {
+    public Collection<SQLException> closeAllResources() {
+        synchronized (closeLock) {
             closed.set(true);
-            closeHandlers(true);
-            closeConnections(true);
+            Collection<SQLException> result = new LinkedList<>();
+            result.addAll(closeHandlers(true));
+            result.addAll(closeConnections(true));
+            return result;
         }
     }
     
@@ -326,9 +334,17 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                     if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                         each.rollback();
                     }
-                    each.close();
                 } catch (final SQLException ex) {
                     result.add(ex);
+                } finally {
+                    try {
+                        each.close();
+                    } catch (final SQLException ex) {
+                        if (!isClosed(each)) {
+                            log.warn("Close connection {} failed.", each, ex);
+                        }
+                        result.add(ex);
+                    }
                 }
             }
             cachedConnections.clear();
@@ -337,6 +353,16 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             connectionPostProcessors.clear();
         }
         return result;
+    }
+    
+    private boolean isClosed(final Connection connection) {
+        try {
+            if (connection.isClosed()) {
+                return true;
+            }
+        } catch (final SQLException ignored) {
+        }
+        return false;
     }
     
     private void resetSessionVariablesIfNecessary(final Collection<Connection> values, final Collection<SQLException> exceptions) {
