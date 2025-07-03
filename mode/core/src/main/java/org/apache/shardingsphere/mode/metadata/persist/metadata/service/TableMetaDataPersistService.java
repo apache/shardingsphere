@@ -78,11 +78,11 @@ public final class TableMetaDataPersistService {
      * @param tables to be persisted tables
      */
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
-        for (ShardingSphereTable each : tables) {
+        tables.parallelStream().forEach(each -> {
             String tableName = each.getName().toLowerCase();
             VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath(databaseName, schemaName, tableName));
             versionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
-        }
+        });
     }
     
     /**

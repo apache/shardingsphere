@@ -49,6 +49,7 @@
 1. SQL Parser: Support Oracle create table with lob storage clause sql parsing - [#35782](https://github.com/apache/shardingsphere/pull/35782)
 1. SQL Parser: Support Oracle multiple backslash literal parsing - [#35784](https://github.com/apache/shardingsphere/pull/35784)
 1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
+1. Mode: Optimize table metadata persistence performance for SINGLE table rule by implementing parallel processing - [#35500](https://github.com/apache/shardingsphere/issues/35500)
 
 ### Bug Fixes
 
