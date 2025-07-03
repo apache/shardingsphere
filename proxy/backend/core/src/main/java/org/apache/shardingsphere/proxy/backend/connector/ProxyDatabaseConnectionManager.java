@@ -341,7 +341,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                         each.close();
                     } catch (final SQLException ex) {
                         if (!isClosed(each)) {
-                            log.error("Connection {} is not closed", each);
+                            log.warn("Close connection {} failed.", each, ex);
                         }
                         result.add(ex);
                     }
