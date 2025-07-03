@@ -33,13 +33,23 @@ class PostgreSQLInt4BinaryProtocolValueTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
-    
+
     @Test
-    void assertNewInstance() {
+    void assertGetColumnLength() {
         PostgreSQLInt4BinaryProtocolValue actual = new PostgreSQLInt4BinaryProtocolValue();
         assertThat(actual.getColumnLength(payload, null), is(4));
+    }
+
+    @Test
+    void assertRead() {
+        PostgreSQLInt4BinaryProtocolValue actual = new PostgreSQLInt4BinaryProtocolValue();
         when(payload.readInt4()).thenReturn(1);
         assertThat(actual.read(payload, 4), is(1));
+    }
+
+    @Test
+    void assertWrite() {
+        PostgreSQLInt4BinaryProtocolValue actual = new PostgreSQLInt4BinaryProtocolValue();
         actual.write(payload, 1);
         verify(payload).writeInt4(1);
     }
