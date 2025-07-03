@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SpoolStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Oracle Spool statement.
+ * Spool statement for Oracle.
  */
-public final class OracleSpoolStatement extends SpoolStatement implements OracleStatement {
+@RequiredArgsConstructor
+@Getter
+public final class OracleSpoolStatement extends DALStatement {
+    
+    private final String fileName;
 }

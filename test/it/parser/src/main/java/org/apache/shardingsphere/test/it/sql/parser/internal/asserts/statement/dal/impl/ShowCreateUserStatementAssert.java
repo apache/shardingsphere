@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateUserStatementTestCase;
 
@@ -40,7 +40,7 @@ public final class ShowCreateUserStatementAssert {
      * @param actual actual show create user statement
      * @param expected expected show create user statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowCreateUserStatement actual, final ShowCreateUserStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateUserStatement actual, final ShowCreateUserStatementTestCase expected) {
         assertNotNull(expected.getUser(), assertContext.getText("expected show create user should be not null"));
         assertThat(assertContext.getText("user name does not match: "), actual.getName(), is(expected.getUser().getName()));
     }

@@ -27,10 +27,11 @@ public interface PostgreSQLBinaryProtocolValue {
     /**
      * Get column length.
      *
+     * @param payload payload operation for PostgreSQL packet
      * @param value value of column
      * @return column length
      */
-    int getColumnLength(Object value);
+    int getColumnLength(PostgreSQLPacketPayload payload, Object value);
     
     /**
      * Read binary protocol value.

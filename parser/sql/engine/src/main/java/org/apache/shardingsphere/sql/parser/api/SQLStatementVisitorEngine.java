@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
@@ -55,9 +54,9 @@ public final class SQLStatementVisitorEngine {
     }
     
     private <T> void appendSQLComments(final ParseASTNode parseASTNode, final T visitResult) {
-        if (visitResult instanceof AbstractSQLStatement) {
+        if (visitResult instanceof SQLStatement) {
             for (Token each : parseASTNode.getHiddenTokens()) {
-                ((AbstractSQLStatement) visitResult).getCommentSegments().add(new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex()));
+                ((SQLStatement) visitResult).getComments().add(new CommentSegment(each.getText(), each.getStartIndex(), each.getStopIndex()));
             }
         }
     }

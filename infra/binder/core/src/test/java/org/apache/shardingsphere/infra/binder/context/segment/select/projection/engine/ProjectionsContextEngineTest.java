@@ -101,21 +101,6 @@ class ProjectionsContextEngineTest {
     }
     
     @Test
-    void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerAbsent() {
-        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
-        OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));
-        owner.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        shorthandProjectionSegment.setOwner(owner);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        projectionsSegment.getProjections().add(shorthandProjectionSegment);
-        OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("name")), OrderDirection.ASC, NullsOrderType.FIRST));
-        OrderByContext orderByContext = new OrderByContext(Collections.singletonList(orderByItem), true);
-        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
-        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
-        assertNotNull(actual);
-    }
-    
-    @Test
     void assertCreateProjectionsContextWhenColumnOrderByItemSegmentOwnerPresent() {
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
         OwnerSegment owner = new OwnerSegment(0, 10, new IdentifierValue("name"));

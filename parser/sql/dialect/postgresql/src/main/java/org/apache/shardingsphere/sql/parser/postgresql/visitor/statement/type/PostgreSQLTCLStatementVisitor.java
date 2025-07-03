@@ -21,13 +21,11 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IsoLevelContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackPreparedContext;
@@ -40,24 +38,16 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Tr
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCheckpointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLLockStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARollbackStatement;
 
 /**
  * TCL statement visitor for PostgreSQL.
@@ -66,138 +56,109 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        PostgreSQLSetTransactionStatement result = new PostgreSQLSetTransactionStatement();
+        SetTransactionStatement result = new SetTransactionStatement();
         if (null != ctx.transactionModeList()) {
-            ctx.transactionModeList().transactionModeItem().forEach(each -> {
-                result.setAccessMode(getTransactionAccessType(each));
-                result.setIsolationLevel(getTransactionIsolationLevel(each));
-            });
+            for (TransactionModeItemContext each : ctx.transactionModeList().transactionModeItem()) {
+                result = new SetTransactionStatement(null, getTransactionIsolationLevel(each.isoLevel()), getTransactionAccessType(each));
+            }
         }
         return result;
     }
     
-    private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext modeItemContext) {
-        if (null != modeItemContext.ONLY()) {
-            return TransactionAccessType.READ_ONLY;
+    private TransactionIsolationLevel getTransactionIsolationLevel(final IsoLevelContext ctx) {
+        if (null == ctx) {
+            return null;
         }
-        if (null != modeItemContext.WRITE()) {
-            return TransactionAccessType.READ_WRITE;
+        if (null != ctx.UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != ctx.REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        if (null != ctx.SERIALIZABLE()) {
+            return TransactionIsolationLevel.SERIALIZABLE;
         }
         return null;
     }
     
-    private TransactionIsolationLevel getTransactionIsolationLevel(final TransactionModeItemContext modeItemContext) {
-        if (null == modeItemContext.isoLevel()) {
+    private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext ctx) {
+        if (null == ctx) {
             return null;
         }
-        if (null != modeItemContext.isoLevel().UNCOMMITTED()) {
-            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        if (null != ctx.ONLY()) {
+            return TransactionAccessType.READ_ONLY;
         }
-        if (null != modeItemContext.isoLevel().COMMITTED()) {
-            return TransactionIsolationLevel.READ_COMMITTED;
-        }
-        if (null != modeItemContext.isoLevel().REPEATABLE()) {
-            return TransactionIsolationLevel.REPEATABLE_READ;
-        }
-        if (null != modeItemContext.isoLevel().SERIALIZABLE()) {
-            return TransactionIsolationLevel.SERIALIZABLE;
+        if (null != ctx.WRITE()) {
+            return TransactionAccessType.READ_WRITE;
         }
         return null;
     }
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new PostgreSQLBeginTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new PostgreSQLCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new PostgreSQLRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitAbort(final AbortContext ctx) {
-        return new PostgreSQLRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        PostgreSQLSavepointStatement result = new PostgreSQLSavepointStatement();
-        result.setSavepointName(savepointName);
-        return result;
+        return new SavepointStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        PostgreSQLRollbackStatement result = new PostgreSQLRollbackStatement();
-        result.setSavepointName(ctx.colId().getText());
-        return result;
+        return new RollbackStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        String savepointName = ctx.colId().getText();
-        PostgreSQLReleaseSavepointStatement result = new PostgreSQLReleaseSavepointStatement();
-        result.setSavepointName(savepointName);
-        return result;
+        return new ReleaseSavepointStatement(ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
-        return new PostgreSQLStartTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitEnd(final EndContext ctx) {
-        return new PostgreSQLCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new PostgreSQLSetConstraintsStatement();
-    }
-    
-    @Override
-    public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new PostgreSQLCommitPreparedStatement();
-    }
-    
-    @Override
-    public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new PostgreSQLRollbackPreparedStatement();
-    }
-    
-    @Override
-    public ASTNode visitLock(final LockContext ctx) {
-        PostgreSQLLockStatement result = new PostgreSQLLockStatement();
-        if (null != ctx.relationExprList()) {
-            result.getTables().addAll(getLockTables(ctx.relationExprList().relationExpr()));
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getLockTables(final List<RelationExprContext> relationExprContexts) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (RelationExprContext each : relationExprContexts) {
-            SimpleTableSegment tableSegment = (SimpleTableSegment) visit(each.qualifiedName());
-            result.add(tableSegment);
-        }
-        return result;
+        return new SetConstraintsStatement();
     }
     
     @Override
     public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
-        return new PostgreSQLPrepareTransactionStatement();
+        return new XAPrepareStatement(ctx.gid().getText());
     }
     
     @Override
-    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new PostgreSQLCheckpointStatement();
+    public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
+        return new XACommitStatement(ctx.gid().getText());
+    }
+    
+    @Override
+    public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
+        return new XARollbackStatement(ctx.gid().getText());
     }
 }

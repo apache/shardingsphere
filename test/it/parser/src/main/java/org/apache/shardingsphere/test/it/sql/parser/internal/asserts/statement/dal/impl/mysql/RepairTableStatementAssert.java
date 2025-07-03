@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RepairTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RepairTableStatementTestCase;
@@ -37,11 +37,11 @@ public final class RepairTableStatementAssert {
      * @param actual actual repair table statement
      * @param expected expected repair table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final RepairTableStatement actual, final RepairTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRepairTableStatement actual, final RepairTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final RepairTableStatement actual, final RepairTableStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLRepairTableStatement actual, final RepairTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

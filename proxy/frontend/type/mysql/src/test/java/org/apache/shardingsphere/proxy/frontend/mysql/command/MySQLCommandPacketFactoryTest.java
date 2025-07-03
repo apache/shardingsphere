@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -97,7 +97,7 @@ class MySQLCommandPacketFactoryTest {
         ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(serverPreparedStatementRegistry);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLSelectStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
         serverPreparedStatementRegistry.addPreparedStatement(1, new MySQLServerPreparedStatement("select 1", sqlStatementContext, new HintValueContext(), Collections.emptyList()));
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, payload, connectionSession), instanceOf(MySQLComStmtExecutePacket.class));
     }

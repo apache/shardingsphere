@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -51,10 +52,9 @@ public final class ShowTablesStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final ShowTablesStatement actual, final ShowTableStatementTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
+            assertNull(actual.getFromDatabase(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getDatabase());
         }
         if (null == expected.getLikePattern()) {
             assertFalse(actual.getLikePattern().isPresent(), assertContext.getText("Actual like pattern should not exist."));

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Index meta data utility class.
@@ -73,11 +74,7 @@ public final class IndexMetaDataUtils {
      * @return generated logic index name
      */
     public static String getGeneratedLogicIndexName(final Collection<ColumnSegment> columns) {
-        StringBuilder builder = new StringBuilder();
-        for (ColumnSegment each : columns) {
-            builder.append(each.getIdentifier().getValue()).append(UNDERLINE);
-        }
-        return builder.append(GENERATED_LOGIC_INDEX_NAME_SUFFIX).toString();
+        return columns.stream().map(each -> each.getIdentifier().getValue() + UNDERLINE).collect(Collectors.joining("", "", GENERATED_LOGIC_INDEX_NAME_SUFFIX));
     }
     
     /**

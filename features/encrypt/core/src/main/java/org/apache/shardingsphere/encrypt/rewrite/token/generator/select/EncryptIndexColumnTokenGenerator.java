@@ -26,8 +26,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -53,16 +52,16 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof IndexAvailable && sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().isEmpty()
-                && !((IndexAvailable) sqlStatementContext).getIndexColumns().isEmpty();
+        return !sqlStatementContext.getTablesContext().getTableNames().isEmpty()
+                && sqlStatementContext instanceof IndexContextAvailable && !((IndexContextAvailable) sqlStatementContext).getIndexColumns().isEmpty();
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        String tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().iterator().next();
+        String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         Collection<SQLToken> result = new LinkedList<>();
-        for (ColumnSegment each : ((IndexAvailable) sqlStatementContext).getIndexColumns()) {
+        for (ColumnSegment each : ((IndexContextAvailable) sqlStatementContext).getIndexColumns()) {
             if (encryptTable.isEncryptColumn(each.getIdentifier().getValue())) {
                 generateSQLToken(encryptTable, each, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
             }

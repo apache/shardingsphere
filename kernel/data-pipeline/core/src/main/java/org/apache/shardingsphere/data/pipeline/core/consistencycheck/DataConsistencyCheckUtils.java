@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -67,6 +67,22 @@ public final class DataConsistencyCheckUtils {
             }
         }
         return true;
+    }
+    
+    /**
+     * Is first unique key value matched.
+     *
+     * @param thisRecord this record
+     * @param thatRecord that record
+     * @param uniqueKey unique key
+     * @param equalsBuilder equals builder
+     * @return true if matched, otherwise false
+     */
+    public static boolean isFirstUniqueKeyValueMatched(final Map<String, Object> thisRecord, final Map<String, Object> thatRecord, final String uniqueKey, final EqualsBuilder equalsBuilder) {
+        if (thisRecord.isEmpty() || thatRecord.isEmpty()) {
+            return false;
+        }
+        return isMatched(equalsBuilder, getFirstUniqueKeyValue(thisRecord, uniqueKey), getFirstUniqueKeyValue(thatRecord, uniqueKey));
     }
     
     /**
@@ -194,9 +210,6 @@ public final class DataConsistencyCheckUtils {
      * @return first unique key value
      */
     public static Object getFirstUniqueKeyValue(final Map<String, Object> rawRecord, final @Nullable String uniqueKey) {
-        if (rawRecord.isEmpty() || null == uniqueKey) {
-            return null;
-        }
-        return rawRecord.get(uniqueKey);
+        return rawRecord.isEmpty() || null == uniqueKey ? null : rawRecord.get(uniqueKey);
     }
 }

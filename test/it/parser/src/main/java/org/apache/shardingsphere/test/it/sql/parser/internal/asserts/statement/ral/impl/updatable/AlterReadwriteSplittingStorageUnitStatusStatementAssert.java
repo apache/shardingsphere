@@ -28,8 +28,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
@@ -53,10 +52,9 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final AlterReadwriteSplittingStorageUnitStatusStatement actual, final DatabaseContainedTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
+            assertNull(actual.getFromDatabase(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getDatabase());
         }
     }
 }

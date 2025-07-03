@@ -21,8 +21,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatem
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * ClickHouse TCL statement visitor.
+ * TCL statement visitor for ClickHouse.
  */
 public final class ClickHouseTCLStatementVisitor extends ClickHouseStatementVisitor implements TCLStatementVisitor {
-    
 }

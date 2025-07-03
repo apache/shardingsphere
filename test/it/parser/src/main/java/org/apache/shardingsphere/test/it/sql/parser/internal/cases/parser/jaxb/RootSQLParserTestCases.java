@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateLoadableFunctionTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DelimiterStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DescribeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DropResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.EmptyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ExplainStatementTestCase;
@@ -596,8 +597,11 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "use")
     private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
     
+    @XmlElement(name = "explain")
+    private final List<ExplainStatementTestCase> explainTestCases = new LinkedList<>();
+    
     @XmlElement(name = "describe")
-    private final List<ExplainStatementTestCase> describeTestCases = new LinkedList<>();
+    private final List<DescribeStatementTestCase> describeTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-databases")
     private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();

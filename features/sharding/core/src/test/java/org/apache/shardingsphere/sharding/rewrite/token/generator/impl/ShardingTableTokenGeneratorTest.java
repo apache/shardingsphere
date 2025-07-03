@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTableToken;
@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -68,7 +69,9 @@ class ShardingTableTokenGeneratorTest {
     @Test
     void assertIsNotGenerateSQLTokenWithNotTableAvailable() {
         generator.setRouteContext(new RouteContext());
-        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
@@ -86,12 +89,16 @@ class ShardingTableTokenGeneratorTest {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.containsTableSharding()).thenReturn(true);
         generator.setRouteContext(routeContext);
-        assertTrue(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokenWithNotTableAvailable() {
-        assertTrue(generator.generateSQLTokens(mock(SQLStatementContext.class)).isEmpty());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        assertTrue(generator.generateSQLTokens(sqlStatementContext).isEmpty());
     }
     
     @Test

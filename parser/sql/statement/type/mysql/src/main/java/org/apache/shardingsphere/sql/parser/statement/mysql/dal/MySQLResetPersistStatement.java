@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetPersistStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
 
 /**
- * MySQL reset persist statement.
+ * Reset persist statement for MySQL.
  */
-public final class MySQLResetPersistStatement extends ResetPersistStatement implements MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class MySQLResetPersistStatement extends DALStatement {
     
-    public MySQLResetPersistStatement(final boolean ifExists, final IdentifierValue identifier) {
-        super(ifExists, identifier);
-    }
+    private final boolean ifExists;
+    
+    private final IdentifierValue identifier;
 }

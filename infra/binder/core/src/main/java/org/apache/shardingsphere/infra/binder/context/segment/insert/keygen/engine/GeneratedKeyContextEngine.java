@@ -26,8 +26,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -91,26 +93,34 @@ public final class GeneratedKeyContextEngine {
     
     private GeneratedKeyContext findGeneratedKey(final Map<String, Integer> insertColumnNamesAndIndexes, final List<InsertValueContext> insertValueContexts,
                                                  final List<Object> params, final String generateKeyColumnName) {
-        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, false);
+        int generateKeyIndex = findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName);
+        boolean generated = false;
+        Collection<Comparable<?>> generatedValues = new LinkedList<>();
         for (InsertValueContext each : insertValueContexts) {
-            ExpressionSegment expression = each.getValueExpressions().get(findGenerateKeyIndex(insertColumnNamesAndIndexes, generateKeyColumnName));
-            if (expression instanceof ParameterMarkerExpressionSegment) {
-                if (params.isEmpty()) {
-                    continue;
-                }
-                if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
-                        && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
-                    result.getGeneratedValues().add((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
-                }
-            } else if (expression instanceof LiteralExpressionSegment) {
-                result.getGeneratedValues().add((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
-            }
+            ExpressionSegment expression = each.getValueExpressions().get(generateKeyIndex);
+            getGeneratedValue(params, expression).ifPresent(generatedValues::add);
         }
+        GeneratedKeyContext result = new GeneratedKeyContext(generateKeyColumnName, generated);
+        result.getGeneratedValues().addAll(generatedValues);
         return result;
     }
     
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnAndIndexMap(tableName).get(generateKeyColumnName) : insertColumnNamesAndIndexes.get(generateKeyColumnName);
+    }
+    
+    private Optional<Comparable<?>> getGeneratedValue(final List<Object> params, final ExpressionSegment expression) {
+        if (expression instanceof ParameterMarkerExpressionSegment) {
+            if (params.size() > ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()
+                    && null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex())) {
+                return Optional.of((Comparable<?>) params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex()));
+            }
+            return Optional.empty();
+        }
+        if (expression instanceof LiteralExpressionSegment && null != ((LiteralExpressionSegment) expression).getLiterals()) {
+            return Optional.of((Comparable<?>) ((LiteralExpressionSegment) expression).getLiterals());
+        }
+        return Optional.empty();
     }
 }

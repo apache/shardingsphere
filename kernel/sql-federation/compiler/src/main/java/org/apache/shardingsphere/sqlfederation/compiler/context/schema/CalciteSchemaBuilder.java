@@ -52,6 +52,9 @@ public final class CalciteSchemaBuilder {
     public static CalciteSchema build(final Collection<ShardingSphereDatabase> databases) {
         CalciteSchema result = CalciteSchema.createRootSchema(true);
         for (ShardingSphereDatabase each : databases) {
+            if (each.getAllSchemas().isEmpty()) {
+                continue;
+            }
             Optional<String> defaultSchema = new DatabaseTypeRegistry(each.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema();
             AbstractSchema schema = defaultSchema.isPresent() ? buildDatabase(each) : buildSchema(each.getAllSchemas().iterator().next(), each.getProtocolType());
             result.add(each.getName(), schema);

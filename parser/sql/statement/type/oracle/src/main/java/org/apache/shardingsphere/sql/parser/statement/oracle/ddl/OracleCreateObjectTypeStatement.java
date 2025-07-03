@@ -21,14 +21,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.CreateTypeStatement;
 
 import java.util.Collection;
 
-@Getter
+/**
+ * Create object type statement for Oracle.
+ */
 @RequiredArgsConstructor
-public final class OracleCreateObjectTypeStatement extends CreateTypeStatement implements OracleStatement {
+@Getter
+public final class OracleCreateObjectTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     

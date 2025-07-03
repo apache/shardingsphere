@@ -37,13 +37,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +58,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     private static final Map<String, Collection<String>> SCHEMA_TABLES = new CaseInsensitiveMap<>();
     
     static {
-        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Collections.singletonList("cluster_information")));
     }
     
     @Override
@@ -85,8 +85,8 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         if (sqlStatement instanceof SetStatement) {
             return Optional.of(new PostgreSQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
-        if (sqlStatement instanceof ResetParameterStatement) {
-            return Optional.of(new PostgreSQLResetVariableAdminExecutor((ResetParameterStatement) sqlStatement));
+        if (sqlStatement instanceof PostgreSQLResetParameterStatement) {
+            return Optional.of(new PostgreSQLResetVariableAdminExecutor((PostgreSQLResetParameterStatement) sqlStatement));
         }
         return Optional.empty();
     }

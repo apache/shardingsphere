@@ -31,13 +31,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PostgreSQLInt2ArrayBinaryProtocolValueTest {
     
-    private PostgreSQLBinaryProtocolValue newInstance() {
-        return new PostgreSQLInt2ArrayBinaryProtocolValue();
-    }
-    
     @Test
     void assertGetColumnLength() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> newInstance().getColumnLength("val"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLInt2ArrayBinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
     }
     
     @Test
@@ -49,13 +45,13 @@ class PostgreSQLInt2ArrayBinaryProtocolValueTest {
         byteBuf.writeCharSequence(parameterValue, StandardCharsets.ISO_8859_1);
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        Object actual = newInstance().read(payload, parameterValue.length());
+        Object actual = new PostgreSQLInt2ArrayBinaryProtocolValue().read(payload, parameterValue.length());
         assertThat(actual, is(new short[]{11, 12}));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }
     
     @Test
     void assertWrite() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> newInstance().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLInt2ArrayBinaryProtocolValue().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
     }
 }

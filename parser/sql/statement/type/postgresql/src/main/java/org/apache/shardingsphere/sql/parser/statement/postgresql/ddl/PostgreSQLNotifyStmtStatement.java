@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.NotifyStmtStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL notify statement.
+ * Notify statement for PostgreSQL.
  */
-public final class PostgreSQLNotifyStmtStatement extends NotifyStmtStatement implements PostgreSQLStatement {
+public final class PostgreSQLNotifyStmtStatement extends DDLStatement {
 }

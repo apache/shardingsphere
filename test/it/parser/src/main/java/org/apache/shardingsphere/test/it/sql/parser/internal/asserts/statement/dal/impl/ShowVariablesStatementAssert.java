@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowVariablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.variable.MySQLShowVariablesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowVariablesStatementTestCase;
@@ -37,9 +37,9 @@ public final class ShowVariablesStatementAssert {
      * @param actual actual show variables statement
      * @param expected expected show variables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariablesStatement actual, final ShowVariablesStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowVariablesStatement actual, final ShowVariablesStatementTestCase expected) {
+        if (null != actual.getFilter()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }
     }
 }

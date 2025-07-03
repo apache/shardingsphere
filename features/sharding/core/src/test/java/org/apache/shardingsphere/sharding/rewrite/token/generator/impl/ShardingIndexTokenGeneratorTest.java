@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -50,7 +50,7 @@ class ShardingIndexTokenGeneratorTest {
     private final ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
     
     @Test
-    void assertIsNotGenerateSQLTokenWithNotIndexAvailable() {
+    void assertIsNotGenerateSQLTokenWithNotIndexContextAvailable() {
         assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
@@ -69,7 +69,7 @@ class ShardingIndexTokenGeneratorTest {
     }
     
     @Test
-    void assertGenerateSQLTokensWithNotIndexAvailable() {
+    void assertGenerateSQLTokensWithNotIndexContextAvailable() {
         Collection<SQLToken> actual = generator.generateSQLTokens(mock(SQLStatementContext.class));
         assertTrue(actual.isEmpty());
     }

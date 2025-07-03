@@ -19,17 +19,17 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.CallStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.CopyStatementAssert;
@@ -79,14 +79,14 @@ public final class DMLStatementAssert {
             InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, (InsertStatementTestCase) expected);
         } else if (actual instanceof CallStatement) {
             CallStatementAssert.assertIs(assertContext, (CallStatement) actual, (CallStatementTestCase) expected);
-        } else if (actual instanceof CopyStatement) {
-            CopyStatementAssert.assertIs(assertContext, (CopyStatement) actual, (CopyStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLCopyStatement) {
+            CopyStatementAssert.assertIs(assertContext, (PostgreSQLCopyStatement) actual, (CopyStatementTestCase) expected);
         } else if (actual instanceof DoStatement) {
             DoStatementAssert.assertIs(assertContext, (DoStatement) actual, (DoStatementTestCase) expected);
-        } else if (actual instanceof LoadDataStatement) {
-            LoadDataStatementAssert.assertIs(assertContext, (LoadDataStatement) actual, (LoadDataStatementTestCase) expected);
-        } else if (actual instanceof LoadXMLStatement) {
-            LoadXMLStatementAssert.assertIs(assertContext, (LoadXMLStatement) actual, (LoadXMLStatementTestCase) expected);
+        } else if (actual instanceof MySQLLoadDataStatement) {
+            LoadDataStatementAssert.assertIs(assertContext, (MySQLLoadDataStatement) actual, (LoadDataStatementTestCase) expected);
+        } else if (actual instanceof MySQLLoadXMLStatement) {
+            LoadXMLStatementAssert.assertIs(assertContext, (MySQLLoadXMLStatement) actual, (LoadXMLStatementTestCase) expected);
         }
     }
 }

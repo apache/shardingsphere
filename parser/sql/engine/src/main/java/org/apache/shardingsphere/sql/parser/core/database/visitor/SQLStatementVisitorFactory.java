@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatementType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.SQLStatementType;
 
 /**
  * SQL statement visitor factory.
@@ -54,12 +54,12 @@ public final class SQLStatementVisitorFactory {
                 return visitorFacade.getDDLVisitorClass().getConstructor().newInstance();
             case TCL:
                 return visitorFacade.getTCLVisitorClass().getConstructor().newInstance();
+            case LCL:
+                return visitorFacade.getLCLVisitorClass().getConstructor().newInstance();
             case DCL:
                 return visitorFacade.getDCLVisitorClass().getConstructor().newInstance();
             case DAL:
                 return visitorFacade.getDALVisitorClass().getConstructor().newInstance();
-            case RL:
-                return visitorFacade.getRLVisitorClass().getConstructor().newInstance();
             default:
                 throw new SQLParsingException(type.name());
         }

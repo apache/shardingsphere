@@ -61,15 +61,19 @@ rollbackToSavepoint
     ;
 
 prepareTransaction
-    : PREPARE TRANSACTION STRING_
+    : PREPARE TRANSACTION gid
     ;
 
 commitPrepared
-    : COMMIT PREPARED STRING_
+    : COMMIT PREPARED gid
     ;
 
 rollbackPrepared
-    : ROLLBACK PREPARED STRING_
+    : ROLLBACK PREPARED gid
+    ;
+
+gid
+    : STRING_
     ;
 
 setConstraints
@@ -82,10 +86,6 @@ constraintsSetMode
 
 constraintsSetList
     : ALL | qualifiedNameList
-    ;
-
-checkpoint
-    : CHECKPOINT
     ;
 
 lock

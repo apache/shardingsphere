@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowReplicaStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.show.MySQLShowReplicaStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowReplicaStatusStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class ShowReplicaStatusStatementAssert {
      * @param actual actual show replica status statement
      * @param expected expected show replica status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReplicaStatusStatement actual, final ShowReplicaStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowReplicaStatusStatement actual, final ShowReplicaStatusStatementTestCase expected) {
         if (null != expected.getChannel()) {
             assertThat(assertContext.getText("Actual show replica status channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
         }

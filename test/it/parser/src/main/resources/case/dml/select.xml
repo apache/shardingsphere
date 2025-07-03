@@ -499,6 +499,9 @@
                         <parameter>
                             <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
                         </parameter>
+                        <parameter start-index="53" stop-index="58">
+                            <literal-expression value="latin1" start-index="53" stop-index="58"/>
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>
@@ -512,6 +515,9 @@
                     <function start-index="7" stop-index="57" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, BINARY(4))" function-name="CONVERT" >
                         <parameter>
                             <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" function-name="GROUPING(f1)" />
+                        </parameter>
+                        <parameter start-index="48" stop-index="56">
+                            <data-type value="BINARY" start-index="48" stop-index="56"/>
                         </parameter>
                     </function>
                 </expr>
@@ -527,6 +533,9 @@
                         <parameter>
                             <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
                         </parameter>
+                        <parameter start-index="48" stop-index="54">
+                            <data-type value="CHAR" start-index="48" stop-index="54"/>
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>
@@ -540,6 +549,9 @@
                     <function start-index="7" stop-index="52" text="CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot;, CHAR)" function-name="CONVERT">
                         <parameter>
                             <common-expression start-index="15" stop-index="45" text="TIMESTAMP&quot;2004-01-22 21:45:33&quot;" />
+                        </parameter>
+                        <parameter start-index="48" stop-index="51">
+                            <data-type value="CHAR" start-index="48" stop-index="51"/>
                         </parameter>
                     </function>
                 </expr>
@@ -3879,6 +3891,9 @@
                                     <literal-expression value="5" start-index="34" stop-index="34" />
                                 </parameter>
                             </function>
+                        </parameter>
+                        <parameter start-index="39" stop-index="44">
+                            <data-type value="SIGNED" start-index="39" stop-index="44"/>
                         </parameter>
                     </function>
                 </expr>
@@ -10224,5 +10239,44 @@
         <from>
             <simple-table name="RDB$AUTH_MAPPING" start-index="25" stop-index="40"/>
         </from>
+    </select>
+    <select sql-case-id="select_with_string_literal">
+        <from start-index="87" stop-index="87">
+            <simple-table name="t" start-index="87" stop-index="87"/>
+        </from>
+        <projections start-index="7" stop-index="80">
+            <expression-projection text="translate(t.order_no, '\1234567890', '\', '\\', '', '\\\', '''', '\n\t\b')" start-index="7" stop-index="80">
+                <expr start-index="7" stop-index="80">
+                    <function function-name="translate" text="translate(t.order_no, '\1234567890', '\', '\\', '', '\\\', '''', '\n\t\b')" start-index="7" stop-index="80">
+                        <parameter start-index="17" stop-index="26">
+                            <column name="order_no" start-index="17" stop-index="26">
+                                <owner name="t" start-index="17" stop-index="17"/>
+                            </column>
+                        </parameter>
+                        <parameter start-index="29" stop-index="41">
+                            <literal-expression value="\1234567890" start-index="29" stop-index="41"/>
+                        </parameter>
+                        <parameter start-index="44" stop-index="46">
+                            <literal-expression value="\" start-index="44" stop-index="46"/>
+                        </parameter>
+                        <parameter start-index="49" stop-index="52">
+                            <literal-expression value="\\" start-index="49" stop-index="52"/>
+                        </parameter>
+                        <parameter start-index="55" stop-index="56">
+                            <literal-expression value="" start-index="55" stop-index="56"/>
+                        </parameter>
+                        <parameter start-index="59" stop-index="63">
+                            <literal-expression value="\\\" start-index="59" stop-index="63"/>
+                        </parameter>
+                        <parameter start-index="66" stop-index="69">
+                            <literal-expression value="''" start-index="66" stop-index="69"/>
+                        </parameter>
+                        <parameter start-index="72" stop-index="79">
+                            <literal-expression value="\n\t\b" start-index="72" stop-index="79"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>

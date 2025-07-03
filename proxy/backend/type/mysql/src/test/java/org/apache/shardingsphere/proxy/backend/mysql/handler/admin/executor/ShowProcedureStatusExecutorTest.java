@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcedureStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class ShowProcedureStatusExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement());
+        ShowProcedureStatusExecutor executor = new ShowProcedureStatusExecutor(new MySQLShowProcedureStatusStatement(null));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mock(ConnectionSession.class));

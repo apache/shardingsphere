@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,17 +55,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowFunctionStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcedureStatusStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowProcessListStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.MySQLShowProcedureStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process.MySQLShowProcessListStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -95,7 +95,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowFunctionStatus() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowFunctionStatusStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowFunctionStatusStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowFunctionStatusExecutor.class));
@@ -104,7 +104,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowProcedureStatus() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcedureStatusStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcedureStatusStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowProcedureStatusExecutor.class));
@@ -113,7 +113,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowTables() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowTablesStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowTablesStatement(null, null, false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowTablesExecutor.class));
@@ -128,16 +128,16 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithUse() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLUseStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLUseStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(UseDatabaseExecutor.class));
     }
     
     @Test
-    void assertCreateWithMySQLShowDatabasesStatement() {
+    void assertCreateWithShowDatabasesStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowDatabasesStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowDatabasesStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowDatabasesExecutor.class));
@@ -155,7 +155,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowCreateDatabaseStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowCreateDatabaseStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowCreateDatabaseStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowCreateDatabaseExecutor.class));
@@ -164,7 +164,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSetStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLSetStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new SetStatement(Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLSetVariableAdminExecutor.class));
@@ -173,7 +173,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectStatementForShowConnectionId() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "CONNECTION_ID()")));
@@ -187,7 +187,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectStatementForShowVersion() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "version()")));
@@ -201,7 +201,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectStatementForCurrentUser() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "CURRENT_USER()")));
@@ -216,7 +216,7 @@ class MySQLAdminExecutorCreatorTest {
     void assertCreateWithSelectStatementForTransactionReadOnly() {
         
         initProxyContext(Collections.emptyList());
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_read_only", "SESSION");
@@ -232,7 +232,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectStatementForTransactionIsolation() {
         initProxyContext(Collections.emptyList());
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_isolation", "SESSION");
@@ -248,7 +248,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectStatementForShowDatabase() {
         initProxyContext(Collections.emptyList());
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "DATABASE()")));
@@ -263,7 +263,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithOtherSelectStatementForNoResource() {
         initProxyContext(Collections.emptyList());
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "CURRENT_DATE()")));
@@ -282,7 +282,7 @@ class MySQLAdminExecutorCreatorTest {
         initProxyContext(Collections.singleton(database));
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
         when(ProxyContext.getInstance().getContextManager().getDatabase("db_0")).thenReturn(database);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "CURRENT_DATE()")));
@@ -300,7 +300,7 @@ class MySQLAdminExecutorCreatorTest {
         initProxyContext(Collections.singleton(database));
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("db_0"));
         when(ProxyContext.getInstance().getContextManager().getDatabase("db_0")).thenReturn(database);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.empty());
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "CURRENT_DATE()")));
@@ -317,7 +317,7 @@ class MySQLAdminExecutorCreatorTest {
         initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("ENGINES")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(tableSegment));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -331,7 +331,7 @@ class MySQLAdminExecutorCreatorTest {
         initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("SCHEMATA")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(tableSegment));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -348,7 +348,7 @@ class MySQLAdminExecutorCreatorTest {
         initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("CHARACTER_SETS")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(tableSegment));
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -361,7 +361,7 @@ class MySQLAdminExecutorCreatorTest {
         initProxyContext(Collections.emptyList());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("accounts")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("performance_schema")));
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getFrom()).thenReturn(Optional.of(tableSegment));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
@@ -380,7 +380,7 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithDMLStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLDeleteStatement());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new DeleteStatement());
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "delete from t", "", Collections.emptyList());
         assertThat(actual, is(Optional.empty()));
     }

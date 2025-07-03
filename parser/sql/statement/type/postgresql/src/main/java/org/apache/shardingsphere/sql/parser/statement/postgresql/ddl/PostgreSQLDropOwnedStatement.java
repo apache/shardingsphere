@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropOwnedStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL drop owned statement.
+ * Drop Owned statement for PostgreSQL.
  */
-public final class PostgreSQLDropOwnedStatement extends DropOwnedStatement implements PostgreSQLStatement {
+public final class PostgreSQLDropOwnedStatement extends DDLStatement {
 }

@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.ddl.column.RenameTableDefinitionSegmentBinder;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.RenameTableStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Rename table statement binder.
@@ -34,18 +35,14 @@ public final class RenameTableStatementBinder implements SQLStatementBinder<Rena
     
     @Override
     public RenameTableStatement bind(final RenameTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        RenameTableStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getRenameTables().forEach(each -> result.getRenameTables().add(RenameTableDefinitionSegmentBinder.bind(each, binderContext, tableBinderContexts)));
-        return result;
+        Collection<RenameTableDefinitionSegment> boundRenameTables = sqlStatement.getRenameTables().stream()
+                .map(each -> RenameTableDefinitionSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
+        return copy(sqlStatement, boundRenameTables);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static RenameTableStatement copy(final RenameTableStatement sqlStatement) {
-        RenameTableStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+    private static RenameTableStatement copy(final RenameTableStatement sqlStatement, final Collection<RenameTableDefinitionSegment> boundRenameTables) {
+        RenameTableStatement result = new RenameTableStatement(boundRenameTables);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

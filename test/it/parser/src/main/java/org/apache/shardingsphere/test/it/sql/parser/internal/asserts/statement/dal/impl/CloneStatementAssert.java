@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneInstanceSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CloneStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CloneStatementTestCase;
 
@@ -40,12 +40,12 @@ public final class CloneStatementAssert {
      * @param actual actual clone statement
      * @param expected expected clone statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CloneStatement actual, final CloneStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCloneStatement actual, final CloneStatementTestCase expected) {
         if (null != expected.getDataDirectory()) {
-            assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneActionSegment().getCloneDir(), is(expected.getDataDirectory().getLocation()));
+            assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneAction().getCloneDir(), is(expected.getDataDirectory().getLocation()));
         }
         if (null != expected.getInstance()) {
-            CloneInstanceSegment instance = actual.getCloneActionSegment().getCloneInstance();
+            CloneInstanceSegment instance = actual.getCloneAction().getCloneInstance();
             assertThat(assertContext.getText("Actual instance hostname does not match: "), instance.getHostname(), is(expected.getInstance().getHostname()));
             assertThat(assertContext.getText("Actual instance username does not match: "), instance.getUsername(), is(expected.getInstance().getUsername()));
             assertThat(assertContext.getText("Actual instance port does not match: "), instance.getPort(), is(expected.getInstance().getPort()));

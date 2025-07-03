@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowTriggersStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger.MySQLShowTriggersStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -39,13 +39,13 @@ public final class ShowTriggersStatementAssert {
      * @param actual actual show triggers statement
      * @param expected expected show tables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
-        if (actual.getFromDatabase().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTriggersStatement actual, final ShowTriggersStatementTestCase expected) {
+        if (null != actual.getFromDatabase()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
         }
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+        if (null != actual.getFilter()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }
     }
 }

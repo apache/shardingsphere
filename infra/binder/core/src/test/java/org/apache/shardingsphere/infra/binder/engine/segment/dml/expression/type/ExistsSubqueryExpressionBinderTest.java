@@ -24,8 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,7 +35,7 @@ class ExistsSubqueryExpressionBinderTest {
     
     @Test
     void assertBindExistsSubqueryExpression() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, selectStatement, "t_test"));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock(), mock());
@@ -47,6 +46,5 @@ class ExistsSubqueryExpressionBinderTest {
         assertThat(actual.getSubquery().getStartIndex(), is(existsSubqueryExpression.getSubquery().getStartIndex()));
         assertThat(actual.getSubquery().getStopIndex(), is(existsSubqueryExpression.getSubquery().getStopIndex()));
         assertThat(actual.getSubquery().getText(), is("t_test"));
-        assertThat(actual.getSubquery().getSelect().getDatabaseType(), is(existsSubqueryExpression.getSubquery().getSelect().getDatabaseType()));
     }
 }

@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLAlterTableStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -48,7 +48,7 @@ class ShardingAlterTableSupportedCheckerTest {
     
     @Test
     void assertCheckWithRenameTableWithShardingTable() {
-        PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
+        AlterTableStatement sqlStatement = new AlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
         AlterTableStatementContext sqlStatementContext = new AlterTableStatementContext(mock(), sqlStatement);

@@ -19,17 +19,16 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQLServer grant statement.
+ * Grant statement for SQLServer.
  */
 @Getter
-public final class SQLServerGrantStatement extends GrantStatement implements SQLServerStatement {
+public final class SQLServerGrantStatement extends GrantStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();
 }

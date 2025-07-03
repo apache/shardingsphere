@@ -19,16 +19,17 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dcl.GrantStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRouteEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRouteEngine;
@@ -40,17 +41,14 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92GrantStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,7 +82,7 @@ class ShardingRouteEngineFactoryTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Mock(extraInterfaces = TableAvailable.class)
+    @Mock
     private SQLStatementContext sqlStatementContext;
     
     @Mock
@@ -93,15 +91,15 @@ class ShardingRouteEngineFactoryTest {
     @Mock
     private ShardingConditions shardingConditions;
     
-    private Collection<String> tableNames;
+    private final Collection<String> tableNames = new ArrayList<>();
     
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @BeforeEach
     void setUp() {
-        when(((TableAvailable) sqlStatementContext).getTablesContext()).thenReturn(tablesContext);
-        tableNames = new ArrayList<>();
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(tableNames);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -123,6 +121,7 @@ class ShardingRouteEngineFactoryTest {
         tableNames.add("tbl");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         DALStatement dalStatement = mock(DALStatement.class);
+        when(dalStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
@@ -131,9 +130,9 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDCLForSingleTable() {
-        GrantStatement grantStatement = new SQL92GrantStatement();
-        grantStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        GrantStatementContext sqlStatementContext = new GrantStatementContext(mock(), grantStatement);
+        GrantStatement sqlStatement = new GrantStatement();
+        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.singletonList("tbl"), props);
         assertThat(actual, instanceOf(ShardingTableBroadcastRouteEngine.class));
@@ -181,7 +180,7 @@ class ShardingRouteEngineFactoryTest {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         tableNames.add("");
-        when(shardingRule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())).thenReturn(tableNames);
+        when(shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(tableNames);
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
@@ -201,19 +200,9 @@ class ShardingRouteEngineFactoryTest {
     }
     
     @Test
-    void assertNewInstanceForShowCreateTableWithTableRule() {
-        DALStatement dalStatement = mock(ShowCreateTableStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
-        tableNames.add("table_1");
-        when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
-        assertThat(actual, instanceOf(ShardingUnicastRouteEngine.class));
-    }
-    
-    @Test
-    void assertNewInstanceForShowColumnsWithTableRule() {
-        DALStatement dalStatement = mock(ShowColumnsStatement.class);
+    void assertNewInstanceForCommonDALStatement() {
+        DALStatement dalStatement = mock(DALStatement.class);
+        when(dalStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         when(sqlStatementContext.getSqlStatement()).thenReturn(dalStatement);
         tableNames.add("table_1");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
@@ -235,17 +224,6 @@ class ShardingRouteEngineFactoryTest {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, mock(ConfigurationProperties.class));
         assertThat(actual, instanceOf(ShardingStandardRouteEngine.class));
-    }
-    
-    @Test
-    void assertNewInstanceForOptimizeTableWithShardingTable() {
-        OptimizeTableStatement sqlStatement = mock(OptimizeTableStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        tableNames.add("table_1");
-        when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
-        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
-        assertThat(actual, instanceOf(ShardingTableBroadcastRouteEngine.class));
     }
     
     @Test

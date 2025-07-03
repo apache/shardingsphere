@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
@@ -69,7 +69,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<WithSegment> withSegment = actual.getWithSegment();
+        Optional<WithSegment> withSegment = actual.getWith();
         if (null == expected.getWithClause()) {
             assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
@@ -79,7 +79,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        if (null != expected.getTables() && !expected.getTables().isEmpty()) {
+        if (!expected.getTables().isEmpty()) {
             assertNotNull(actual.getTable(), assertContext.getText("Actual table segment should exist."));
             List<SimpleTableSegment> actualTableSegments = new LinkedList<>();
             if (actual.getTable() instanceof SimpleTableSegment) {
@@ -98,7 +98,7 @@ public final class DeleteStatementAssert {
     }
     
     private static void assertOutput(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = actual.getOutputSegment();
+        Optional<OutputSegment> outputSegment = actual.getOutput();
         if (null == expected.getOutputClause()) {
             assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {

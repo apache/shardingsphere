@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowEventsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.event.MySQLShowEventsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -39,13 +39,13 @@ public final class ShowEventsStatementAssert {
      * @param actual actual show events statement
      * @param expected expected show events statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowEventsStatement actual, final ShowEventsStatementTestCase expected) {
-        if (actual.getFromDatabase().isPresent()) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
-            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowEventsStatement actual, final ShowEventsStatementTestCase expected) {
+        if (null != actual.getFromDatabase()) {
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getFromDatabase().getDatabase());
+            SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase(), expected.getFromDatabase());
         }
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+        if (null != actual.getFilter()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -29,7 +28,13 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.Where
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 /**
  * Update statement binder.
@@ -38,25 +43,29 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     
     @Override
     public UpdateStatement bind(final UpdateStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        UpdateStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getWithSegment().ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())));
-        result.setTable(TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, LinkedHashMultimap.create()));
-        sqlStatement.getFrom().ifPresent(optional -> result.setFrom(TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        sqlStatement.getAssignmentSegment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        sqlStatement.getWhere().ifPresent(optional -> result.setWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        sqlStatement.getOrderBy().ifPresent(optional -> result.setOrderBy(
-                OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, LinkedHashMultimap.create())));
-        return result;
+        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())).orElse(null);
+        TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, LinkedHashMultimap.create());
+        TableSegment boundFrom = sqlStatement.getFrom().map(optional -> TableSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        SetAssignmentSegment boundSetAssignment = sqlStatement.getAssignment()
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
+                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private UpdateStatement copy(final UpdateStatement sqlStatement) {
-        UpdateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,
+                                 final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
+        UpdateStatement result = new UpdateStatement();
+        result.setWith(boundWith);
+        result.setTable(boundTable);
+        result.setFrom(boundFrom);
+        result.setSetAssignment(boundSetAssignment);
+        result.setWhere(boundWhere);
+        result.setOrderBy(boundOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

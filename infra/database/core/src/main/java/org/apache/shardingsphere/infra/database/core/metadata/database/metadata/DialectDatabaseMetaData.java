@@ -145,7 +145,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return pagination option
      */
     default DialectPaginationOption getPaginationOption() {
-        return new DialectPaginationOption(false, "");
+        return new DialectPaginationOption(false, "", false);
     }
     
     /**

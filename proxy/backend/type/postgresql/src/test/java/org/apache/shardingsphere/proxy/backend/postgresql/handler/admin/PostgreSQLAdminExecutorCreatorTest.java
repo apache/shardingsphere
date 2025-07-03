@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
-import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -30,13 +31,12 @@ import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -87,12 +87,12 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(databaseType, new PostgreSQLInsertStatement())), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new InsertStatement())), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(databaseType, new PostgreSQLShowStatement("client_encoding")));
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new ShowStatement("client_encoding")));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
     }
@@ -142,13 +142,13 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectNonPgCatalog() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithSetStatement() {
-        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(databaseType, new PostgreSQLSetStatement());
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new SetStatement(Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
@@ -157,14 +157,14 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithResetStatement() {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
-                .create(new UnknownSQLStatementContext(databaseType, new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
+                .create(new CommonSQLStatementContext(databaseType, new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
     }
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new PostgreSQLDeleteStatement());
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new DeleteStatement());
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

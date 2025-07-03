@@ -26,7 +26,7 @@ import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransa
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -45,8 +45,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -161,12 +161,12 @@ public final class DriverJDBCPushDownExecuteExecutor {
         return Optional.empty();
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private List<ResultSet> getResultSets(final List<? extends Statement> statements) throws SQLException {
         List<ResultSet> result = new ArrayList<>(statements.size());
         for (Statement each : statements) {
-            if (null != each.getResultSet()) {
-                result.add(each.getResultSet());
+            ResultSet resultSet = each.getResultSet();
+            if (null != resultSet) {
+                result.add(resultSet);
             }
         }
         return result;

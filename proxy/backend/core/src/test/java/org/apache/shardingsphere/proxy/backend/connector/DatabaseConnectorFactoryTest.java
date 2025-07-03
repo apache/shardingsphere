@@ -59,6 +59,7 @@ class DatabaseConnectorFactoryTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
         when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -82,6 +83,7 @@ class DatabaseConnectorFactoryTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
         when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);

@@ -84,13 +84,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -105,16 +105,16 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        SQL92InsertStatement result = (SQL92InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        SQL92InsertStatement result = new SQL92InsertStatement();
+        InsertStatement result = new InsertStatement();
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
@@ -136,13 +136,13 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        SQL92UpdateStatement result = new SQL92UpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -186,12 +186,12 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        SQL92DeleteStatement result = new SQL92DeleteStatement();
+        DeleteStatement result = new DeleteStatement();
         result.setTable((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -207,8 +207,8 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.combineClause());
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        SelectStatement result = (SelectStatement) visit(ctx.combineClause());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -220,7 +220,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQL92SelectStatement result = new SQL92SelectStatement();
+        SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
@@ -403,7 +403,7 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            SQL92SelectStatement subquery = (SQL92SelectStatement) visit(ctx.subquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {

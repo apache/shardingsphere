@@ -19,9 +19,9 @@ package org.apache.shardingsphere.distsql.handler.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.available.FromDatabaseAvailable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -39,7 +39,9 @@ public final class DatabaseNameUtils {
      * @return database name
      */
     public static String getDatabaseName(final SQLStatement sqlStatement, final String currentDatabaseName) {
-        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
-        return databaseSegment.map(optional -> optional.getIdentifier().getValue()).orElse(currentDatabaseName);
+        Optional<FromDatabaseSQLStatementAttribute> fromDatabaseAttribute = sqlStatement.getAttributes().findAttribute(FromDatabaseSQLStatementAttribute.class);
+        return fromDatabaseAttribute.isPresent()
+                ? fromDatabaseAttribute.get().getFromDatabase().map(FromDatabaseSegment::getDatabase).map(optional -> optional.getIdentifier().getValue()).orElse(currentDatabaseName)
+                : currentDatabaseName;
     }
 }

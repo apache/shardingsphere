@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.Opti
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.limit.LimitClauseAssert;
@@ -118,7 +118,7 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertOptionHint(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        Optional<OptionHintSegment> optionHintSegment = actual.getOptionHintSegment();
+        Optional<OptionHintSegment> optionHintSegment = actual.getOptionHint();
         if (null == expected.getOptionHint()) {
             assertFalse(optionHintSegment.isPresent(), assertContext.getText("Actual option hint segment should not exist."));
         } else {
@@ -129,7 +129,7 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertOutputClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = actual.getOutputSegment();
+        Optional<OutputSegment> outputSegment = actual.getOutput();
         if (null == expected.getOutputClause()) {
             assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {

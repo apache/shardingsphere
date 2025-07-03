@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.limit.PaginationValueSQLConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.orderby.OrderByConverter;
@@ -57,6 +57,6 @@ public final class DeleteStatementConverter implements SQLStatementConverter<Del
         SqlNode condition = deleteStatement.getWhere().flatMap(WhereConverter::convert).orElse(null);
         SqlIdentifier alias = deleteStatement.getTable().getAliasName().map(optional -> new SqlIdentifier(optional, SqlParserPos.ZERO)).orElse(null);
         SqlDelete sqlDelete = new SqlDelete(SqlParserPos.ZERO, deleteTable, condition, null, alias);
-        return deleteStatement.getWithSegment().flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
+        return deleteStatement.getWith().flatMap(optional -> WithConverter.convert(optional, sqlDelete)).orElse(sqlDelete);
     }
 }

@@ -27,16 +27,17 @@ import org.apache.shardingsphere.data.pipeline.migration.distsql.statement.query
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowDatabasesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +88,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseDAL() {
-        assertParse(mock(ShowDatabasesStatement.class), "DAL=1");
+        assertParse(mock(MySQLShowDatabasesStatement.class), "DAL=1");
     }
     
     @Test
@@ -97,7 +98,7 @@ class SQLParseCountAdviceTest {
     
     @Test
     void assertParseRQL() {
-        assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null), "RQL=1");
+        assertParse(new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1");
     }
     
     @Test

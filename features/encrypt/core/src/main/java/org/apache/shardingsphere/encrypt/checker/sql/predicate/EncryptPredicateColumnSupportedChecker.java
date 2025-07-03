@@ -24,8 +24,8 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -47,18 +47,18 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
+        return sqlStatementContext instanceof WhereContextAvailable && !((WhereContextAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
     @Override
     public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
-        Collection<BinaryOperationExpression> joinConditions = SQLStatementContextExtractor.getJoinConditions((WhereAvailable) sqlStatementContext, allSubqueryContexts);
+        Collection<BinaryOperationExpression> joinConditions = SQLStatementContextExtractor.getJoinConditions((WhereContextAvailable) sqlStatementContext, allSubqueryContexts);
         JoinConditionsEncryptorChecker.checkIsSame(joinConditions, rule, "join condition");
-        check(rule, (WhereAvailable) sqlStatementContext);
+        check(rule, (WhereContextAvailable) sqlStatementContext);
     }
     
-    private void check(final EncryptRule rule, final WhereAvailable sqlStatementContext) {
+    private void check(final EncryptRule rule, final WhereContextAvailable sqlStatementContext) {
         for (ColumnSegment each : sqlStatementContext.getColumnSegments()) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             String columnName = each.getIdentifier().getValue();

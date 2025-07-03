@@ -37,7 +37,7 @@ class PostgreSQLInt4BinaryProtocolValueTest {
     @Test
     void assertNewInstance() {
         PostgreSQLInt4BinaryProtocolValue actual = new PostgreSQLInt4BinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), is(4));
+        assertThat(actual.getColumnLength(payload, null), is(4));
         when(payload.readInt4()).thenReturn(1);
         assertThat(actual.read(payload, 4), is(1));
         actual.write(payload, 1);

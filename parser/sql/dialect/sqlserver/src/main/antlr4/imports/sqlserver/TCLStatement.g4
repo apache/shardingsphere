@@ -39,10 +39,6 @@ beginTransaction
     : BEGIN (TRAN | TRANSACTION) ((transactionName | transactionVariableName) (WITH MARK (stringLiterals | NCHAR_TEXT)?)?)?
     ;
 
-beginDistributedTransaction
-    : BEGIN DISTRIBUTED (TRAN | TRANSACTION) (transactionName | transactionVariableName)?
-    ;
-
 commit
     : COMMIT ((TRAN | TRANSACTION) (transactionName | transactionVariableName)?)? (WITH LP_ DELAYED_DURABILITY EQ_ (OFF | ON) RP_)?
     ;
@@ -61,4 +57,8 @@ rollbackWork
 
 savepoint
     : SAVE (TRAN | TRANSACTION) (savepointName | savepointVariableName)
+    ;
+
+beginDistributedTransaction
+    : BEGIN DISTRIBUTED (TRAN | TRANSACTION) (transactionName | transactionVariableName)?
     ;

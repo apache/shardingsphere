@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.PostgreSQLShowVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
 import java.sql.Types;
 import java.util.Collections;
@@ -65,7 +65,7 @@ public final class OpenGaussShowVariableExecutor implements DatabaseAdminQueryEx
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String name = showStatement.getName().orElse("").toLowerCase(Locale.ROOT);
+        String name = showStatement.getName().toLowerCase(Locale.ROOT);
         if (VARIABLE_ROW_DATA_GENERATORS.containsKey(name)) {
             queryResultMetaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", "", name, Types.VARCHAR, "VARCHAR", -1, 0)));
             OpenGaussShowVariableExecutor.VariableRowDataGenerator variableRowDataGenerator = VARIABLE_ROW_DATA_GENERATORS.getOrDefault(name, unused -> new String[]{"", "", ""});

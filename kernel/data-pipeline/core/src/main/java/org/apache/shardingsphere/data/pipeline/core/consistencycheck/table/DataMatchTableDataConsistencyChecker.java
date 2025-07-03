@@ -22,11 +22,13 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.Tabl
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.RecordSingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
@@ -39,13 +41,20 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
+    private static final String STREAMING_RANGE_TYPE_KEY = "streaming-range-type";
+    
     private static final int DEFAULT_CHUNK_SIZE = 1000;
     
+    private static final StreamingRangeType DEFAULT_STREAMING_RANGE_TYPE = StreamingRangeType.SMALL;
+    
     private int chunkSize;
+    
+    private StreamingRangeType streamingRangeType;
     
     @Override
     public void init(final Properties props) {
         chunkSize = getChunkSize(props);
+        streamingRangeType = getStreamingRangeType(props);
     }
     
     private int getChunkSize(final Properties props) {
@@ -65,9 +74,22 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         return result;
     }
     
+    private StreamingRangeType getStreamingRangeType(final Properties props) {
+        String streamingRangeTypeText = props.getProperty(STREAMING_RANGE_TYPE_KEY);
+        if (Strings.isNullOrEmpty(streamingRangeTypeText)) {
+            return DEFAULT_STREAMING_RANGE_TYPE;
+        }
+        try {
+            return StreamingRangeType.valueOf(streamingRangeTypeText.toUpperCase());
+        } catch (final IllegalArgumentException ex) {
+            throw new PipelineInvalidParameterException("'streaming-range-type' is not a valid value: `" + streamingRangeTypeText
+                    + "`, expected values are " + Arrays.toString(StreamingRangeType.values()));
+        }
+    }
+    
     @Override
     public TableInventoryChecker buildTableInventoryChecker(final TableInventoryCheckParameter param) {
-        return new DataMatchTableInventoryChecker(param, chunkSize);
+        return new DataMatchTableInventoryChecker(param, chunkSize, streamingRangeType);
     }
     
     @Override
@@ -88,9 +110,12 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         
         private final int chunkSize;
         
-        DataMatchTableInventoryChecker(final TableInventoryCheckParameter param, final int chunkSize) {
+        private final StreamingRangeType streamingRangeType;
+        
+        DataMatchTableInventoryChecker(final TableInventoryCheckParameter param, final int chunkSize, final StreamingRangeType streamingRangeType) {
             super(param);
             this.chunkSize = chunkSize;
+            this.streamingRangeType = streamingRangeType;
         }
         
         @Override
@@ -103,7 +128,7 @@ public final class DataMatchTableDataConsistencyChecker implements TableDataCons
         
         @Override
         protected SingleTableInventoryCalculator buildSingleTableInventoryCalculator() {
-            return new RecordSingleTableInventoryCalculator(chunkSize);
+            return new RecordSingleTableInventoryCalculator(chunkSize, streamingRangeType);
         }
     }
 }

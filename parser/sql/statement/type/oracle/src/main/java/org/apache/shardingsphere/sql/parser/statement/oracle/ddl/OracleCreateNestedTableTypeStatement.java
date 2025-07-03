@@ -21,12 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.CreateTypeStatement;
 
-@Getter
+/****
+ * Create nested table type statement for Oracle.
+ */
 @RequiredArgsConstructor
-public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatement implements OracleStatement {
+@Getter
+public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     

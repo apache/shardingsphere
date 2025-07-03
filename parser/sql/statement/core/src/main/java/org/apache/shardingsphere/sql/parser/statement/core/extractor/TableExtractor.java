@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -57,12 +58,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -102,7 +103,7 @@ public final class TableExtractor {
         selectStatement.getGroupBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getGroupByItems()));
         selectStatement.getOrderBy().ifPresent(optional -> extractTablesFromOrderByItems(optional.getOrderByItems()));
         selectStatement.getHaving().ifPresent(optional -> extractTablesFromExpression(optional.getExpr()));
-        selectStatement.getWithSegment().ifPresent(optional -> extractTablesFromCTEs(optional.getCommonTableExpressions()));
+        selectStatement.getWith().ifPresent(optional -> extractTablesFromCTEs(optional.getCommonTableExpressions()));
         selectStatement.getLock().ifPresent(this::extractTablesFromLock);
     }
     
@@ -192,6 +193,9 @@ public final class TableExtractor {
         }
         if (expressionSegment instanceof TypeCastExpression) {
             extractTablesFromExpression(((TypeCastExpression) expressionSegment).getExpression());
+        }
+        if (expressionSegment instanceof QuantifySubqueryExpression) {
+            extractTablesFromExpression(((QuantifySubqueryExpression) expressionSegment).getSubquery());
         }
     }
     

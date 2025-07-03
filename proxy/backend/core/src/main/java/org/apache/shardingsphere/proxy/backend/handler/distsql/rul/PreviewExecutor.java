@@ -26,9 +26,8 @@ import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecut
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -57,8 +56,8 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -96,7 +95,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
                 metaData, currentDatabaseName, hintValueContext).bind(database.getProtocolType(), toBePreviewedStatement, Collections.emptyList());
         QueryContext queryContext = new QueryContext(
                 toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext, connectionContext.getQueryContext().getConnectionContext(), metaData);
-        if (toBePreviewedStatementContext instanceof CursorAvailable && toBePreviewedStatementContext instanceof CursorAware) {
+        if (toBePreviewedStatementContext instanceof CursorContextAvailable && toBePreviewedStatementContext instanceof CursorAware) {
             setUpCursorDefinition(toBePreviewedStatementContext);
         }
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new EmptyRuleException(database.getName()));
@@ -107,9 +106,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(defaultSchemaName)
-                : defaultSchemaName;
+        return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     
     private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData,
@@ -123,10 +120,10 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     private void setUpCursorDefinition(final SQLStatementContext toBePreviewedStatementContext) {
-        if (!((CursorAvailable) toBePreviewedStatementContext).getCursorName().isPresent()) {
+        if (!((CursorContextAvailable) toBePreviewedStatementContext).getCursorName().isPresent()) {
             return;
         }
-        String cursorName = ((CursorAvailable) toBePreviewedStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
+        String cursorName = ((CursorContextAvailable) toBePreviewedStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
         CursorStatementContext cursorStatementContext = connectionContext.getQueryContext().getConnectionContext().getCursorContext().getCursorStatementContexts().get(cursorName);
         Preconditions.checkNotNull(cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorAware) toBePreviewedStatementContext).setCursorStatementContext(cursorStatementContext);

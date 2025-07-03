@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Truncate statement binder.
@@ -34,18 +35,14 @@ public final class TruncateStatementBinder implements SQLStatementBinder<Truncat
     
     @Override
     public TruncateStatement bind(final TruncateStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        TruncateStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getTables().forEach(each -> result.getTables().add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)));
-        return result;
+        Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
+                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
+        return copy(sqlStatement, boundTables);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static TruncateStatement copy(final TruncateStatement sqlStatement) {
-        TruncateStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+    private TruncateStatement copy(final TruncateStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
+        TruncateStatement result = new TruncateStatement(boundTables);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

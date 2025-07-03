@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.RelShuttleImpl;
 import org.apache.calcite.rel.core.TableScan;
+import org.apache.calcite.rel.logical.LogicalTableScan;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.operator.logical.LogicalScan;
 
 /**
@@ -34,7 +35,10 @@ public final class LogicalScanRelRewriter extends RelShuttleImpl {
     
     @Override
     public RelNode visit(final TableScan tableScan) {
-        return new LogicalScan(tableScan, databaseType);
+        if (tableScan instanceof LogicalTableScan) {
+            return new LogicalScan(tableScan, databaseType);
+        }
+        return tableScan;
     }
     
     /**

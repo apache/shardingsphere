@@ -41,6 +41,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-route-postgresql</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-postgresql-protocol</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
@@ -59,8 +65,9 @@
         </dependency>
         
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-postgresql</artifactId>
+            <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>

@@ -21,54 +21,53 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AnalyzeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.VacuumStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSchemaStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.AlterSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.AlterSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.DropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,7 +90,7 @@ public enum PostgreSQLCommand {
     CALL(CallStatement.class),
     DO(DoStatement.class),
     ANALYZE(AnalyzeTableStatement.class),
-    VACUUM(VacuumStatement.class),
+    VACUUM(PostgreSQLVacuumStatement.class),
     ALTER_FUNCTION(AlterFunctionStatement.class),
     ALTER_INDEX(AlterIndexStatement.class),
     ALTER_PROCEDURE(AlterProcedureStatement.class),
@@ -120,14 +119,14 @@ public enum PostgreSQLCommand {
     DROP_VIEW(DropViewStatement.class),
     TRUNCATE_TABLE(TruncateStatement.class),
     BEGIN(BeginTransactionStatement.class),
-    START_TRANSACTION(StartTransactionStatement.class),
+    START_TRANSACTION(BeginTransactionStatement.class),
     COMMIT(CommitStatement.class),
     SAVEPOINT(SavepointStatement.class),
     ROLLBACK(RollbackStatement.class),
     RELEASE(ReleaseSavepointStatement.class),
     SET(SetStatement.class, SetTransactionStatement.class),
-    RESET(ResetParameterStatement.class),
-    DECLARE_CURSOR(CursorStatement.class, DeclareStatement.class),
+    RESET(PostgreSQLResetParameterStatement.class),
+    DECLARE_CURSOR(CursorStatement.class, PostgreSQLDeclareStatement.class),
     MOVE(MoveStatement.class),
     CLOSE_CURSOR(CloseStatement.class),
     SUCCESS(DistSQLStatement.class);
@@ -163,7 +162,7 @@ public enum PostgreSQLCommand {
     }
     
     private static CachedResult compute(final Class<? extends SQLStatement> target) {
-        Optional<PostgreSQLCommand> result = Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny();
+        Optional<PostgreSQLCommand> result = Arrays.stream(values()).filter(each -> matches(target, each)).findAny();
         return result.map(CachedResult::new).orElse(CachedResult.EMPTY);
     }
     

@@ -17,30 +17,37 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ClusterStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.util.Optional;
 
 /**
- * PostgreSQL cluster statement.
+ * Cluster statement for PostgreSQL.
  */
-@Setter
-public final class PostgreSQLClusterStatement extends ClusterStatement implements PostgreSQLStatement {
+@RequiredArgsConstructor
+public final class PostgreSQLClusterStatement extends DDLStatement {
     
-    private SimpleTableSegment simpleTable;
+    private final SimpleTableSegment simpleTable;
     
-    private IndexSegment index;
+    private final IndexSegment index;
     
-    @Override
+    /**
+     * Get simple table.
+     *
+     * @return simple table
+     */
     public Optional<SimpleTableSegment> getSimpleTable() {
         return Optional.ofNullable(simpleTable);
     }
     
-    @Override
+    /**
+     * Get index.
+     *
+     * @return index segment
+     */
     public Optional<IndexSegment> getIndex() {
         return Optional.ofNullable(index);
     }

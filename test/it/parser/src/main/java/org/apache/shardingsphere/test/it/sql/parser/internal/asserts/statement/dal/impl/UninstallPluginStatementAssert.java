@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.UninstallPluginStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UninstallPluginStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class UninstallPluginStatementAssert {
      * @param actual actual uninstall plugin statement
      * @param expected expected uninstall plugin statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UninstallPluginStatement actual, final UninstallPluginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLUninstallPluginStatement actual, final UninstallPluginStatementTestCase expected) {
         assertThat(assertContext.getText("Actual plugin name does not match: "), actual.getPluginName(), is(expected.getPlugin().getName()));
     }
 }

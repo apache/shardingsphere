@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -28,11 +28,9 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.MySQLAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -57,10 +55,10 @@ class ShardingAlterViewSupportedCheckerTest {
     
     @Test
     void assertPreValidateAlterView() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        AlterViewStatement sqlStatement = new MySQLAlterViewStatement();
+        AlterViewStatement sqlStatement = new AlterViewStatement();
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -74,7 +72,7 @@ class ShardingAlterViewSupportedCheckerTest {
     
     @Test
     void assertPreValidateAlterViewWithShardingTable() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         AlterViewStatement sqlStatement = mock(AlterViewStatement.class);

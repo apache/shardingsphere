@@ -254,12 +254,14 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ## Other Exception
 
-| Vendor Code | SQL State | Reason                          |
-|-------------|-----------|---------------------------------|
-| 30000       | HY000     | Unknown exception: %s           |
-| 30001       | 0A000     | Unsupported SQL operation: %s   |
-| 30002       | HY000     | Database protocol exception: %s |
-| 30003       | 0A000     | Unsupported command: %s         |
-| 30004       | HY000     | Server exception: %s            |
-| 30010       | HY000     | Can not find plugin class '%s'. |
-| 30020       | HY000     | File access failed, file is: %s |
+| Vendor Code | SQL State | Reason                                               |
+|-------------|-----------|------------------------------------------------------|
+| 30000       | HY000     | Unknown exception: %s                                |
+| 30001       | 0A000     | Unsupported SQL operation: %s                        |
+| 30002       | HY000     | Database protocol exception: %s                      |
+| 30003       | 0A000     | Unsupported command: %s                              |
+| 30004       | HY000     | Server exception: %s                                 |
+| 30005       | HY000     | Underlying SQL state: %s, underlying error code: %s. |
+| 30010       | HY000     | Can not find plugin class '%s'.                      |
+| 30020       | HY000     | File access failed, file is: %s                      |
+| 30030       | HY000     | Unexpected tableless route engine.                   |

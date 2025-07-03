@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplay
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionalExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -43,7 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -144,12 +143,9 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
-            return false;
-        }
         for (ShardingSphereRule each : rules) {
             Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
-            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
         }

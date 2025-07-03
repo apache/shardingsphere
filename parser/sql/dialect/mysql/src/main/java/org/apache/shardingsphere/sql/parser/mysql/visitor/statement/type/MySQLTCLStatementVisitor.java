@@ -22,14 +22,14 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IsolationTypesContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OptionTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionAccessModeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaBeginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaEndContext;
@@ -40,29 +40,21 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStateme
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.tcl.AutoCommitSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XABeginStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XACommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAEndStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAPrepareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARecoveryStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XARollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAEndStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLLockStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLSetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLUnlockStatement;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * TCL statement visitor for MySQL.
@@ -71,46 +63,59 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
-        if (null != ctx.optionType()) {
-            OperationScope scope = null;
-            if (null != ctx.optionType().SESSION()) {
-                scope = OperationScope.SESSION;
-            } else if (null != ctx.optionType().GLOBAL()) {
-                scope = OperationScope.GLOBAL;
-            }
-            result.setScope(scope);
+        return new SetTransactionStatement(getOperationScope(ctx.optionType()),
+                getTransactionIsolationLevel(null == ctx.transactionCharacteristics().isolationLevel() ? null : ctx.transactionCharacteristics().isolationLevel().isolationTypes()),
+                getTransactionAccessType(ctx.transactionCharacteristics().transactionAccessMode()));
+    }
+    
+    private OperationScope getOperationScope(final OptionTypeContext ctx) {
+        if (null == ctx) {
+            return null;
         }
-        if (null != ctx.transactionCharacteristics().isolationLevel()) {
-            TransactionIsolationLevel isolationLevel = null;
-            if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().SERIALIZABLE()) {
-                isolationLevel = TransactionIsolationLevel.SERIALIZABLE;
-            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().COMMITTED()) {
-                isolationLevel = TransactionIsolationLevel.READ_COMMITTED;
-            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().UNCOMMITTED()) {
-                isolationLevel = TransactionIsolationLevel.READ_UNCOMMITTED;
-            } else if (null != ctx.transactionCharacteristics().isolationLevel().isolationTypes().REPEATABLE()) {
-                isolationLevel = TransactionIsolationLevel.REPEATABLE_READ;
-            }
-            result.setIsolationLevel(isolationLevel);
+        if (null != ctx.SESSION()) {
+            return OperationScope.SESSION;
         }
-        if (null != ctx.transactionCharacteristics().transactionAccessMode()) {
-            TransactionAccessType accessType = null;
-            if (null != ctx.transactionCharacteristics().transactionAccessMode().ONLY()) {
-                accessType = TransactionAccessType.READ_ONLY;
-            } else if (null != ctx.transactionCharacteristics().transactionAccessMode().WRITE()) {
-                accessType = TransactionAccessType.READ_WRITE;
-            }
-            result.setAccessMode(accessType);
+        if (null != ctx.GLOBAL()) {
+            return OperationScope.GLOBAL;
         }
-        return result;
+        return null;
+    }
+    
+    private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationTypesContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        if (null != ctx.SERIALIZABLE()) {
+            return TransactionIsolationLevel.SERIALIZABLE;
+        }
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != ctx.UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != ctx.REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        return null;
+    }
+    
+    private TransactionAccessType getTransactionAccessType(final TransactionAccessModeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        if (null != ctx.ONLY()) {
+            return TransactionAccessType.READ_ONLY;
+        }
+        if (null != ctx.WRITE()) {
+            return TransactionAccessType.READ_WRITE;
+        }
+        return null;
     }
     
     @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
-        MySQLSetAutoCommitStatement result = new MySQLSetAutoCommitStatement();
-        result.setAutoCommit(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
-        return result;
+        return new SetAutoCommitStatement(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
     }
     
     private AutoCommitSegment generateAutoCommitSegment(final Token ctx) {
@@ -120,35 +125,27 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new MySQLBeginTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new MySQLCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        MySQLRollbackStatement result = new MySQLRollbackStatement();
-        if (null != ctx.identifier()) {
-            result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        }
-        return result;
+        return null == ctx.identifier() ? new RollbackStatement() : new RollbackStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        MySQLSavepointStatement result = new MySQLSavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        return result;
+        return new SavepointStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        MySQLReleaseSavepointStatement result = new MySQLReleaseSavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        return result;
+        return new ReleaseSavepointStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
@@ -179,31 +176,5 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitXaRecovery(final XaRecoveryContext ctx) {
         return new XARecoveryStatement();
-    }
-    
-    @Override
-    public ASTNode visitLock(final LockContext ctx) {
-        MySQLLockStatement result = new MySQLLockStatement();
-        if (null != ctx.tableLock()) {
-            result.getTables().addAll(getLockTables(ctx.tableLock()));
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        for (TableLockContext each : tableLockContexts) {
-            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(each.tableName());
-            if (null != each.alias()) {
-                simpleTableSegment.setAlias((AliasSegment) visit(each.alias()));
-            }
-            result.add(simpleTableSegment);
-        }
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitUnlock(final UnlockContext ctx) {
-        return new MySQLUnlockStatement();
     }
 }

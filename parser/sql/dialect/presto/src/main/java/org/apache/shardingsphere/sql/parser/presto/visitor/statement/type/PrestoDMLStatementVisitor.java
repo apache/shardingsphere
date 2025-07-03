@@ -172,6 +172,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
@@ -179,10 +183,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoUpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -192,7 +192,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * DML statement visitor for presto.
+ * DML statement visitor for Presto.
  */
 public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor implements DMLStatementVisitor {
     
@@ -206,11 +206,11 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         if (null != ctx.queryExpressionParens()) {
             return visit(ctx.queryExpressionParens());
         }
-        PrestoSelectStatement result = (PrestoSelectStatement) visit(ctx.queryExpression());
+        SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -227,11 +227,11 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     
     @Override
     public ASTNode visitQueryExpression(final QueryExpressionContext ctx) {
-        PrestoSelectStatement result;
+        SelectStatement result;
         if (null != ctx.queryExpressionBody()) {
-            result = (PrestoSelectStatement) visit(ctx.queryExpressionBody());
+            result = (SelectStatement) visit(ctx.queryExpressionBody());
         } else {
-            result = (PrestoSelectStatement) visit(ctx.queryExpressionParens());
+            result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
@@ -247,7 +247,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         if (null != ctx.selectWithInto()) {
             return visit(ctx.selectWithInto());
         }
-        PrestoSelectStatement result = (PrestoSelectStatement) visit(ctx.queryExpression());
+        SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
@@ -260,18 +260,18 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody()) {
-            PrestoSelectStatement result = new PrestoSelectStatement();
+            SelectStatement result = new SelectStatement();
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
-                    (PrestoSelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
+                    (SelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
             return result;
         }
         if (null != ctx.queryExpressionParens()) {
-            PrestoSelectStatement result = new PrestoSelectStatement();
+            SelectStatement result = new SelectStatement();
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
-                    (PrestoSelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
+                    (SelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
             result.setProjections(left.getSelect().getProjections());
             left.getSelect().getFrom().ifPresent(result::setFrom);
             result.setCombine(createCombineSegment(ctx.combineClause(), left));
@@ -288,13 +288,13 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
             combineType = null == ctx.combineOption() || null == ctx.combineOption().ALL() ? CombineType.UNION : CombineType.UNION_ALL;
         }
         ParserRuleContext ruleContext = null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary();
-        SubquerySegment right = new SubquerySegment(ruleContext.start.getStartIndex(), ruleContext.stop.getStopIndex(), (PrestoSelectStatement) visit(ruleContext), getOriginalText(ruleContext));
+        SubquerySegment right = new SubquerySegment(ruleContext.start.getStartIndex(), ruleContext.stop.getStopIndex(), (SelectStatement) visit(ruleContext), getOriginalText(ruleContext));
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
     
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
-        PrestoSelectStatement result = new PrestoSelectStatement();
+        SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
@@ -327,7 +327,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     
     @Override
     public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        PrestoSelectStatement result = new PrestoSelectStatement();
+        SelectStatement result = new SelectStatement();
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
@@ -347,7 +347,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
-        PrestoSelectStatement result = new PrestoSelectStatement();
+        SelectStatement result = new SelectStatement();
         if (null != ctx.TABLE()) {
             result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
                     new IdentifierValue(ctx.tableName().getText()))));
@@ -808,26 +808,26 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        PrestoInsertStatement result;
+        InsertStatement result;
         if (null != ctx.insertValuesClause()) {
-            result = (PrestoInsertStatement) visit(ctx.insertValuesClause());
+            result = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
-            result = (PrestoInsertStatement) visit(ctx.insertSelectClause());
+            result = (InsertStatement) visit(ctx.insertSelectClause());
         } else {
-            result = new PrestoInsertStatement();
+            result = new InsertStatement();
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        PrestoInsertStatement result = new PrestoInsertStatement();
+        InsertStatement result = new InsertStatement();
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
                 result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
@@ -842,13 +842,13 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
-        PrestoSelectStatement selectStatement = (PrestoSelectStatement) visit(ctx.select());
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        PrestoInsertStatement result = new PrestoInsertStatement();
+        InsertStatement result = new InsertStatement();
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
                 result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
@@ -889,7 +889,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        PrestoUpdateStatement result = new PrestoUpdateStatement();
+        UpdateStatement result = new UpdateStatement();
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
         result.setTable(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -902,7 +902,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -954,7 +954,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        PrestoDeleteStatement result = new PrestoDeleteStatement();
+        DeleteStatement result = new DeleteStatement();
         if (null != ctx.multipleTablesClause()) {
             result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
@@ -969,7 +969,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1002,18 +1002,18 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        PrestoSelectStatement result;
+        SelectStatement result;
         if (null != ctx.queryExpression()) {
-            result = (PrestoSelectStatement) visit(ctx.queryExpression());
+            result = (SelectStatement) visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
                 result.setLock((LockSegment) visit(ctx.lockClauseList()));
             }
         } else if (null != ctx.selectWithInto()) {
-            result = (PrestoSelectStatement) visit(ctx.selectWithInto());
+            result = (SelectStatement) visit(ctx.selectWithInto());
         } else {
-            result = (PrestoSelectStatement) visit(ctx.getChild(0));
+            result = (SelectStatement) visit(ctx.getChild(0));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1231,7 +1231,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            PrestoSelectStatement subquery = (PrestoSelectStatement) visit(ctx.subquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {

@@ -29,15 +29,15 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rol
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetImplicitTransactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XABeginStatement;
 
 /**
  * TCL statement visitor for SQLServer.
@@ -46,66 +46,68 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        SQLServerSetTransactionStatement result = new SQLServerSetTransactionStatement();
-        result.setIsolationLevel(getTransactionIsolationLevel(ctx.isolationLevel()));
-        return result;
+        return new SetTransactionStatement(null, getTransactionIsolationLevel(ctx.isolationLevel()), null);
     }
     
     private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationLevelContext ctx) {
-        TransactionIsolationLevel result;
         if (null != ctx.UNCOMMITTED()) {
-            result = TransactionIsolationLevel.READ_UNCOMMITTED;
-        } else if (null != ctx.COMMITTED()) {
-            result = TransactionIsolationLevel.READ_COMMITTED;
-        } else if (null != ctx.REPEATABLE()) {
-            result = TransactionIsolationLevel.REPEATABLE_READ;
-        } else if (null != ctx.SNAPSHOT()) {
-            result = TransactionIsolationLevel.SNAPSHOT;
-        } else {
-            result = TransactionIsolationLevel.SERIALIZABLE;
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
         }
-        return result;
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != ctx.REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        if (null != ctx.SNAPSHOT()) {
+            return TransactionIsolationLevel.SNAPSHOT;
+        }
+        return TransactionIsolationLevel.SERIALIZABLE;
     }
     
     @Override
     public ASTNode visitSetImplicitTransactions(final SetImplicitTransactionsContext ctx) {
-        SQLServerSetAutoCommitStatement result = new SQLServerSetAutoCommitStatement();
-        result.setAutoCommit("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
-        return result;
+        return new SetAutoCommitStatement("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
     }
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new SQLServerBeginTransactionStatement();
-    }
-    
-    @Override
-    public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
-        return new SQLServerBeginDistributedTransactionStatement();
+        return new BeginTransactionStatement();
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new SQLServerCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitCommitWork(final CommitWorkContext ctx) {
-        return new SQLServerCommitStatement();
+        return new CommitStatement();
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new SQLServerRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitRollbackWork(final RollbackWorkContext ctx) {
-        return new SQLServerRollbackStatement();
+        return new RollbackStatement();
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SQLServerSavepointStatement();
+        return new SavepointStatement(null);
+    }
+    
+    @Override
+    public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
+        String xid = null;
+        if (null != ctx.transactionName()) {
+            xid = ctx.transactionName().getText();
+        } else if (null != ctx.transactionVariableName()) {
+            xid = ctx.transactionVariableName().getText();
+        }
+        return new XABeginStatement(xid);
     }
 }

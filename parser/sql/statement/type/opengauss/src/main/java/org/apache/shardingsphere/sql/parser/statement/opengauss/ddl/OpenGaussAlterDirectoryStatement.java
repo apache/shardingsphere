@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.opengauss.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * OpenGauss alter directory statement.
+ * Alter directory statement for openGauss.
  */
-public final class OpenGaussAlterDirectoryStatement extends AlterDirectoryStatement implements OpenGaussStatement {
+public final class OpenGaussAlterDirectoryStatement extends DDLStatement {
 }

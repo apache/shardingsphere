@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
@@ -55,15 +54,15 @@ public final class CommentAssert {
     }
     
     private static void assertEmptyComment(final SQLCaseAssertContext assertContext, final SQLStatement actual) {
-        if (actual instanceof AbstractSQLStatement) {
-            assertTrue(((AbstractSQLStatement) actual).getCommentSegments().isEmpty(), assertContext.getText("Comment should be empty."));
+        if (actual instanceof SQLStatement) {
+            assertTrue(actual.getComments().isEmpty(), assertContext.getText("Comment should be empty."));
         }
     }
     
     private static void assertCorrectComment(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
-        assertInstanceOf(AbstractSQLStatement.class, actual, assertContext.getText("Comment should exist."));
-        assertThat(assertContext.getText("Comments size assertion error: "), ((AbstractSQLStatement) actual).getCommentSegments().size(), is(expected.getComments().size()));
-        Iterator<CommentSegment> actualIterator = ((AbstractSQLStatement) actual).getCommentSegments().iterator();
+        assertInstanceOf(SQLStatement.class, actual, assertContext.getText("Comment should exist."));
+        assertThat(assertContext.getText("Comments size assertion error: "), actual.getComments().size(), is(expected.getComments().size()));
+        Iterator<CommentSegment> actualIterator = actual.getComments().iterator();
         for (ExpectedComment each : expected.getComments()) {
             assertThat(assertContext.getText("Comments assertion error: "), actualIterator.next().getText(), is(each.getText()));
         }

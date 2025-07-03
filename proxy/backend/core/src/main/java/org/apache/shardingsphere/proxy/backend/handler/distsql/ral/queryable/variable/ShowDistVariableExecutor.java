@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -75,7 +76,7 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private String getTemporaryConfigurationValue(final ShardingSphereMetaData metaData, final String variableName) {
-        return getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)).toString());
+        return getStringResult(metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(variableName)));
     }
     
     private String getConnectionSize(final String variableName) {
@@ -86,6 +87,9 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     private String getStringResult(final Object value) {
         if (null == value) {
             return "";
+        }
+        if (value instanceof Float || value instanceof Double) {
+            return new BigDecimal(String.valueOf(value)).toPlainString();
         }
         return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
     }

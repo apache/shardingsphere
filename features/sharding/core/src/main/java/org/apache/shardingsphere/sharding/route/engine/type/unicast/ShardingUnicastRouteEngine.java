@@ -19,20 +19,20 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.sharding.exception.syntax.DataSourceIntersectionNotFoundException;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,11 +78,12 @@ public final class ShardingUnicastRouteEngine implements ShardingRouteEngine {
     }
     
     private String getDataSourceName(final Collection<String> dataSourceNames) {
-        return sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
+        return sqlStatementContext instanceof CursorContextAvailable || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
     }
     
     private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext || sqlStatementContext instanceof DropViewStatementContext;
+        return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext
+                || sqlStatementContext.getSqlStatement() instanceof DropViewStatement;
     }
     
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) {

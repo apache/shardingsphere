@@ -28,7 +28,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
 /**
@@ -45,19 +45,16 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
     
     @Override
     public ResponseHeader execute() {
-        ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
+        ShardingSpherePreconditions.checkState(sqlStatement.containsScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
         setReadOnly();
         setTransactionIsolationLevel();
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private void setReadOnly() {
-        if (!sqlStatement.getAccessMode().isPresent()) {
-            return;
-        }
-        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode().get()) {
+        if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_ONLY)) {
             connectionSession.setReadOnly(true);
-        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode().get()) {
+        } else if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_WRITE)) {
             connectionSession.setReadOnly(false);
         }
     }

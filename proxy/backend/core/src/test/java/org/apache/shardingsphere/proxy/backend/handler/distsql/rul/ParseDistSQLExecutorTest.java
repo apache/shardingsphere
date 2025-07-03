@@ -73,7 +73,7 @@ class ParseDistSQLExecutorTest {
         handler.execute();
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("SelectStatement"));
         assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
     }
     

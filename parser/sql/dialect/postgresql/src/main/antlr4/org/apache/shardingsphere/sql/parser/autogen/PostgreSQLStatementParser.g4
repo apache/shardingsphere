@@ -17,7 +17,7 @@
 
 parser grammar PostgreSQLStatementParser;
 
-import TCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import TCLStatement, LCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 options {
     tokenVocab = PostgreSQLStatementLexer;
@@ -149,7 +149,6 @@ execute
     | dropAccessMethod
     | dropServer
     | alterPolicy
-    | checkpoint
     | fetch
     | move
     | close
@@ -180,6 +179,7 @@ execute
     | alterType
     | alterTrigger
     | createPublication
+    | checkpoint
     | emptyStatement
     | open
     ) SEMI_? EOF

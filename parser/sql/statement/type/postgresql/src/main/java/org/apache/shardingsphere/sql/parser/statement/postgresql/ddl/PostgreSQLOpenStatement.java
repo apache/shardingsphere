@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.OpenStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL open statement.
+ * Open statement for PostgreSQL.
  */
-public final class PostgreSQLOpenStatement extends OpenStatement implements PostgreSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class PostgreSQLOpenStatement extends DDLStatement {
+    
+    private final CursorNameSegment cursorName;
 }

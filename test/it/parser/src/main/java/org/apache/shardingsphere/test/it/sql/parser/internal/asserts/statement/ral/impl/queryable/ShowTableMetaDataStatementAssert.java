@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show table meta data statement assert.
@@ -44,8 +43,7 @@ public final class ShowTableMetaDataStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual, final ShowTableMetaDataStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
-            assertTrue(actual.getDatabase().isPresent());
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getDatabase());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
         }
     }

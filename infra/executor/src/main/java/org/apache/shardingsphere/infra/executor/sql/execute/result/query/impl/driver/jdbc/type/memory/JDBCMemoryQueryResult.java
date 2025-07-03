@@ -23,13 +23,26 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * JDBC query result for memory loading.
  */
 public final class JDBCMemoryQueryResult extends AbstractMemoryQueryResult {
     
+    private final ResultSet jdbcResultSet;
+    
     public JDBCMemoryQueryResult(final ResultSet resultSet, final DatabaseType databaseType) throws SQLException {
+        this(resultSet, databaseType, false);
+    }
+    
+    public JDBCMemoryQueryResult(final ResultSet resultSet, final DatabaseType databaseType, final boolean containsJDBCResultSet) throws SQLException {
         super(new JDBCQueryResultMetaData(resultSet.getMetaData()), new QueryResultDataRowLoader(databaseType).load(resultSet.getMetaData().getColumnCount(), resultSet));
+        jdbcResultSet = containsJDBCResultSet ? resultSet : null;
+    }
+    
+    @Override
+    public Optional<ResultSet> getJDBCResultSet() {
+        return Optional.ofNullable(jdbcResultSet);
     }
 }

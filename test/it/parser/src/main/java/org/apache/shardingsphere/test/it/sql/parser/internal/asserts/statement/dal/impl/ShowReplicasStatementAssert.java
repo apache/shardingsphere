@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowReplicasStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.show.MySQLShowReplicasStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowReplicasStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class ShowReplicasStatementAssert {
      * @param actual actual show replicas statement
      * @param expected expected show replicas statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReplicasStatement actual, final ShowReplicasStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowReplicasStatement actual, final ShowReplicasStatementTestCase expected) {
     }
 }

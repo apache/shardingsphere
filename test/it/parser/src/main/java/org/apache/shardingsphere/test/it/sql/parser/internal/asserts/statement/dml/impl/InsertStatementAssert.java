@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.Mul
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.hint.WithTableHintClauseAssert;
@@ -155,7 +155,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<WithSegment> withSegment = actual.getWithSegment();
+        Optional<WithSegment> withSegment = actual.getWith();
         if (null == expected.getWithClause()) {
             assertFalse(withSegment.isPresent(), assertContext.getText("Actual with segment should not exist."));
         } else {
@@ -165,7 +165,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertOutputClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<OutputSegment> outputSegment = actual.getOutputSegment();
+        Optional<OutputSegment> outputSegment = actual.getOutput();
         if (null == expected.getOutputClause()) {
             assertFalse(outputSegment.isPresent(), assertContext.getText("Actual output segment should not exist."));
         } else {
@@ -186,7 +186,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertMultiTableInsertIntoClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<MultiTableInsertIntoSegment> multiTableInsertIntoSegment = actual.getMultiTableInsertIntoSegment();
+        Optional<MultiTableInsertIntoSegment> multiTableInsertIntoSegment = actual.getMultiTableInsertInto();
         if (null == expected.getMultiTableInsertInto()) {
             assertFalse(multiTableInsertIntoSegment.isPresent(), assertContext.getText("Actual multi table insert into segment should not exist."));
         } else {
@@ -196,7 +196,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertMultiTableConditionalIntoClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<MultiTableConditionalIntoSegment> multiTableConditionalIntoSegment = actual.getMultiTableConditionalIntoSegment();
+        Optional<MultiTableConditionalIntoSegment> multiTableConditionalIntoSegment = actual.getMultiTableConditionalInto();
         if (null == expected.getMultiTableConditionalInto()) {
             assertFalse(multiTableConditionalIntoSegment.isPresent(), assertContext.getText("Actual multi table conditional into segment should not exist."));
         } else {
@@ -206,7 +206,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertReturningClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<ReturningSegment> returningSegment = actual.getReturningSegment();
+        Optional<ReturningSegment> returningSegment = actual.getReturning();
         if (null == expected.getReturningClause()) {
             assertFalse(returningSegment.isPresent(), assertContext.getText("Actual returning segment should not exist."));
         } else {
@@ -216,7 +216,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertInsertExecClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<ExecSegment> execSegment = actual.getExecSegment();
+        Optional<ExecSegment> execSegment = actual.getExec();
         if (null == expected.getExecClause()) {
             assertFalse(execSegment.isPresent(), assertContext.getText("Actual exec segment should not exist."));
         } else {
@@ -226,7 +226,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertWithTableHintClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<WithTableHintSegment> withTableHintSegment = actual.getWithTableHintSegment();
+        Optional<WithTableHintSegment> withTableHintSegment = actual.getWithTableHint();
         if (null == expected.getExpectedWithTableHintClause()) {
             assertFalse(withTableHintSegment.isPresent(), assertContext.getText("Actual with table hint should not exist."));
         } else {
@@ -236,7 +236,7 @@ public final class InsertStatementAssert {
     }
     
     private static void assertRowSetFunctionClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
-        Optional<FunctionSegment> rowSetFunctionSegment = actual.getRowSetFunctionSegment();
+        Optional<FunctionSegment> rowSetFunctionSegment = actual.getRowSetFunction();
         if (null == expected.getExpectedRowSetFunctionClause()) {
             assertFalse(rowSetFunctionSegment.isPresent(), assertContext.getText("Actual row set function should not exist."));
         } else {

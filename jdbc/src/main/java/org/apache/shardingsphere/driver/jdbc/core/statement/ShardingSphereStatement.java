@@ -30,8 +30,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultS
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -49,7 +48,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -264,20 +262,12 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
-        handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
+        handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
         sqlStatementContext = queryContext.getSqlStatementContext();
         ShardingSpherePreconditions.checkNotNull(sqlStatementContext, () -> new IllegalStateException("Statement context can not be null"));
-        usedDatabaseName = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName())
-                : connection.getCurrentDatabaseName();
+        usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         clearStatements();
-    }
-    
-    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connection.beginTransactionIfNeededWhenAutoCommitFalse();
-        }
     }
     
     private void clearStatements() throws SQLException {
@@ -336,11 +326,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
-            return false;
-        }
         for (DataNodeRuleAttribute each : metaData.getDatabase(usedDatabaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+            if (each.isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
         }

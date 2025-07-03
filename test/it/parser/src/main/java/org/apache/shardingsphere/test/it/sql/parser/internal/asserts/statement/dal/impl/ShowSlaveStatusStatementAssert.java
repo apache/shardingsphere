@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowSlaveStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.show.MySQLShowSlaveStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowSlaveStatusStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class ShowSlaveStatusStatementAssert {
      * @param actual actual show slave status statement
      * @param expected expected show slave status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowSlaveStatusStatement actual, final ShowSlaveStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveStatusStatement actual, final ShowSlaveStatusStatementTestCase expected) {
         if (null != expected.getChannel()) {
             assertThat(assertContext.getText("Actual show slave status channel name assertion error: "), actual.getChannel(), is(expected.getChannel()));
         }

@@ -64,12 +64,20 @@ rollbackToSavepoint
     : ROLLBACK (WORK | TRANSACTION)? TO SAVEPOINT? colId
     ;
 
+prepareTransaction
+    : PREPARE TRANSACTION gid
+    ;
+
 commitPrepared
-    : COMMIT PREPARED STRING_
+    : COMMIT PREPARED gid
     ;
 
 rollbackPrepared
-    : ROLLBACK PREPARED STRING_
+    : ROLLBACK PREPARED gid
+    ;
+
+gid
+    : STRING_
     ;
 
 setConstraints
@@ -82,27 +90,4 @@ constraintsSetMode
 
 constraintsSetList
     : ALL | qualifiedNameList
-    ;
-
-lock
-    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
-    ;
-
-lockType
-    : ACCESS SHARE
-    | ROW SHARE
-    | ROW EXCLUSIVE
-    | SHARE UPDATE EXCLUSIVE
-    | SHARE
-    | SHARE ROW EXCLUSIVE
-    | EXCLUSIVE
-    | ACCESS EXCLUSIVE
-    ;
-
-prepareTransaction
-    : PREPARE TRANSACTION STRING_
-    ;
-
-checkpoint
-    : CHECKPOINT
     ;

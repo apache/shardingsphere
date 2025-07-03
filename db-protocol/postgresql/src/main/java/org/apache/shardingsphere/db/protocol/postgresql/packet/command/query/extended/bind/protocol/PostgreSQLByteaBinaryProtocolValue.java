@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 public final class PostgreSQLByteaBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         return ((byte[]) value).length;
     }
     

@@ -20,12 +20,11 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
@@ -74,9 +73,9 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
@@ -134,8 +133,8 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         checkBackendReady(sqlStatementContext);
         containsDerivedProjections = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
-        if (sqlStatementContext instanceof CursorAvailable) {
-            prepareCursorStatementContext((CursorAvailable) sqlStatementContext);
+        if (sqlStatementContext instanceof CursorContextAvailable) {
+            prepareCursorStatementContext((CursorContextAvailable) sqlStatementContext);
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this, queryContext);
         pushDownMetaDataRefreshEngine = new PushDownMetaDataRefreshEngine(
@@ -144,13 +143,12 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
-        boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(),
-                sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaNames() : Collections.emptyList(), database);
+        boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(database.getName()));
         ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(database.getName()));
     }
     
-    private void prepareCursorStatementContext(final CursorAvailable statementContext) {
+    private void prepareCursorStatementContext(final CursorContextAvailable statementContext) {
         if (statementContext.getCursorName().isPresent()) {
             prepareCursorStatementContext(statementContext, statementContext.getCursorName().get().getIdentifier().getValue().toLowerCase());
         }
@@ -159,7 +157,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         }
     }
     
-    private void prepareCursorStatementContext(final CursorAvailable statementContext, final String cursorName) {
+    private void prepareCursorStatementContext(final CursorContextAvailable statementContext, final String cursorName) {
         CursorConnectionContext cursorContext = databaseConnectionManager.getConnectionSession().getConnectionContext().getCursorContext();
         if (statementContext instanceof CursorStatementContext) {
             cursorContext.getCursorStatementContexts().put(cursorName, (CursorStatementContext) statementContext);
@@ -329,9 +327,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     }
     
     private boolean isNeedAccumulate() {
-        Collection<String> tableNames = queryContext.getSqlStatementContext() instanceof TableAvailable
-                ? ((TableAvailable) queryContext.getSqlStatementContext()).getTablesContext().getTableNames()
-                : Collections.emptyList();
+        Collection<String> tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
         for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
             if (each.isNeedAccumulate(tableNames)) {
                 return true;

@@ -17,11 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
- * PostgreSQL declare statement.
+ * Declare statement for PostgreSQL.
  */
-public final class PostgreSQLDeclareStatement extends DeclareStatement implements PostgreSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class PostgreSQLDeclareStatement extends DDLStatement {
+    
+    private final CursorNameSegment cursorName;
+    
+    private final SelectStatement select;
 }

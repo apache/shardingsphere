@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -37,7 +37,7 @@ class SaneQueryResultEngineTest {
     @Test
     void assertGetSaneQueryResultForSelectStatement() {
         SaneQueryResultEngine saneQueryResultEngine = new SaneQueryResultEngine(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        Optional<ExecuteResult> actual = saneQueryResultEngine.getSaneQueryResult(new SQL92SelectStatement(), null);
+        Optional<ExecuteResult> actual = saneQueryResultEngine.getSaneQueryResult(new SelectStatement(), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
         RawMemoryQueryResult actualResult = (RawMemoryQueryResult) actual.get();

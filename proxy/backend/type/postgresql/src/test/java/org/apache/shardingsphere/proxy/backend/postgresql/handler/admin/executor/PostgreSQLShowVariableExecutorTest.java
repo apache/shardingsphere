@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -40,7 +40,7 @@ class PostgreSQLShowVariableExecutorTest {
     @Test
     void assertExecuteShowAll() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new PostgreSQLShowStatement("ALL"));
+        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement("ALL"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(3));
@@ -67,7 +67,7 @@ class PostgreSQLShowVariableExecutorTest {
     @Test
     void assertExecuteShowOne() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new PostgreSQLShowStatement("client_encoding"));
+        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement("client_encoding"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));

@@ -28,10 +28,10 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.UnknownSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -55,10 +55,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,7 +117,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
                 .thenReturn(new MySQLServerPreparedStatement("UPDATE tbl SET col=1 WHERE id = ?", updateStatementContext, new HintValueContext(), Collections.emptyList()));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLServerPreparedStatement("COMMIT", new UnknownSQLStatementContext(databaseType, new MySQLCommitStatement()), new HintValueContext(), Collections.emptyList()));
+                .thenReturn(new MySQLServerPreparedStatement("COMMIT", new CommonSQLStatementContext(databaseType, new CommitStatement()), new HintValueContext(), Collections.emptyList()));
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData());
@@ -136,14 +136,14 @@ class MySQLComStmtExecuteExecutorTest {
         return result;
     }
     
-    private MySQLSelectStatement prepareSelectStatement() {
-        MySQLSelectStatement result = new MySQLSelectStatement();
+    private SelectStatement prepareSelectStatement() {
+        SelectStatement result = new SelectStatement();
         result.setProjections(new ProjectionsSegment(0, 0));
         return result;
     }
     
-    private MySQLUpdateStatement prepareUpdateStatement() {
-        MySQLUpdateStatement result = new MySQLUpdateStatement();
+    private UpdateStatement prepareUpdateStatement() {
+        UpdateStatement result = new UpdateStatement();
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         ColumnAssignmentSegment columnAssignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0));
         result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(columnAssignmentSegment)));
@@ -180,7 +180,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new MySQLUpdateStatement()));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement()));
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         Iterator<DatabasePacket> actual = executor.execute().iterator();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
@@ -194,7 +194,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getStatementId()).thenReturn(3);
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
         ProxyBackendHandler proxyBackendHandler = mock(ProxyBackendHandler.class);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new MySQLCommitStatement()));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new CommitStatement()));
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Iterator<DatabasePacket> actual = executor.execute().iterator();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));

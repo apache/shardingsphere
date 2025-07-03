@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.BinlogStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog.MySQLBinlogStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
 
@@ -39,7 +39,7 @@ public final class BinlogStatementAssert {
      * @param actual actual binlog statement
      * @param expected expected binlog statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final BinlogStatement actual, final BinlogStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLBinlogStatement actual, final BinlogStatementTestCase expected) {
         assertThat(assertContext.getText("Binlog statement context does not match: "), actual.getBase64Str(), is(expected.getBase64Str()));
     }
 }

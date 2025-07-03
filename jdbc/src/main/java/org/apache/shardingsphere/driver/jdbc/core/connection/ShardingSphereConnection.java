@@ -43,7 +43,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 /**
@@ -66,7 +66,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final DriverDatabaseConnectionManager databaseConnectionManager;
     
     @Getter
-    private final Collection<StatementManager> statementManagers = new CopyOnWriteArrayList<>();
+    private final Collection<StatementManager> statementManagers = new ConcurrentLinkedQueue<>();
     
     @Getter
     private final String processId;

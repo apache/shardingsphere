@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CheckTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLCheckTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CheckTableStatementTestCase;
@@ -37,7 +37,7 @@ public final class CheckTableStatementAssert {
      * @param actual actual check table statement
      * @param expected expected check table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CheckTableStatement actual, final CheckTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCheckTableStatement actual, final CheckTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

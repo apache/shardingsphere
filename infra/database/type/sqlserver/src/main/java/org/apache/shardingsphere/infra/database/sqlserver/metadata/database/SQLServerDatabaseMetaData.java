@@ -55,7 +55,7 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectPaginationOption getPaginationOption() {
-        return new DialectPaginationOption(true, "ROW_NUMBER");
+        return new DialectPaginationOption(true, "ROW_NUMBER", true);
     }
     
     @Override

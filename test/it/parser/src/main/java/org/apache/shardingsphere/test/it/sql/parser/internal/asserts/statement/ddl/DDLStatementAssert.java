@@ -19,44 +19,45 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSynonymStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSystemStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AnalyzeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AssociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AuditStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ClusterStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DeclareStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DisassociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FlashbackTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ListenStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.NoAuditStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.NotifyStmtStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.OpenStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RefreshMatViewStmtStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ReindexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.SecurityLabelStmtStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.UnlistenStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.UpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.AlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.RefreshMatViewStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSessionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAnalyzeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLListenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLOpenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLReindexStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterIndexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.AlterSessionStatementAssert;
@@ -88,6 +89,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.NoAuditStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.NotifyStmtStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.OpenStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.PurgeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.RefreshMatViewStmtStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.ReindexStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.impl.RenameTableStatementAssert;
@@ -126,6 +128,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.NoAuditStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.NotifyStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.OpenStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.PurgeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.RefreshMatViewStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ReindexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.RenameTableStatementTestCase;
@@ -166,46 +169,46 @@ public final class DDLStatementAssert {
             DropIndexStatementAssert.assertIs(assertContext, (DropIndexStatement) actual, (DropIndexStatementTestCase) expected);
         } else if (actual instanceof AlterSynonymStatement) {
             AlterSynonymStatementAssert.assertIs(assertContext, (AlterSynonymStatement) actual, (AlterSynonymStatementTestCase) expected);
-        } else if (actual instanceof AlterSessionStatement) {
-            AlterSessionStatementAssert.assertIs(assertContext, (AlterSessionStatement) actual, (AlterSessionStatementTestCase) expected);
-        } else if (actual instanceof AlterSystemStatement) {
-            AlterSystemStatementAssert.assertIs(assertContext, (AlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
-        } else if (actual instanceof AnalyzeStatement) {
-            AnalyzeStatementAssert.assertIs(assertContext, (AnalyzeStatement) actual, (AnalyzeStatementTestCase) expected);
-        } else if (actual instanceof AssociateStatisticsStatement) {
-            AssociateStatisticsStatementAssert.assertIs(assertContext, (AssociateStatisticsStatement) actual, (AssociateStatisticsStatementTestCase) expected);
-        } else if (actual instanceof DisassociateStatisticsStatement) {
-            DisassociateStatisticsStatementAssert.assertIs(assertContext, (DisassociateStatisticsStatement) actual, (DisassociateStatisticsStatementTestCase) expected);
-        } else if (actual instanceof AuditStatement) {
-            AuditStatementAssert.assertIs(assertContext, (AuditStatement) actual, (AuditStatementTestCase) expected);
-        } else if (actual instanceof NoAuditStatement) {
-            NoAuditStatementAssert.assertIs(assertContext, (NoAuditStatement) actual, (NoAuditStatementTestCase) expected);
+        } else if (actual instanceof OracleAlterSessionStatement) {
+            AlterSessionStatementAssert.assertIs(assertContext, (OracleAlterSessionStatement) actual, (AlterSessionStatementTestCase) expected);
+        } else if (actual instanceof OracleAlterSystemStatement) {
+            AlterSystemStatementAssert.assertIs(assertContext, (OracleAlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
+        } else if (actual instanceof OracleAnalyzeStatement) {
+            AnalyzeStatementAssert.assertIs(assertContext, (OracleAnalyzeStatement) actual, (AnalyzeStatementTestCase) expected);
+        } else if (actual instanceof OracleAssociateStatisticsStatement) {
+            AssociateStatisticsStatementAssert.assertIs(assertContext, (OracleAssociateStatisticsStatement) actual, (AssociateStatisticsStatementTestCase) expected);
+        } else if (actual instanceof OracleDisassociateStatisticsStatement) {
+            DisassociateStatisticsStatementAssert.assertIs(assertContext, (OracleDisassociateStatisticsStatement) actual, (DisassociateStatisticsStatementTestCase) expected);
+        } else if (actual instanceof OracleAuditStatement) {
+            AuditStatementAssert.assertIs(assertContext, (OracleAuditStatement) actual, (AuditStatementTestCase) expected);
+        } else if (actual instanceof OracleNoAuditStatement) {
+            NoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (NoAuditStatementTestCase) expected);
         } else if (actual instanceof CursorStatement) {
             CursorStatementAssert.assertIs(assertContext, (CursorStatement) actual, (CursorStatementTestCase) expected);
-        } else if (actual instanceof DeclareStatement) {
-            DeclareStatementAssert.assertIs(assertContext, (DeclareStatement) actual, (DeclareStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLDeclareStatement) {
+            DeclareStatementAssert.assertIs(assertContext, (PostgreSQLDeclareStatement) actual, (DeclareStatementTestCase) expected);
         } else if (actual instanceof CloseStatement) {
             CloseStatementAssert.assertIs(assertContext, (CloseStatement) actual, (CloseStatementTestCase) expected);
         } else if (actual instanceof MoveStatement) {
             MoveStatementAssert.assertIs(assertContext, (MoveStatement) actual, (MoveStatementTestCase) expected);
         } else if (actual instanceof FetchStatement) {
             FetchStatementAssert.assertIs(assertContext, (FetchStatement) actual, (FetchStatementTestCase) expected);
-        } else if (actual instanceof ClusterStatement) {
-            ClusterStatementAssert.assertIs(assertContext, (ClusterStatement) actual, (ClusterStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLClusterStatement) {
+            ClusterStatementAssert.assertIs(assertContext, (PostgreSQLClusterStatement) actual, (ClusterStatementTestCase) expected);
         } else if (actual instanceof CommentStatement) {
             CommentStatementAssert.assertIs(assertContext, (CommentStatement) actual, (CommentStatementTestCase) expected);
-        } else if (actual instanceof ListenStatement) {
-            ListenStatementAssert.assertIs(assertContext, (ListenStatement) actual, (ListenStatementTestCase) expected);
-        } else if (actual instanceof UnlistenStatement) {
-            UnlistenStatementAssert.assertIs(assertContext, (UnlistenStatement) actual, (UnlistenStatementTestCase) expected);
-        } else if (actual instanceof NotifyStmtStatement) {
-            NotifyStmtStatementAssert.assertIs(assertContext, (NotifyStmtStatement) actual, (NotifyStmtStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLListenStatement) {
+            ListenStatementAssert.assertIs(assertContext, (PostgreSQLListenStatement) actual, (ListenStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLUnlistenStatement) {
+            UnlistenStatementAssert.assertIs(assertContext, (PostgreSQLUnlistenStatement) actual, (UnlistenStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLNotifyStmtStatement) {
+            NotifyStmtStatementAssert.assertIs(assertContext, (PostgreSQLNotifyStmtStatement) actual, (NotifyStmtStatementTestCase) expected);
         } else if (actual instanceof RefreshMatViewStmtStatement) {
             RefreshMatViewStmtStatementAssert.assertIs(assertContext, (RefreshMatViewStmtStatement) actual, (RefreshMatViewStmtStatementTestCase) expected);
-        } else if (actual instanceof ReindexStatement) {
-            ReindexStatementAssert.assertIs(assertContext, (ReindexStatement) actual, (ReindexStatementTestCase) expected);
-        } else if (actual instanceof SecurityLabelStmtStatement) {
-            SecurityLabelStmtStatementAssert.assertIs(assertContext, (SecurityLabelStmtStatement) actual, (SecurityLabelStmtStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLReindexStatement) {
+            ReindexStatementAssert.assertIs(assertContext, (PostgreSQLReindexStatement) actual, (ReindexStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLSecurityLabelStmtStatement) {
+            SecurityLabelStmtStatementAssert.assertIs(assertContext, (PostgreSQLSecurityLabelStmtStatement) actual, (SecurityLabelStmtStatementTestCase) expected);
         } else if (actual instanceof CreateViewStatement) {
             CreateViewStatementAssert.assertIs(assertContext, (CreateViewStatement) actual, (CreateViewStatementTestCase) expected);
         } else if (actual instanceof AlterViewStatement) {
@@ -216,12 +219,14 @@ public final class DDLStatementAssert {
             AlterTablespaceStatementAssert.assertIs(assertContext, (AlterTablespaceStatement) actual, (AlterTablespaceStatementTestCase) expected);
         } else if (actual instanceof CreateSequenceStatement) {
             CreateSequenceStatementAssert.assertIs(assertContext, (CreateSequenceStatement) actual, (CreateSequenceStatementTestCase) expected);
-        } else if (actual instanceof UpdateStatisticsStatement) {
-            UpdateStatisticsStatementAssert.assertIs(assertContext, (UpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
-        } else if (actual instanceof OpenStatement) {
-            OpenStatementAssert.assertIs(assertContext, (OpenStatement) actual, (OpenStatementTestCase) expected);
-        } else if (actual instanceof FlashbackTableStatement) {
-            FlashbackTableStatementAssert.assertIs(assertContext, (FlashbackTableStatement) actual, (FlashbackTableStatementTestCase) expected);
+        } else if (actual instanceof SQLServerUpdateStatisticsStatement) {
+            UpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLOpenStatement) {
+            OpenStatementAssert.assertIs(assertContext, (PostgreSQLOpenStatement) actual, (OpenStatementTestCase) expected);
+        } else if (actual instanceof OracleFlashbackTableStatement) {
+            FlashbackTableStatementAssert.assertIs(assertContext, (OracleFlashbackTableStatement) actual, (FlashbackTableStatementTestCase) expected);
+        } else if (actual instanceof OraclePurgeStatement) {
+            PurgeStatementAssert.assertIs(assertContext, (OraclePurgeStatement) actual, (PurgeStatementTestCase) expected);
         }
     }
 }

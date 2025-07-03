@@ -101,10 +101,26 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     public void setAutoCommit(final boolean autoCommit) throws SQLException {
         methodInvocationRecorder.record("setAutoCommit", connection -> connection.setAutoCommit(autoCommit));
         forceExecuteTemplate.execute(getCachedConnections(), connection -> connection.setAutoCommit(autoCommit));
+        if (autoCommit) {
+            clearCachedConnections();
+        }
     }
     
     private Collection<Connection> getCachedConnections() {
         return cachedConnections.values();
+    }
+    
+    /**
+     * Clear cached connections.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void clearCachedConnections() throws SQLException {
+        try {
+            forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
+        } finally {
+            cachedConnections.clear();
+        }
     }
     
     /**
@@ -142,6 +158,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
             connectionContext.close();
+            clearCachedConnections();
         }
     }
     
@@ -164,6 +181,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
                 ConnectionSavepointManager.getInstance().transactionFinished(each);
             }
             connectionContext.close();
+            clearCachedConnections();
         }
     }
     
@@ -382,10 +400,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     @Override
     public void close() throws SQLException {
-        try {
-            forceExecuteTemplate.execute(cachedConnections.values(), Connection::close);
-        } finally {
-            cachedConnections.clear();
-        }
+        clearCachedConnections();
     }
 }

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DeleteStatementTestCase;
@@ -51,10 +49,4 @@ public final class ExplainStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "create-table")
     private CreateTableStatementTestCase createTableAsSelectClause;
-    
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable table;
-    
-    @XmlElement(name = "column-wild")
-    private ExpectedColumn column;
 }

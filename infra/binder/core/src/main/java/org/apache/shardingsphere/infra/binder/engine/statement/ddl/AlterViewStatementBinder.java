@@ -20,13 +20,15 @@ package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Alter view statement binder.
@@ -35,22 +37,21 @@ public final class AlterViewStatementBinder implements SQLStatementBinder<AlterV
     
     @Override
     public AlterViewStatement bind(final AlterViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        AlterViewStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setView(SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts));
-        sqlStatement.getSelect().ifPresent(optional -> result.setSelect(new SelectStatementBinder().bind(optional, binderContext)));
-        sqlStatement.getRenameView().ifPresent(optional -> result.setRenameView(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
-        return result;
+        SimpleTableSegment boundView = SimpleTableSegmentBinder.bind(sqlStatement.getView(), binderContext, tableBinderContexts);
+        SelectStatement boundSelect = sqlStatement.getSelect().map(optional -> new SelectStatementBinder().bind(optional, binderContext)).orElse(null);
+        SimpleTableSegment boundRenameView = sqlStatement.getRenameView().map(optional -> SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
+        return copy(sqlStatement, boundView, boundSelect, boundRenameView);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static AlterViewStatement copy(final AlterViewStatement sqlStatement) {
-        AlterViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private AlterViewStatement copy(final AlterViewStatement sqlStatement, final SimpleTableSegment boundView, final SelectStatement boundSelect, final SimpleTableSegment boundRenameView) {
+        AlterViewStatement result = new AlterViewStatement();
+        result.setView(boundView);
+        result.setSelect(boundSelect);
+        result.setRenameView(boundRenameView);
         sqlStatement.getViewDefinition().ifPresent(result::setViewDefinition);
         sqlStatement.getConstraintDefinition().ifPresent(result::setConstraintDefinition);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowSlaveHostsStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.show.MySQLShowSlaveHostsStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowSlaveHostsStatementTestCase;
 
@@ -36,6 +36,6 @@ public final class ShowSlaveHostsStatementAssert {
      * @param actual actual show slave host statement
      * @param expected expected show slave host statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowSlaveHostsStatement actual, final ShowSlaveHostsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowSlaveHostsStatement actual, final ShowSlaveHostsStatementTestCase expected) {
     }
 }

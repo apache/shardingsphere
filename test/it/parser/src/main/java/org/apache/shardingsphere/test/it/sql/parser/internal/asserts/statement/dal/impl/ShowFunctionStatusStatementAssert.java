@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowFunctionStatusStatementTestCase;
@@ -37,9 +37,9 @@ public final class ShowFunctionStatusStatementAssert {
      * @param actual actual show function status statement
      * @param expected expected show function status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowFunctionStatusStatement actual, final ShowFunctionStatusStatementTestCase expected) {
-        if (actual.getFilter().isPresent()) {
-            ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowFunctionStatusStatement actual, final ShowFunctionStatusStatementTestCase expected) {
+        if (null != actual.getFilter()) {
+            ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }
     }
 }

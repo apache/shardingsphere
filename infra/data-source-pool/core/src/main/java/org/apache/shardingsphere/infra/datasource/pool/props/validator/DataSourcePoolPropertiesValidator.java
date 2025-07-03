@@ -77,8 +77,8 @@ public final class DataSourcePoolPropertiesValidator {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(props);
+            checkFailFast(dataSource);
             if (expectedPrivileges.isEmpty() || expectedPrivileges.contains(PrivilegeCheckType.NONE)) {
-                checkFailFast(dataSource);
                 return;
             }
             checkPrivileges(dataSource, props, expectedPrivileges);

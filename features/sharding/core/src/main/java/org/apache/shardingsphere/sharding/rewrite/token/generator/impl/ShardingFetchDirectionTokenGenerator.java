@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ConnectionContextAware;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.FetchDirectionToken
 import org.apache.shardingsphere.sql.parser.statement.core.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 
 /**
  * Sharding fetch direction token generator.

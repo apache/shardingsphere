@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.decider;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -194,6 +194,7 @@ class ShardingSQLFederationDeciderTest {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_tbl", "bar_tbl"));
         when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         return result;
     }
     

@@ -20,8 +20,7 @@ package org.apache.shardingsphere.single.rule;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -42,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -109,16 +107,12 @@ public final class SingleRule implements DatabaseRule {
         Optional<DataNode> sampleDataNode = mutableDataNodeRuleAttribute.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
         if (sampleDataNode.isPresent()) {
             for (DataNode each : dataNodes) {
-                if (!isSameComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
+                if (isDifferentComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
                     return false;
                 }
             }
         }
         return true;
-    }
-    
-    private boolean isSameComputeNode(final String sampleDataSourceName, final String dataSourceName) {
-        return sampleDataSourceName.equalsIgnoreCase(dataSourceName);
     }
     
     private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables) {
@@ -132,11 +126,15 @@ public final class SingleRule implements DatabaseRule {
                 sampleDataSourceName = dataNode.get().getDataSourceName();
                 continue;
             }
-            if (!isSameComputeNode(sampleDataSourceName, dataNode.get().getDataSourceName())) {
+            if (isDifferentComputeNode(sampleDataSourceName, dataNode.get().getDataSourceName())) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private boolean isDifferentComputeNode(final String sampleDataSourceName, final String dataSourceName) {
+        return !sampleDataSourceName.equalsIgnoreCase(dataSourceName);
     }
     
     /**
@@ -173,10 +171,10 @@ public final class SingleRule implements DatabaseRule {
      * @return qualified tables
      */
     public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        Collection<SimpleTableSegment> tables = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables() : Collections.emptyList();
+        Collection<SimpleTableSegment> tables = sqlStatementContext.getTablesContext().getSimpleTables();
         Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, tables);
-        if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
-            result = IndexMetaDataUtils.getTableNames(database, protocolType, ((IndexAvailable) sqlStatementContext).getIndexes());
+        if (result.isEmpty() && sqlStatementContext instanceof IndexContextAvailable) {
+            result = IndexMetaDataUtils.getTableNames(database, protocolType, ((IndexContextAvailable) sqlStatementContext).getIndexes());
         }
         return result;
     }

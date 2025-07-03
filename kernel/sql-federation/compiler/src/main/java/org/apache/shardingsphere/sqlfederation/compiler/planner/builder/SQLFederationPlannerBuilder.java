@@ -102,11 +102,13 @@ public final class SQLFederationPlannerBuilder {
      */
     public static RelOptPlanner buildHepPlanner() {
         HepProgramBuilder builder = new HepProgramBuilder();
+        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getAggregationRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getSortRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getPushIntoScanRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
-        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
         return new HepPlanner(builder.build());
     }
@@ -116,6 +118,19 @@ public final class SQLFederationPlannerBuilder {
         result.add(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE);
         result.add(CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE);
         result.add(CoreRules.JOIN_SUB_QUERY_TO_CORRELATE);
+        return result;
+    }
+    
+    private static Collection<RelOptRule> getSortRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(CoreRules.SORT_JOIN_TRANSPOSE);
+        return result;
+    }
+    
+    private static Collection<RelOptRule> getPushIntoScanRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(PushFilterIntoScanRule.Config.DEFAULT.toRule());
+        result.add(PushProjectIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     
@@ -140,7 +155,6 @@ public final class SQLFederationPlannerBuilder {
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
         result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
-        result.add(PushProjectIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     
@@ -148,7 +162,6 @@ public final class SQLFederationPlannerBuilder {
         Collection<RelOptRule> result = new LinkedList<>();
         result.add(CoreRules.FILTER_INTO_JOIN);
         result.add(CoreRules.JOIN_CONDITION_PUSH);
-        result.add(CoreRules.SORT_JOIN_TRANSPOSE);
         result.add(CoreRules.FILTER_AGGREGATE_TRANSPOSE);
         result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.FILTER_SET_OP_TRANSPOSE);
@@ -156,7 +169,6 @@ public final class SQLFederationPlannerBuilder {
         result.add(CoreRules.FILTER_MERGE);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
-        result.add(PushFilterIntoScanRule.Config.DEFAULT.toRule());
         return result;
     }
     

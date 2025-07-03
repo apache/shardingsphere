@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -60,7 +59,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 class ShardingSphereResultSetTest {
     
@@ -75,10 +73,10 @@ class ShardingSphereResultSetTest {
     }
     
     private SQLStatementContext createSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class));
+        SQLStatementContext result = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
-        when(((TableAvailable) result).getTablesContext()).thenReturn(tablesContext);
+        when(result.getTablesContext()).thenReturn(tablesContext);
         return result;
     }
     
@@ -563,7 +561,7 @@ class ShardingSphereResultSetTest {
     
     @Test
     void assertGetObjectWithShort() throws SQLException {
-        short result = (short) 0;
+        short result = 0;
         when(mergeResultSet.getValue(1, short.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, short.class), is(result));
         when(mergeResultSet.getValue(1, Short.class)).thenReturn(result);

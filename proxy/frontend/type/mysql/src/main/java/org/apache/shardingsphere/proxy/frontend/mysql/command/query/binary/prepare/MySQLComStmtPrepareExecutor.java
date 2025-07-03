@@ -31,8 +31,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -52,7 +51,6 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCa
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.ArrayList;
@@ -128,7 +126,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
         List<ShardingSphereColumn> columnsOfParameterMarkers =
                 MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
-        Collection<ParameterMarkerSegment> parameterMarkerSegments = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments();
+        Collection<ParameterMarkerSegment> parameterMarkerSegments = sqlStatementContext.getSqlStatement().getParameterMarkers();
         Collection<MySQLPacket> result = new ArrayList<>(parameterMarkerSegments.size());
         Collection<Integer> paramColumnDefinitionFlags = new ArrayList<>(parameterMarkerSegments.size());
         for (int index = 0; index < parameterMarkerSegments.size(); index++) {
@@ -168,9 +166,9 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     }
     
     private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext) {
-        String databaseName = ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElseGet(connectionSession::getCurrentDatabaseName);
+        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getCurrentDatabaseName);
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
-        return ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().map(database::getSchema)
+        return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema)
                 .orElseGet(() -> database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())));
     }
     

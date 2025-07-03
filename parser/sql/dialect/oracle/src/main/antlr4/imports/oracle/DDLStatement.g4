@@ -466,11 +466,11 @@ localPartitionedIndex
     ;
 
 onRangePartitionedTable
-    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?) RP_
+    : LP_ partitionedTable (COMMA_ partitionedTable)* RP_
     ;
 
 onListPartitionedTable
-    : LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? (COMMA_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?) RP_
+    : LP_ partitionedTable (COMMA_ partitionedTable)* RP_
     ;
 
 onHashPartitionedTable
@@ -478,7 +478,11 @@ onHashPartitionedTable
     ;
 
 onCompPartitionedTable
-    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification? indexSubpartitionClause RP_
+    : (STORE IN LP_ tablespaceName (COMMA_ tablespaceName) RP_)? LP_ partitionedTable indexSubpartitionClause RP_
+    ;
+    
+partitionedTable
+    : PARTITION partitionName? (segmentAttributesClause | indexCompression)* usableSpecification?
     ;
 
 domainIndexClause
@@ -684,6 +688,7 @@ columnProperties
 columnProperty
     : objectTypeColProperties
     | xmlTypeColProperties
+    | lobStorageClause
     ;
 
 xmlTypeColProperties
@@ -1180,9 +1185,9 @@ lobStorageParameters
 
 lobParameters
     : ( (ENABLE | DISABLE) STORAGE IN ROW
-        | CHUNK NUMBER_
-        | PCTVERSION NUMBER_
-        | FREEPOOLS NUMBER_
+        | CHUNK INTEGER_
+        | PCTVERSION INTEGER_
+        | FREEPOOLS INTEGER_
         | lobRetentionClause
         | lobDeduplicateClause
         | lobCompressionClause

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle rename statement.
+ * Rename statement for Oracle.
  */
-public final class OracleRenameStatement extends RenameStatement implements OracleStatement {
+public final class OracleRenameStatement extends DDLStatement {
 }

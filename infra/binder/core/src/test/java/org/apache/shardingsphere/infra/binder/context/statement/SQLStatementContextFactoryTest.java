@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement;
 
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.FetchStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.MoveStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.MoveStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -36,16 +37,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussMoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -63,7 +63,7 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
         selectStatement.setProjections(projectionsSegment);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, selectStatement, Collections.emptyList());
@@ -72,7 +72,7 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
-        InsertStatement insertStatement = new SQL92InsertStatement();
+        InsertStatement insertStatement = new InsertStatement();
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, insertStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
@@ -81,38 +81,37 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
         AlterDatabaseStatement alterDatabaseStatement = mock(AlterDatabaseStatement.class);
+        when(alterDatabaseStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, alterDatabaseStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCursorStatement() {
-        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
-        when(selectStatement.getProjections().getProjections()).thenReturn(Collections.emptyList());
-        when(selectStatement.getCommentSegments()).thenReturn(Collections.emptyList());
+        CursorStatement cursorStatement = mock(CursorStatement.class, RETURNS_DEEP_STUBS);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         when(cursorStatement.getSelect()).thenReturn(selectStatement);
-        when(cursorStatement.getCommentSegments()).thenReturn(Collections.emptyList());
+        when(cursorStatement.getComments()).thenReturn(Collections.emptyList());
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCloseStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new OpenGaussCloseStatement(), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new CloseStatement(null, false), Collections.emptyList());
         assertThat(actual, instanceOf(CloseStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForMoveStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new OpenGaussMoveStatement(), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new MoveStatement(null, null), Collections.emptyList());
         assertThat(actual, instanceOf(MoveStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForFetchStatement() {
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new OpenGaussFetchStatement(), Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new FetchStatement(null, null), Collections.emptyList());
         assertThat(actual, instanceOf(FetchStatementContext.class));
     }
     

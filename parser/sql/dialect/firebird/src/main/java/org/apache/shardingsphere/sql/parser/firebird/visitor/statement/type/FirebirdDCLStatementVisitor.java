@@ -25,10 +25,10 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Gran
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
 /**
  * DCL statement visitor for Firebird.
@@ -37,7 +37,7 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        FirebirdGrantStatement result = new FirebirdGrantStatement();
+        GrantStatement result = new GrantStatement();
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -46,7 +46,7 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        FirebirdRevokeStatement result = new FirebirdRevokeStatement();
+        RevokeStatement result = new RevokeStatement();
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -55,11 +55,11 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new FirebirdCreateRoleStatement();
+        return new CreateRoleStatement();
     }
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new FirebirdCreateUserStatement();
+        return new CreateUserStatement();
     }
 }

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.ImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
- * MySQL import statement.
+ * Import statement for MySQL.
  */
-public final class MySQLImportStatement extends ImportStatement implements MySQLStatement {
+public final class MySQLImportStatement extends DMLStatement {
 }

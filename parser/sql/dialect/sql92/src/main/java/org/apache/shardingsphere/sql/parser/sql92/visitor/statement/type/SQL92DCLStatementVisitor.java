@@ -21,10 +21,10 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RevokeContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dcl.SQL92RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
 /**
  * DCL statement visitor for SQL92.
@@ -33,7 +33,7 @@ public final class SQL92DCLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        SQL92GrantStatement result = new SQL92GrantStatement();
+        GrantStatement result = new GrantStatement();
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -42,7 +42,7 @@ public final class SQL92DCLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        SQL92RevokeStatement result = new SQL92RevokeStatement();
+        RevokeStatement result = new RevokeStatement();
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }

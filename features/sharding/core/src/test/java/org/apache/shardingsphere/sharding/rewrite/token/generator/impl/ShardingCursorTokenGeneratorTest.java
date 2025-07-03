@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.CursorToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -40,7 +40,7 @@ class ShardingCursorTokenGeneratorTest {
     private final ShardingCursorTokenGenerator generator = new ShardingCursorTokenGenerator(mock(ShardingRule.class));
     
     @Test
-    void assertIsNotGenerateSQLTokenWithNotCursorAvailable() {
+    void assertIsNotGenerateSQLTokenWithNotCursorContextAvailable() {
         assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     

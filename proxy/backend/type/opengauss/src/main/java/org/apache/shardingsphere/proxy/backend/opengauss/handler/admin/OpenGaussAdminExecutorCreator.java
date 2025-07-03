@@ -21,7 +21,6 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
@@ -36,8 +35,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Proj
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,7 +67,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.intervaltonum(pg_catalog.gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("pg_catalog.gs_password_notifytime()");
         SCHEMA_TABLES.put("pg_catalog", new CaseInsensitiveSet<>(Arrays.asList("pg_class", "pg_namespace", "pg_database", "pg_tables", "pg_roles")));
-        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Arrays.asList("cluster_information", "sharding_table_statistics")));
+        SCHEMA_TABLES.put("shardingsphere", new CaseInsensitiveSet<>(Collections.singletonList("cluster_information")));
     }
     
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
@@ -84,7 +83,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
-        Map<String, Collection<String>> selectedSchemaTables = sqlStatementContext instanceof TableAvailable ? getSelectedSchemaTables(sqlStatementContext) : Collections.emptyMap();
+        Map<String, Collection<String>> selectedSchemaTables = getSelectedSchemaTables(sqlStatementContext);
         if (isSQLFederationSystemCatalogQuery(selectedSchemaTables) || isSQLFederationSystemCatalogQueryExpressions(sqlStatementContext)) {
             return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext, sql, databaseName, parameters));
         }
@@ -96,7 +95,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     private Map<String, Collection<String>> getSelectedSchemaTables(final SQLStatementContext sqlStatementContext) {
         Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
-        for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
+        for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             TableNameSegment tableNameSegment = each.getTableName();
             String schemaName = tableNameSegment.getTableBoundInfo().map(optional -> optional.getOriginalSchema().getValue()).orElse(null);
             schemaName = Strings.isNullOrEmpty(schemaName) ? each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null) : schemaName;

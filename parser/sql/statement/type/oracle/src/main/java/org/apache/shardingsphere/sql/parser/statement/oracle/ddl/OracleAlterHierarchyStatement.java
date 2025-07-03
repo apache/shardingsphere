@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterHierarchyStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle alter hierarchy statement.
+ * Alter hierarchy statement for Oracle.
  */
-public final class OracleAlterHierarchyStatement extends AlterHierarchyStatement implements OracleStatement {
+public final class OracleAlterHierarchyStatement extends DDLStatement {
 }

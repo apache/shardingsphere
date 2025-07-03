@@ -71,4 +71,6 @@ public final class SQLExtensionOperatorTable {
     
     public static final SqlFunction INTERVAL_OPERATOR =
             new SqlFunction("INTERVAL_OPERATOR", SqlKind.OTHER, ReturnTypes.BIGINT_NULLABLE, InferTypes.FIRST_KNOWN, OperandTypes.VARIADIC, SqlFunctionCategory.STRING);
+    
+    public static final SqlBinaryOperator RLIKE = new SqlBinaryOperator("RLIKE", SqlKind.MATCH_RECOGNIZE, 30, true, ReturnTypes.INTEGER, InferTypes.VARCHAR_1024, OperandTypes.ANY_ANY);
 }

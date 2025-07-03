@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.AlterResourceGroupStatementTestCase;
 
@@ -40,7 +40,7 @@ public final class AlterResourceGroupStatementAssert {
      * @param actual actual alter resource group statement
      * @param expected expected alter resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterResourceGroupStatement actual, final AlterResourceGroupStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLAlterResourceGroupStatement actual, final AlterResourceGroupStatementTestCase expected) {
         assertNotNull(expected.getGroup(), assertContext.getText("expected alter resource group should be not null"));
         assertThat(assertContext.getText("group name does not match: "), actual.getGroupName(), is(expected.getGroup().getName()));
     }

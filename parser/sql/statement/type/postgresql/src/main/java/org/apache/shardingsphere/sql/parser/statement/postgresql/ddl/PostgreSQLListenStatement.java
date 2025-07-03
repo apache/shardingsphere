@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ListenStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL listen statement.
+ * Listen statement for PostgreSQL.
  */
-public class PostgreSQLListenStatement extends ListenStatement implements PostgreSQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class PostgreSQLListenStatement extends DDLStatement {
+    
+    private final String channelName;
 }

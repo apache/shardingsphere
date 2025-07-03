@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.AlterResourceCostStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Oracle alter resource cost statement.
+ * Alter resource cost statement for Oracle.
  */
-public final class OracleAlterResourceCostStatement extends AlterResourceCostStatement implements OracleStatement {
+public final class OracleAlterResourceCostStatement extends DALStatement {
 }

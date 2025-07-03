@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.CloneStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * MySQL clone statement.
+ * Clone statement for MySQL.
  */
-public final class MySQLCloneStatement extends CloneStatement implements MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class MySQLCloneStatement extends DALStatement {
+    
+    private final CloneActionSegment cloneAction;
 }

@@ -60,9 +60,9 @@ hive.metastore=file
 hive.metastore.catalog.dir=file:/home/iceberg_data
 ```
 
-### Create business-related schemas, databases, and tables
+### Create business-related schemas and tables
 
-Use third-party tools to create business-related schemas, databases, and tables in Presto.
+Use third-party tools to create business-related schemas and tables in Presto.
 Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly install it through Snapcraft.
 
 ```shell
@@ -176,8 +176,7 @@ ShardingSphere JDBC DataSource does not yet support the execution of Presto's `c
 ### Transaction Limitations
 
 Presto does not support local transactions, XA transactions, or Seata's AT mode transactions at the ShardingSphere integration level.
-
-There are known issues on the ShardingSphere side for Presto's local transactions at the ShardingSphere integration level.
+There are bugs with Presto's own transaction support, see https://github.com/prestodb/presto/issues/25204 .
 
 ### Connector Limitations
 

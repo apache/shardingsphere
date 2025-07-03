@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
@@ -50,7 +51,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.CaseWhenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.CollateExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ColumnConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ExtractArgExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.FunctionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.InExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.IntervalExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ListExpressionConverter;
@@ -58,13 +61,12 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.MatchExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.NotExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ParameterMarkerExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.QuantifySubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.RowExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.TypeCastExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.UnaryOperationExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.VariableSegmentConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.FunctionConverter;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection.impl.DataTypeConverter;
 
@@ -156,6 +158,9 @@ public final class ExpressionConverter {
         }
         if (segment instanceof IntervalExpression) {
             return IntervalExpressionConverter.convert((IntervalExpression) segment);
+        }
+        if (segment instanceof QuantifySubqueryExpression) {
+            return QuantifySubqueryExpressionConverter.convert((QuantifySubqueryExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

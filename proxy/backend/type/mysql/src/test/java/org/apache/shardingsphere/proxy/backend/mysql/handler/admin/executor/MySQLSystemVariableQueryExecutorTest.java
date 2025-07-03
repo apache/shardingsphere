@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorWithOtherExpressionProjection() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment variable = new VariableSegment(0, 0, "max_connections", "session");
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.max_connections", variable));
@@ -55,7 +55,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorWithUnknownVariable() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@unknown_variable", new VariableSegment(0, 0, "unknown_variable")));
         assertFalse(MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement).isPresent());
@@ -63,7 +63,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorAndExecuteWithCorrectScope() throws SQLException {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment maxConnectionsVariable = new VariableSegment(0, 0, "max_connections", "global");
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@global.max_connections", maxConnectionsVariable));
@@ -91,7 +91,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertExecuteWithIncorrectScope() {
-        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment variable = new VariableSegment(0, 0, "max_connections", "session");
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.max_connections", variable));

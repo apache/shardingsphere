@@ -21,6 +21,7 @@
 
 ### Enhancements
 
+1. Build: Support compiling and using ShardingSphere under OpenJDK 24 - [#35145](https://github.com/apache/shardingsphere/pull/35145)
 1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Parser: Support MySQL SELECT CAST AS YEAR statement parse - [#34638](https://github.com/apache/shardingsphere/pull/34638)
@@ -43,6 +44,11 @@
 1. DistSQL: Add InUsedStorageUnitRetriever for single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
+1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
+1. SQL Parser: Support mysql quantify operator parse and upgrade calcite to 1.40.0 - [#35675](https://github.com/apache/shardingsphere/pull/35675)
+1. SQL Parser: Support Oracle create table with lob storage clause sql parsing - [#35782](https://github.com/apache/shardingsphere/pull/35782)
+1. SQL Parser: Support Oracle multiple backslash literal parsing - [#35784](https://github.com/apache/shardingsphere/pull/35784)
+1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
 
 ### Bug Fixes
 
@@ -53,11 +59,20 @@
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
 1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use sql federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
 1. DistSQL: Fix duplicate result when show rules used storage unit with readwrite-splitting rule - [#35129](https://github.com/apache/shardingsphere/pull/35129)
+1. DistSQL: Fix missing comma in `ALTER SQL_FEDERATION RULE` - [#35523](https://github.com/apache/shardingsphere/pull/35523)
 1. JDBC: Alleviate connection leaks caused by Seata Client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
 1. JDBC: Fix wrong jdbc database metadata pass through logic - [#34959](https://github.com/apache/shardingsphere/pull/34959)
 1. JDBC: Fix getting database name from sql statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
 1. JDBC: Support set datasource properties type with java.time.Duration - [#35241](https://github.com/apache/shardingsphere/pull/35241)
 1. Proxy: Fix `show processlist` not wait for all nodes - [#35348](https://github.com/apache/shardingsphere/pull/35348)
+1. Proxy: Fix NoSuchElementException exception when execute MySQL SHOW VARIABLES without current database - [#35550](https://github.com/apache/shardingsphere/pull/35550)
+1. Parser: Refactor pivot and unpivot clause handling to support multiple column names - [35586](https://github.com/apache/shardingsphere/pull/35586)
+1. JDBC: Resolve statement manager leaks when creating multiple statements - [#35665](https://github.com/apache/shardingsphere/pull/35665)
+1. Kernel: Fix not return generate key when id set null - [35783](https://github.com/apache/shardingsphere/pull/35783)
+1. Encrypt: Resolve rewrite issue in nested concat function - [35815](https://github.com/apache/shardingsphere/pull/35815)
+1. JDBC: Fix the issue where cached connections in DriverDatabaseConnectionManager were not released in time - [35834](https://github.com/apache/shardingsphere/pull/35834)
+1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
+1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
 
 ### Change Logs
 

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.column.InsertColumnsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
@@ -29,10 +28,16 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -44,34 +49,38 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     @Override
     public InsertStatement bind(final InsertStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        InsertStatement result = copy(sqlStatement);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getWithSegment().ifPresent(optional -> result.setWithSegment(WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())));
-        sqlStatement.getTable().ifPresent(optional -> result.setTable(SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)));
-        if (sqlStatement.getInsertColumns().isPresent() && !sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
-            result.setInsertColumns(InsertColumnsSegmentBinder.bind(sqlStatement.getInsertColumns().get(), binderContext, tableBinderContexts));
-        } else {
-            sqlStatement.getInsertColumns().ifPresent(result::setInsertColumns);
+        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())).orElse(null);
+        SimpleTableSegment boundTable = sqlStatement.getTable().map(optional -> SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
+        InsertColumnsSegment boundInsertColumns = sqlStatement.getInsertColumns().isPresent() && !sqlStatement.getInsertColumns().get().getColumns().isEmpty()
+                ? InsertColumnsSegmentBinder.bind(sqlStatement.getInsertColumns().get(), binderContext, tableBinderContexts)
+                : sqlStatement.getInsertColumns().orElse(null);
+        SetAssignmentSegment boundSetAssignment = sqlStatement.getSetAssignment()
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        SubquerySegment boundInsertSelect = sqlStatement.getInsertSelect().map(optional -> SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
+        InsertStatement result = copy(sqlStatement, boundWith, boundTable, boundInsertColumns, boundSetAssignment, boundInsertSelect);
+        if (!sqlStatement.getInsertColumns().isPresent() || sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
             tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));
         }
-        sqlStatement.getSetAssignment().ifPresent(optional -> result.setSetAssignment(AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())));
-        sqlStatement.getInsertSelect().ifPresent(optional -> result.setInsertSelect(SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)));
         return result;
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private InsertStatement copy(final InsertStatement sqlStatement) {
-        InsertStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
+    private InsertStatement copy(final InsertStatement sqlStatement, final WithSegment boundWith, final SimpleTableSegment boundTable,
+                                 final InsertColumnsSegment boundInsertColumns, final SetAssignmentSegment boundSetAssignment, final SubquerySegment boundInsertSelect) {
+        InsertStatement result = new InsertStatement();
+        result.setWith(boundWith);
+        result.setTable(boundTable);
+        result.setInsertColumns(boundInsertColumns);
+        result.setSetAssignment(boundSetAssignment);
+        result.setInsertSelect(boundInsertSelect);
         result.getValues().addAll(sqlStatement.getValues());
         sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
-        sqlStatement.getOutputSegment().ifPresent(result::setOutputSegment);
+        sqlStatement.getOutput().ifPresent(result::setOutput);
         sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
-        sqlStatement.getMultiTableInsertIntoSegment().ifPresent(result::setMultiTableInsertIntoSegment);
-        sqlStatement.getMultiTableConditionalIntoSegment().ifPresent(result::setMultiTableConditionalIntoSegment);
-        sqlStatement.getReturningSegment().ifPresent(result::setReturningSegment);
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        sqlStatement.getMultiTableInsertInto().ifPresent(result::setMultiTableInsertInto);
+        sqlStatement.getMultiTableConditionalInto().ifPresent(result::setMultiTableConditionalInto);
+        sqlStatement.getReturning().ifPresent(result::setReturning);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
     

@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.core;
 
-import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class SQLParserEngineTest {
     
@@ -36,15 +33,7 @@ class SQLParserEngineTest {
     void assertParse() {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse("")).thenReturn(mock(ParseASTNode.class));
-        LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues()
-                .initialCapacity(128).maximumSize(1024L).build(new CacheLoader<String, ParseASTNode>() {
-                    
-                    @ParametersAreNonnullByDefault
-                    @Override
-                    public ParseASTNode load(final String sql) {
-                        return sqlParserExecutor.parse(sql);
-                    }
-                });
+        LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128).maximumSize(1024L).build(sqlParserExecutor::parse);
         parseTreeCache.get("");
         verify(sqlParserExecutor).parse("");
         parseTreeCache.get("");

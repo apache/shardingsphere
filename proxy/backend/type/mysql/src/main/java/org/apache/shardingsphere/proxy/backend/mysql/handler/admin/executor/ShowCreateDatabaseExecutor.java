@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowCreateDatabaseStatement;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
     
     private static final String CREATE_DATABASE = "CREATE DATABASE ";
     
-    private final ShowCreateDatabaseStatement showCreateDatabaseStatement;
+    private final MySQLShowCreateDatabaseStatement showCreateDatabaseStatement;
     
     private QueryResultMetaData queryResultMetaData;
     

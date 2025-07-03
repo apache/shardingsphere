@@ -22,13 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show rules statement assert.
@@ -50,10 +49,9 @@ public final class ShowRulesStatementAssert {
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final ShowDatabaseRulesStatement actual, final DatabaseContainedTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(actual.getDatabase().isPresent(), assertContext.getText("Actual database should not exist."));
+            assertNull(actual.getFromDatabase(), assertContext.getText("Actual database should not exist."));
         } else {
-            assertTrue(actual.getDatabase().isPresent(), assertContext.getText("Actual database should exist."));
-            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
+            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getDatabase());
         }
     }
 }

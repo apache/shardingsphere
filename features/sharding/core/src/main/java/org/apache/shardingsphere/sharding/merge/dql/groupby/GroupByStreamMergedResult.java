@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -134,7 +134,7 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) {
         Object result = currentRow.get(columnIndex - 1);
         setWasNull(null == result);
         return result;

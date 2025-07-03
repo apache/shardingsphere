@@ -17,11 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.PurgeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle purge statement.
+ * Purge statement for Oracle.
  */
-public final class OraclePurgeStatement extends PurgeStatement implements OracleStatement {
+@RequiredArgsConstructor
+@Getter
+public final class OraclePurgeStatement extends DDLStatement {
+    
+    private final SimpleTableSegment table;
+    
+    private final IndexSegment index;
 }

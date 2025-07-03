@@ -17,11 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateLoginStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.SQLServerStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
- * SQLServer create login statement.
+ * Create login statement for SQLServer.
  */
-public final class SQLServerCreateLoginStatement extends CreateLoginStatement implements SQLServerStatement {
+@RequiredArgsConstructor
+@Getter
+public final class SQLServerCreateLoginStatement extends DCLStatement {
+    
+    private final LoginSegment loginSegment;
 }

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.RestartStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * MySQL restart statement.
+ * Restart statement for MySQL.
  */
-public final class MySQLRestartStatement extends RestartStatement implements MySQLStatement {
+public final class MySQLRestartStatement extends DALStatement {
 }

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -64,13 +64,13 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereAvailable;
+        return sqlStatementContext instanceof WhereContextAvailable;
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
-        Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
+        Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereContextAvailable) sqlStatementContext, allSubqueryContexts);
         Collection<ExpressionSegment> expressions = getAllExpressions(whereSegments);
         return generateSQLTokens(expressions, sqlStatementContext);
     }

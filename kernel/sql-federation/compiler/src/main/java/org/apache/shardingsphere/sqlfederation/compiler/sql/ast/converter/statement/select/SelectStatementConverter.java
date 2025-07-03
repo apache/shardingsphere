@@ -25,7 +25,7 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.groupby.GroupByConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.groupby.HavingConverter;
@@ -63,7 +63,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
     }
     
     private SqlNode convertWith(final SqlNode sqlSelect, final SelectStatement selectStatement) {
-        return selectStatement.getWithSegment().flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
+        return selectStatement.getWith().flatMap(segment -> WithConverter.convert(segment, sqlSelect)).orElse(null);
     }
     
     private SqlSelect convertSelect(final SelectStatement selectStatement) {

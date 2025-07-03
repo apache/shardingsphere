@@ -95,6 +95,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-binder-sqlserver</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

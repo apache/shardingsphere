@@ -41,9 +41,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -65,7 +64,7 @@ class SubquerySegmentBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement();
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));

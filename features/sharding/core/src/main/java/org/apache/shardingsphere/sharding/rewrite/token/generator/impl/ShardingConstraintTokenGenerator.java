@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -42,19 +42,17 @@ public final class ShardingConstraintTokenGenerator implements CollectionSQLToke
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof ConstraintAvailable && !((ConstraintAvailable) sqlStatementContext).getConstraints().isEmpty();
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(ConstraintSQLStatementAttribute.class).map(optional -> !optional.getConstraints().isEmpty()).orElse(false);
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        if (sqlStatementContext instanceof ConstraintAvailable) {
-            for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {
-                IdentifierValue constraintIdentifier = each.getIdentifier();
-                // TODO make sure can remove null check here? @duanzhengqiang
-                if (null != constraintIdentifier) {
-                    result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, rule));
-                }
+        for (ConstraintSegment each : sqlStatementContext.getSqlStatement().getAttributes().getAttribute(ConstraintSQLStatementAttribute.class).getConstraints()) {
+            IdentifierValue constraintIdentifier = each.getIdentifier();
+            // TODO make sure can remove null check here? @duanzhengqiang
+            if (null != constraintIdentifier) {
+                result.add(new ConstraintToken(each.getStartIndex(), each.getStopIndex(), constraintIdentifier, sqlStatementContext, rule));
             }
         }
         return result;

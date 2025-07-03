@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AuditStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle audit statement.
+ * Audit statement for Oracle.
  */
-public final class OracleAuditStatement extends AuditStatement implements OracleStatement {
+public final class OracleAuditStatement extends DDLStatement {
 }

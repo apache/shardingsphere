@@ -138,6 +138,7 @@ class StandardDatabaseConnectorTest {
     @Test
     void assertBinaryProtocolQueryHeader() throws SQLException, NoSuchFieldException, IllegalAccessException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.PREPARED_STATEMENT, createQueryContext(sqlStatementContext));
         Field queryHeadersField = StandardDatabaseConnector.class.getDeclaredField("queryHeaders");
@@ -201,6 +202,7 @@ class StandardDatabaseConnectorTest {
     @Test
     void assertAddStatementCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         engine.add(statement);
@@ -212,6 +214,7 @@ class StandardDatabaseConnectorTest {
     @Test
     void assertAddResultSetCorrectly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         engine.add(resultSet);
@@ -223,6 +226,7 @@ class StandardDatabaseConnectorTest {
     @Test
     void assertCloseCorrectly() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
@@ -240,6 +244,7 @@ class StandardDatabaseConnectorTest {
     @Test
     void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         DatabaseConnector engine = createDatabaseConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext));
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");

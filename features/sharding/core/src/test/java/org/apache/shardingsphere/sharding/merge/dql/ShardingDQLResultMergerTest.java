@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedR
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
-import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
@@ -52,16 +51,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -88,7 +83,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildIteratorStreamMergedResult() throws SQLException {
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 mysqlDatabaseType, selectStatement, Collections.emptyList(), createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
@@ -99,7 +94,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildIteratorStreamMergedResultWithLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -112,7 +107,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildIteratorStreamMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -126,21 +121,19 @@ class ShardingDQLResultMergerTest {
     void assertBuildIteratorStreamMergedResultWithOracleLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(oracleDatabaseType);
         final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         WhereSegment whereSegment = mock(WhereSegment.class);
         BinaryOperationExpression binaryOperationExpression = mock(BinaryOperationExpression.class);
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -149,15 +142,14 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(IteratorStreamMergedResult.class));
+        assertThat(actual, instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
     void assertBuildIteratorStreamMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), null));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -171,7 +163,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildOrderByStreamMergedResult() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -183,7 +175,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildOrderByStreamMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), null));
@@ -203,18 +195,16 @@ class ShardingDQLResultMergerTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
-        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setFrom(subqueryTableSegment);
@@ -222,15 +212,14 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(oracleDatabaseType,
                 selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(OrderByStreamMergedResult.class));
+        assertThat(actual, instanceOf(OrderByStreamMergedResult.class));
     }
     
     @Test
     void assertBuildOrderByStreamMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralRowNumberValueSegment(0, 0, 1L, true), null));
@@ -245,7 +234,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildGroupByStreamMergedResult() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -258,7 +247,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildGroupByStreamMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -279,18 +268,16 @@ class ShardingDQLResultMergerTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
-        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -299,15 +286,14 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(actual, instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
     void assertBuildGroupByStreamMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -323,7 +309,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildGroupByMemoryMergedResult() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
@@ -335,7 +321,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildGroupByMemoryMergedResultWithMySQLLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), null));
@@ -355,18 +341,16 @@ class ShardingDQLResultMergerTest {
         when(binaryOperationExpression.getLeft()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue("row_id")));
         when(binaryOperationExpression.getRight()).thenReturn(new LiteralExpressionSegment(0, 0, 1L));
         when(binaryOperationExpression.getOperator()).thenReturn(">=");
+        when(binaryOperationExpression.getText()).thenReturn("");
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
-        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -375,15 +359,14 @@ class ShardingDQLResultMergerTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByStreamMergedResult.class));
+        assertThat(actual, instanceOf(GroupByStreamMergedResult.class));
     }
     
     @Test
     void assertBuildGroupByMemoryMergedResultWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.FIRST))));
@@ -400,7 +383,7 @@ class ShardingDQLResultMergerTest {
     void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setProjections(projectionsSegment);
@@ -411,7 +394,7 @@ class ShardingDQLResultMergerTest {
     
     @Test
     void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithMySQLLimit() throws SQLException {
-        MySQLSelectStatement selectStatement = (MySQLSelectStatement) buildSelectStatement(new MySQLSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setProjections(projectionsSegment);
@@ -436,31 +419,27 @@ class ShardingDQLResultMergerTest {
         when(whereSegment.getExpr()).thenReturn(binaryOperationExpression);
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
-        SelectStatement subSelectStatement = mock(MySQLSelectStatement.class);
+        SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
-        OracleSelectStatement selectStatement = (OracleSelectStatement) buildSelectStatement(new OracleSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setFrom(subqueryTableSegment);
         selectStatement.setWhere(whereSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 oracleDatabaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class));
-        assertThat(actual, instanceOf(RowNumberDecoratorMergedResult.class));
-        assertThat(((RowNumberDecoratorMergedResult) actual).getMergedResult(), instanceOf(GroupByMemoryMergedResult.class));
+        assertThat(actual, instanceOf(GroupByMemoryMergedResult.class));
     }
     
     @Test
     void assertBuildGroupByMemoryMergedResultWithAggregationOnlyWithSQLServerLimit() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(sqlserverDatabaseType);
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) buildSelectStatement(new SQLServerSelectStatement());
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "COUNT(*)"));
         selectStatement.setProjections(projectionsSegment);

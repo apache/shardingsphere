@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -48,6 +48,7 @@ import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStateme
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -114,41 +115,55 @@ class DistSQLBackendHandlerFactoryTest {
     
     @Test
     void assertExecuteDataSourcesContext() throws SQLException {
-        assertThat(new DistSQLUpdateBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteShardingTableRuleContext() throws SQLException {
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        assertThat(new DistSQLUpdateBackendHandler(mock(CreateShardingTableRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        CreateShardingTableRuleStatement sqlStatement = mock(CreateShardingTableRuleStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAddResourceContext() throws SQLException {
-        assertThat(new DistSQLUpdateBackendHandler(mock(RegisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterResourceContext() throws SQLException {
-        assertThat(new DistSQLUpdateBackendHandler(mock(AlterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        AlterStorageUnitStatement sqlStatement = mock(AlterStorageUnitStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterShadowRuleContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLUpdateBackendHandler(mock(AlterShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        AlterShadowRuleStatement sqlStatement = mock(AlterShadowRuleStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteCreateShadowRuleContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLUpdateBackendHandler(mock(CreateShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        CreateShadowRuleStatement sqlStatement = mock(CreateShadowRuleStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropShadowRuleContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLUpdateBackendHandler(mock(DropShadowRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        DropShadowRuleStatement sqlStatement = mock(DropShadowRuleStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
@@ -162,45 +177,55 @@ class DistSQLBackendHandlerFactoryTest {
     @Test
     void assertExecuteShowShadowRulesContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowRulesStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowTableRulesContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowTableRulesStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        ShowShadowTableRulesStatement sqlStatement = mock(ShowShadowTableRulesStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLQueryBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLQueryBackendHandler(mock(ShowShadowAlgorithmsStatement.class), connectionSession).execute(), instanceOf(QueryResponseHeader.class));
+        ShowShadowAlgorithmsStatement sqlStatement = mock(ShowShadowAlgorithmsStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLQueryBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(QueryResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropShadowAlgorithmContext() throws SQLException {
         mockRuleMetaData();
-        assertThat(new DistSQLUpdateBackendHandler(mock(DropShadowAlgorithmStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        DropShadowAlgorithmStatement sqlStatement = mock(DropShadowAlgorithmStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropResourceContext() throws SQLException {
-        assertThat(new DistSQLUpdateBackendHandler(mock(UnregisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        UnregisterStorageUnitStatement sqlStatement = mock(UnregisterStorageUnitStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteDropReadwriteSplittingRuleContext() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateBackendHandler(mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute());
+        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateBackendHandler(mock(DropReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
     }
     
     @Test
     void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
-        assertThat(new DistSQLUpdateBackendHandler(mock(CreateReadwriteSplittingRuleStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        CreateReadwriteSplittingRuleStatement sqlStatement = mock(CreateReadwriteSplittingRuleStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        assertThat(new DistSQLUpdateBackendHandler(sqlStatement, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteAlterReadwriteSplittingRuleContext() {
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class), connectionSession).execute());
+        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
     }
     
     private void mockRuleMetaData() {
