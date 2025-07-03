@@ -58,14 +58,16 @@ class ShardingUnicastRouteEngineTest {
     
     @Test
     void assertRoutingForShardingTable() {
-        RouteContext actual = new ShardingUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.singleton("t_order"), new ConnectionContext(Collections::emptySet)).route(rule);
+        RouteContext actual =
+                new ShardingUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.singleton("t_order"), new ConnectionContext(Collections::emptySet)).route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertFalse("ds_2".equalsIgnoreCase(actual.getRouteUnits().iterator().next().getDataSourceMapper().getLogicName()));
     }
     
     @Test
     void assertRoutingForBroadcastTable() {
-        RouteContext actual = new ShardingUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.singleton("t_config"), new ConnectionContext(Collections::emptySet)).route(rule);
+        RouteContext actual =
+                new ShardingUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.singleton("t_config"), new ConnectionContext(Collections::emptySet)).route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
@@ -83,7 +85,8 @@ class ShardingUnicastRouteEngineTest {
     
     @Test
     void assertRoutingForTableWithoutTableRule() {
-        RouteContext actual = new ShardingUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.singleton("t_other"), new ConnectionContext(Collections::emptySet)).route(rule);
+        RouteContext actual =
+                new ShardingUnicastRouteEngine(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.singleton("t_other"), new ConnectionContext(Collections::emptySet)).route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
     }
     
