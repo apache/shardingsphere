@@ -55,11 +55,11 @@ public final class CreateIndexStatementContext implements SQLStatementContext, I
     
     @Override
     public Collection<IndexSegment> getIndexes() {
-        if (null == sqlStatement.getIndex()) {
-            return sqlStatement.getGeneratedIndexStartIndex().map(optional -> Collections.singletonList(new IndexSegment(optional, optional,
-                    new IndexNameSegment(optional, optional, new IdentifierValue(IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())))))).orElseGet(Collections::emptyList);
+        if (null != sqlStatement.getIndex()) {
+            return Collections.singleton(sqlStatement.getIndex());
         }
-        return Collections.singleton(sqlStatement.getIndex());
+        return sqlStatement.getGeneratedIndexStartIndex().map(optional -> Collections.singletonList(new IndexSegment(optional, optional,
+                new IndexNameSegment(optional, optional, new IdentifierValue(IndexMetaDataUtils.getGeneratedLogicIndexName(sqlStatement.getColumns())))))).orElseGet(Collections::emptyList);
     }
     
     @Override
