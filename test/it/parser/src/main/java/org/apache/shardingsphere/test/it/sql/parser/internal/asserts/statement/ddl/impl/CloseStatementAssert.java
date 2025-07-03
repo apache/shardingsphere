@@ -26,9 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ide
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CloseStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Close statement assert.
@@ -50,11 +49,10 @@ public final class CloseStatementAssert {
     
     private static void assertCursorName(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
         if (null == expected.getCursorName()) {
-            assertFalse(actual.getCursorName().isPresent(), assertContext.getText("Actual cursor name should not exist."));
+            assertNull(actual.getCursorName(), assertContext.getText("Actual cursor name should not exist."));
         } else {
-            assertTrue(actual.getCursorName().isPresent(), assertContext.getText("Actual cursor name should exist."));
-            IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().get().getIdentifier(), expected.getCursorName(), "Close");
-            SQLSegmentAssert.assertIs(assertContext, actual.getCursorName().get(), expected.getCursorName());
+            IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Close");
+            SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
         }
     }
     

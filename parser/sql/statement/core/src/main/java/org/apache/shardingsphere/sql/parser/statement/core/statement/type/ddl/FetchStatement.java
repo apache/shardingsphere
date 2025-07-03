@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 
 import java.util.Optional;
 
@@ -42,5 +44,10 @@ public final class FetchStatement extends DDLStatement {
      */
     public Optional<DirectionSegment> getDirection() {
         return Optional.ofNullable(direction);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }

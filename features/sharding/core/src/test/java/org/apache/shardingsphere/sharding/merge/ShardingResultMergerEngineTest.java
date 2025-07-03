@@ -98,9 +98,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        SQLStatement sqlStatement = mock(FetchStatement.class);
-        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, sqlStatement);
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new FetchStatement(null, null));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }
 }
