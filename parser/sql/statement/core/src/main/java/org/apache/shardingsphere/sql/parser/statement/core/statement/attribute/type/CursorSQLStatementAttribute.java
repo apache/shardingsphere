@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import java.util.Optional;
 
 /**
- * Cursor SQL statement attribute
+ * Cursor SQL statement attribute.
  */
 @RequiredArgsConstructor
 public final class CursorSQLStatementAttribute implements SQLStatementAttribute {
