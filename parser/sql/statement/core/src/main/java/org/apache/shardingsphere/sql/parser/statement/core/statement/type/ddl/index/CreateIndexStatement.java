@@ -19,16 +19,23 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.i
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Create index statement.
@@ -76,5 +83,40 @@ public final class CreateIndexStatement extends DDLStatement {
      */
     public Optional<LockTableSegment> getLockTable() {
         return Optional.ofNullable(lockTable);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new CreateIndexIndexSQLStatementAttribute());
+    }
+    
+    private class CreateIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
+        
+        private static final String UNDERLINE = "_";
+        
+        private static final String GENERATED_LOGIC_INDEX_NAME_SUFFIX = "idx";
+        
+        @Override
+        public Collection<IndexSegment> getIndexes() {
+            if (null != index) {
+                return Collections.singleton(index);
+            }
+            if (getGeneratedIndexStartIndex().isPresent()) {
+                int generatedIndexStartIndex = getGeneratedIndexStartIndex().get();
+                IndexNameSegment generatedIndexNameSegment = new IndexNameSegment(generatedIndexStartIndex, generatedIndexStartIndex,
+                        new IdentifierValue(getGeneratedLogicIndexName(columns)));
+                return Collections.singleton(new IndexSegment(generatedIndexStartIndex, generatedIndexStartIndex, generatedIndexNameSegment));
+            }
+            return Collections.emptyList();
+        }
+        
+        private String getGeneratedLogicIndexName(final Collection<ColumnSegment> columns) {
+            return columns.stream().map(each -> each.getIdentifier().getValue() + UNDERLINE).collect(Collectors.joining("", "", GENERATED_LOGIC_INDEX_NAME_SUFFIX));
+        }
+        
+        @Override
+        public Collection<ColumnSegment> getIndexColumns() {
+            return columns;
+        }
     }
 }

@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.aware;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
+
+import java.util.Collection;
 
 /**
- * Cursor aware.
+ * Index SQL statement attribute.
  */
-public interface CursorAware {
+public interface IndexSQLStatementAttribute extends SQLStatementAttribute {
     
     /**
-     * Set cursor statement context.
+     * Get index segments.
      *
-     * @param cursorStatementContext cursor statement context
+     * @return index segments
      */
-    void setCursorStatementContext(CursorStatementContext cursorStatementContext);
+    Collection<IndexSegment> getIndexes();
+    
+    /**
+     * Get index columns.
+     *
+     * @return index columns
+     */
+    Collection<ColumnSegment> getIndexColumns();
 }

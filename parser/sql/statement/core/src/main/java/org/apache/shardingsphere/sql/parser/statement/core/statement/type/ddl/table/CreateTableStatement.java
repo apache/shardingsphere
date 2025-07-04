@@ -22,11 +22,14 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
@@ -34,6 +37,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Create table statement.
@@ -87,7 +91,21 @@ public final class CreateTableStatement extends DDLStatement {
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new CreateTableConstraintSQLStatementAttribute());
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
+    }
+    
+    private Collection<SimpleTableSegment> getTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        result.add(table);
+        for (ColumnDefinitionSegment each : columnDefinitions) {
+            result.addAll(each.getReferencedTables());
+        }
+        for (ConstraintDefinitionSegment each : constraintDefinitions) {
+            if (each.getReferencedTable().isPresent()) {
+                result.add(each.getReferencedTable().get());
+            }
+        }
+        return result;
     }
     
     private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
@@ -99,6 +117,23 @@ public final class CreateTableStatement extends DDLStatement {
                 each.getConstraintName().ifPresent(result::add);
             }
             return result;
+        }
+    }
+    
+    private class CreateTableIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
+        
+        @Override
+        public Collection<IndexSegment> getIndexes() {
+            Collection<IndexSegment> result = new LinkedList<>();
+            for (ConstraintDefinitionSegment each : constraintDefinitions) {
+                each.getIndexName().ifPresent(result::add);
+            }
+            return result;
+        }
+        
+        @Override
+        public Collection<ColumnSegment> getIndexColumns() {
+            return constraintDefinitions.stream().flatMap(each -> each.getIndexColumns().stream()).collect(Collectors.toList());
         }
     }
 }

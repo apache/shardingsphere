@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -48,7 +48,7 @@ public final class ShardingTableTokenGenerator implements CollectionSQLTokenGene
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return !(sqlStatementContext instanceof CursorAware) && (isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding());
+        return !(sqlStatementContext instanceof CursorHeldSQLStatementContext) && (isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding());
     }
     
     private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
