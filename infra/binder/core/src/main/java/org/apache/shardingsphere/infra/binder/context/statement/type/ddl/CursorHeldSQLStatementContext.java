@@ -26,26 +26,26 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Close statement context.
+ * Cursor held SQL statement context.
  */
 @Getter
-public final class CloseStatementContext implements SQLStatementContext, WhereContextAvailable, CursorAware {
+public final class CursorHeldSQLStatementContext implements SQLStatementContext, WhereContextAvailable, CursorAware {
     
     private final DatabaseType databaseType;
     
-    private final CloseStatement sqlStatement;
+    private final SQLStatement sqlStatement;
     
     private TablesContext tablesContext;
     
     private CursorStatementContext cursorStatementContext;
     
-    public CloseStatementContext(final DatabaseType databaseType, final CloseStatement sqlStatement) {
+    public CursorHeldSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(Collections.emptyList());
