@@ -74,7 +74,7 @@ public final class AlterTableMetadataCheckUtils {
     private static void validateModifyColumns(final ShardingSphereTable table, final Collection<ModifyColumnDefinitionSegment> modifyColumns) {
         for (ModifyColumnDefinitionSegment each : modifyColumns) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName, ""));
+            ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName, table.getName()));
         }
     }
     
@@ -83,7 +83,7 @@ public final class AlterTableMetadataCheckUtils {
             String newColumnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
             ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName));
             String oldColumnName = each.getPreviousColumn().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, ""));
+            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, table.getName()));
         }
     }
     
@@ -92,7 +92,7 @@ public final class AlterTableMetadataCheckUtils {
             String newColumnName = each.getColumnName().getIdentifier().getValue();
             ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName));
             String oldColumnName = each.getOldColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, ""));
+            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, table.getName()));
         }
     }
     
