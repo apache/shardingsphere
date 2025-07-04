@@ -50,7 +50,7 @@ public final class CreateIndexStatement extends DDLStatement {
     
     private boolean ifNotExists;
     
-    private Integer generatedIndexStartIndex;
+    private Integer anonymousIndexStartIndex;
     
     private AlgorithmTypeSegment algorithmType;
     
@@ -59,12 +59,12 @@ public final class CreateIndexStatement extends DDLStatement {
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     /**
-     * Get generated index start index.
+     * Get anonymous index start index.
      *
-     * @return generated index start index
+     * @return anonymous index start index
      */
-    public Optional<Integer> getGeneratedIndexStartIndex() {
-        return Optional.ofNullable(generatedIndexStartIndex);
+    public Optional<Integer> getAnonymousIndexStartIndex() {
+        return Optional.ofNullable(anonymousIndexStartIndex);
     }
     
     /**
@@ -101,13 +101,12 @@ public final class CreateIndexStatement extends DDLStatement {
             if (null != index) {
                 return Collections.singleton(index);
             }
-            if (getGeneratedIndexStartIndex().isPresent()) {
-                int generatedIndexStartIndex = getGeneratedIndexStartIndex().get();
-                IndexNameSegment generatedIndexNameSegment = new IndexNameSegment(generatedIndexStartIndex, generatedIndexStartIndex,
-                        new IdentifierValue(getGeneratedLogicIndexName(columns)));
-                return Collections.singleton(new IndexSegment(generatedIndexStartIndex, generatedIndexStartIndex, generatedIndexNameSegment));
+            if (!getAnonymousIndexStartIndex().isPresent()) {
+                return Collections.emptyList();
             }
-            return Collections.emptyList();
+            int anonymousIndexStartIndex = getAnonymousIndexStartIndex().get();
+            IndexNameSegment anonymousIndexNameSegment = new IndexNameSegment(anonymousIndexStartIndex, anonymousIndexStartIndex, new IdentifierValue(getGeneratedLogicIndexName(columns)));
+            return Collections.singleton(new IndexSegment(anonymousIndexStartIndex, anonymousIndexStartIndex, anonymousIndexNameSegment));
         }
         
         private String getGeneratedLogicIndexName(final Collection<ColumnSegment> columns) {
