@@ -178,7 +178,7 @@ class AlterTableMetadataCheckUtilsTest {
         assertDoesNotThrow(() -> AlterTableMetadataCheckUtils.checkAlterTable(alterTableStatement, shardingSphereTable));
     }
     
-    private Collection<AddColumnDefinitionSegment> createAddColumnDefinitions(String... columnNames) {
+    private Collection<AddColumnDefinitionSegment> createAddColumnDefinitions(final String... columnNames) {
         Collection<AddColumnDefinitionSegment> result = new ArrayList<>(columnNames.length);
         for (String each : columnNames) {
             ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
@@ -190,7 +190,7 @@ class AlterTableMetadataCheckUtilsTest {
         return result;
     }
     
-    private Collection<ModifyColumnDefinitionSegment> createModifyColumnDefinitions(String columnName) {
+    private Collection<ModifyColumnDefinitionSegment> createModifyColumnDefinitions(final String columnName) {
         ColumnDefinitionSegment columnDefinition = mock(ColumnDefinitionSegment.class);
         IdentifierValue identifier = new IdentifierValue(columnName);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, identifier);
@@ -200,23 +200,23 @@ class AlterTableMetadataCheckUtilsTest {
         return Collections.singletonList(segment);
     }
     
-    private Collection<RenameColumnSegment> createRenameColumnSegments(String oldName, String newName) {
+    private Collection<RenameColumnSegment> createRenameColumnSegments(final String oldColumnName, final String newColumnName) {
         Collection<RenameColumnSegment> result = new ArrayList<>();
         RenameColumnSegment segment = mock(RenameColumnSegment.class);
-        when(segment.getColumnName()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue(newName)));
-        when(segment.getOldColumnName()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue(oldName)));
+        when(segment.getColumnName()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue(newColumnName)));
+        when(segment.getOldColumnName()).thenReturn(new ColumnSegment(0, 0, new IdentifierValue(oldColumnName)));
         result.add(segment);
         return result;
     }
     
-    private Collection<DropColumnDefinitionSegment> createDropColumnDefinitions(String columnName) {
+    private Collection<DropColumnDefinitionSegment> createDropColumnDefinitions(final String columnName) {
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue(columnName));
         DropColumnDefinitionSegment segment = mock(DropColumnDefinitionSegment.class);
         when(segment.getColumns()).thenReturn(Collections.singletonList(column));
         return Collections.singletonList(segment);
     }
     
-    private Collection<AddConstraintDefinitionSegment> createAddConstraintDefinitions(String indexName) {
+    private Collection<AddConstraintDefinitionSegment> createAddConstraintDefinitions(final String indexName) {
         AddConstraintDefinitionSegment segment = mock(AddConstraintDefinitionSegment.class);
         when(segment.getConstraintDefinition()).thenReturn(mock(ConstraintDefinitionSegment.class));
         when(segment.getConstraintDefinition().getIndexName()).thenReturn(Optional.of(mock(IndexSegment.class)));
@@ -231,12 +231,12 @@ class AlterTableMetadataCheckUtilsTest {
         return Collections.singletonList(segment);
     }
     
-    private Collection<RenameIndexDefinitionSegment> createRenameIndexDefinitions(String oldName, String newName) {
+    private Collection<RenameIndexDefinitionSegment> createRenameIndexDefinitions(String oldIndexName, String newIndexName) {
         RenameIndexDefinitionSegment segment = mock(RenameIndexDefinitionSegment.class);
         when(segment.getIndexSegment()).thenReturn(mock(IndexSegment.class));
-        when(segment.getIndexSegment().getIndexName()).thenReturn(new IndexNameSegment(0, 0, new IdentifierValue(oldName)));
+        when(segment.getIndexSegment().getIndexName()).thenReturn(new IndexNameSegment(0, 0, new IdentifierValue(oldIndexName)));
         when(segment.getRenameIndexSegment()).thenReturn(mock(IndexSegment.class));
-        when(segment.getRenameIndexSegment().getIndexName()).thenReturn(new IndexNameSegment(0, 0, new IdentifierValue(newName)));
+        when(segment.getRenameIndexSegment().getIndexName()).thenReturn(new IndexNameSegment(0, 0, new IdentifierValue(newIndexName)));
         return Collections.singletonList(segment);
     }
 }
