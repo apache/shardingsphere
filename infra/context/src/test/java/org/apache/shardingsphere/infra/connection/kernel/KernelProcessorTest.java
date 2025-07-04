@@ -61,23 +61,23 @@ class KernelProcessorTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
         when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(mockShardingSphereRule()), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(mockRule()), Collections.emptyList());
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString())));
-        ExecutionContext actual = new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(mockShardingSphereRule()), props);
+        ExecutionContext actual = new KernelProcessor().generateExecutionContext(queryContext, new RuleMetaData(mockRule()), props);
         assertThat(actual.getExecutionUnits().size(), is(1));
     }
     
-    private Collection<ShardingSphereRule> mockShardingSphereRule() {
+    private Collection<ShardingSphereRule> mockRule() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.getAttributes()).thenReturn(new RuleAttributes());
