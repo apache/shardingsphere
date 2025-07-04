@@ -82,7 +82,7 @@ class EncryptCreateTableTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokens() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(mockCreateTableStatementContext());
+        Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(mock(), createCreateTableStatement()));
         assertThat(actual.size(), is(1));
         SQLToken token = actual.iterator().next();
         assertThat(token, instanceOf(SubstituteColumnDefinitionToken.class));
@@ -103,13 +103,10 @@ class EncryptCreateTableTokenGeneratorTest {
         assertTrue(((SubstituteColumnDefinitionToken) token).isLastColumn());
     }
     
-    private CommonSQLStatementContext mockCreateTableStatementContext() {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
-        ColumnDefinitionSegment segment = new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
-        sqlStatement.getColumnDefinitions().add(segment);
-        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(sqlStatement);
+    private CreateTableStatement createCreateTableStatement() {
+        CreateTableStatement result = new CreateTableStatement();
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
+        result.getColumnDefinitions().add(new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, ""));
         return result;
     }
 }
