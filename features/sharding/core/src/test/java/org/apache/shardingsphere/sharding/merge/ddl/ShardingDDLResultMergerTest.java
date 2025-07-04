@@ -59,7 +59,9 @@ class ShardingDDLResultMergerTest {
     
     @Test
     void assertMergeWithIteratorStreamMergedResult() throws SQLException {
-        assertThat(merger.merge(Collections.singletonList(createQueryResult()), mock(CursorHeldSQLStatementContext.class), mock(), mock()), instanceOf(IteratorStreamMergedResult.class));
+        CursorHeldSQLStatementContext sqlStatement = mock(CursorHeldSQLStatementContext.class);
+        when(sqlStatement.getSqlStatement()).thenReturn(mock(FetchStatement.class));
+        assertThat(merger.merge(Collections.singletonList(createQueryResult()), sqlStatement, mock(), mock()), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
