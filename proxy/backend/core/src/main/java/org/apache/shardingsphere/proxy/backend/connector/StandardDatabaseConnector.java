@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -74,6 +73,7 @@ import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResul
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -152,20 +152,22 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     private void prepareCursorStatementContext(final SQLStatementContext sqlStatementContext) {
         Optional<CursorNameSegment> cursorName = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(CursorSQLStatementAttribute.class).getCursorName();
         cursorName.ifPresent(optional -> prepareCursorStatementContext(sqlStatementContext, optional.getIdentifier().getValue().toLowerCase()));
-        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
+        if (sqlStatementContext.getSqlStatement() instanceof CloseStatement && ((CloseStatement) sqlStatementContext.getSqlStatement()).isCloseAll()) {
             databaseConnectionManager.getConnectionSession().getConnectionContext().clearCursorContext();
         }
     }
     
     private void prepareCursorStatementContext(final SQLStatementContext sqlStatementContext, final String cursorName) {
         CursorConnectionContext cursorContext = databaseConnectionManager.getConnectionSession().getConnectionContext().getCursorContext();
-        cursorContext.getCursorStatementContexts().put(cursorName, (CursorStatementContext) sqlStatementContext);
+        if (sqlStatementContext instanceof CursorStatementContext) {
+            cursorContext.getCursorStatementContexts().put(cursorName, (CursorStatementContext) sqlStatementContext);
+        }
         if (sqlStatementContext instanceof CursorAware) {
             ShardingSpherePreconditions.checkContainsKey(
                     cursorContext.getCursorStatementContexts(), cursorName, () -> new IllegalArgumentException(String.format("Cursor %s does not exist.", cursorName)));
             ((CursorAware) sqlStatementContext).setCursorStatementContext(cursorContext.getCursorStatementContexts().get(cursorName));
         }
-        if (sqlStatementContext instanceof CloseStatementContext) {
+        if (sqlStatementContext.getSqlStatement() instanceof CloseStatement) {
             cursorContext.removeCursor(cursorName);
         }
     }

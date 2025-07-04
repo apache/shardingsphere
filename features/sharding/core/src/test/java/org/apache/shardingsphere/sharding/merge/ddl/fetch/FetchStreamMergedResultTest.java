@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -70,9 +70,9 @@ class FetchStreamMergedResultTest {
     
     private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private FetchStatementContext fetchCountStatementContext;
+    private CursorHeldSQLStatementContext fetchCountStatementContext;
     
-    private FetchStatementContext fetchAllStatementContext;
+    private CursorHeldSQLStatementContext fetchAllStatementContext;
     
     private ShardingDDLResultMerger resultMerger;
     
@@ -83,15 +83,15 @@ class FetchStreamMergedResultTest {
     
     @BeforeEach
     void setUp() {
-        fetchCountStatementContext = createFetchStatementContext(false);
-        fetchAllStatementContext = createFetchStatementContext(true);
+        fetchCountStatementContext = createCursorHeldSQLStatementContext(false);
+        fetchAllStatementContext = createCursorHeldSQLStatementContext(true);
         resultMerger = new ShardingDDLResultMerger();
         connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
     }
     
-    private static FetchStatementContext createFetchStatementContext(final boolean containsAllDirectionType) {
-        FetchStatementContext result = new FetchStatementContext(DATABASE_TYPE, createFetchStatement(containsAllDirectionType));
+    private static CursorHeldSQLStatementContext createCursorHeldSQLStatementContext(final boolean containsAllDirectionType) {
+        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(DATABASE_TYPE, createFetchStatement(containsAllDirectionType));
         result.setCursorStatementContext(mockCursorStatementContext());
         return result;
     }
@@ -157,10 +157,10 @@ class FetchStreamMergedResultTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertNextForNotEmpty(final String name, final int index, final FetchStatementContext fetchStatementContext) throws SQLException {
+    void assertNextForNotEmpty(final String name, final int index, final CursorHeldSQLStatementContext sqlStatementContext) throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(index).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchStatementContext, database, connectionContext);
+        MergedResult actual = resultMerger.merge(queryResults, sqlStatementContext, database, connectionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -170,12 +170,12 @@ class FetchStreamMergedResultTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("first", 0, createFetchStatementContext(false)),
-                    Arguments.of("middle", 1, createFetchStatementContext(false)),
-                    Arguments.of("last", 2, createFetchStatementContext(false)),
-                    Arguments.of("firstWithAllDirection", 0, createFetchStatementContext(true)),
-                    Arguments.of("middleWithAllDirection", 1, createFetchStatementContext(true)),
-                    Arguments.of("lastWithAllDirection", 2, createFetchStatementContext(true)));
+                    Arguments.of("first", 0, createCursorHeldSQLStatementContext(false)),
+                    Arguments.of("middle", 1, createCursorHeldSQLStatementContext(false)),
+                    Arguments.of("last", 2, createCursorHeldSQLStatementContext(false)),
+                    Arguments.of("firstWithAllDirection", 0, createCursorHeldSQLStatementContext(true)),
+                    Arguments.of("middleWithAllDirection", 1, createCursorHeldSQLStatementContext(true)),
+                    Arguments.of("lastWithAllDirection", 2, createCursorHeldSQLStatementContext(true)));
         }
     }
 }
