@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.ddl;
 
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -59,7 +59,9 @@ class ShardingDDLResultMergerTest {
     
     @Test
     void assertMergeWithIteratorStreamMergedResult() throws SQLException {
-        assertThat(merger.merge(Collections.singletonList(createQueryResult()), mock(FetchStatementContext.class), mock(), mock()), instanceOf(IteratorStreamMergedResult.class));
+        CursorHeldSQLStatementContext sqlStatement = mock(CursorHeldSQLStatementContext.class);
+        when(sqlStatement.getSqlStatement()).thenReturn(mock(FetchStatement.class));
+        assertThat(merger.merge(Collections.singletonList(createQueryResult()), sqlStatement, mock(), mock()), instanceOf(IteratorStreamMergedResult.class));
     }
     
     @Test
@@ -73,11 +75,11 @@ class ShardingDDLResultMergerTest {
         when(database.getName()).thenReturn("foo_db");
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCursorContext()).thenReturn(new CursorConnectionContext());
-        assertThat(merger.merge(createQueryResults(), createFetchStatementContext(database), mock(), connectionContext), instanceOf(FetchStreamMergedResult.class));
+        assertThat(merger.merge(createQueryResults(), createCursorHeldSQLStatementContext(database), mock(), connectionContext), instanceOf(FetchStreamMergedResult.class));
     }
     
-    private FetchStatementContext createFetchStatementContext(final ShardingSphereDatabase database) {
-        FetchStatementContext result = new FetchStatementContext(databaseType, new FetchStatement(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
+    private CursorHeldSQLStatementContext createCursorHeldSQLStatementContext(final ShardingSphereDatabase database) {
+        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(databaseType, new FetchStatement(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }
