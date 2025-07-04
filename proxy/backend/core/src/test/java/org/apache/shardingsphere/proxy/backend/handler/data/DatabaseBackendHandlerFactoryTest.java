@@ -63,8 +63,7 @@ class DatabaseBackendHandlerFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class, RETURNS_DEEP_STUBS));
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
-                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                mock(ConnectionSession.class), false);
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
