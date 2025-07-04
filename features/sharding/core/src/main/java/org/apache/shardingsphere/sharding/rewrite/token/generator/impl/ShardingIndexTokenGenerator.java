@@ -59,7 +59,6 @@ public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGene
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
-        
         for (IndexSegment each : sqlStatementContext.getSqlStatement().getAttributes()
                 .findAttribute(IndexSQLStatementAttribute.class).map(IndexSQLStatementAttribute::getIndexes).orElse(Collections.emptyList())) {
             ShardingSphereSchema schema = each.getOwner().isPresent() ? schemas.get(each.getOwner().get().getIdentifier().getValue()) : defaultSchema;

@@ -52,7 +52,9 @@ class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotIndexContextAvailable() {
-        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new AlterIndexStatement());
+        assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
@@ -72,7 +74,9 @@ class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokensWithNotIndexContextAvailable() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(mock(SQLStatementContext.class));
+        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new AlterIndexStatement());
+        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertTrue(actual.isEmpty());
     }
     
@@ -101,8 +105,9 @@ class ShardingIndexTokenGeneratorTest {
         CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         AlterIndexStatement sqlStatement = new AlterIndexStatement();
         sqlStatement.setIndex(indexSegment);
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         when(result.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     
