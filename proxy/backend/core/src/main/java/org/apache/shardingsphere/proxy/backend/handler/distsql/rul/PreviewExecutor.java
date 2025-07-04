@@ -24,8 +24,8 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAw
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -96,8 +96,9 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
                 metaData, currentDatabaseName, hintValueContext).bind(database.getProtocolType(), toBePreviewedStatement, Collections.emptyList());
         QueryContext queryContext = new QueryContext(
                 toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext, connectionContext.getQueryContext().getConnectionContext(), metaData);
-        if (toBePreviewedStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent() && toBePreviewedStatementContext instanceof CursorAware) {
-            setUpCursorDefinition(toBePreviewedStatementContext);
+        if (toBePreviewedStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
+                && toBePreviewedStatementContext instanceof CursorHeldSQLStatementContext) {
+            setUpCursorDefinition((CursorHeldSQLStatementContext) toBePreviewedStatementContext);
         }
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new EmptyRuleException(database.getName()));
         String schemaName = getSchemaName(queryContext.getSqlStatementContext(), database);
@@ -120,7 +121,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         return new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps()).getExecutionUnits();
     }
     
-    private void setUpCursorDefinition(final SQLStatementContext toBePreviewedStatementContext) {
+    private void setUpCursorDefinition(final CursorHeldSQLStatementContext toBePreviewedStatementContext) {
         Optional<CursorNameSegment> cursorNameSegment = toBePreviewedStatementContext.getSqlStatement().getAttributes().getAttribute(CursorSQLStatementAttribute.class).getCursorName();
         if (!cursorNameSegment.isPresent()) {
             return;
@@ -128,7 +129,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         String cursorName = cursorNameSegment.get().getIdentifier().getValue().toLowerCase();
         CursorStatementContext cursorStatementContext = connectionContext.getQueryContext().getConnectionContext().getCursorContext().getCursorStatementContexts().get(cursorName);
         Preconditions.checkNotNull(cursorStatementContext, "Cursor %s does not exist.", cursorName);
-        ((CursorAware) toBePreviewedStatementContext).setCursorStatementContext(cursorStatementContext);
+        toBePreviewedStatementContext.setCursorStatementContext(cursorStatementContext);
     }
     
     private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final SQLFederationEngine federationEngine) {
