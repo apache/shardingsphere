@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -59,7 +59,7 @@ class ShardingDropIndexSupportedCheckerTest {
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new DropIndexStatementContext(mock(), sqlStatement)));
+        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(mock(), sqlStatement)));
     }
     
     @Test
@@ -70,6 +70,6 @@ class ShardingDropIndexSupportedCheckerTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotFoundException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new DropIndexStatementContext(mock(), sqlStatement)));
+        assertThrows(IndexNotFoundException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
     }
 }

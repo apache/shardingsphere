@@ -20,7 +20,6 @@ package org.apache.shardingsphere.single.rule;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -173,10 +173,11 @@ public final class SingleRule implements DatabaseRule {
     public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         Collection<SimpleTableSegment> tables = sqlStatementContext.getTablesContext().getSimpleTables();
         Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, tables);
-        if (result.isEmpty() && sqlStatementContext instanceof IndexContextAvailable) {
-            result = IndexMetaDataUtils.getTableNames(database, protocolType, ((IndexContextAvailable) sqlStatementContext).getIndexes());
+        if (!result.isEmpty()) {
+            return result;
         }
-        return result;
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class)
+                .map(optional -> IndexMetaDataUtils.getTableNames(database, protocolType, optional.getIndexes())).orElse(result);
     }
     
     private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {

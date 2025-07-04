@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -162,10 +162,10 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         if (sqlStatementContext instanceof CursorStatementContext) {
             cursorContext.getCursorStatementContexts().put(cursorName, (CursorStatementContext) sqlStatementContext);
         }
-        if (sqlStatementContext instanceof CursorAware) {
+        if (sqlStatementContext instanceof CursorHeldSQLStatementContext) {
             ShardingSpherePreconditions.checkContainsKey(
                     cursorContext.getCursorStatementContexts(), cursorName, () -> new IllegalArgumentException(String.format("Cursor %s does not exist.", cursorName)));
-            ((CursorAware) sqlStatementContext).setCursorStatementContext(cursorContext.getCursorStatementContexts().get(cursorName));
+            ((CursorHeldSQLStatementContext) sqlStatementContext).setCursorStatementContext(cursorContext.getCursorStatementContexts().get(cursorName));
         }
         if (sqlStatementContext.getSqlStatement() instanceof CloseStatement) {
             cursorContext.removeCursor(cursorName);

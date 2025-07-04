@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -35,7 +34,7 @@ import java.util.Collections;
  * Cursor held SQL statement context.
  */
 @Getter
-public final class CursorHeldSQLStatementContext implements SQLStatementContext, WhereContextAvailable, CursorAware {
+public final class CursorHeldSQLStatementContext implements SQLStatementContext, WhereContextAvailable {
     
     private final DatabaseType databaseType;
     
@@ -51,7 +50,11 @@ public final class CursorHeldSQLStatementContext implements SQLStatementContext,
         tablesContext = new TablesContext(Collections.emptyList());
     }
     
-    @Override
+    /**
+     * Set cursor statement context.
+     *
+     * @param cursorStatementContext cursor statement context
+     */
     public void setCursorStatementContext(final CursorStatementContext cursorStatementContext) {
         this.cursorStatementContext = cursorStatementContext;
         tablesContext = cursorStatementContext.getTablesContext();

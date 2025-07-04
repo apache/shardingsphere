@@ -22,16 +22,11 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -47,12 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Ex
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
@@ -121,21 +111,6 @@ public final class SQLStatementContextFactory {
     
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                                               final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        if (sqlStatement instanceof CreateTableStatement) {
-            return new CreateTableStatementContext(databaseType, (CreateTableStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof AlterTableStatement) {
-            return new AlterTableStatementContext(databaseType, (AlterTableStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof CreateIndexStatement) {
-            return new CreateIndexStatementContext(databaseType, (CreateIndexStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof AlterIndexStatement) {
-            return new AlterIndexStatementContext(databaseType, (AlterIndexStatement) sqlStatement);
-        }
-        if (sqlStatement instanceof DropIndexStatement) {
-            return new DropIndexStatementContext(databaseType, (DropIndexStatement) sqlStatement);
-        }
         if (sqlStatement instanceof CreateProcedureStatement) {
             return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
         }

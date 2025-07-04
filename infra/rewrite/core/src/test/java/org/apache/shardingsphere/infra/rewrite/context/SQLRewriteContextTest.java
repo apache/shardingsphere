@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.Collec
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,6 +77,9 @@ class SQLRewriteContextTest {
     @BeforeEach
     void setUp() {
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(optionalSQLTokenGenerator.generateSQLToken(sqlStatementContext)).thenReturn(sqlToken);
         when(collectionSQLTokenGenerator.generateSQLTokens(sqlStatementContext)).thenReturn(Collections.singleton(sqlToken));
         when(database.getName()).thenReturn("foo_db");

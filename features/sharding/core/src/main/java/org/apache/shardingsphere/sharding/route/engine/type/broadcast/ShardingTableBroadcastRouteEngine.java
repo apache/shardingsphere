@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingCart
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -106,9 +106,8 @@ public final class ShardingTableBroadcastRouteEngine implements ShardingRouteEng
         if (!shardingRuleTableNames.isEmpty()) {
             return shardingRuleTableNames;
         }
-        return sqlStatementContext instanceof IndexContextAvailable
-                ? getTableNames(database, sqlStatementContext.getDatabaseType(), ((IndexContextAvailable) sqlStatementContext).getIndexes())
-                : Collections.emptyList();
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class)
+                .map(optional -> getTableNames(database, sqlStatementContext.getDatabaseType(), optional.getIndexes())).orElse(Collections.emptyList());
     }
     
     private Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {

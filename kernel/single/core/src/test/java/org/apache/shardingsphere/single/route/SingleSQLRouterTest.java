@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.route;
 
 import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -224,6 +224,6 @@ class SingleSQLRouterTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        return new QueryContext(new CreateTableStatementContext(databaseType, createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext, metaData);
+        return new QueryContext(new CommonSQLStatementContext(databaseType, createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext, metaData);
     }
 }

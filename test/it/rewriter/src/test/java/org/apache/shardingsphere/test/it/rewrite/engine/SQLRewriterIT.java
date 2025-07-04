@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.it.rewrite.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -143,8 +143,8 @@ public abstract class SQLRewriterIT {
         if (result instanceof ParameterAware) {
             ((ParameterAware) result).setUpParameters(testParams.getInputParameters());
         }
-        if (result instanceof CursorAware) {
-            ((CursorAware) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, databaseType, sqlParserEngine));
+        if (result instanceof CursorHeldSQLStatementContext) {
+            ((CursorHeldSQLStatementContext) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, databaseType, sqlParserEngine));
         }
         return result;
     }
