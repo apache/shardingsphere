@@ -36,20 +36,20 @@ class PostgreSQLTimeBinaryProtocolValueTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
-
+    
     @Test
     void assertGetColumnLength() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
         assertThat(actual.getColumnLength(payload, null), is(8));
     }
-
+    
     @Test
     void assertRead() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
         when(payload.readInt8()).thenReturn(1L);
         assertThat(actual.read(payload, 8), is(1L));
     }
-
+    
     @Test
     void assertWrite() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
