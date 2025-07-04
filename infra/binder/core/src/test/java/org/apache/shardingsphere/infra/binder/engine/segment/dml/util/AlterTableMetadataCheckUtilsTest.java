@@ -224,14 +224,14 @@ class AlterTableMetadataCheckUtilsTest {
         return Collections.singletonList(segment);
     }
     
-    private Collection<DropIndexDefinitionSegment> createDropIndexDefinitions(String indexName) {
+    private Collection<DropIndexDefinitionSegment> createDropIndexDefinitions(final String indexName) {
         DropIndexDefinitionSegment segment = mock(DropIndexDefinitionSegment.class);
         when(segment.getIndexSegment()).thenReturn(mock(IndexSegment.class));
         when(segment.getIndexSegment().getIndexName()).thenReturn(new IndexNameSegment(0, 0, new IdentifierValue(indexName)));
         return Collections.singletonList(segment);
     }
     
-    private Collection<RenameIndexDefinitionSegment> createRenameIndexDefinitions(String oldIndexName, String newIndexName) {
+    private Collection<RenameIndexDefinitionSegment> createRenameIndexDefinitions(final String oldIndexName, final String newIndexName) {
         RenameIndexDefinitionSegment segment = mock(RenameIndexDefinitionSegment.class);
         when(segment.getIndexSegment()).thenReturn(mock(IndexSegment.class));
         when(segment.getIndexSegment().getIndexName()).thenReturn(new IndexNameSegment(0, 0, new IdentifierValue(oldIndexName)));
