@@ -36,13 +36,11 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,26 +57,21 @@ class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyIndex() {
-        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new AlterIndexStatement());
-        when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), new AlterIndexStatement());
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsGenerateSQLToken() {
-        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         AlterIndexStatement sqlStatement = new AlterIndexStatement();
         sqlStatement.setIndex(mock(IndexSegment.class));
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), sqlStatement);
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensWithNotIndexContextAvailable() {
-        CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new AlterIndexStatement());
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new AlterIndexStatement());
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertTrue(actual.isEmpty());
     }
@@ -105,13 +98,9 @@ class ShardingIndexTokenGeneratorTest {
     }
     
     private CommonSQLStatementContext mockAlterIndexStatementContext(final IndexSegment indexSegment) {
-        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
         AlterIndexStatement sqlStatement = new AlterIndexStatement();
         sqlStatement.setIndex(indexSegment);
-        when(result.getSqlStatement()).thenReturn(sqlStatement);
-        when(result.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        return result;
+        return new CommonSQLStatementContext(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), sqlStatement);
     }
     
     private void assertTokens(final Collection<SQLToken> actual, final ShardingSphereSchema schema) throws ReflectiveOperationException {
