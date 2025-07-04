@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundEx
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
@@ -51,6 +52,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
@@ -86,6 +89,7 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
         ShardingSphereSchema schema = binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(schemaName.getValue());
         checkTableExists(binderContext, schema, schemaName.getValue(), tableName.getValue());
+        checkTableMetadata(binderContext, schema, schemaName.getValue(), tableName.getValue());
         tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
                 createSimpleTableBinderContext(segment, schema, databaseName, schemaName, binderContext));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
@@ -94,6 +98,34 @@ public final class SimpleTableSegmentBinder {
         segment.getOwner().ifPresent(result::setOwner);
         segment.getAliasSegment().ifPresent(result::setAlias);
         return result;
+    }
+    
+    private static void checkTableMetadata(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String schemaName, final String tableName) {
+        if (binderContext.getHintValueContext().isSkipMetadataValidate()) {
+            return;
+        }
+        ShardingSphereTable shardingSphereTable = schema.getTable(tableName);
+        if (binderContext.getSqlStatement() instanceof AlterTableStatement) {
+            if (isRenameTable((AlterTableStatement) binderContext.getSqlStatement(), tableName)) {
+                return;
+            }
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+            AlterTableMetadataCheckUtils.checkAlterTable((AlterTableStatement) binderContext.getSqlStatement(), shardingSphereTable);
+            return;
+        }
+        if (binderContext.getSqlStatement() instanceof CreateIndexStatement) {
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+            String indexName = ((CreateIndexStatement) binderContext.getSqlStatement()).getIndex().getIndexName().getIdentifier().getValue();
+            ShardingSpherePreconditions.checkState(!shardingSphereTable.containsIndex(indexName), () -> new DuplicateIndexException(indexName));
+            return;
+        }
+        if (binderContext.getSqlStatement() instanceof DropIndexStatement) {
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
+            ((DropIndexStatement) binderContext.getSqlStatement()).getIndexes().forEach(each -> {
+                String indexName = each.getIndexName().getIdentifier().getValue();
+                ShardingSpherePreconditions.checkState(shardingSphereTable.containsIndex(indexName), () -> new IndexNotFoundException(schemaName, indexName));
+            });
+        }
     }
     
     private static IdentifierValue getDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
