@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,11 +52,12 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EncryptAlterTableTokenGeneratorTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private EncryptAlterTableTokenGenerator generator;
     
@@ -98,7 +100,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     @Test
     void assertAddColumnGenerateSQLTokens() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(mockAddColumnStatementContext());
+        Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(databaseType, createAddColumnStatement()));
         assertThat(actual.size(), is(4));
         Iterator<SQLToken> actualIterator = actual.iterator();
         assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
@@ -116,49 +118,42 @@ class EncryptAlterTableTokenGeneratorTest {
         assertThat(likeToken.getStopIndex(), is(67));
     }
     
-    private CommonSQLStatementContext mockAddColumnStatementContext() {
-        AlterTableStatement sqlStatement = new AlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
+    private SQLStatement createAddColumnStatement() {
+        AlterTableStatement result = new AlterTableStatement();
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
                 33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
-        sqlStatement.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment)));
-        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(sqlStatement);
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment)));
         return result;
     }
     
     @Test
     void assertModifyEncryptColumnGenerateSQLTokens() {
-        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(mockModifyColumnStatementContext()));
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(databaseType, createModifyColumnStatement())));
     }
     
-    private CommonSQLStatementContext mockModifyColumnStatementContext() {
-        AlterTableStatement sqlStatement = new AlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
+    private SQLStatement createModifyColumnStatement() {
+        AlterTableStatement result = new AlterTableStatement();
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
                 36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
-        sqlStatement.getModifyColumnDefinitions().add(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment));
-        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(sqlStatement);
+        result.getModifyColumnDefinitions().add(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment));
         return result;
     }
     
     @Test
     void assertChangeEncryptColumnGenerateSQLTokens() {
-        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(mockChangeColumnStatementContext()));
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(databaseType, createChangeColumnStatement())));
     }
     
-    private CommonSQLStatementContext mockChangeColumnStatementContext() {
-        AlterTableStatement sqlStatement = new AlterTableStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
+    private SQLStatement createChangeColumnStatement() {
+        AlterTableStatement result = new AlterTableStatement();
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
                 55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false, "");
         ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, columnDefinitionSegment);
         changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
-        sqlStatement.getChangeColumnDefinitions().add(changeColumnDefinitionSegment);
-        CommonSQLStatementContext result = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(sqlStatement);
+        result.getChangeColumnDefinitions().add(changeColumnDefinitionSegment);
         return result;
     }
 }
