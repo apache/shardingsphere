@@ -68,6 +68,9 @@ class ShardingIndexTokenGeneratorTest {
     @Test
     void assertIsGenerateSQLToken() {
         CommonSQLStatementContext sqlStatementContext = mock(CommonSQLStatementContext.class, RETURNS_DEEP_STUBS);
+        AlterIndexStatement sqlStatement = new AlterIndexStatement();
+        sqlStatement.setIndex(mock(IndexSegment.class));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(sqlStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
