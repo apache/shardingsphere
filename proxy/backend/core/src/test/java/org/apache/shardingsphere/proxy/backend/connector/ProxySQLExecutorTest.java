@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -248,10 +247,10 @@ class ProxySQLExecutorTest {
         new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, mock(DatabaseConnector.class), mockQueryContext()).checkExecutePrerequisites(executionContext);
     }
     
-    private CreateTableStatementContext createCreateTableStatementContext(final DatabaseType databaseType) {
+    private CommonSQLStatementContext createCreateTableStatementContext(final DatabaseType databaseType) {
         CreateTableStatement sqlStatement = mock(CreateTableStatement.class);
         when(sqlStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CreateTableStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
     private SQLStatementContext createTruncateStatementContext(final DatabaseType databaseType) {

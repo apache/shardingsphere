@@ -30,7 +30,7 @@ import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -45,36 +45,38 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Alter table token generator for encrypt.
  */
 @RequiredArgsConstructor
 @Setter
-public final class EncryptAlterTableTokenGenerator implements CollectionSQLTokenGenerator<AlterTableStatementContext> {
+public final class EncryptAlterTableTokenGenerator implements CollectionSQLTokenGenerator<CommonSQLStatementContext> {
     
     private final EncryptRule rule;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof AlterTableStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof AlterTableStatement;
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext sqlStatementContext) {
-        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+    public Collection<SQLToken> generateSQLTokens(final CommonSQLStatementContext sqlStatementContext) {
+        AlterTableStatement sqlStatement = (AlterTableStatement) sqlStatementContext.getSqlStatement();
+        String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
-        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getAddColumnDefinitions()));
-        result.addAll(getModifyColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getModifyColumnDefinitions()));
-        result.addAll(getChangeColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getChangeColumnDefinitions()));
-        List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, sqlStatementContext.getSqlStatement().getDropColumnDefinitions());
+        Collection<SQLToken> result = new LinkedList<>(getAddColumnTokens(encryptTable, sqlStatement.getAddColumnDefinitions()));
+        result.addAll(getModifyColumnTokens(encryptTable, sqlStatement.getModifyColumnDefinitions()));
+        result.addAll(getChangeColumnTokens(encryptTable, sqlStatement.getChangeColumnDefinitions()));
+        List<SQLToken> dropColumnTokens = getDropColumnTokens(encryptTable, sqlStatement.getDropColumnDefinitions());
         Optional<DialectAlterTableOption> alterTableOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getAlterTableOption();
         if (alterTableOption.isPresent() && alterTableOption.get().isSupportMergeDropColumns()) {
             result.addAll(mergeDropColumnStatement(dropColumnTokens, alterTableOption.get().isContainsParenthesesOnMergeDropColumns()));
@@ -220,11 +222,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     }
     
     private List<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final Collection<DropColumnDefinitionSegment> segments) {
-        List<SQLToken> result = new ArrayList<>();
-        for (DropColumnDefinitionSegment each : segments) {
-            result.addAll(getDropColumnTokens(encryptTable, each));
-        }
-        return result;
+        return segments.stream().flatMap(each -> getDropColumnTokens(encryptTable, each).stream()).collect(Collectors.toList());
     }
     
     private Collection<SQLToken> getDropColumnTokens(final EncryptTable encryptTable, final DropColumnDefinitionSegment segment) {

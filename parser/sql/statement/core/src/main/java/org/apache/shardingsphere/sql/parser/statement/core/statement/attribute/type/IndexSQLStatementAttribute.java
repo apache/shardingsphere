@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.context.available;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
 
 import java.util.Collection;
 
 /**
- * Index context available.
+ * Index SQL statement attribute.
  */
-public interface IndexContextAvailable {
+public interface IndexSQLStatementAttribute extends SQLStatementAttribute {
     
     /**
      * Get index segments.
