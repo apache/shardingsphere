@@ -407,6 +407,10 @@ FIRST
     : F I R S T
     ;
 
+SKIP_
+    : S K I P
+    ;
+
 FOUND
     : F O U N D
     ;
@@ -977,4 +981,16 @@ COMMENT
 
 SIMILAR
     : S I M I L A R
+    ;
+
+CURRENT_ROLE
+    : C U R R E N T UL_ R O L E
+    ;
+
+OPTIMIZE
+    : O P T I M I Z E
+    ;
+
+GEN_ID
+    : G E N UL_ I D
     ;
