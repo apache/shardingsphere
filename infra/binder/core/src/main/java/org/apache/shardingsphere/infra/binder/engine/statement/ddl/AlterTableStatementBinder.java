@@ -60,7 +60,6 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
         result.getRenameIndexDefinitions().addAll(sqlStatement.getRenameIndexDefinitions());
         sqlStatement.getModifyCollectionRetrieval().ifPresent(result::setModifyCollectionRetrieval);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

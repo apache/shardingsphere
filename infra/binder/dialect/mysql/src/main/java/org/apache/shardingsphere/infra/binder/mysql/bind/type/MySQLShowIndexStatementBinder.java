@@ -38,7 +38,6 @@ public final class MySQLShowIndexStatementBinder implements SQLStatementBinder<M
     private MySQLShowIndexStatement copy(final MySQLShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
         MySQLShowIndexStatement result = new MySQLShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

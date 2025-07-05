@@ -46,7 +46,6 @@ public final class DropIndexStatementBinder implements SQLStatementBinder<DropIn
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
         result.setIfExists(sqlStatement.isIfExists());
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

@@ -81,7 +81,6 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         sqlStatement.getMultiTableConditionalInto().ifPresent(result::setMultiTableConditionalInto);
         sqlStatement.getReturning().ifPresent(result::setReturning);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
     

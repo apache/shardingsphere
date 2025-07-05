@@ -46,7 +46,6 @@ public final class DropTableStatementBinder implements SQLStatementBinder<DropTa
         result.setIfExists(sqlStatement.isIfExists());
         result.setContainsCascade(sqlStatement.isContainsCascade());
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }
