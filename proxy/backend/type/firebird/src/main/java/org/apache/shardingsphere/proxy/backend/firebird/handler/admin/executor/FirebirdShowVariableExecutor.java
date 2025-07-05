@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Executor for Firebird show statement.
@@ -59,7 +60,9 @@ public final class FirebirdShowVariableExecutor implements DatabaseAdminQueryExe
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String name = showStatement.getName().orElse("").toLowerCase(Locale.ROOT);
+        String name = Optional.ofNullable(showStatement.getName())
+                .orElse("")
+                .toLowerCase(Locale.ROOT);
         queryResultMetaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", "", name, Types.VARCHAR, "VARCHAR", -1, 0)));
         VariableRowDataGenerator variableRowDataGenerator = VARIABLE_ROW_DATA_GENERATORS.getOrDefault(name, unused -> new String[]{"", "", ""});
         mergedResult = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(variableRowDataGenerator.getVariable(connectionSession)[1])));
