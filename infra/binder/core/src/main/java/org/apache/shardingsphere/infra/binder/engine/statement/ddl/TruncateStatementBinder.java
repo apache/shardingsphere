@@ -43,7 +43,6 @@ public final class TruncateStatementBinder implements SQLStatementBinder<Truncat
     private TruncateStatement copy(final TruncateStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
         TruncateStatement result = new TruncateStatement(boundTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

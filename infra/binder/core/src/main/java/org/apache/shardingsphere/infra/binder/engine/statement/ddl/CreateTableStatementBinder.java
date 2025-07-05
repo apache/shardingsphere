@@ -63,7 +63,6 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
         sqlStatement.getLikeTable().ifPresent(result::setLikeTable);
         sqlStatement.getCreateTableOption().ifPresent(result::setCreateTableOption);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

@@ -41,7 +41,6 @@ public final class ExplainStatementBinder implements SQLStatementBinder<ExplainS
     private ExplainStatement copy(final ExplainStatement sqlStatement, final SQLStatement boundSQLStatement) {
         ExplainStatement result = new ExplainStatement(boundSQLStatement);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

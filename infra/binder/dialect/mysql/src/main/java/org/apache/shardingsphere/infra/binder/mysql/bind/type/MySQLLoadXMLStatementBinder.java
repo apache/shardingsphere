@@ -42,7 +42,6 @@ public final class MySQLLoadXMLStatementBinder implements SQLStatementBinder<MyS
     private MySQLLoadXMLStatement copy(final MySQLLoadXMLStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
         MySQLLoadXMLStatement result = new MySQLLoadXMLStatement(boundTableSegment);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

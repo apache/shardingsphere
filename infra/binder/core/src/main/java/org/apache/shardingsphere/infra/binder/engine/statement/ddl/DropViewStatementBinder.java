@@ -44,7 +44,6 @@ public final class DropViewStatementBinder implements SQLStatementBinder<DropVie
         DropViewStatement result = new DropViewStatement();
         result.getViews().addAll(boundViews);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

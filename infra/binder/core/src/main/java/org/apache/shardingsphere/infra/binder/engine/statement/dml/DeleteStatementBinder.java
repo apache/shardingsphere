@@ -59,7 +59,6 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         sqlStatement.getLimit().ifPresent(result::setLimit);
         sqlStatement.getOutput().ifPresent(result::setOutput);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }
