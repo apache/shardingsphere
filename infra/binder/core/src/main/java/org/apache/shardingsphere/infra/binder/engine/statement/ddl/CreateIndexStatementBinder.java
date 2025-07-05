@@ -58,6 +58,7 @@ public final class CreateIndexStatementBinder implements SQLStatementBinder<Crea
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

@@ -38,6 +38,7 @@ public final class MySQLShowCreateTableStatementBinder implements SQLStatementBi
     private MySQLShowCreateTableStatement copy(final MySQLShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
         MySQLShowCreateTableStatement result = new MySQLShowCreateTableStatement(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

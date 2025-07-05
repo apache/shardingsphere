@@ -66,6 +66,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
         result.setOrderBy(boundOrderBy);
         sqlStatement.getLimit().ifPresent(result::setLimit);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

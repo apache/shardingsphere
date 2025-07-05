@@ -46,6 +46,7 @@ public final class CreateViewStatementBinder implements SQLStatementBinder<Creat
         result.setReplaceView(sqlStatement.isReplaceView());
         result.setViewDefinition(sqlStatement.getViewDefinition());
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

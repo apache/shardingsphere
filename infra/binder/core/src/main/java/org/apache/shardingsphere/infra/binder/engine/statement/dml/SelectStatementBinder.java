@@ -110,6 +110,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         sqlStatement.getModel().ifPresent(result::setModel);
         sqlStatement.getSubqueryType().ifPresent(result::setSubqueryType);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }
