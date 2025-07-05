@@ -203,7 +203,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         SQLStatement sqlStatement = compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse(sql, useCache);
         List<Object> params = getParameters(sqlString.getParamIndexes());
         HintValueContext hintValueContext = new HintValueContext();
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, params);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, executorContext.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, params);
         return new QueryContext(sqlStatementContext, sql, params, hintValueContext, queryContext.getConnectionContext(), metaData, useCache);
     }
     

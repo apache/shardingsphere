@@ -71,7 +71,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), currentDatabaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), currentDatabaseName, hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
         databaseConnector = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);

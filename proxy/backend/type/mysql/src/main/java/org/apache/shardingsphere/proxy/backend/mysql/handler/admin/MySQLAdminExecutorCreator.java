@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
@@ -114,7 +115,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     private Optional<DatabaseAdminExecutor> createExecutorForSelectStatement(final SelectStatementContext selectStatementContext, final String sql,
                                                                              final String databaseName, final List<Object> parameters) {
         if (!selectStatementContext.getSqlStatement().getFrom().isPresent()) {
-            return findAdminExecutorForSelectWithoutFrom(selectStatementContext.getSqlStatement(), sql, databaseName);
+            return findAdminExecutorForSelectWithoutFrom(selectStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement(), sql, databaseName);
         }
         if (INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getContextManager().getDatabase(databaseName).isComplete()) {
             return MySQLInformationSchemaExecutorFactory.newInstance(selectStatementContext, sql, parameters);
@@ -131,12 +132,13 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return Optional.empty();
     }
     
-    private Optional<DatabaseAdminExecutor> findAdminExecutorForSelectWithoutFrom(final SelectStatement selectStatement, final String sql, final String databaseName) {
+    private Optional<DatabaseAdminExecutor> findAdminExecutorForSelectWithoutFrom(final DatabaseType databaseType,
+                                                                                  final SelectStatement selectStatement, final String sql, final String databaseName) {
         Optional<DatabaseAdminExecutor> result = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
-        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
+        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(databaseType, selectStatement, sql, databaseName);
     }
     
-    private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SelectStatement selectStatement, final String sql, final String databaseName) {
+    private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final DatabaseType databaseType, final SelectStatement selectStatement, final String sql, final String databaseName) {
         if (isShowSpecialFunction(selectStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowConnectionIdExecutor(selectStatement));
         }
@@ -149,7 +151,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowCurrentDatabaseExecutor());
         }
-        return mockExecutor(databaseName, selectStatement, sql);
+        return mockExecutor(databaseName, databaseType, selectStatement, sql);
     }
     
     private boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
@@ -158,12 +160,12 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return !segmentIterator.hasNext() && firstProjection instanceof ExpressionProjectionSegment && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
     }
     
-    private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
+    private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final DatabaseType databaseType, final SelectStatement sqlStatement, final String sql) {
         if (hasNoResource()) {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
         boolean isUseSchema = null != databaseName || sqlStatement.getFrom().isPresent();
-        return isUseSchema ? Optional.empty() : Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql));
+        return isUseSchema ? Optional.empty() : Optional.of(new UnicastResourceShowExecutor(databaseType, sqlStatement, sql));
     }
     
     private boolean hasNoResource() {

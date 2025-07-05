@@ -19,8 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
@@ -34,7 +32,6 @@ import java.util.LinkedList;
  * SQL statement.
  */
 @Getter
-@Setter
 public class SQLStatement implements ASTNode {
     
     private final Collection<Integer> uniqueParameterIndexes = new LinkedHashSet<>();
@@ -44,8 +41,6 @@ public class SQLStatement implements ASTNode {
     private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     
     private final Collection<CommentSegment> comments = new LinkedList<>();
-    
-    private DatabaseType databaseType;
     
     /**
      * Get count of parameters.
