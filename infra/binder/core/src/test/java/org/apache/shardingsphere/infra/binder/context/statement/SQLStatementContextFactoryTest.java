@@ -91,7 +91,7 @@ class SQLStatementContextFactoryTest {
         SelectStatement sqlStatement = new SelectStatement();
         sqlStatement.setProjections(new ProjectionsSegment(0, 0));
         CursorStatement cursorStatement = new CursorStatement(null, sqlStatement);
-        when(cursorStatement.getDatabaseType()).thenReturn(databaseType);
+        cursorStatement.setDatabaseType(databaseType);
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }

@@ -66,17 +66,24 @@ public final class SQLBindEngine {
         if (dialectSQLBindEngine.isPresent()) {
             Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(sqlStatement, binderContext);
             if (boundSQLStatement.isPresent()) {
+                boundSQLStatement.get().setDatabaseType(sqlStatement.getDatabaseType());
                 return boundSQLStatement.get();
             }
         }
         if (sqlStatement instanceof DMLStatement) {
-            return new DMLStatementBindEngine().bind((DMLStatement) sqlStatement, binderContext);
+            SQLStatement result = new DMLStatementBindEngine().bind((DMLStatement) sqlStatement, binderContext);
+            result.setDatabaseType(sqlStatement.getDatabaseType());
+            return result;
         }
         if (sqlStatement instanceof DDLStatement) {
-            return new DDLStatementBindEngine().bind((DDLStatement) sqlStatement, binderContext);
+            SQLStatement result = new DDLStatementBindEngine().bind((DDLStatement) sqlStatement, binderContext);
+            result.setDatabaseType(sqlStatement.getDatabaseType());
+            return result;
         }
         if (sqlStatement instanceof DALStatement) {
-            return new DALStatementBindEngine().bind((DALStatement) sqlStatement, binderContext);
+            SQLStatement result = new DALStatementBindEngine().bind((DALStatement) sqlStatement, binderContext);
+            result.setDatabaseType(sqlStatement.getDatabaseType());
+            return result;
         }
         return sqlStatement;
     }
