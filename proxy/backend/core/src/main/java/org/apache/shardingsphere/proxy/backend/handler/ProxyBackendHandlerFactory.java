@@ -77,7 +77,8 @@ public final class ProxyBackendHandlerFactory {
     /**
      * Create new instance of backend handler.
      *
-     * @param databaseType database type
+     * @param protocolDatabaseType protocol database type
+     * @param parserDatabaseType parser database type
      * @param sql SQL to be executed
      * @param sqlStatement SQL statement
      * @param connectionSession connection session
@@ -85,7 +86,8 @@ public final class ProxyBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
+    public static ProxyBackendHandler newInstance(final DatabaseType protocolDatabaseType, final DatabaseType parserDatabaseType,
+                                                  final String sql, final SQLStatement sqlStatement,
                                                   final ConnectionSession connectionSession, final HintValueContext hintValueContext) throws SQLException {
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
@@ -93,11 +95,11 @@ public final class ProxyBackendHandlerFactory {
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                        connectionSession.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
+                        connectionSession.getCurrentDatabaseName(), hintValueContext).bind(parserDatabaseType, sqlStatement, Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         connectionSession.setQueryContext(queryContext);
-        return newInstance(databaseType, queryContext, connectionSession, false);
+        return newInstance(protocolDatabaseType, queryContext, connectionSession, false);
     }
     
     /**
