@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
@@ -48,6 +48,6 @@ public final class ExplainStatementContext implements SQLStatementContext {
         this.databaseType = databaseType;
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList()));
-        explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
+        explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
     }
 }

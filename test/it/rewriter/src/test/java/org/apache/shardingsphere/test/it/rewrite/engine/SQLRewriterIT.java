@@ -112,7 +112,7 @@ public abstract class SQLRewriterIT {
         RuleMetaData globalRuleMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(Collections.emptyList(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), globalRuleMetaData, mock());
         HintValueContext hintValueContext = SQLHintUtils.extractHint(testParams.getInputSQL());
-        SQLStatementContext sqlStatementContext = bind(testParams, metaData, databaseName, hintValueContext, sqlStatement, sqlParserEngine);
+        SQLStatementContext sqlStatementContext = bind(testParams, metaData, databaseName, hintValueContext, databaseType, sqlStatement, sqlParserEngine);
         ConnectionContext connectionContext = createConnectionContext(database.getName());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, testParams.getInputParameters(), hintValueContext, connectionContext, metaData);
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
@@ -138,20 +138,20 @@ public abstract class SQLRewriterIT {
     }
     
     private SQLStatementContext bind(final SQLRewriteEngineTestParameters testParams, final ShardingSphereMetaData metaData, final String databaseName,
-                                     final HintValueContext hintValueContext, final SQLStatement sqlStatement, final SQLParserEngine sqlParserEngine) {
-        SQLStatementContext result = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+                                     final HintValueContext hintValueContext, final DatabaseType databaseType, final SQLStatement sqlStatement, final SQLParserEngine sqlParserEngine) {
+        SQLStatementContext result = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
         if (result instanceof ParameterAware) {
             ((ParameterAware) result).setUpParameters(testParams.getInputParameters());
         }
         if (result instanceof CursorHeldSQLStatementContext) {
-            ((CursorHeldSQLStatementContext) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
+            ((CursorHeldSQLStatementContext) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, databaseType, sqlParserEngine));
         }
         return result;
     }
     
-    private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
+    private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final DatabaseType databaseType, final SQLParserEngine sqlParserEngine) {
         SQLStatement sqlStatement = sqlParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
-        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(databaseType, sqlStatement, Collections.emptyList());
     }
     
     private ConnectionContext createConnectionContext(final String databaseName) {

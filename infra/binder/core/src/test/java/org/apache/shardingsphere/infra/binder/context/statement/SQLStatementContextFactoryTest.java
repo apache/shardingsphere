@@ -60,63 +60,54 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
-        SelectStatement sqlStatement = new SelectStatement();
-        sqlStatement.setLimit(new LimitSegment(0, 10, null, null));
-        sqlStatement.setProjections(new ProjectionsSegment(0, 0));
-        sqlStatement.setDatabaseType(databaseType);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setLimit(new LimitSegment(0, 10, null, null));
+        selectStatement.setProjections(projectionsSegment);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, selectStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(SelectStatementContext.class));
     }
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
-        InsertStatement sqlStatement = new InsertStatement();
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        sqlStatement.setDatabaseType(databaseType);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        InsertStatement insertStatement = new InsertStatement();
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, insertStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(InsertStatementContext.class));
     }
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
-        AlterDatabaseStatement sqlStatement = mock(AlterDatabaseStatement.class);
-        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
-        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        AlterDatabaseStatement alterDatabaseStatement = mock(AlterDatabaseStatement.class);
+        when(alterDatabaseStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, alterDatabaseStatement, Collections.emptyList());
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCursorStatement() {
-        SelectStatement sqlStatement = new SelectStatement();
-        sqlStatement.setProjections(new ProjectionsSegment(0, 0));
-        CursorStatement cursorStatement = new CursorStatement(null, sqlStatement);
-        cursorStatement.setDatabaseType(databaseType);
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(cursorStatement, Collections.emptyList());
+        SelectStatement selectStatement = new SelectStatement();
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        CursorStatement cursorStatement = new CursorStatement(null, selectStatement);
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, cursorStatement, Collections.emptyList());
         assertThat(actual, instanceOf(CursorStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForCloseStatement() {
-        CloseStatement sqlStatement = new CloseStatement(null, false);
-        sqlStatement.setDatabaseType(databaseType);
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new CloseStatement(null, false), Collections.emptyList());
         assertThat(actual, instanceOf(CursorHeldSQLStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForMoveStatement() {
-        MoveStatement sqlStatement = new MoveStatement(null, null);
-        sqlStatement.setDatabaseType(databaseType);
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new MoveStatement(null, null), Collections.emptyList());
         assertThat(actual, instanceOf(CursorHeldSQLStatementContext.class));
     }
     
     @Test
     void assertNewInstanceForFetchStatement() {
-        FetchStatement sqlStatement = new FetchStatement(null, null);
-        sqlStatement.setDatabaseType(databaseType);
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(databaseType, new FetchStatement(null, null), Collections.emptyList());
         assertThat(actual, instanceOf(CursorHeldSQLStatementContext.class));
     }
     
