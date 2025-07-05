@@ -21,7 +21,6 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -151,8 +150,7 @@ class ShardingRouteCacheableCheckerTest {
     
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(
-                new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class)),
-                DATABASE_NAME, new HintValueContext()).bind(databaseType, parse(sql), params);
+                new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), DATABASE_NAME, new HintValueContext()).bind(parse(sql), params);
         return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
     }
     
