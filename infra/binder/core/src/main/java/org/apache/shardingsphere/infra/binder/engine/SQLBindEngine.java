@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -52,35 +51,41 @@ public final class SQLBindEngine {
     /**
      * Bind SQL statement.
      *
-     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param params parameters
      * @return SQL statement context
      */
-    public SQLStatementContext bind(final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement boundSQLStatement = isNeedBind() ? bind(databaseType, sqlStatement) : sqlStatement;
-        return SQLStatementContextFactory.newInstance(metaData, databaseType, boundSQLStatement, params, currentDatabaseName);
+    public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
+        SQLStatement boundSQLStatement = isNeedBind() ? bind(sqlStatement) : sqlStatement;
+        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, params, currentDatabaseName);
     }
     
-    private SQLStatement bind(final DatabaseType databaseType, final SQLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
-        Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, databaseType);
+    private SQLStatement bind(final SQLStatement sqlStatement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, sqlStatement.getDatabaseType(), sqlStatement);
+        Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, sqlStatement.getDatabaseType());
         if (dialectSQLBindEngine.isPresent()) {
-            Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(statement, binderContext);
+            Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(sqlStatement, binderContext);
             if (boundSQLStatement.isPresent()) {
+                boundSQLStatement.get().setDatabaseType(sqlStatement.getDatabaseType());
                 return boundSQLStatement.get();
             }
         }
-        if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine().bind((DMLStatement) statement, binderContext);
+        if (sqlStatement instanceof DMLStatement) {
+            SQLStatement result = new DMLStatementBindEngine().bind((DMLStatement) sqlStatement, binderContext);
+            result.setDatabaseType(sqlStatement.getDatabaseType());
+            return result;
         }
-        if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine().bind((DDLStatement) statement, binderContext);
+        if (sqlStatement instanceof DDLStatement) {
+            SQLStatement result = new DDLStatementBindEngine().bind((DDLStatement) sqlStatement, binderContext);
+            result.setDatabaseType(sqlStatement.getDatabaseType());
+            return result;
         }
-        if (statement instanceof DALStatement) {
-            return new DALStatementBindEngine().bind((DALStatement) statement, binderContext);
+        if (sqlStatement instanceof DALStatement) {
+            SQLStatement result = new DALStatementBindEngine().bind((DALStatement) sqlStatement, binderContext);
+            result.setDatabaseType(sqlStatement.getDatabaseType());
+            return result;
         }
-        return statement;
+        return sqlStatement;
     }
     
     private boolean isNeedBind() {

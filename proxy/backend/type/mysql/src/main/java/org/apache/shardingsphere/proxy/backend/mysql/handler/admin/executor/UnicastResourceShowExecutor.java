@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -64,8 +63,6 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
     
-    private final DatabaseType databaseType;
-    
     private final SelectStatement sqlStatement;
     
     private final String sql;
@@ -86,8 +83,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         try {
             connectionSession.setCurrentDatabaseName(databaseName);
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-            SQLStatementContext sqlStatementContext = new SQLBindEngine(
-                    metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
+            SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
             databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(
                     sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();

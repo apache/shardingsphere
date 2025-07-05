@@ -72,16 +72,16 @@ public final class PipelineDDLDecorator {
         if (Strings.isNullOrEmpty(sql)) {
             return Optional.empty();
         }
-        String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, databaseType, sql.trim());
+        String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, sql.trim());
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
-            return decorateOpenGauss(targetDatabaseName, schemaName, result, parserEngine, databaseType);
+            return decorateOpenGauss(targetDatabaseName, schemaName, result, parserEngine);
         }
         return Optional.of(result);
     }
     
-    private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final DatabaseType databaseType, final String sql) {
-        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, databaseType, sql);
+    private String decorateActualSQL(final String databaseName, final String targetTableName, final SQLParserEngine parserEngine, final String sql) {
+        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext.getSqlStatement() instanceof CreateTableStatement) {
             appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
@@ -101,8 +101,8 @@ public final class PipelineDDLDecorator {
         return doDecorateActualTable(replaceMap, sql);
     }
     
-    private SQLStatementContext parseSQL(final String currentDatabaseName, final SQLParserEngine parserEngine, final DatabaseType databaseType, final String sql) {
-        return new SQLBindEngine(metaData, currentDatabaseName, new HintValueContext()).bind(databaseType, parserEngine.parse(sql, true), Collections.emptyList());
+    private SQLStatementContext parseSQL(final String currentDatabaseName, final SQLParserEngine parserEngine, final String sql) {
+        return new SQLBindEngine(metaData, currentDatabaseName, new HintValueContext()).bind(parserEngine.parse(sql, true), Collections.emptyList());
     }
     
     private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
@@ -146,16 +146,15 @@ public final class PipelineDDLDecorator {
     }
     
     // TODO remove it after set search_path is supported.
-    private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String queryContext,
-                                               final SQLParserEngine parserEngine, final DatabaseType databaseType) {
+    private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String queryContext, final SQLParserEngine parserEngine) {
         if (queryContext.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, databaseName, parserEngine, databaseType));
+        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, databaseName, parserEngine));
     }
     
-    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine, final DatabaseType databaseType) {
-        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, databaseType, sql);
+    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine) {
+        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         if (sqlStatementContext.getSqlStatement() instanceof CreateTableStatement || sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement
                 || sqlStatementContext.getSqlStatement() instanceof AlterTableStatement || sqlStatementContext.getSqlStatement() instanceof CommentStatement) {
             if (sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {

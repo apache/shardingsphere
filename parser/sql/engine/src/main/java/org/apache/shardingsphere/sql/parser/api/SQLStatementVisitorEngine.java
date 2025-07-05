@@ -48,9 +48,10 @@ public final class SQLStatementVisitorEngine {
      */
     public SQLStatement visit(final ParseASTNode parseASTNode) {
         SQLStatementVisitor visitor = SQLStatementVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
-        ASTNode result = parseASTNode.getRootNode().accept(visitor);
+        SQLStatement result = (SQLStatement) parseASTNode.getRootNode().accept(visitor);
         appendSQLComments(parseASTNode, result);
-        return (SQLStatement) result;
+        result.setDatabaseType(databaseType);
+        return result;
     }
     
     private <T> void appendSQLComments(final ParseASTNode parseASTNode, final T visitResult) {
