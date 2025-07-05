@@ -1,0 +1,6 @@
+[
+{
+  "condition":{"typeReachable":"com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"},
+  "name":"com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"
+}
+]
