@@ -45,6 +45,7 @@ public final class AlterIndexStatementBinder implements SQLStatementBinder<Alter
         sqlStatement.getRenameIndex().ifPresent(result::setRenameIndex);
         result.setSimpleTable(boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

@@ -52,6 +52,7 @@ public final class AlterViewStatementBinder implements SQLStatementBinder<AlterV
         sqlStatement.getViewDefinition().ifPresent(result::setViewDefinition);
         sqlStatement.getConstraintDefinition().ifPresent(result::setConstraintDefinition);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }

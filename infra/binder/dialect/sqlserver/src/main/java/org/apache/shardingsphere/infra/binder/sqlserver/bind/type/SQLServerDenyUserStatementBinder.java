@@ -53,6 +53,7 @@ public final class SQLServerDenyUserStatementBinder implements SQLStatementBinde
         result.setTable(boundTable);
         sqlStatement.getColumns().addAll(boundColumns);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+        result.setDatabaseType(sqlStatement.getDatabaseType());
         return result;
     }
 }
