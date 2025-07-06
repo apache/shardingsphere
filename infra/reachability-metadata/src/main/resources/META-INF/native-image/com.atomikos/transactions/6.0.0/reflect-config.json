@@ -3,5 +3,53 @@
   "condition":{"typeReachable":"com.atomikos.logging.LoggerFactory"},
   "name":"com.atomikos.logging.Slf4JLoggerFactoryDelegate",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"com.arjuna.common.internal.util.propertyservice.BeanPopulator"},
+  "name":"com.arjuna.ats.jta.common.JTAEnvironmentBean",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.CommitMarkableResourceRecordRecoveryModule"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.CommitMarkableResourceRecordRecoveryModule",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule"},
+  "name":"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.txoj.recovery.TORecoveryModule"},
+  "name":"com.arjuna.ats.internal.txoj.recovery.TORecoveryModule",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.arjuna.common.RecoveryEnvironmentBean"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"},
+  "name":"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter"
 }
 ]
