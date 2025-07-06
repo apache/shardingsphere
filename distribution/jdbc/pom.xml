@@ -162,6 +162,12 @@
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-shadow-core</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -325,6 +331,17 @@
             </dependencies>
         </profile>
         
+        <profile>
+            <id>feature-readwrite-splitting</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>feature-shadow</id>
             <dependencies>
