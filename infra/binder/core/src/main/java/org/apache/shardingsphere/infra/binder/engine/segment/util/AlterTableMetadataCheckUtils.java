@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateColumnException;
@@ -40,6 +42,7 @@ import java.util.Collection;
 /**
  * Alter table metadata checker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterTableMetadataCheckUtils {
     
     /**
@@ -104,7 +107,7 @@ public final class AlterTableMetadataCheckUtils {
     
     private static void validateAddIndexes(final ShardingSphereTable table, final Collection<AddConstraintDefinitionSegment> addConstraints) {
         for (AddConstraintDefinitionSegment each : addConstraints) {
-            String indexName = each.getConstraintDefinition().getIndexName().map(c -> c.getIndexName().getIdentifier().getValue()).orElse("");
+            String indexName = each.getConstraintDefinition().getIndexName().map(optional -> optional.getIndexName().getIdentifier().getValue()).orElse("");
             if (indexName.isEmpty()) {
                 continue;
             }
