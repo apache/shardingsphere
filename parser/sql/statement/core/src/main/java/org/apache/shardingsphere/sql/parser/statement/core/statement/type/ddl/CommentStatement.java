@@ -34,7 +34,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-public class CommentStatement extends DDLStatement {
+public final class CommentStatement extends DDLStatement {
     
     private SimpleTableSegment table;
     
