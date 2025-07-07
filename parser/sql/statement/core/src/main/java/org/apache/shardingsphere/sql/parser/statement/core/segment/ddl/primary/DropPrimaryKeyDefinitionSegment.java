@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefi
 @RequiredArgsConstructor
 @Getter
 public final class DropPrimaryKeyDefinitionSegment implements AlterDefinitionSegment {
-
+    
     private final int startIndex;
-
+    
     private final int stopIndex;
 }

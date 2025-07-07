@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DDLStatementAssert {
-
+    
     /**
      * Assert DDL statement is correct with expected parser result.
      *
