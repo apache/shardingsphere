@@ -30,7 +30,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-public class DropSchemaStatement extends DDLStatement {
+public final class DropSchemaStatement extends DDLStatement {
     
     private final Collection<IdentifierValue> schemaNames = new LinkedList<>();
     

@@ -29,9 +29,9 @@ import org.apache.shardingsphere.readwritesplitting.distsql.statement.ShowStatus
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowRulesStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowStorageUnitsStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.impl.ShowTablesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowRulesStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowStorageUnitsStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.type.ShowTablesStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
 

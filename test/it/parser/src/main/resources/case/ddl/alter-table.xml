@@ -804,6 +804,7 @@
     
     <alter-table sql-case-id="alter_table_drop_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
+        <drop-primary-key start-index="20" stop-index="35"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_not_null">
@@ -893,6 +894,7 @@
     
     <alter-table sql-case-id="alter_table_drop_constraints">
         <table name="t_order" start-index="12" stop-index="18" />
+        <drop-primary-key start-index="20" stop-index="65"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_index">

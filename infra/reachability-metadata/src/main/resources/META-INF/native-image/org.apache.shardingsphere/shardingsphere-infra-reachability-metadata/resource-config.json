@@ -18,7 +18,7 @@
     "locales":["en"]
   }, {
     "name":"com.microsoft.sqlserver.jdbc.SQLServerResource",
-    "locales":["zh-CN", "en"]
+    "locales":["zh-CN", "en_US"]
   }, {
     "name":"org.postgresql.translation.messages",
     "locales":["en"]

@@ -69,9 +69,10 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
+        DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        DatabaseType parserDatabaseType = ProxySQLComQueryParser.getParserDatabaseType(protocolDatabaseType, connectionSession);
+        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), parserDatabaseType);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolDatabaseType, parserDatabaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
     }
     
     @Override

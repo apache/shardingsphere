@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
@@ -68,6 +69,8 @@ public final class AlterTableStatement extends DDLStatement {
     private AlgorithmTypeSegment algorithmSegment;
     
     private LockTableSegment lockTableSegment;
+    
+    private DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
     
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
@@ -134,6 +137,15 @@ public final class AlterTableStatement extends DDLStatement {
      */
     public Optional<LockTableSegment> getLockTableSegment() {
         return Optional.ofNullable(lockTableSegment);
+    }
+    
+    /**
+     * Get drop primary key.
+     *
+     * @return drop primary key
+     */
+    public Optional<DropPrimaryKeyDefinitionSegment> getDropPrimaryKeyDefinition() {
+        return Optional.ofNullable(dropPrimaryKeyDefinition);
     }
     
     @Override

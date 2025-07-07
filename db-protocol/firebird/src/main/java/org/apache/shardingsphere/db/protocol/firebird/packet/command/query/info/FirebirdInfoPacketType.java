@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info;
 
 public interface FirebirdInfoPacketType {
-    
+
     /**
      * Get code of the info packet type.
      *
      * @return numeric code representing the packet type
      */
     int getCode();
-    
+
     /**
      * Determine whether this info packet type is common.
      *

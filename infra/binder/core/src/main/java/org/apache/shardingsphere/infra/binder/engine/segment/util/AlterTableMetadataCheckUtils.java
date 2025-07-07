@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateColumnException;
@@ -40,6 +42,7 @@ import java.util.Collection;
 /**
  * Alter table metadata checker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterTableMetadataCheckUtils {
     
     /**
@@ -71,7 +74,7 @@ public final class AlterTableMetadataCheckUtils {
     private static void validateModifyColumns(final ShardingSphereTable table, final Collection<ModifyColumnDefinitionSegment> modifyColumns) {
         for (ModifyColumnDefinitionSegment each : modifyColumns) {
             String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName, ""));
+            ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName, table.getName()));
         }
     }
     
@@ -80,7 +83,7 @@ public final class AlterTableMetadataCheckUtils {
             String newColumnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
             ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName));
             String oldColumnName = each.getPreviousColumn().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, ""));
+            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, table.getName()));
         }
     }
     
@@ -89,7 +92,7 @@ public final class AlterTableMetadataCheckUtils {
             String newColumnName = each.getColumnName().getIdentifier().getValue();
             ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName));
             String oldColumnName = each.getOldColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, ""));
+            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, table.getName()));
         }
     }
     
@@ -104,7 +107,7 @@ public final class AlterTableMetadataCheckUtils {
     
     private static void validateAddIndexes(final ShardingSphereTable table, final Collection<AddConstraintDefinitionSegment> addConstraints) {
         for (AddConstraintDefinitionSegment each : addConstraints) {
-            String indexName = each.getConstraintDefinition().getIndexName().map(c -> c.getIndexName().getIdentifier().getValue()).orElse("");
+            String indexName = each.getConstraintDefinition().getIndexName().map(optional -> optional.getIndexName().getIdentifier().getValue()).orElse("");
             if (indexName.isEmpty()) {
                 continue;
             }
