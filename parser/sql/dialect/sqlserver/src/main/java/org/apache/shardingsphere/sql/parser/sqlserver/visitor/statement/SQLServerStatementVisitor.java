@@ -717,21 +717,21 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitXmlMethodCall(final SQLServerStatementParser.XmlMethodCallContext ctx) {
         String fullMethodName;
-        if (null != ctx.alias()) {
-            fullMethodName = ctx.alias().getText() + "." + ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
-        } else {
+        if (null == ctx.alias()) {
             fullMethodName = ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
+        } else {
+            fullMethodName = ctx.alias().getText() + "." + ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                 fullMethodName, getOriginalText(ctx));
-        if (null != ctx.alias()) {
+        if (null == ctx.alias()) {
+            OwnerSegment owner = new OwnerSegment(ctx.columnName().getStart().getStartIndex(),
+                    ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ctx.columnName().getText()));
+            result.setOwner(owner);
+        } else {
             String ownerName = ctx.alias().getText() + "." + ctx.columnName().getText();
             OwnerSegment owner = new OwnerSegment(ctx.alias().getStart().getStartIndex(),
                     ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ownerName));
-            result.setOwner(owner);
-        } else {
-            OwnerSegment owner = new OwnerSegment(ctx.columnName().getStart().getStartIndex(),
-                    ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ctx.columnName().getText()));
             result.setOwner(owner);
         }
         if (null != ctx.expr()) {

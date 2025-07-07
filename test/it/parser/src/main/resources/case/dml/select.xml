@@ -9392,7 +9392,7 @@
             </join-table>
         </from>
         <where start-index="78" stop-index="142">
-                <expr>
+            <expr>
                 <binary-operation-expression start-index="84" stop-index="142">
                     <left>
                         <common-expression text="MATCH(Person1-(friend)->Person2)" start-index="84" stop-index="115"/>
