@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrai
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 
@@ -35,7 +34,4 @@ public final class DropConstraintDefinitionSegment implements AlterDefinitionSeg
     private final int stopIndex;
     
     private final ConstraintSegment constraintName;
-    
-    @Setter
-    private boolean primaryKey;
 }
