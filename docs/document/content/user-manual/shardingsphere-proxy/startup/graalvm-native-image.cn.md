@@ -95,7 +95,7 @@ services:
 
 若从源码构建，开发者有2种选择，
 
-1. 在不安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物的 `Linux Docker Image`
+1. 在不安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物的 `Linux Container`
 2. 在安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物。对于 Windows，可通过此途径创建`.exe`形态的 GraalVM Native Image
 
 ### 使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR
@@ -113,7 +113,7 @@ services:
 </dependencies>
 ```
 
-### 构建 Linux Docker Image
+### 构建 Linux Container
 
 #### 前提条件
 

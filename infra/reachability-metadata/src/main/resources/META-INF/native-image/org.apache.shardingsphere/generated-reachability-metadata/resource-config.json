@@ -334,6 +334,9 @@
     "condition":{"typeReachable":"org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter\\E"
   }, {
+    "condition":{"typeReachable":"org.apache.shardingsphere.sharding.checker.sql.dml.ShardingTableSupportedChecker"},
+    "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sharding.checker.sql.dml.DialectUnsupportedShardingSQLStatementProvider\\E"
+  }, {
     "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilderFactory"},
     "pattern":"\\QMETA-INF/services/org.apache.shardingsphere.sqlfederation.compiler.context.connection.config.ConnectionConfigBuilder\\E"
   }, {
