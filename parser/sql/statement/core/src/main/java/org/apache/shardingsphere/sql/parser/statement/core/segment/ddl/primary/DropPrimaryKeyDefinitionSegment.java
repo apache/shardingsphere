@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 
 /**
- * Drop constraint definition segment.
+ * Drop primary key definition segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropConstraintDefinitionSegment implements AlterDefinitionSegment {
+public final class DropPrimaryKeyDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
-    
-    private final ConstraintSegment constraintName;
-    
-    @Setter
-    private boolean primaryKey;
 }
