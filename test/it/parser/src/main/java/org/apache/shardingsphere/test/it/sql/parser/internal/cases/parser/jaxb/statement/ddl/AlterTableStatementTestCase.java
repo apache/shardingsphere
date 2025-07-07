@@ -78,7 +78,7 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "modify-collection-retrieval")
     private ExpectedModifyCollectionRetrievalDefinition modifyCollectionRetrievalDefinition;
-
+    
     @XmlElement(name = "drop-primary-key")
     private ExpectedDropPrimaryKeyDefinition dropPrimaryKeyDefinition;
 }

@@ -93,7 +93,7 @@ public final class AlterTableStatementAssert {
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
         assertDropPrimaryKeyDefinition(assertContext, actual, expected);
     }
-
+    
     private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         Optional<ConvertTableDefinitionSegment> convertTable = actual.getConvertTableDefinition();
         if (null == expected.getConvertTable()) {
@@ -262,7 +262,7 @@ public final class AlterTableStatementAssert {
         }
     }
     
-    private static void assertDropPrimaryKeyDefinition(SQLCaseAssertContext assertContext, AlterTableStatement actual, AlterTableStatementTestCase expected) {
+    private static void assertDropPrimaryKeyDefinition(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         Optional<DropPrimaryKeyDefinitionSegment> dropPrimaryKeyDefinition = actual.getDropPrimaryKeyDefinition();
         if (!dropPrimaryKeyDefinition.isPresent()) {
             return;
