@@ -133,6 +133,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Dro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
@@ -351,6 +352,8 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
             alterTableStatement.setLockTableSegment((LockTableSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropPrimaryKeyDefinitionSegment) {
+            alterTableStatement.setDropPrimaryKeyDefinition((DropPrimaryKeyDefinitionSegment) alterDefinitionSegment);
         }
     }
     
@@ -437,6 +440,9 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
                     (IdentifierValue) visit(alterTableDrop.identifier()));
             return Optional.of(new DropConstraintDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), constraint));
+        }
+        if (null != alterTableDrop.PRIMARY() && null != alterTableDrop.KEY()) {
+            return Optional.of(new DropPrimaryKeyDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex()));
         }
         if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
             ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
