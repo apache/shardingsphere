@@ -234,7 +234,7 @@ class SQLStatementCompilerIT {
     void assertCompile(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(testcase.getSql(), false);
         String actual = sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
-        assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
+        assertThat(actual, is(testcase.getAssertion().iterator().next().getExpectedResult()));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
