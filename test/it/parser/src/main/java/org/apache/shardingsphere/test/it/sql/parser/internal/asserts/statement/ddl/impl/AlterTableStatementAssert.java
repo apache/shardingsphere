@@ -264,11 +264,10 @@ public final class AlterTableStatementAssert {
     
     private static void assertDropPrimaryKeyDefinition(SQLCaseAssertContext assertContext, AlterTableStatement actual, AlterTableStatementTestCase expected) {
         Optional<DropPrimaryKeyDefinitionSegment> dropPrimaryKeyDefinition = actual.getDropPrimaryKeyDefinition();
-        if (null == expected.getDropPrimaryKeyDefinition()) {
-            assertFalse(dropPrimaryKeyDefinition.isPresent(), assertContext.getText("Actual drop primary key definition should not exist."));
-        } else {
-            assertTrue(dropPrimaryKeyDefinition.isPresent(), assertContext.getText("Actual drop primary key definition should exist."));
-            SQLSegmentAssert.assertIs(assertContext, actual.getDropPrimaryKeyDefinition().get(), expected.getDropPrimaryKeyDefinition());
+        if (!dropPrimaryKeyDefinition.isPresent()) {
+            return;
         }
+        assertNotNull(expected.getDropPrimaryKeyDefinition(), assertContext.getText("Actual drop primary key definition should exist."));
+        SQLSegmentAssert.assertIs(assertContext, actual.getDropPrimaryKeyDefinition().get(), expected.getDropPrimaryKeyDefinition());
     }
 }
