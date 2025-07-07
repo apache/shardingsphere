@@ -15,33 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 
 /**
- * XML definition of test case.
+ * Drop primary key definition segment.
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class TestCase {
+public final class DropPrimaryKeyDefinitionSegment implements AlterDefinitionSegment {
     
-    @JacksonXmlProperty(isAttribute = true, localName = "sql")
-    private String sql;
+    private final int startIndex;
     
-    @JacksonXmlProperty(localName = "assertion")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    private List<TestCaseAssertion> assertion;
-    
-    @Override
-    public String toString() {
-        return sql;
-    }
+    private final int stopIndex;
 }

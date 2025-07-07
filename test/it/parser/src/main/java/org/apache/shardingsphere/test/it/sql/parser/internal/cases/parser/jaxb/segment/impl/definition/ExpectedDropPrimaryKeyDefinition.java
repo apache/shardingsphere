@@ -15,33 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
 /**
- * XML definition of test case.
+ * Expected drop primary key definition.
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-@Getter
-@Setter
-public final class TestCase {
-    
-    @JacksonXmlProperty(isAttribute = true, localName = "sql")
-    private String sql;
-    
-    @JacksonXmlProperty(localName = "assertion")
-    @JacksonXmlElementWrapper(useWrapping = false)
-    private List<TestCaseAssertion> assertion;
-    
-    @Override
-    public String toString() {
-        return sql;
-    }
+public final class ExpectedDropPrimaryKeyDefinition extends AbstractExpectedSQLSegment {
 }

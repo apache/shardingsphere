@@ -66,7 +66,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
             return false;
         }
         includedDataNodes.addAll(getTableDataNodes(rule, database, tableNames));
-        if (isAllShardingTables(selectStatementContext, tableNames) && isAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
+        if (isAllShardingTables(selectStatementContext, tableNames) && isSubqueryAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
             return false;
         }
         if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsHaving()
@@ -82,8 +82,11 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         return tableNames.size() > 1 && !rule.isBindingTablesUseShardingColumnsJoin(selectStatementContext, tableNames);
     }
     
-    private boolean isAllSameShardingConditions(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,
-                                                final ShardingSphereDatabase database, final ShardingRule rule) {
+    private boolean isSubqueryAllSameShardingConditions(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,
+                                                        final ShardingSphereDatabase database, final ShardingRule rule) {
+        if (!selectStatementContext.isContainsSubquery()) {
+            return false;
+        }
         ShardingConditions shardingConditions = createShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule);
         return shardingConditions.isSameShardingCondition();
     }

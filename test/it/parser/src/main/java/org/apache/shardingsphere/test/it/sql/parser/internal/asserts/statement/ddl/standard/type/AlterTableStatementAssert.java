@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -90,6 +91,7 @@ public final class AlterTableStatementAssert {
         assertRenameColumnDefinitions(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
+        assertDropPrimaryKeyDefinition(assertContext, actual, expected);
     }
     
     private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
@@ -258,5 +260,14 @@ public final class AlterTableStatementAssert {
                 TableAssert.assertIs(assertContext, modifyCollectionRetrieval.get().getNestedTable(), expected.getModifyCollectionRetrievalDefinition().getTable());
             }
         }
+    }
+    
+    private static void assertDropPrimaryKeyDefinition(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<DropPrimaryKeyDefinitionSegment> dropPrimaryKeyDefinition = actual.getDropPrimaryKeyDefinition();
+        if (!dropPrimaryKeyDefinition.isPresent()) {
+            return;
+        }
+        assertNotNull(expected.getDropPrimaryKeyDefinition(), assertContext.getText("Actual drop primary key definition should exist."));
+        SQLSegmentAssert.assertIs(assertContext, actual.getDropPrimaryKeyDefinition().get(), expected.getDropPrimaryKeyDefinition());
     }
 }

@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create index push down meta data refresher.
@@ -54,7 +54,8 @@ public final class CreateIndexPushDownMetaDataRefresher implements PushDownMetaD
         ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
         ShardingSphereTable table = schema.getTable(tableName);
         ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
-        newTable.putIndex(new ShardingSphereIndex(indexName, new LinkedList<>(), false));
+        newTable.putIndex(new ShardingSphereIndex(indexName, sqlStatement.getColumns().stream()
+                .map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), false));
         metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(newTable));
     }
     
