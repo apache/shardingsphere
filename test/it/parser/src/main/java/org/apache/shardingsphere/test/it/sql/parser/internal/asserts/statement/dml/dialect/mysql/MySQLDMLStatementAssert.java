@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.mysql.type.MySQLLoadDataStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.mysql.type.MySQLLoadXMLStatementAssert;

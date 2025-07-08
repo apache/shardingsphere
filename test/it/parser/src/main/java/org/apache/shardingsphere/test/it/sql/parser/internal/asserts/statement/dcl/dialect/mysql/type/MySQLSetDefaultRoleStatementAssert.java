@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.role.MySQLSetDefaultRoleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.dialect.mysql.MySQLSetDefaultRoleStatementTestCase;
 
