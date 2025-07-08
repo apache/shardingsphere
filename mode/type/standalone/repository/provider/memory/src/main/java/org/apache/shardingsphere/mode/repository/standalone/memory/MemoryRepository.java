@@ -27,16 +27,16 @@ import java.util.stream.Collectors;
  * Memory repository.
  */
 public final class MemoryRepository implements StandalonePersistRepository {
-
+    
     // CHECKSTYLE:OFF
     private final TreeMap<String, String> metaDataSortedMap = new TreeMap<>();
     // CHECKSTYLE:ON
-
+    
     @Override
     public String query(final String key) {
         return metaDataSortedMap.get(key);
     }
-
+    
     @Override
     public List<String> getChildrenKeys(final String key) {
         String searchPrefix;
@@ -60,34 +60,34 @@ public final class MemoryRepository implements StandalonePersistRepository {
                 .distinct()
                 .collect(Collectors.toList());
     }
-
+    
     @Override
     public boolean isExisted(final String key) {
         return metaDataSortedMap.containsKey(key);
     }
-
+    
     @Override
     public void persist(final String key, final String value) {
         metaDataSortedMap.put(key, value);
     }
-
+    
     @Override
     public void update(final String key, final String value) {
         if (metaDataSortedMap.containsKey(key)) {
             metaDataSortedMap.put(key, value);
         }
     }
-
+    
     @Override
     public void delete(final String key) {
         metaDataSortedMap.remove(key);
     }
-
+    
     @Override
     public void close() {
 
     }
-
+    
     @Override
     public Object getType() {
         return "Memory";
