@@ -713,7 +713,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitXmlMethodCall(final SQLServerStatementParser.XmlMethodCallContext ctx) {
         String fullMethodName;
@@ -741,7 +741,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         return result;
     }
-
+    
     private ASTNode getFunctionSegment(final int startIndex, final int stopIndex, final String functionName, final String text, final List<ExprContext> exprList) {
         FunctionSegment result = new FunctionSegment(startIndex, stopIndex, functionName, text);
         if (null != exprList) {
