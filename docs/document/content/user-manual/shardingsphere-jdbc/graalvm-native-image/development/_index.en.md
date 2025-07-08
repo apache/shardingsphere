@@ -119,7 +119,6 @@ This article does not discuss changing the default logging driver in `/etc/docke
 ### Windows Server
 
 For a regular Windows Server 2025 instance, the operation is equivalent to Windows 11 Home 24H2.
-But the Github Actions Runner instance of `windows-latest` cannot run Linux Containers, so ShardingSphere does not set up CI for nativeTest for Windows.
 
 ## Handling unit tests
 

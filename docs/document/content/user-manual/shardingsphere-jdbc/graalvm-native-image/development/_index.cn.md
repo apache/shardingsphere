@@ -112,7 +112,6 @@ wsl --install
 ### Windows Server
 
 对于通常的 Windows Server 2025 实例，操作等同于 Windows 11 Home 24H2。
-但 `windows-latest` 的 Github Actions Runner 实例无法运行 Linux Containers，因此 ShardingSphere 不为 Windows 设置 nativeTest 的 CI。
 
 ## 处理单元测试
 

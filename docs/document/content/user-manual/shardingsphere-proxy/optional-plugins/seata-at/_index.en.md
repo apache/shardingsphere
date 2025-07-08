@@ -365,39 +365,8 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DELETE FROM t_order WHERE user_id=1");
         }
     }
 }
-```
-
-## Usage restrictions
-
-### ShardingSphere Proxy Native for GraalVM Native Image
-
-For ShardingSphere Proxy Native in GraalVM Native Image,
-Users always need to modify the ShardingSphere source code to add the Seata Client and Seata integrated Maven modules and compile them into GraalVM Native Image.
-ShardingSphere Proxy Native in GraalVM Native Image cannot recognize the additional JAR files.
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>2.2.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
 ```
