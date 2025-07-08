@@ -85,7 +85,7 @@ public final class MemoryRepository implements StandalonePersistRepository {
     
     @Override
     public void close() {
-
+    
     }
     
     @Override
