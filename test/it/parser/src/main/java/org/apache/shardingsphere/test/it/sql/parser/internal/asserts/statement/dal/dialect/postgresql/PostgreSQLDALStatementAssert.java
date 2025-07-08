@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLR
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.postgresql.type.PostgreSQLResetParameterStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ResetParameterStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.postgresql.PostgreSQLResetParameterStatementTestCase;
 
 /**
  * DAL statement assert for PostgreSQL.
@@ -41,7 +41,7 @@ public final class PostgreSQLDALStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof PostgreSQLResetParameterStatement) {
-            PostgreSQLResetParameterStatementAssert.assertIs(assertContext, (PostgreSQLResetParameterStatement) actual, (ResetParameterStatementTestCase) expected);
+            PostgreSQLResetParameterStatementAssert.assertIs(assertContext, (PostgreSQLResetParameterStatement) actual, (PostgreSQLResetParameterStatementTestCase) expected);
         }
     }
 }

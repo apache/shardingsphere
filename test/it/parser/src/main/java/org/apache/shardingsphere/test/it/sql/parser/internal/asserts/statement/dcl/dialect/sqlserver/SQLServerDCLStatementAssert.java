@@ -36,13 +36,13 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.dialect.sqlserver.type.SQLServerRevokeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.dialect.sqlserver.type.SQLServerSetUserStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterLoginStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateLoginStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DenyUserStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropLoginStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.GrantStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.RevokeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerAlterLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerCreateLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerDenyUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerDropLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerSetUserStatementTestCase;
 
 /**
  * DCL statement assert for SQLServer.
@@ -59,15 +59,15 @@ public final class SQLServerDCLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DCLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof SQLServerDenyUserStatement) {
-            SQLServerDenyUserStatementAssert.assertIs(assertContext, (SQLServerDenyUserStatement) actual, (DenyUserStatementTestCase) expected);
+            SQLServerDenyUserStatementAssert.assertIs(assertContext, (SQLServerDenyUserStatement) actual, (SQLServerDenyUserStatementTestCase) expected);
         } else if (actual instanceof SQLServerCreateLoginStatement) {
-            SQLServerCreateLoginStatementAssert.assertIs(assertContext, (SQLServerCreateLoginStatement) actual, (CreateLoginStatementTestCase) expected);
+            SQLServerCreateLoginStatementAssert.assertIs(assertContext, (SQLServerCreateLoginStatement) actual, (SQLServerCreateLoginStatementTestCase) expected);
         } else if (actual instanceof SQLServerAlterLoginStatement) {
-            SQLServerAlterLoginStatementAssert.assertIs(assertContext, (SQLServerAlterLoginStatement) actual, (AlterLoginStatementTestCase) expected);
+            SQLServerAlterLoginStatementAssert.assertIs(assertContext, (SQLServerAlterLoginStatement) actual, (SQLServerAlterLoginStatementTestCase) expected);
         } else if (actual instanceof SQLServerDropLoginStatement) {
-            SQLServerDropLoginStatementAssert.assertIs(assertContext, (SQLServerDropLoginStatement) actual, (DropLoginStatementTestCase) expected);
+            SQLServerDropLoginStatementAssert.assertIs(assertContext, (SQLServerDropLoginStatement) actual, (SQLServerDropLoginStatementTestCase) expected);
         } else if (actual instanceof SQLServerSetUserStatement) {
-            SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SetUserStatementTestCase) expected);
+            SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SQLServerSetUserStatementTestCase) expected);
         } else if (actual instanceof SQLServerGrantStatement) {
             SQLServerGrantStatementAssert.assertIs(assertContext, (SQLServerGrantStatement) actual, (GrantStatementTestCase) expected);
         } else if (actual instanceof SQLServerRevokeStatement) {

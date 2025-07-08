@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShutdownStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShutdownStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShutdownStatementTestCase;
 
 /**
  * MySQL shutdown statement assert for MySQL.
@@ -36,6 +36,6 @@ public final class MySQLShutdownStatementAssert {
      * @param actual actual shutdown statement
      * @param expected expected shutdown statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShutdownStatement actual, final ShutdownStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShutdownStatement actual, final MySQLShutdownStatementTestCase expected) {
     }
 }

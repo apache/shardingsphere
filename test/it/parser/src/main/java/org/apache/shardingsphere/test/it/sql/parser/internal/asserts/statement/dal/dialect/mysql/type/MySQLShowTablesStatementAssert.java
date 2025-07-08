@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowTablesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowTablesStatementTestCase;
 
 /**
  * Show tables statement assert for MySQL.
@@ -39,7 +39,7 @@ public final class MySQLShowTablesStatementAssert {
      * @param actual actual show tables statement
      * @param expected expected show tables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTablesStatement actual, final ShowTablesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowTablesStatement actual, final MySQLShowTablesStatementTestCase expected) {
         if (actual.getFromDatabase().isPresent()) {
             DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());

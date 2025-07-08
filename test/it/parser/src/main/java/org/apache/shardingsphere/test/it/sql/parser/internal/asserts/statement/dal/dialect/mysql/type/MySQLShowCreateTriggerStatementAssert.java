@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger.MySQLShowCreateTriggerStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateTriggerStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCreateTriggerStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +40,7 @@ public final class MySQLShowCreateTriggerStatementAssert {
      * @param actual actual show create trigger statement
      * @param expected expected show create trigger statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateTriggerStatement actual, final ShowCreateTriggerStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCreateTriggerStatement actual, final MySQLShowCreateTriggerStatementTestCase expected) {
         assertNotNull(expected.getTrigger(), assertContext.getText("expected show create trigger should be not null"));
         assertThat(assertContext.getText("trigger name does not match: "), actual.getName(), is(expected.getTrigger().getName()));
     }

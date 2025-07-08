@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatem
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.reset.ExpectedResetOptionSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ResetStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLResetStatementTestCase;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public final class MySQLResetStatementAssert {
      * @param actual actual reset statement
      * @param expected expected reset statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetStatement actual, final ResetStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetStatement actual, final MySQLResetStatementTestCase expected) {
         assertThat(assertContext.getText("Actual options size assertion error: "), actual.getOptions().size(), is(expected.getOptions().size()));
         assertOptions(assertContext, actual.getOptions(), expected.getOptions());
     }

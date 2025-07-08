@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetDefaultRoleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.mysql.MySQLSetDefaultRoleStatementTestCase;
 
 /**
  * Set default role statement assert for MySQL.
@@ -36,6 +36,6 @@ public final class MySQLSetDefaultRoleStatementAssert {
      * @param actual actual set role statement
      * @param expected expected set role statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetDefaultRoleStatement actual, final SetDefaultRoleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetDefaultRoleStatement actual, final MySQLSetDefaultRoleStatementTestCase expected) {
     }
 }

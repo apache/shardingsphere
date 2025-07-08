@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.variable.MySQLShowVariablesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowVariablesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowVariablesStatementTestCase;
 
 /**
  * Show variables statement assert for MySQL.
@@ -37,7 +37,7 @@ public final class MySQLShowVariablesStatementAssert {
      * @param actual actual show variables statement
      * @param expected expected show variables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowVariablesStatement actual, final ShowVariablesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowVariablesStatement actual, final MySQLShowVariablesStatementTestCase expected) {
         if (null != actual.getFilter()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }

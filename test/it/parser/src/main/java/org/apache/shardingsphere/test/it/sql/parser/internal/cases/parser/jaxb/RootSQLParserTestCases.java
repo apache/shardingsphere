@@ -21,82 +21,82 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.AlterResourceGroupStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CacheIndexStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CheckTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ChecksumTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CloneStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateLoadableFunctionTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CreateResourceGroupStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DelimiterStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DescribeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DropResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.EmptyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ExplainStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.FlushStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.HelpStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.InstallComponentStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.InstallPluginStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.KillStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.LoadIndexInfoStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.OptimizeTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RepairTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ResetParameterStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ResetPersistStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ResetStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SetParameterStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SetResourceGroupStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBinlogEventsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCharacterSetStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCollationStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowColumnsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateTriggerStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCreateUserStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowDatabasesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowEventsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowFunctionStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowIndexStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowOpenTablesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowProcedureCodeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowProcedureStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowRelayLogEventsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowReplicaStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowReplicasStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowSlaveHostsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowSlaveStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowTableStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowTablesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowTriggersStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowVariablesStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShutdownStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SpoolStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UninstallComponentStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UninstallPluginStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UseStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLAlterResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLBinlogStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCacheIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCheckTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLChecksumTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCloneStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCreateLoadableFunctionTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLDelimiterStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLDescribeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLDropResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLFlushStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLHelpStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLInstallComponentStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLInstallPluginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLKillStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLLoadIndexInfoStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLOptimizeTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLRepairTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLResetPersistStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLResetStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLSetResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowBinlogEventsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCharacterSetStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCollationStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowColumnsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCreateTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCreateTriggerStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCreateUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowEventsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowFunctionStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowOpenTablesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowProcedureCodeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowProcedureStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowRelayLogEventsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowReplicaStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowReplicasStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowSlaveHostsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowSlaveStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowTableStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowTablesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowTriggersStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowVariablesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShutdownStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLUninstallComponentStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLUninstallPluginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLUseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.oracle.OracleSpoolStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.postgresql.PostgreSQLResetParameterStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterUserStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateGroupStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateLoginStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateRoleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.CreateUserStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DenyUserStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropLoginStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropRoleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DropUserStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.GrantStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.ReassignOwnedStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.RenameUserStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.RevertStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.RevokeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetDefaultRoleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetPasswordStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetRoleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.mysql.MySQLRenameUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.mysql.MySQLSetDefaultRoleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.mysql.MySQLSetPasswordStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.postgresql.PostgreSQLReassignOwnedStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerAlterLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerCreateLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerDenyUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerDropLoginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerSetUserStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterAggregateStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterAnalyticViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterAttributeDimensionStatementTestCase;
@@ -562,19 +562,19 @@ public final class RootSQLParserTestCases {
     private final List<DropUserStatementTestCase> dropUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "rename-user")
-    private final List<RenameUserStatementTestCase> renameUserTestCases = new LinkedList<>();
+    private final List<MySQLRenameUserStatementTestCase> renameUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "deny-user")
-    private final List<DenyUserStatementTestCase> denyUserTestCases = new LinkedList<>();
+    private final List<SQLServerDenyUserStatementTestCase> denyUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-login")
-    private final List<CreateLoginStatementTestCase> createLoginTestCases = new LinkedList<>();
+    private final List<SQLServerCreateLoginStatementTestCase> createLoginTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-login")
-    private final List<AlterLoginStatementTestCase> alterLoginTestCases = new LinkedList<>();
+    private final List<SQLServerAlterLoginStatementTestCase> alterLoginTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-login")
-    private final List<DropLoginStatementTestCase> dropLoginTestCases = new LinkedList<>();
+    private final List<SQLServerDropLoginStatementTestCase> dropLoginTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-role")
     private final List<CreateRoleStatementTestCase> createRoleTestCases = new LinkedList<>();
@@ -586,73 +586,73 @@ public final class RootSQLParserTestCases {
     private final List<DropRoleStatementTestCase> dropRoleTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-default-role")
-    private final List<SetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();
+    private final List<MySQLSetDefaultRoleStatementTestCase> setDefaultRoleTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-role")
     private final List<SetRoleStatementTestCase> setRoleTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-password")
-    private final List<SetPasswordStatementTestCase> setPasswordTestCases = new LinkedList<>();
+    private final List<MySQLSetPasswordStatementTestCase> setPasswordTestCases = new LinkedList<>();
     
     @XmlElement(name = "use")
-    private final List<UseStatementTestCase> useTestCases = new LinkedList<>();
+    private final List<MySQLUseStatementTestCase> useTestCases = new LinkedList<>();
     
     @XmlElement(name = "explain")
     private final List<ExplainStatementTestCase> explainTestCases = new LinkedList<>();
     
     @XmlElement(name = "describe")
-    private final List<DescribeStatementTestCase> describeTestCases = new LinkedList<>();
+    private final List<MySQLDescribeStatementTestCase> describeTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-databases")
-    private final List<ShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
+    private final List<MySQLShowDatabasesStatementTestCase> showDatabasesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-tables")
-    private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
+    private final List<MySQLShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-function-status")
-    private final List<ShowFunctionStatusStatementTestCase> showFunctionStatusTestCases = new LinkedList<>();
+    private final List<MySQLShowFunctionStatusStatementTestCase> showFunctionStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-procedure-status")
-    private final List<ShowProcedureStatusStatementTestCase> showProcedureStatusTestCases = new LinkedList<>();
+    private final List<MySQLShowProcedureStatusStatementTestCase> showProcedureStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-procedure-code")
-    private final List<ShowProcedureCodeStatementTestCase> showProcedureCodeTestCases = new LinkedList<>();
+    private final List<MySQLShowProcedureCodeStatementTestCase> showProcedureCodeTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-relay-log-events")
-    private final List<ShowRelayLogEventsStatementTestCase> showRelayLogEventsTestCases = new LinkedList<>();
+    private final List<MySQLShowRelayLogEventsStatementTestCase> showRelayLogEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-slave-hosts")
-    private final List<ShowSlaveHostsStatementTestCase> showSlaveHostsTestCases = new LinkedList<>();
+    private final List<MySQLShowSlaveHostsStatementTestCase> showSlaveHostsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-columns")
-    private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
+    private final List<MySQLShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-table")
-    private final List<ShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
+    private final List<MySQLShowCreateTableStatementTestCase> showCreateTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-trigger")
-    private final List<ShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
+    private final List<MySQLShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-resource-group")
-    private final List<AlterResourceGroupStatementTestCase> alterResourceGroupTestCases = new LinkedList<>();
+    private final List<MySQLAlterResourceGroupStatementTestCase> alterResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-resource-group")
-    private final List<CreateResourceGroupStatementTestCase> createResourceGroupTestCases = new LinkedList<>();
+    private final List<MySQLCreateResourceGroupStatementTestCase> createResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-resource-group")
-    private final List<DropResourceGroupStatementTestCase> dropResourceGroupTestCases = new LinkedList<>();
+    private final List<MySQLDropResourceGroupStatementTestCase> dropResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "binlog")
-    private final List<BinlogStatementTestCase> binlogTestCases = new LinkedList<>();
+    private final List<MySQLBinlogStatementTestCase> binlogTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-user")
-    private final List<ShowCreateUserStatementTestCase> showCreateUserTestCases = new LinkedList<>();
+    private final List<MySQLShowCreateUserStatementTestCase> showCreateUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-status")
-    private final List<ShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
+    private final List<MySQLShowTableStatusStatementTestCase> showTableStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-index")
-    private final List<ShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
+    private final List<MySQLShowIndexStatementTestCase> showIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "show")
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
@@ -847,7 +847,7 @@ public final class RootSQLParserTestCases {
     private final List<DropDomainStatementTestCase> dropDomainTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-triggers")
-    private final List<ShowTriggersStatementTestCase> showTriggerTestCases = new LinkedList<>();
+    private final List<MySQLShowTriggersStatementTestCase> showTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-view")
     private final List<DropViewStatementTestCase> dropViewTestCases = new LinkedList<>();
@@ -1126,28 +1126,28 @@ public final class RootSQLParserTestCases {
     private final List<DropSchemaStatementTestCase> dropSchemaTestCases = new LinkedList<>();
     
     @XmlElement(name = "install-component")
-    private final List<InstallComponentStatementTestCase> installComponentTestCases = new LinkedList<>();
+    private final List<MySQLInstallComponentStatementTestCase> installComponentTestCases = new LinkedList<>();
     
     @XmlElement(name = "flush")
-    private final List<FlushStatementTestCase> flushTestCases = new LinkedList<>();
+    private final List<MySQLFlushStatementTestCase> flushTestCases = new LinkedList<>();
     
     @XmlElement(name = "install-plugin")
-    private final List<InstallPluginStatementTestCase> installPluginTestCases = new LinkedList<>();
+    private final List<MySQLInstallPluginStatementTestCase> installPluginTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-compute-nodes")
     private final List<ShowComputeNodesStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "clone")
-    private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
+    private final List<MySQLCloneStatementTestCase> cloneTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-status-from-readwrite-splitting-rules")
     private final List<ShowStatusFromReadwriteSplittingRulesStatementTestCase> showStatusFromReadwriteSplittingRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "uninstall-component")
-    private final List<UninstallComponentStatementTestCase> uninstallComponentTestCases = new LinkedList<>();
+    private final List<MySQLUninstallComponentStatementTestCase> uninstallComponentTestCases = new LinkedList<>();
     
     @XmlElement(name = "uninstall-plugin")
-    private final List<UninstallPluginStatementTestCase> uninstallPluginTestCases = new LinkedList<>();
+    private final List<MySQLUninstallPluginStatementTestCase> uninstallPluginTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-storage-units")
     private final List<ShowStorageUnitsStatementTestCase> showStorageUnitsTestCases = new LinkedList<>();
@@ -1165,13 +1165,13 @@ public final class RootSQLParserTestCases {
     private final List<ShowShardingTableNodesStatementTestCase> showShardingTableNodesTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-resource-group")
-    private final List<SetResourceGroupStatementTestCase> setResourceGroupTestCases = new LinkedList<>();
+    private final List<MySQLSetResourceGroupStatementTestCase> setResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "optimize-table")
-    private final List<OptimizeTableStatementTestCase> optimizeTableTestCases = new LinkedList<>();
+    private final List<MySQLOptimizeTableStatementTestCase> optimizeTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "repair-table")
-    private final List<RepairTableStatementTestCase> repairTableTestCases = new LinkedList<>();
+    private final List<MySQLRepairTableStatementTestCase> repairTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-auditor")
     private final List<CreateShardingAuditorStatementTestCase> createShardingAuditorTestCases = new LinkedList<>();
@@ -1189,13 +1189,13 @@ public final class RootSQLParserTestCases {
     private final List<AlterDefaultShadowAlgorithmStatementTestCase> alterDefaultShadowAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-replicas")
-    private final List<ShowReplicasStatementTestCase> showReplicasTestCases = new LinkedList<>();
+    private final List<MySQLShowReplicasStatementTestCase> showReplicasTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-replica-status")
-    private final List<ShowReplicaStatusStatementTestCase> showReplicaStatusTestCases = new LinkedList<>();
+    private final List<MySQLShowReplicaStatusStatementTestCase> showReplicaStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-slave-status")
-    private final List<ShowSlaveStatusStatementTestCase> showSlaveStatusTestCases = new LinkedList<>();
+    private final List<MySQLShowSlaveStatusStatementTestCase> showSlaveStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-auditor")
     private final List<AlterShardingAuditorStatementTestCase> alterShardingAuditorTestCases = new LinkedList<>();
@@ -1210,25 +1210,25 @@ public final class RootSQLParserTestCases {
     private final List<DropDefaultShardingStrategyStatementTestCase> dropDefaultShardingStrategyTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset")
-    private final List<ResetStatementTestCase> resetTestCases = new LinkedList<>();
+    private final List<MySQLResetStatementTestCase> resetTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset-persist")
-    private final List<ResetPersistStatementTestCase> resetPersistTestCases = new LinkedList<>();
+    private final List<MySQLResetPersistStatementTestCase> resetPersistTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset-parameter")
-    private final List<ResetParameterStatementTestCase> resetParameterTestCases = new LinkedList<>();
+    private final List<PostgreSQLResetParameterStatementTestCase> resetParameterTestCases = new LinkedList<>();
     
     @XmlElement(name = "cache-index")
-    private final List<CacheIndexStatementTestCase> cacheIndexTestCases = new LinkedList<>();
+    private final List<MySQLCacheIndexStatementTestCase> cacheIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "load-index")
-    private final List<LoadIndexInfoStatementTestCase> loadIndexInfoTestCases = new LinkedList<>();
+    private final List<MySQLLoadIndexInfoStatementTestCase> loadIndexInfoTestCases = new LinkedList<>();
     
     @XmlElement(name = "kill")
-    private final List<KillStatementTestCase> killTestCases = new LinkedList<>();
+    private final List<MySQLKillStatementTestCase> killTestCases = new LinkedList<>();
     
     @XmlElement(name = "shutdown")
-    private final List<ShutdownStatementTestCase> shutdownTestCases = new LinkedList<>();
+    private final List<MySQLShutdownStatementTestCase> shutdownTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-default-single-table-storage-unit")
     private final List<SetDefaultSingleTableStorageUnitStatementTestCase> setDefaultSingleTableStorageUnitTestCases = new LinkedList<>();
@@ -1237,31 +1237,31 @@ public final class RootSQLParserTestCases {
     private final List<SetDefaultSingleTableStorageUnitStatementTestCase> setDefaultSingleTableStorageUnitToRandomTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-open-tables")
-    private final List<ShowOpenTablesStatementTestCase> showOpenTablesTestCases = new LinkedList<>();
+    private final List<MySQLShowOpenTablesStatementTestCase> showOpenTablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "check-table")
-    private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
+    private final List<MySQLCheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "checksum-table")
-    private final List<ChecksumTableStatementTestCase> checksumTableTestCases = new LinkedList<>();
+    private final List<MySQLChecksumTableStatementTestCase> checksumTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-status")
-    private final List<ShowStatusStatementTestCase> showStatusTestCases = new LinkedList<>();
+    private final List<MySQLShowStatusStatementTestCase> showStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "refresh-table-metadata")
     private final List<RefreshTableMetaDataStatementTestCase> refreshTableMetaDataTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-events")
-    private final List<ShowEventsStatementTestCase> showEventsTestCases = new LinkedList<>();
+    private final List<MySQLShowEventsStatementTestCase> showEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-character-set")
-    private final List<ShowCharacterSetStatementTestCase> showCharacterSetTestCases = new LinkedList<>();
+    private final List<MySQLShowCharacterSetStatementTestCase> showCharacterSetTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-collation")
-    private final List<ShowCollationStatementTestCase> showCollationTestCases = new LinkedList<>();
+    private final List<MySQLShowCollationStatementTestCase> showCollationTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-variables")
-    private final List<ShowVariablesStatementTestCase> showVariablesTestCases = new LinkedList<>();
+    private final List<MySQLShowVariablesStatementTestCase> showVariablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-key-generators")
     private final List<ShowShardingKeyGeneratorsStatementTestCase> showShardingKeyGeneratorsTestCases = new LinkedList<>();
@@ -1273,7 +1273,7 @@ public final class RootSQLParserTestCases {
     private final List<ShowMaskRulesStatementTestCase> showMaskRulesStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "delimiter")
-    private final List<DelimiterStatementTestCase> delimiterTestCases = new LinkedList<>();
+    private final List<MySQLDelimiterStatementTestCase> delimiterTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sql-parser-rule")
     private final List<ShowSQLParserRuleStatementTestCase> showSQLParserRuleTestCases = new LinkedList<>();
@@ -1408,7 +1408,7 @@ public final class RootSQLParserTestCases {
     private final List<DropLanguageStatementTestCase> dropLanguageTestCases = new LinkedList<>();
     
     @XmlElement(name = "help")
-    private final List<HelpStatementTestCase> helpTestCases = new LinkedList<>();
+    private final List<MySQLHelpStatementTestCase> helpTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-unused-sharding-algorithms")
     private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsTestCases = new LinkedList<>();
@@ -1420,7 +1420,7 @@ public final class RootSQLParserTestCases {
     private final List<ShowUnusedShardingAuditorsStatementTestCase> showUnusedShardingAuditorsStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-binlog-events")
-    private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsTestCases = new LinkedList<>();
+    private final List<MySQLShowBinlogEventsStatementTestCase> showBinlogEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "listen")
     private final List<ListenStatementTestCase> listenTestCases = new LinkedList<>();
@@ -1477,7 +1477,7 @@ public final class RootSQLParserTestCases {
     private final List<PreparedStatementTestCase> preparedTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-user")
-    private final List<SetUserStatementTestCase> setUserTestCases = new LinkedList<>();
+    private final List<SQLServerSetUserStatementTestCase> setUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-algorithm")
     private final List<DropShardingAlgorithmStatementTestCase> dropShardingAlgorithmTestCases = new LinkedList<>();
@@ -1648,7 +1648,7 @@ public final class RootSQLParserTestCases {
     private final List<PrepareTransactionTestCase> prepareTransactionTestCases = new LinkedList<>();
     
     @XmlElement(name = "reassign-owned")
-    private final List<ReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
+    private final List<PostgreSQLReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-event-trigger")
     private final List<CreateEventTriggerStatementTestCase> createEventTriggerStatementTestCases = new LinkedList<>();
@@ -1738,10 +1738,10 @@ public final class RootSQLParserTestCases {
     private final List<UpdateStatisticsStatementTestCase> updateStatisticsStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "spool")
-    private final List<SpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
+    private final List<OracleSpoolStatementTestCase> oracleSpoolStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-loadable-function")
-    private final List<CreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();
+    private final List<MySQLCreateLoadableFunctionTestCase> createLoadableFunctionTestCases = new LinkedList<>();
     
     @XmlElement(name = "start-replica")
     private final List<StartReplicaStatementTestCase> startReplicaStatementTestCases = new LinkedList<>();
