@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetPasswordStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetPasswordStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.mysql.MySQLSetPasswordStatementTestCase;
 
 /**
  * Set password statement assert for MySQL.
@@ -36,6 +36,6 @@ public final class MySQLSetPasswordStatementAssert {
      * @param actual actual set password statement
      * @param expected expected set password statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetPasswordStatement actual, final SetPasswordStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetPasswordStatement actual, final MySQLSetPasswordStatementTestCase expected) {
     }
 }

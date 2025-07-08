@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLChecksumTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ChecksumTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLChecksumTableStatementTestCase;
 
 /**
  * Checksum table statement assert for MySQL.
@@ -37,11 +37,11 @@ public final class MySQLChecksumTableStatementAssert {
      * @param actual actual checksum table statement
      * @param expected expected checksum table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final MySQLChecksumTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final MySQLChecksumTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

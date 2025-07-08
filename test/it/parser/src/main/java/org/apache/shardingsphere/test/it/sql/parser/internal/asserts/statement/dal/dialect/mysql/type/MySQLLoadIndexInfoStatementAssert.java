@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ide
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedLoadTableIndex;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.LoadIndexInfoStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLLoadIndexInfoStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +47,7 @@ public final class MySQLLoadIndexInfoStatementAssert {
      * @param actual actual load index info statement
      * @param expected expected load index info statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLLoadIndexInfoStatement actual, final LoadIndexInfoStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLLoadIndexInfoStatement actual, final MySQLLoadIndexInfoStatementTestCase expected) {
         assertThat("Load index info statement table index size assertion error: ", actual.getTableIndexes().size(), is(expected.getTableIndexes().size()));
         int count = 0;
         for (LoadTableIndexSegment each : actual.getTableIndexes()) {

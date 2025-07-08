@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.component.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.component.ExpectedComponent;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.InstallComponentStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLInstallComponentStatementTestCase;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public final class MySQLInstallComponentStatementAssert {
      * @param actual actual install component statement
      * @param expected expected install component statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLInstallComponentStatement actual, final InstallComponentStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLInstallComponentStatement actual, final MySQLInstallComponentStatementTestCase expected) {
         assertThat(assertContext.getText("Actual components size assertion error: "), actual.getComponents().size(), is(expected.getComponents().size()));
         assertComponents(assertContext, actual.getComponents(), expected.getComponents());
     }

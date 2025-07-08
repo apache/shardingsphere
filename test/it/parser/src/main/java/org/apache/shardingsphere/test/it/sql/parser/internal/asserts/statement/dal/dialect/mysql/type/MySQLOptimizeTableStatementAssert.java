@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.OptimizeTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLOptimizeTableStatementTestCase;
 
 /**
  * Optimize table statement assert for MySQL.
@@ -37,11 +37,11 @@ public final class MySQLOptimizeTableStatementAssert {
      * @param actual actual optimize table statement
      * @param expected expected optimize table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final MySQLOptimizeTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final MySQLOptimizeTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

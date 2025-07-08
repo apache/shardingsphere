@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ResetParameterStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.postgresql.PostgreSQLResetParameterStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +39,7 @@ public final class PostgreSQLResetParameterStatementAssert {
      * @param actual actual reset parameter statement
      * @param expected expected reset parameter statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLResetParameterStatement actual, final ResetParameterStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLResetParameterStatement actual, final PostgreSQLResetParameterStatementTestCase expected) {
         assertThat(assertContext.getText("Configuration parameter assertion error: "), actual.getConfigurationParameter(), is(expected.getConfigurationParameter()));
     }
 }

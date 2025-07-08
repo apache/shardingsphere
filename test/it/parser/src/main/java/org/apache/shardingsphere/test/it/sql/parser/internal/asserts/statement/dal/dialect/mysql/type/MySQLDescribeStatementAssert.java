@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQ
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.DescribeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLDescribeStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -40,14 +40,14 @@ public final class MySQLDescribeStatementAssert {
      * @param actual actual explain statement
      * @param expected expected describe statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final DescribeStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final MySQLDescribeStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         if (actual.getColumnWildcard().isPresent()) {
             assertDescribeColumnWild(assertContext, actual, expected);
         }
     }
     
-    private static void assertDescribeColumnWild(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final DescribeStatementTestCase expected) {
+    private static void assertDescribeColumnWild(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final MySQLDescribeStatementTestCase expected) {
         if (actual.getColumnWildcard().isPresent()) {
             ColumnAssert.assertIs(assertContext, actual.getColumnWildcard().get(), expected.getColumn());
         } else {

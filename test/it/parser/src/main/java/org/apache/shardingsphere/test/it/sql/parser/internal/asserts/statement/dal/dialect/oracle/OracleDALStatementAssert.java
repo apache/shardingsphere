@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStat
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.oracle.type.OracleSpoolStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SpoolStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.oracle.OracleSpoolStatementTestCase;
 
 /**
  * DAL statement assert for Oracle.
@@ -41,7 +41,7 @@ public final class OracleDALStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof OracleSpoolStatement) {
-            OracleSpoolStatementAssert.assertIs(assertContext, (OracleSpoolStatement) actual, (SpoolStatementTestCase) expected);
+            OracleSpoolStatementAssert.assertIs(assertContext, (OracleSpoolStatement) actual, (OracleSpoolStatementTestCase) expected);
         }
     }
 }

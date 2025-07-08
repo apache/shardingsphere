@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.KillStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLKillStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +39,7 @@ public final class MySQLKillStatementAssert {
      * @param actual actual kill statement
      * @param expected expected kill statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLKillStatement actual, final KillStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLKillStatement actual, final MySQLKillStatementTestCase expected) {
         assertThat(assertContext.getText("Kill statement context does not match: "), actual.getProcessId(), is(expected.getProcessId()));
     }
 }

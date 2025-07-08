@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.NotifyStmtStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.postgresql.PostgreSQLNotifyStmtStatementTestCase;
 
 /**
  * Notify statement assert for PostgreSQL.
@@ -36,6 +36,6 @@ public final class PostgreSQLNotifyStmtStatementAssert {
      * @param actual actual notify statement
      * @param expected expected notify statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLNotifyStmtStatement actual, final NotifyStmtStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLNotifyStmtStatement actual, final PostgreSQLNotifyStmtStatementTestCase expected) {
     }
 }

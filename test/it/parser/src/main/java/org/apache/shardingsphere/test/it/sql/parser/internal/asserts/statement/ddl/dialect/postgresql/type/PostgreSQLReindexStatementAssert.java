@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLReindexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ReindexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.postgresql.PostgreSQLReindexStatementTestCase;
 
 /**
  * Reindex statement assert for PostgreSQL.
@@ -36,6 +36,6 @@ public final class PostgreSQLReindexStatementAssert {
      * @param actual actual reindex statement
      * @param expected expected reindex statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLReindexStatement actual, final ReindexStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLReindexStatement actual, final PostgreSQLReindexStatementTestCase expected) {
     }
 }

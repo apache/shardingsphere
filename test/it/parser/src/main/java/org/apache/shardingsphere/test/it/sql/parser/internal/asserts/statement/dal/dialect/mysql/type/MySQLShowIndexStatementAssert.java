@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowIndexStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,12 +42,12 @@ public final class MySQLShowIndexStatementAssert {
      * @param actual actual show index statement
      * @param expected expected show index statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final MySQLShowIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertDatabase(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final MySQLShowIndexStatementTestCase expected) {
         if (null == expected.getTable()) {
             assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
@@ -55,7 +55,7 @@ public final class MySQLShowIndexStatementAssert {
         }
     }
     
-    private static void assertDatabase(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
+    private static void assertDatabase(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final MySQLShowIndexStatementTestCase expected) {
         if (null == expected.getDatabase()) {
             assertFalse(actual.getFromDatabase().isPresent(), assertContext.getText("Actual database segment should not exist."));
         } else {

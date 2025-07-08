@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLC
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.ClusterStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.postgresql.PostgreSQLClusterStatementTestCase;
 
 import java.util.Optional;
 
@@ -45,12 +45,12 @@ public final class PostgreSQLClusterStatementAssert {
      * @param actual actual cluster statement
      * @param expected expected cluster statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLClusterStatement actual, final ClusterStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLClusterStatement actual, final PostgreSQLClusterStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final PostgreSQLClusterStatement actual, final ClusterStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final PostgreSQLClusterStatement actual, final PostgreSQLClusterStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = actual.getSimpleTable();
         if (null == expected.getTable()) {
             assertFalse(tableSegment.isPresent(), assertContext.getText("Actual table segment should not exist."));
@@ -60,7 +60,7 @@ public final class PostgreSQLClusterStatementAssert {
         }
     }
     
-    private static void assertIndex(final SQLCaseAssertContext assertContext, final PostgreSQLClusterStatement actual, final ClusterStatementTestCase expected) {
+    private static void assertIndex(final SQLCaseAssertContext assertContext, final PostgreSQLClusterStatement actual, final PostgreSQLClusterStatementTestCase expected) {
         Optional<IndexSegment> indexSegment = actual.getIndex();
         if (null == expected.getIndex()) {
             assertFalse(indexSegment.isPresent(), assertContext.getText("Actual index segment should not exist."));

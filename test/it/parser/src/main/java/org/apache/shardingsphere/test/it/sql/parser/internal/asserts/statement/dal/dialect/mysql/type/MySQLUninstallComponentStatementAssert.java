@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.component.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.component.ExpectedComponent;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.UninstallComponentStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLUninstallComponentStatementTestCase;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public final class MySQLUninstallComponentStatementAssert {
      * @param actual actual uninstall component statement
      * @param expected expected uninstall component statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLUninstallComponentStatement actual, final UninstallComponentStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLUninstallComponentStatement actual, final MySQLUninstallComponentStatementTestCase expected) {
         assertThat(assertContext.getText("Actual components size assertion error: "), actual.getComponents().size(), is(expected.getComponents().size()));
         assertComponents(assertContext, actual.getComponents(), expected.getComponents());
     }

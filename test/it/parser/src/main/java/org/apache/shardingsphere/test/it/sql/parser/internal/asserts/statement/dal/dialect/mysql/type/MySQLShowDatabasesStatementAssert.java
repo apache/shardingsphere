@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowDatabasesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowDatabasesStatementTestCase;
 
 /**
  * Show databases statement assert for MySQL.
@@ -37,7 +37,7 @@ public final class MySQLShowDatabasesStatementAssert {
      * @param actual actual show databases statement
      * @param expected expected show databases statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowDatabasesStatement actual, final ShowDatabasesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowDatabasesStatement actual, final MySQLShowDatabasesStatementTestCase expected) {
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
         }
