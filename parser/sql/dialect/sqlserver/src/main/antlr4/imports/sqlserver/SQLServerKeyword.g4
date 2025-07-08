@@ -1998,3 +1998,15 @@ VALUE
 EXIST
     : E X I S T
     ;
+
+CHANGETABLE
+    : C H A N G E T A B L E
+    ;
+
+VERSION
+    : V E R S I O N
+    ;
+
+CHANGES
+    : C H A N G E S
+    ;
