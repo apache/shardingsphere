@@ -10309,4 +10309,70 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_cross_apply_changetable_version">
+        <projections start-index="7" stop-index="92">
+            <column-projection name="Emp ID" start-index="7" stop-index="16" start-delimiter="[" end-delimiter="]">
+                <owner name="e" start-index="7" stop-index="7"/>
+            </column-projection>
+            <column-projection name="SSN" start-index="19" stop-index="23">
+                <owner name="e" start-index="19" stop-index="19"/>
+            </column-projection>
+            <column-projection name="FirstName" start-index="26" stop-index="36">
+                <owner name="e" start-index="26" stop-index="26"/>
+            </column-projection>
+            <column-projection name="LastName" start-index="39" stop-index="48">
+                <owner name="e" start-index="39" stop-index="39"/>
+            </column-projection>
+            <column-projection name="SYS_CHANGE_VERSION" start-index="51" stop-index="70">
+                <owner name="c" start-index="51" stop-index="51"/>
+            </column-projection>
+            <column-projection name="SYS_CHANGE_CONTEXT" start-index="73" stop-index="92">
+                <owner name="c" start-index="73" stop-index="73"/>
+            </column-projection>
+        </projections>
+        <from start-index="107" stop-index="228">
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="Employees" start-index="99" stop-index="112" alias="e"/>
+                </left>
+                <right>
+                    <function-table table-alias="c" start-index="127" stop-index="226">
+                        <table-function function-name="CHANGETABLE" text="CHANGETABLE (VERSION Employees, ([Emp ID], SSN), (e.[Emp ID], e.SSN))">
+                            <parameter>
+                                <literal-expression value="VERSION" start-index="140" stop-index="146"/>
+                            </parameter>
+                            <parameter>
+                                <column name="Employees" start-index="148" stop-index="156"/>
+                            </parameter>
+                            <parameter>
+                                <list-expression start-index="159" stop-index="175">
+                                    <items>
+                                        <column name="Emp ID" start-index="160" stop-index="168" start-delimiter="[" end-delimiter="]"/>
+                                    </items>
+                                    <items>
+                                        <column name="SSN" start-index="171" stop-index="173"/>
+                                    </items>
+                                </list-expression>
+                            </parameter>
+                            <parameter>
+                                <list-expression start-index="178" stop-index="200">
+                                    <items>
+                                        <column name="Emp ID" start-index="181" stop-index="191" start-delimiter="[" end-delimiter="]">
+                                            <owner name="e" start-index="179" stop-index="179"/>
+                                        </column>
+                                    </items>
+                                    <items>
+                                        <column name="SSN" start-index="194" stop-index="198">
+                                            <owner name="e" start-index="194" stop-index="194"/>
+                                        </column>
+                                    </items>
+                                </list-expression>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>l
+    </select>
 </sql-parser-test-cases>
