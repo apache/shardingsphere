@@ -97,7 +97,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereDistributedTransactionManager distributedTransactionManager = transactionRule.getResource().getTransactionManager(transactionType);
-        Connection result = isInTransaction(distributedTransactionManager) ? distributedTransactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
+        Connection result = isInDistributedTransaction(distributedTransactionManager) ? distributedTransactionManager.getConnection(databaseName, dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];
             result.setCatalog(catalog);
@@ -105,7 +105,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         return result;
     }
     
-    private boolean isInTransaction(final ShardingSphereDistributedTransactionManager distributedTransactionManager) {
+    private boolean isInDistributedTransaction(final ShardingSphereDistributedTransactionManager distributedTransactionManager) {
         return null != distributedTransactionManager && distributedTransactionManager.isInTransaction();
     }
 }
