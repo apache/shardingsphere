@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowFunctionStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowFunctionStatusStatementTestCase;
 
 /**
  * Show function status statement assert for MySQL.
@@ -37,7 +37,7 @@ public final class MySQLShowFunctionStatusStatementAssert {
      * @param actual actual show function status statement
      * @param expected expected show function status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowFunctionStatusStatement actual, final ShowFunctionStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowFunctionStatusStatement actual, final MySQLShowFunctionStatusStatementTestCase expected) {
         if (null != actual.getFilter()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }

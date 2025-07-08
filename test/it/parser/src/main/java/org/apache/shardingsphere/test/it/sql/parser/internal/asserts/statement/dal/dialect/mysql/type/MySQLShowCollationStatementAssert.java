@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.character.MySQLShowCollationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowCollationStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowCollationStatementTestCase;
 
 /**
  * Show collation statement assert for MySQL.
@@ -37,7 +37,7 @@ public final class MySQLShowCollationStatementAssert {
      * @param actual actual show collation statement
      * @param expected expected show collation statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCollationStatement actual, final ShowCollationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowCollationStatement actual, final MySQLShowCollationStatementTestCase expected) {
         if (null != actual.getFilter()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter(), expected.getFilter());
         }

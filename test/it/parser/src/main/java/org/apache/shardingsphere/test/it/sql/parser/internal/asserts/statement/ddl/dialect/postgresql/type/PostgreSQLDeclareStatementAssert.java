@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DeclareStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.postgresql.PostgreSQLDeclareStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,17 +42,17 @@ public final class PostgreSQLDeclareStatementAssert {
      * @param actual actual declare statement
      * @param expected expected declare statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLDeclareStatement actual, final DeclareStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLDeclareStatement actual, final PostgreSQLDeclareStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
     }
     
-    private static void assertCursorName(final SQLCaseAssertContext assertContext, final PostgreSQLDeclareStatement actual, final DeclareStatementTestCase expected) {
+    private static void assertCursorName(final SQLCaseAssertContext assertContext, final PostgreSQLDeclareStatement actual, final PostgreSQLDeclareStatementTestCase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Cursor");
         SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
     }
     
-    private static void assertSelect(final SQLCaseAssertContext assertContext, final PostgreSQLDeclareStatement actual, final DeclareStatementTestCase expected) {
+    private static void assertSelect(final SQLCaseAssertContext assertContext, final PostgreSQLDeclareStatement actual, final PostgreSQLDeclareStatementTestCase expected) {
         if (null == expected.getSelectTestCase()) {
             assertNull(actual.getSelect(), assertContext.getText("Actual select statement should not exist."));
         } else {

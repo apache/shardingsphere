@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.oracle.dal.OracleSpoolStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.SpoolStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.oracle.OracleSpoolStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +39,7 @@ public final class OracleSpoolStatementAssert {
      * @param actual actual spool statement
      * @param expected expected spool statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleSpoolStatement actual, final SpoolStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleSpoolStatement actual, final OracleSpoolStatementTestCase expected) {
         if (null != expected.getFilename()) {
             assertThat(assertContext.getText("Actual filename does not match: "), actual.getFileName(), is(expected.getFilename()));
         }

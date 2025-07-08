@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneInstanceSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CloneStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCloneStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +40,7 @@ public final class MySQLCloneStatementAssert {
      * @param actual actual clone statement
      * @param expected expected clone statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCloneStatement actual, final CloneStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCloneStatement actual, final MySQLCloneStatementTestCase expected) {
         if (null != expected.getDataDirectory()) {
             assertThat(assertContext.getText("Actual data directory does not match: "), actual.getCloneAction().getCloneDir(), is(expected.getDataDirectory().getLocation()));
         }

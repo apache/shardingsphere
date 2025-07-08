@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ind
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedCacheTableIndex;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedPartitionDefinition;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.CacheIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLCacheIndexStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,7 +49,7 @@ public final class MySQLCacheIndexStatementAssert {
      * @param actual actual cache index statement
      * @param expected expected cache index statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCacheIndexStatement actual, final CacheIndexStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCacheIndexStatement actual, final MySQLCacheIndexStatementTestCase expected) {
         if (!expected.getTableIndexes().isEmpty()) {
             int count = 0;
             for (CacheTableIndexSegment each : actual.getTableIndexes()) {

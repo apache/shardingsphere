@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLRestartStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.RestartStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLRestartStatementTestCase;
 
 /**
  * restart statement assert for MySQL.
@@ -36,6 +36,6 @@ public final class MySQLRestartStatementAssert {
      * @param actual actual restart statement
      * @param expected expected restart statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRestartStatement actual, final RestartStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRestartStatement actual, final MySQLRestartStatementTestCase expected) {
     }
 }

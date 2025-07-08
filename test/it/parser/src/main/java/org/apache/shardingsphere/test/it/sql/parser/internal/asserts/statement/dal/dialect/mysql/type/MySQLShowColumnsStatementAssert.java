@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowColumnsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLShowColumnsStatementTestCase;
 
 /**
  * Show columns statement assert for MySQL.
@@ -39,7 +39,7 @@ public final class MySQLShowColumnsStatementAssert {
      * @param actual actual show columns statement
      * @param expected expected show columns statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowColumnsStatement actual, final ShowColumnsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowColumnsStatement actual, final MySQLShowColumnsStatementTestCase expected) {
         if (null != actual.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.ReassignOwnedStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.postgresql.PostgreSQLReassignOwnedStatementTestCase;
 
 /**
  * Reassign owned statement assert for PostgreSQL.
@@ -36,6 +36,6 @@ public final class PostgreSQLReassignOwnedStatementAssert {
      * @param actual actual reassign owned statement
      * @param expected expected reassign owned statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLReassignOwnedStatement actual, final ReassignOwnedStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PostgreSQLReassignOwnedStatement actual, final PostgreSQLReassignOwnedStatementTestCase expected) {
     }
 }

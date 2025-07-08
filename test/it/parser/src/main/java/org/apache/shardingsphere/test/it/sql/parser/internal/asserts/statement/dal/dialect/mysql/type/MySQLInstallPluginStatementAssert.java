@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin.MySQLInstallPluginStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.InstallPluginStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.mysql.MySQLInstallPluginStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +39,7 @@ public final class MySQLInstallPluginStatementAssert {
      * @param actual actual install plugin statement
      * @param expected expected install plugin statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLInstallPluginStatement actual, final InstallPluginStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLInstallPluginStatement actual, final MySQLInstallPluginStatementTestCase expected) {
         assertThat(assertContext.getText("Actual plugin name does not match: "), actual.getPluginName(), is(expected.getPlugin().getName()));
     }
 }

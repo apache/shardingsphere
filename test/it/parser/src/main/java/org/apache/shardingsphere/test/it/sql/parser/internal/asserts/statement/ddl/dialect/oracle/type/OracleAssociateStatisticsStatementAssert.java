@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ind
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.packages.PackageAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.type.TypeAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AssociateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAssociateStatisticsStatementTestCase;
 
 /**
  * Associate Statistics statement assert for Oracle.
@@ -49,7 +49,7 @@ public final class OracleAssociateStatisticsStatementAssert {
      * @param actual actual associate statistics statement
      * @param expected expected associate statistics statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
         assertColumns(assertContext, actual, expected);
         assertIndexes(assertContext, actual, expected);
@@ -59,13 +59,13 @@ public final class OracleAssociateStatisticsStatementAssert {
         assertIndexTypes(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getTables()) {
             TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
         }
     }
     
-    private static void assertColumns(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getColumns()) {
             int count = 0;
             for (ColumnSegment each : actual.getColumns()) {
@@ -75,7 +75,7 @@ public final class OracleAssociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertIndexes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertIndexes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getIndexes()) {
             int count = 0;
             for (IndexSegment each : actual.getIndexes()) {
@@ -85,7 +85,7 @@ public final class OracleAssociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertFunctions(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertFunctions(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getFunctions()) {
             int count = 0;
             for (FunctionSegment each : actual.getFunctions()) {
@@ -95,7 +95,7 @@ public final class OracleAssociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertPackages(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertPackages(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getPackages()) {
             int count = 0;
             for (PackageSegment each : actual.getPackages()) {
@@ -105,7 +105,7 @@ public final class OracleAssociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertTypes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertTypes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getTypes()) {
             int count = 0;
             for (TypeSegment each : actual.getTypes()) {
@@ -115,7 +115,7 @@ public final class OracleAssociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertIndexTypes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+    private static void assertIndexTypes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final OracleAssociateStatisticsStatementTestCase expected) {
         if (null != expected.getIndexTypes()) {
             int count = 0;
             for (IndexTypeSegment each : actual.getIndexTypes()) {

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.S
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.sqlserver.type.SQLServerUpdateStatisticsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.UpdateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.sqlserver.SQLServerUpdateStatisticsStatementTestCase;
 
 /**
  * DDL statement assert for SQLServer.
@@ -41,7 +41,7 @@ public final class SQLServerDDLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DDLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof SQLServerUpdateStatisticsStatement) {
-            SQLServerUpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (UpdateStatisticsStatementTestCase) expected);
+            SQLServerUpdateStatisticsStatementAssert.assertIs(assertContext, (SQLServerUpdateStatisticsStatement) actual, (SQLServerUpdateStatisticsStatementTestCase) expected);
         }
     }
 }

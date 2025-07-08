@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.FlashbackTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleFlashbackTableStatementTestCase;
 
 /**
  * Flashback table statement assert for Oracle.
@@ -37,16 +37,16 @@ public final class OracleFlashbackTableStatementAssert {
      * @param actual actual flashback table statement
      * @param expected expected flashback table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final FlashbackTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final OracleFlashbackTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertRenameTable(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final FlashbackTableStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final OracleFlashbackTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
     }
     
-    private static void assertRenameTable(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final FlashbackTableStatementTestCase expected) {
+    private static void assertRenameTable(final SQLCaseAssertContext assertContext, final OracleFlashbackTableStatement actual, final OracleFlashbackTableStatementTestCase expected) {
         if (null != expected.getRenameTable()) {
             TableAssert.assertIs(assertContext, actual.getRenameTable(), expected.getRenameTable());
         }

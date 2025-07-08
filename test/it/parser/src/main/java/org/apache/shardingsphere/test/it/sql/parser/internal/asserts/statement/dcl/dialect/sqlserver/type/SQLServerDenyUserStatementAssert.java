@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDen
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.DenyUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerDenyUserStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,12 +42,12 @@ public final class SQLServerDenyUserStatementAssert {
      * @param actual actual deny user statement
      * @param expected expected deny user statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final SQLServerDenyUserStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumns(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final SQLServerDenyUserStatementTestCase expected) {
         if (null == expected.getTable()) {
             assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
@@ -56,7 +56,7 @@ public final class SQLServerDenyUserStatementAssert {
         }
     }
     
-    private static void assertColumns(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final SQLServerDenyUserStatementTestCase expected) {
         if (expected.getColumns().isEmpty()) {
             assertTrue(actual.getColumns().isEmpty(), assertContext.getText("Actual columns segments should not exist."));
         } else {

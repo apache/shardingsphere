@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerSetUserStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.SetUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.sqlserver.SQLServerSetUserStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +40,7 @@ public final class SQLServerSetUserStatementAssert {
      * @param actual actual SQLServer set user statement
      * @param expected expected set user statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerSetUserStatement actual, final SetUserStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerSetUserStatement actual, final SQLServerSetUserStatementTestCase expected) {
         if (null != expected.getUser()) {
             assertThat(assertContext.getText("Actual user name does not match: "), actual.getUser().getUser(), is(expected.getUser().getName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getUser(), expected.getUser());

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSessionStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSessionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAlterSessionStatementTestCase;
 
 /**
  * Alter session statement assert for Oracle.
@@ -36,6 +36,6 @@ public final class OracleAlterSessionStatementAssert {
      * @param actual actual alter session statement
      * @param expected expected alter session statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAlterSessionStatement actual, final AlterSessionStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleAlterSessionStatement actual, final OracleAlterSessionStatementTestCase expected) {
     }
 }
