@@ -50,7 +50,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLFlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLKillStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLResetStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.index.MySQLLoadIndexInfoStatement;
@@ -70,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure.M
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.view.MySQLShowCreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLRepairTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
