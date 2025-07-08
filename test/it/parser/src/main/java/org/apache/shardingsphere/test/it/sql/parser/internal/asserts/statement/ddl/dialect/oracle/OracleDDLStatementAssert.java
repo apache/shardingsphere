@@ -40,15 +40,15 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OracleNoAuditStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.oracle.type.OraclePurgeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSessionStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSystemStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AnalyzeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AssociateStatisticsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.AuditStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DisassociateStatisticsStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.FlashbackTableStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.NoAuditStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.PurgeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAlterSessionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAlterSystemStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAnalyzeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAssociateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleAuditStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleDisassociateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleFlashbackTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleNoAuditStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OraclePurgeStatementTestCase;
 
 /**
  * DDL statement assert for Oracle.
@@ -65,23 +65,23 @@ public final class OracleDDLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DDLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof OracleAlterSessionStatement) {
-            OracleAlterSessionStatementAssert.assertIs(assertContext, (OracleAlterSessionStatement) actual, (AlterSessionStatementTestCase) expected);
+            OracleAlterSessionStatementAssert.assertIs(assertContext, (OracleAlterSessionStatement) actual, (OracleAlterSessionStatementTestCase) expected);
         } else if (actual instanceof OracleAlterSystemStatement) {
-            OracleAlterSystemStatementAssert.assertIs(assertContext, (OracleAlterSystemStatement) actual, (AlterSystemStatementTestCase) expected);
+            OracleAlterSystemStatementAssert.assertIs(assertContext, (OracleAlterSystemStatement) actual, (OracleAlterSystemStatementTestCase) expected);
         } else if (actual instanceof OracleAnalyzeStatement) {
-            OracleAnalyzeStatementAssert.assertIs(assertContext, (OracleAnalyzeStatement) actual, (AnalyzeStatementTestCase) expected);
+            OracleAnalyzeStatementAssert.assertIs(assertContext, (OracleAnalyzeStatement) actual, (OracleAnalyzeStatementTestCase) expected);
         } else if (actual instanceof OracleAssociateStatisticsStatement) {
-            OracleAssociateStatisticsStatementAssert.assertIs(assertContext, (OracleAssociateStatisticsStatement) actual, (AssociateStatisticsStatementTestCase) expected);
+            OracleAssociateStatisticsStatementAssert.assertIs(assertContext, (OracleAssociateStatisticsStatement) actual, (OracleAssociateStatisticsStatementTestCase) expected);
         } else if (actual instanceof OracleDisassociateStatisticsStatement) {
-            OracleDisassociateStatisticsStatementAssert.assertIs(assertContext, (OracleDisassociateStatisticsStatement) actual, (DisassociateStatisticsStatementTestCase) expected);
+            OracleDisassociateStatisticsStatementAssert.assertIs(assertContext, (OracleDisassociateStatisticsStatement) actual, (OracleDisassociateStatisticsStatementTestCase) expected);
         } else if (actual instanceof OracleAuditStatement) {
-            OracleAuditStatementAssert.assertIs(assertContext, (OracleAuditStatement) actual, (AuditStatementTestCase) expected);
+            OracleAuditStatementAssert.assertIs(assertContext, (OracleAuditStatement) actual, (OracleAuditStatementTestCase) expected);
         } else if (actual instanceof OracleNoAuditStatement) {
-            OracleNoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (NoAuditStatementTestCase) expected);
+            OracleNoAuditStatementAssert.assertIs(assertContext, (OracleNoAuditStatement) actual, (OracleNoAuditStatementTestCase) expected);
         } else if (actual instanceof OracleFlashbackTableStatement) {
-            OracleFlashbackTableStatementAssert.assertIs(assertContext, (OracleFlashbackTableStatement) actual, (FlashbackTableStatementTestCase) expected);
+            OracleFlashbackTableStatementAssert.assertIs(assertContext, (OracleFlashbackTableStatement) actual, (OracleFlashbackTableStatementTestCase) expected);
         } else if (actual instanceof OraclePurgeStatement) {
-            OraclePurgeStatementAssert.assertIs(assertContext, (OraclePurgeStatement) actual, (PurgeStatementTestCase) expected);
+            OraclePurgeStatementAssert.assertIs(assertContext, (OraclePurgeStatement) actual, (OraclePurgeStatementTestCase) expected);
         }
     }
 }

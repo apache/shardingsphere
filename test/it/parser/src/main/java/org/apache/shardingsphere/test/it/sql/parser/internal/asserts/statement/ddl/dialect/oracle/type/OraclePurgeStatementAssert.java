@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStat
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.PurgeStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OraclePurgeStatementTestCase;
 
 /**
  * Purge statement assert for Oracle.
@@ -38,18 +38,18 @@ public final class OraclePurgeStatementAssert {
      * @param actual actual purge statement
      * @param expected expected purge statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OraclePurgeStatement actual, final PurgeStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final OraclePurgeStatement actual, final OraclePurgeStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final OraclePurgeStatement actual, final PurgeStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final OraclePurgeStatement actual, final OraclePurgeStatementTestCase expected) {
         if (null != expected.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
     
-    private static void assertIndex(final SQLCaseAssertContext assertContext, final OraclePurgeStatement actual, final PurgeStatementTestCase expected) {
+    private static void assertIndex(final SQLCaseAssertContext assertContext, final OraclePurgeStatement actual, final OraclePurgeStatementTestCase expected) {
         if (null != expected.getIndex()) {
             IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
         }
