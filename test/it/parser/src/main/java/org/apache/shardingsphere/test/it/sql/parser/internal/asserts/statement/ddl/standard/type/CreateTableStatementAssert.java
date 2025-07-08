@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.def
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.CreateTableOptionDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateTableStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.CreateTableStatementTestCase;
 
 import java.util.List;
 import java.util.Optional;

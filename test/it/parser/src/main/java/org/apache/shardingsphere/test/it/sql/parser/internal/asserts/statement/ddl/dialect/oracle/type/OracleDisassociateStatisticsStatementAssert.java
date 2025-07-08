@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ind
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.packages.PackageAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.type.TypeAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle.OracleDisassociateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.statistics.OracleDisassociateStatisticsStatementTestCase;
 
 /**
  * Disassociate Statistics statement assert for Oracle.

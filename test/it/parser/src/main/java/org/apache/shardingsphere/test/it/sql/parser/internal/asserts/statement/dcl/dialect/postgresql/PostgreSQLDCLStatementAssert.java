@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLR
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dcl.dialect.postgresql.type.PostgreSQLReassignOwnedStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.postgresql.PostgreSQLReassignOwnedStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.dialect.postgresql.PostgreSQLReassignOwnedStatementTestCase;
 
 /**
  * DCL statement assert for PostgreSQL.
