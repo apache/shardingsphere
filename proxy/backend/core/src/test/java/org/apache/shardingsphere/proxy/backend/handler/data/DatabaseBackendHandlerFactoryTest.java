@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -62,8 +63,7 @@ class DatabaseBackendHandlerFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class, RETURNS_DEEP_STUBS));
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
-                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                mock(ConnectionSession.class), false);
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -76,13 +76,9 @@ class DatabaseBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        DatabaseBackendHandler actual =
-                DatabaseBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                        mock(ConnectionSession.class), false);
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new SelectStatement());
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     

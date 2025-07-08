@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Dele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstSkipClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HavingClauseContext;
@@ -48,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Sele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SkipValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableReferenceContext;
@@ -79,10 +82,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -95,6 +105,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -185,9 +197,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        result.getColumns().add(column);
-        return result;
+        return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
     @Override
@@ -224,9 +234,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
         result.addParameterMarkers(getParameterMarkerSegments());
+        if (null != ctx.withClause()) {
+            result.setWith((WithSegment) visit(ctx.withClause()));
+        }
         return result;
     }
     
@@ -240,6 +252,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement();
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        if (ctx.firstSkipClause() != null) {
+            result.setLimit((LimitSegment) visit(ctx.firstSkipClause()));
+        }
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
@@ -259,6 +274,45 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != ctx.havingClause()) {
             result.setHaving((HavingSegment) visit(ctx.havingClause()));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFirstSkipClause(final FirstSkipClauseContext ctx) {
+        PaginationValueSegment rowCount = null;
+        PaginationValueSegment offset = null;
+        if (ctx.FIRST() != null) {
+            rowCount = (PaginationValueSegment) visit(ctx.firstValue());
+            if (ctx.SKIP_() != null) {
+                offset = (PaginationValueSegment) visit(ctx.skipValue());
+            }
+        } else if (ctx.SKIP_() != null) {
+            offset = (PaginationValueSegment) visit(ctx.skipValue());
+        }
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    @Override
+    public ASTNode visitFirstValue(final FirstValueContext ctx) {
+        // TODO Add expression support for firstSkipClause
+        if (null != ctx.numberLiterals()) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+        }
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        getParameterMarkerSegments().add(result);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSkipValue(final SkipValueContext ctx) {
+        // TODO Add expression support for firstSkipClause
+        if (null != ctx.numberLiterals()) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+        }
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        getParameterMarkerSegments().add(result);
         return result;
     }
     
@@ -436,6 +490,14 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             }
             return result;
         }
+        if (null != ctx.expr()) {
+            ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
+            FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
         return visit(ctx.tableReferences());
     }
     
@@ -493,7 +555,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.combineClause());
+        SelectStatement result = (SelectStatement) visit(ctx.combineClause());
+        if (null != ctx.withClause()) {
+            result.setWith((WithSegment) visit(ctx.withClause()));
+        }
+        return result;
     }
     
     @Override

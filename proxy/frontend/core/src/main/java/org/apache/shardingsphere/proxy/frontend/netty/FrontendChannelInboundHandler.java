@@ -33,6 +33,8 @@ import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -105,9 +107,28 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
-        connectionSession.getDatabaseConnectionManager().closeAllResources();
+        processCloseExceptions(connectionSession.getDatabaseConnectionManager().closeAllResources());
         Optional.ofNullable(connectionSession.getProcessId()).ifPresent(processEngine::disconnect);
         databaseProtocolFrontendEngine.release(connectionSession);
+    }
+    
+    private void processCloseExceptions(final Collection<SQLException> exceptions) {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException("");
+        for (SQLException each : exceptions) {
+            ex.setNextException(each);
+        }
+        processException(ex);
+    }
+    
+    private void processException(final Exception cause) {
+        if (ExpectedExceptions.isExpected(cause.getClass())) {
+            log.debug("Exception occur: ", cause);
+        } else {
+            log.error("Exception occur: ", cause);
+        }
     }
     
     @Override

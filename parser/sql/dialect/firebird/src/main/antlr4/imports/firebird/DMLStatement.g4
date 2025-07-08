@@ -77,12 +77,24 @@ combineClause
     ;
 
 selectClause
-    : SELECT selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause?
+    : SELECT firstSkipClause? selectSpecification* projections fromClause? whereClause? groupByClause? havingClause? orderByClause? limitClause? optimizeClause?
     ;
-
 
 selectSpecification
     : duplicateSpecification
+    ;
+
+firstSkipClause
+    : FIRST firstValue (SKIP_ skipValue)?
+    | SKIP_ skipValue
+    ;
+
+firstValue
+    : LP_? (numberLiterals | parameterMarker) RP_?
+    ;
+
+skipValue
+    : LP_? (numberLiterals | parameterMarker) RP_?
     ;
 
 duplicateSpecification
@@ -126,7 +138,10 @@ tableReference
     ;
 
 tableFactor
-    : tableName (AS? alias)? | subquery (AS? alias)? columnNames? | LP_ tableReferences RP_
+    : tableName (AS? alias)?
+    | subquery (AS? alias)? columnNames?
+    | expr (AS? alias)?
+    | LP_ tableReferences RP_
     ;
 
 joinedTable
@@ -160,7 +175,7 @@ withClause
     ;
 
 cteClause
-    : identifier (LP_ columnNames RP_)? AS subquery
+    : alias (LP_ columnNames RP_)? AS subquery
     ;
 
 merge

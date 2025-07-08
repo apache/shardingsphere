@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -109,7 +110,8 @@ public abstract class SQLBinderIT {
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, true),
                 new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)),
+                Collections.singletonList(new ShardingSphereIndex("idx_user_id", Collections.singletonList("user_id"), false)), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_order_item", Arrays.asList(
                 new ShardingSphereColumn("item_id", Types.BIGINT, true, false, false, true, false, false),
                 new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false),

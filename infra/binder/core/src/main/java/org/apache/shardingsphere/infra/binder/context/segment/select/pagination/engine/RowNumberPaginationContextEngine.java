@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class RowNumberPaginationContextEngine {
     
-    private final DialectPaginationOption paginationOption;
+    private final DialectPaginationOption option;
     
     /**
      * Create pagination context.
@@ -76,7 +76,7 @@ public final class RowNumberPaginationContextEngine {
     }
     
     private Optional<String> findRowNumberAlias(final ProjectionsContext projectionsContext) {
-        String rowNumberColumnName = paginationOption.getRowNumberColumnName();
+        String rowNumberColumnName = option.getRowNumberColumnName();
         if (Strings.isNullOrEmpty(rowNumberColumnName)) {
             return Optional.empty();
         }
@@ -89,7 +89,7 @@ public final class RowNumberPaginationContextEngine {
             ExpressionSegment left = ((BinaryOperationExpression) predicate).getLeft();
             if (left instanceof ColumnSegment) {
                 String leftColumnValue = ((ColumnSegment) left).getIdentifier().getValue();
-                return leftColumnValue.equalsIgnoreCase(paginationOption.getRowNumberColumnName()) || leftColumnValue.equalsIgnoreCase(rowNumberAlias);
+                return leftColumnValue.equalsIgnoreCase(option.getRowNumberColumnName()) || leftColumnValue.equalsIgnoreCase(rowNumberAlias);
             }
             return false;
         }

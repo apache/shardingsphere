@@ -19,9 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.context;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -34,6 +31,9 @@ import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRew
 import org.apache.shardingsphere.sharding.rewrite.token.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 
 import java.util.Collection;
 
@@ -58,11 +58,11 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     }
     
     private boolean isAlterOrDropIndexStatement(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof AlterIndexStatementContext || sqlStatementContext instanceof DropIndexStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof AlterIndexStatement || sqlStatementContext.getSqlStatement() instanceof DropIndexStatement;
     }
     
     private boolean isCursorContextAvailableStatement(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CursorContextAvailable;
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent();
     }
     
     private boolean containsShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext) {

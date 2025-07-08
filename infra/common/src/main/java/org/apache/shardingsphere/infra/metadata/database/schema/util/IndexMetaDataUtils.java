@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,8 +39,6 @@ import java.util.Optional;
 public final class IndexMetaDataUtils {
     
     private static final String UNDERLINE = "_";
-    
-    private static final String GENERATED_LOGIC_INDEX_NAME_SUFFIX = "idx";
     
     /**
      * Get logic index name.
@@ -64,20 +61,6 @@ public final class IndexMetaDataUtils {
      */
     public static String getActualIndexName(final String logicIndexName, final String actualTableName) {
         return Strings.isNullOrEmpty(actualTableName) ? logicIndexName : logicIndexName + UNDERLINE + actualTableName;
-    }
-    
-    /**
-     * Get generated logic index name.
-     *
-     * @param columns column segments 
-     * @return generated logic index name
-     */
-    public static String getGeneratedLogicIndexName(final Collection<ColumnSegment> columns) {
-        StringBuilder builder = new StringBuilder();
-        for (ColumnSegment each : columns) {
-            builder.append(each.getIdentifier().getValue()).append(UNDERLINE);
-        }
-        return builder.append(GENERATED_LOGIC_INDEX_NAME_SUFFIX).toString();
     }
     
     /**

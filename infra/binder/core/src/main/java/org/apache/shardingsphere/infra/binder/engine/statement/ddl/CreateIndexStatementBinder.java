@@ -53,7 +53,7 @@ public final class CreateIndexStatementBinder implements SQLStatementBinder<Crea
         result.setTable(boundTable);
         result.getColumns().addAll(boundColumns);
         result.setIndex(sqlStatement.getIndex());
-        sqlStatement.getGeneratedIndexStartIndex().ifPresent(result::setGeneratedIndexStartIndex);
+        sqlStatement.getAnonymousIndexStartIndex().ifPresent(result::setAnonymousIndexStartIndex);
         result.setIfNotExists(sqlStatement.isIfNotExists());
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);

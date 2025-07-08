@@ -710,7 +710,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+        return new AlterUserStatement(null);
     }
     
     @Override

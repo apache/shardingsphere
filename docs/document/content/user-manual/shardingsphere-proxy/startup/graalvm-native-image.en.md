@@ -97,8 +97,7 @@ services:
 
 If you build from source code, developers have two options,
 
-1. Build a `Linux Docker Image` containing ShardingSphere Proxy Native products without installing a local toolchain
-
+1. Build a `Linux Container` containing ShardingSphere Proxy Native products without installing a local toolchain
 2. Build a ShardingSphere Proxy Native product with a local toolchain installed. For Windows, you can create a GraalVM Native Image in the form of `.exe` in this way
 
 ### Use JARs with custom SPI implementations or third-party dependent JARs
@@ -116,7 +115,7 @@ An example of adding a MySQL JDBC Driver dependency is as follows. The relevant 
 </dependencies>
 ```
 
-### Build Linux Docker Image
+### Build Linux Container
 
 #### Prerequisites
 

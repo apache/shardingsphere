@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -90,12 +91,11 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class MySQLAdminExecutorCreatorTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
     void assertCreateWithMySQLShowFunctionStatus() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowFunctionStatusStatement(null));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLShowFunctionStatusStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowFunctionStatusExecutor.class));
@@ -103,8 +103,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithShowProcedureStatus() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcedureStatusStatement(null));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLShowProcedureStatusStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowProcedureStatusExecutor.class));
@@ -112,8 +111,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithShowTables() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowTablesStatement(null, null, false));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLShowTablesStatement(null, null, false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowTablesExecutor.class));
@@ -127,8 +125,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithUse() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLUseStatement(null));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLUseStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(UseDatabaseExecutor.class));
@@ -136,8 +133,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithShowDatabasesStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowDatabasesStatement(null));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLShowDatabasesStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowDatabasesExecutor.class));
@@ -145,8 +141,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithMySQLShowProcessListStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcessListStatement(false));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLShowProcessListStatement(false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowProcessListExecutor.class));
@@ -154,8 +149,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithMySQLShowCreateDatabaseStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowCreateDatabaseStatement(null));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new MySQLShowCreateDatabaseStatement(null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowCreateDatabaseExecutor.class));
@@ -163,8 +157,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSetStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new SetStatement(Collections.emptyList()));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new SetStatement(Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLSetVariableAdminExecutor.class));
@@ -379,8 +372,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithDMLStatement() {
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new DeleteStatement());
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new DeleteStatement());
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "delete from t", "", Collections.emptyList());
         assertThat(actual, is(Optional.empty()));
     }

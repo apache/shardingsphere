@@ -675,7 +675,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         } else {
-            result.setGeneratedIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
+            result.setAnonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
         }
         return result;
     }

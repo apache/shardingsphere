@@ -71,7 +71,7 @@ public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryE
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String name = showStatement.getName().orElse("").toLowerCase(Locale.ROOT);
+        String name = showStatement.getName().toLowerCase(Locale.ROOT);
         if ("ALL".equalsIgnoreCase(name)) {
             executeShowAll(connectionSession);
             return;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.t
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.DropColumnDefinitionSegment;
@@ -31,18 +32,24 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Alter table statement.
@@ -62,6 +69,8 @@ public final class AlterTableStatement extends DDLStatement {
     private AlgorithmTypeSegment algorithmSegment;
     
     private LockTableSegment lockTableSegment;
+    
+    private DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
     
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
@@ -130,12 +139,41 @@ public final class AlterTableStatement extends DDLStatement {
         return Optional.ofNullable(lockTableSegment);
     }
     
-    @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new CreateTableConstraintSQLStatementAttribute());
+    /**
+     * Get drop primary key.
+     *
+     * @return drop primary key
+     */
+    public Optional<DropPrimaryKeyDefinitionSegment> getDropPrimaryKeyDefinition() {
+        return Optional.ofNullable(dropPrimaryKeyDefinition);
     }
     
-    private class CreateTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
+    }
+    
+    private Collection<SimpleTableSegment> getTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        result.add(table);
+        if (getRenameTable().isPresent()) {
+            result.add(getRenameTable().get());
+        }
+        for (AddColumnDefinitionSegment each : addColumnDefinitions) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
+        }
+        for (ModifyColumnDefinitionSegment each : modifyColumnDefinitions) {
+            result.addAll(each.getColumnDefinition().getReferencedTables());
+        }
+        for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
+            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
+        }
+        return result;
+    }
+    
+    private class AlterTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
         
         @Override
         public Collection<ConstraintSegment> getConstraints() {
@@ -146,6 +184,28 @@ public final class AlterTableStatement extends DDLStatement {
             validateConstraintDefinitions.stream().map(ValidateConstraintDefinitionSegment::getConstraintName).forEach(result::add);
             dropConstraintDefinitions.stream().map(DropConstraintDefinitionSegment::getConstraintName).forEach(result::add);
             return result;
+        }
+    }
+    
+    private class AlterTableIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
+        
+        @Override
+        public Collection<IndexSegment> getIndexes() {
+            Collection<IndexSegment> result = new LinkedList<>();
+            for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
+                each.getConstraintDefinition().getIndexName().ifPresent(result::add);
+            }
+            dropIndexDefinitions.stream().map(DropIndexDefinitionSegment::getIndexSegment).forEach(result::add);
+            for (RenameIndexDefinitionSegment each : getRenameIndexDefinitions()) {
+                result.add(each.getIndexSegment());
+                result.add(each.getRenameIndexSegment());
+            }
+            return result;
+        }
+        
+        @Override
+        public Collection<ColumnSegment> getIndexColumns() {
+            return addConstraintDefinitions.stream().flatMap(each -> each.getConstraintDefinition().getIndexColumns().stream()).collect(Collectors.toList());
         }
     }
 }

@@ -49,6 +49,7 @@
 1. SQL Parser: Support Oracle create table with lob storage clause sql parsing - [#35782](https://github.com/apache/shardingsphere/pull/35782)
 1. SQL Parser: Support Oracle multiple backslash literal parsing - [#35784](https://github.com/apache/shardingsphere/pull/35784)
 1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
+1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 
 ### Bug Fixes
 
@@ -72,6 +73,7 @@
 1. Encrypt: Resolve rewrite issue in nested concat function - [35815](https://github.com/apache/shardingsphere/pull/35815)
 1. JDBC: Fix the issue where cached connections in DriverDatabaseConnectionManager were not released in time - [35834](https://github.com/apache/shardingsphere/pull/35834)
 1. Proxy: Fix column length for PostgreSQL string binary protocol value - [35840](https://github.com/apache/shardingsphere/pull/35840)
+1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
 
 ### Change Logs
 

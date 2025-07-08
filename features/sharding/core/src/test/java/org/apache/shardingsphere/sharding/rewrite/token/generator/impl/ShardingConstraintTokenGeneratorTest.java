@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -52,7 +51,7 @@ class ShardingConstraintTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyConstraint() {
-        AlterTableStatementContext sqlStatementContext = mock(AlterTableStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         ConstraintSQLStatementAttribute constraintAttribute = mock(ConstraintSQLStatementAttribute.class);
         when(constraintAttribute.getConstraints()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes(constraintAttribute));

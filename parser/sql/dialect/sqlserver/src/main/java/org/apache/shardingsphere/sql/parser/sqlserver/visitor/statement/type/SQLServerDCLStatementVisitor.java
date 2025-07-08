@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
@@ -59,7 +60,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterLoginStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerAlterUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerCreateLoginStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDropLoginStatement;
@@ -175,7 +175,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new SQLServerAlterUserStatement((UserSegment) visit(ctx.userName()));
+        return new AlterUserStatement((UserSegment) visit(ctx.userName()));
     }
     
     @Override

@@ -19,9 +19,16 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.i
 
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -61,5 +68,28 @@ public final class AlterIndexStatement extends DDLStatement {
      */
     public Optional<SimpleTableSegment> getSimpleTable() {
         return Optional.ofNullable(simpleTable);
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
+    }
+    
+    private class AlterIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
+        
+        @Override
+        public Collection<IndexSegment> getIndexes() {
+            Collection<IndexSegment> result = new LinkedList<>();
+            if (getIndex().isPresent()) {
+                result.add(getIndex().get());
+            }
+            getRenameIndex().ifPresent(result::add);
+            return result;
+        }
+        
+        @Override
+        public Collection<ColumnSegment> getIndexColumns() {
+            return Collections.emptyList();
+        }
     }
 }

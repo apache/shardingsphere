@@ -34,8 +34,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.top.TopProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -71,9 +69,6 @@ class RowNumberDecoratorMergedResultTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -83,8 +78,11 @@ class RowNumberDecoratorMergedResultTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         SelectStatementContext selectStatementContext = new SelectStatementContext(databaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
-        MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
-                mock(ConnectionContext.class));
+        MergedResult actual = resultMerger.merge(
+                Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database, mock(ConnectionContext.class));
+        for (int i = 0; i < 8; i++) {
+            assertTrue(actual.next());
+        }
         assertFalse(actual.next());
     }
     
@@ -119,10 +117,6 @@ class RowNumberDecoratorMergedResultTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(topProjectionSegment.getTop()).thenReturn(new NumberLiteralRowNumberValueSegment(0, 0, 4L, false));
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -134,8 +128,9 @@ class RowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(databaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual = resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database,
                 mock(ConnectionContext.class));
-        assertTrue(actual.next());
-        assertTrue(actual.next());
+        for (int i = 0; i < 8; i++) {
+            assertTrue(actual.next());
+        }
         assertFalse(actual.next());
     }
     
@@ -154,10 +149,6 @@ class RowNumberDecoratorMergedResultTest {
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
-        TopProjectionSegment topProjectionSegment = mock(TopProjectionSegment.class);
-        when(topProjectionSegment.getAlias()).thenReturn("row_id");
-        when(topProjectionSegment.getTop()).thenReturn(new NumberLiteralRowNumberValueSegment(0, 0, 4L, true));
-        when(subProjectionsSegment.getProjections()).thenReturn(Collections.singletonList(topProjectionSegment));
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
         when(subqueryTableSegment.getSubquery()).thenReturn(subquerySegment);
@@ -169,9 +160,9 @@ class RowNumberDecoratorMergedResultTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(databaseType, selectStatement, null, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
         MergedResult actual =
                 resultMerger.merge(Arrays.asList(mockQueryResult(), mockQueryResult(), mockQueryResult(), mockQueryResult()), selectStatementContext, database, mock(ConnectionContext.class));
-        assertTrue(actual.next());
-        assertTrue(actual.next());
-        assertTrue(actual.next());
+        for (int i = 0; i < 8; i++) {
+            assertTrue(actual.next());
+        }
         assertFalse(actual.next());
     }
     

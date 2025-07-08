@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.available.CursorContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingSta
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
@@ -70,7 +70,7 @@ public final class ShardingRouteEngineFactory {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof DDLStatement) {
-            return sqlStatementContext instanceof CursorContextAvailable
+            return queryContext.getSqlStatementContext().getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
                     ? getCursorRouteEngine(rule, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, logicTableNames, props)
                     : getDDLRouteEngine(database, sqlStatementContext, logicTableNames);
         }

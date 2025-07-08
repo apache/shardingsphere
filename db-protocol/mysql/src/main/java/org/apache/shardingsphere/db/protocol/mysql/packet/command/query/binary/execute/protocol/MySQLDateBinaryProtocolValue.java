@@ -87,6 +87,7 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
         writeNanos(payload, nanos);
     }
     
+    @SuppressWarnings("UseOfObsoleteDateTimeApi")
     private LocalDateTime getLocalDateTime(final Object value) {
         if (value instanceof LocalDate) {
             return ((LocalDate) value).atStartOfDay();

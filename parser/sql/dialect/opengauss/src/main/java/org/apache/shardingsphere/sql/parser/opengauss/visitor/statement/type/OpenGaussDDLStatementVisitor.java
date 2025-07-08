@@ -533,7 +533,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
         if (null == ctx.indexName()) {
-            result.setGeneratedIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
+            result.setAnonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
         } else {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         }

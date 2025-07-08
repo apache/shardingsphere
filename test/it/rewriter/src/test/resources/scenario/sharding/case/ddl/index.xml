@@ -36,25 +36,25 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="create_index_without_index_name_with_single_column" db-types="PostgreSQL,openGauss">
-        <input sql="CREATE INDEX ON t_account (status)" />
+        <input sql="/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ CREATE INDEX ON t_account (status)" />
         <output sql="CREATE INDEX status_idx_t_account_0 ON t_account_0 (status)" />
         <output sql="CREATE INDEX status_idx_t_account_1 ON t_account_1 (status)" />
     </rewrite-assertion>
 
     <rewrite-assertion id="create_index_without_index_name_with_single_column_with_schema" db-types="PostgreSQL,openGauss">
-        <input sql="CREATE INDEX ON public.t_account (status)" />
+        <input sql="/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ CREATE INDEX ON public.t_account (status)" />
         <output sql="CREATE INDEX status_idx_t_account_0 ON public.t_account_0 (status)" />
         <output sql="CREATE INDEX status_idx_t_account_1 ON public.t_account_1 (status)" />
     </rewrite-assertion>
 
     <rewrite-assertion id="create_index_without_index_name_with_multi_column" db-types="PostgreSQL,openGauss">
-        <input sql="CREATE INDEX ON t_account (status, account_id)" />
+        <input sql="/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ CREATE INDEX ON t_account (status, account_id)" />
         <output sql="CREATE INDEX status_account_id_idx_t_account_0 ON t_account_0 (status, account_id)" />
         <output sql="CREATE INDEX status_account_id_idx_t_account_1 ON t_account_1 (status, account_id)" />
     </rewrite-assertion>
 
     <rewrite-assertion id="create_index_without_index_name_with_multi_column_with_schema" db-types="PostgreSQL,openGauss">
-        <input sql="CREATE INDEX ON public.t_account (status, account_id)" />
+        <input sql="/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ CREATE INDEX ON public.t_account (status, account_id)" />
         <output sql="CREATE INDEX status_account_id_idx_t_account_0 ON public.t_account_0 (status, account_id)" />
         <output sql="CREATE INDEX status_account_id_idx_t_account_1 ON public.t_account_1 (status, account_id)" />
     </rewrite-assertion>

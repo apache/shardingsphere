@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.IndexContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             return true;
         }
-        return sqlStatementContext instanceof IndexContextAvailable && !((IndexContextAvailable) sqlStatementContext).getIndexes().isEmpty();
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class).map(optional -> !optional.getIndexes().isEmpty()).orElse(false);
     }
     
     @Override
@@ -64,8 +64,8 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         if (!sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             result.addAll(generateTableAvailableSQLTokens(sqlStatementContext, sqlStatementContext.getDatabaseType()));
         }
-        if (sqlStatementContext instanceof IndexContextAvailable && !((IndexContextAvailable) sqlStatementContext).getIndexes().isEmpty()) {
-            result.addAll(generateIndexContextAvailableSQLTokens((IndexContextAvailable) sqlStatementContext));
+        if (sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class).map(optional -> !optional.getIndexes().isEmpty()).orElse(false)) {
+            result.addAll(generateIndexContextAvailableSQLTokens(sqlStatementContext));
         }
         return result;
     }
@@ -91,9 +91,10 @@ public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<S
         return result;
     }
     
-    private Collection<RemoveToken> generateIndexContextAvailableSQLTokens(final IndexContextAvailable indexContextAvailable) {
+    private Collection<RemoveToken> generateIndexContextAvailableSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<RemoveToken> result = new LinkedList<>();
-        for (IndexSegment each : indexContextAvailable.getIndexes()) {
+        for (IndexSegment each : sqlStatementContext.getSqlStatement().getAttributes()
+                .findAttribute(IndexSQLStatementAttribute.class).map(IndexSQLStatementAttribute::getIndexes).orElse(Collections.emptyList())) {
             if (!each.getOwner().isPresent()) {
                 continue;
             }
