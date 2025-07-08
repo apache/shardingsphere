@@ -236,6 +236,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -711,7 +712,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.trimFunction()) {
             return visit(ctx.trimFunction());
         }
+        if (null != ctx.changeTableFunction()) {
+            return visit(ctx.changeTableFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitChangeTableFunction(final ChangeTableFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHANGETABLE().getText(), getOriginalText(ctx));
     }
     
     @Override
@@ -725,13 +734,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                 fullMethodName, getOriginalText(ctx));
         if (null == ctx.alias()) {
-            OwnerSegment owner = new OwnerSegment(ctx.columnName().getStart().getStartIndex(),
-                    ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ctx.columnName().getText()));
+            OwnerSegment owner = new OwnerSegment(ctx.columnName().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ctx.columnName().getText()));
             result.setOwner(owner);
         } else {
             String ownerName = ctx.alias().getText() + "." + ctx.columnName().getText();
-            OwnerSegment owner = new OwnerSegment(ctx.alias().getStart().getStartIndex(),
-                    ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ownerName));
+            OwnerSegment owner = new OwnerSegment(ctx.alias().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ownerName));
             result.setOwner(owner);
         }
         if (null != ctx.expr()) {
