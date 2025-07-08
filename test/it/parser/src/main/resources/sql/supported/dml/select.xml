@@ -324,4 +324,5 @@
     <sql-case id="select_with_string_literal" value="select translate(t.order_no, '\1234567890', '\', '\\', '', '\\\', '''', '\n\t\b') from t" db-types="Oracle" />
     <sql-case id="select_instruction_nodes" value="SELECT T2.Loc.query('.') FROM T CROSS APPLY Instructions.nodes('/root/Location') AS T2(Loc) " db-types="SQLServer"/>
     <sql-case id="select_cross_apply_changetable_version" value="SELECT e.[Emp ID], e.SSN, e.FirstName, e.LastName, c.SYS_CHANGE_VERSION, c.SYS_CHANGE_CONTEXT FROM Employees AS e CROSS APPLY CHANGETABLE (VERSION Employees, ([Emp ID], SSN), (e.[Emp ID], e.SSN)) AS c;" db-types="SQLServer"/>
+    <sql-case id="select_ai_generate_embeddings" value="SELECT id, AI_GENERATE_EMBEDDINGS(large_text USE MODEL MyAzureOpenAIModel) FROM myTable;" db-types="SQLServer"/>
 </sql-cases>
