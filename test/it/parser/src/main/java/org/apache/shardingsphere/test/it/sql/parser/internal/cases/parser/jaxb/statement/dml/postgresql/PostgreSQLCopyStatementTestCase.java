@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.postgresql;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedLimitClause;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.query.ExpectedPrepareStatementQuery;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Table statement test case.
+ * Copy statement test case for PostgreSQL.
  */
 @Getter
 @Setter
-public final class TableStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+public final class PostgreSQLCopyStatementTestCase extends SQLParserTestCase {
     
     @XmlElement
-    private ExpectedColumn column;
+    private ExpectedSimpleTable table;
     
-    @XmlElement(name = "limit")
-    private ExpectedLimitClause limitClause;
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
+    
+    @XmlElement
+    private ExpectedPrepareStatementQuery query;
 }

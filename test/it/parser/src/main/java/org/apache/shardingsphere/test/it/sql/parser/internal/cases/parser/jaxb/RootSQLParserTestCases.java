@@ -295,18 +295,18 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.sqlserver.SQLServerDropServiceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.sqlserver.SQLServerUpdateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CallStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CheckpointStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DoStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.HandlerStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.ImportStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadDataStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadXMLStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.mysql.MySQLHandlerStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.mysql.MySQLImportStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.mysql.MySQLLoadDataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.mysql.MySQLLoadXMLStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.postgresql.PostgreSQLCheckpointStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.postgresql.PostgreSQLCopyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.plsql.CreateProcedureTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterGlobalClockRuleStatementTestCase;
@@ -859,19 +859,19 @@ public final class RootSQLParserTestCases {
     private final List<DoStatementTestCase> doTestCases = new LinkedList<>();
     
     @XmlElement(name = "handler")
-    private final List<HandlerStatementTestCase> handlerStatementTestCases = new LinkedList<>();
+    private final List<MySQLHandlerStatementTestCase> handlerStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "copy")
-    private final List<CopyStatementTestCase> copyTestCases = new LinkedList<>();
+    private final List<PostgreSQLCopyStatementTestCase> copyTestCases = new LinkedList<>();
     
     @XmlElement(name = "import")
-    private final List<ImportStatementTestCase> importTestCase = new LinkedList<>();
+    private final List<MySQLImportStatementTestCase> importTestCase = new LinkedList<>();
     
     @XmlElement(name = "load-data")
-    private final List<LoadDataStatementTestCase> loadDataTestCases = new LinkedList<>();
+    private final List<MySQLLoadDataStatementTestCase> loadDataTestCases = new LinkedList<>();
     
     @XmlElement(name = "load-xml")
-    private final List<LoadXMLStatementTestCase> loadXmlTestCases = new LinkedList<>();
+    private final List<MySQLLoadXMLStatementTestCase> loadXmlTestCases = new LinkedList<>();
     
     @XmlElement(name = "xa")
     private final List<XATestCase> xaTestCases = new LinkedList<>();
@@ -1609,7 +1609,7 @@ public final class RootSQLParserTestCases {
     private final List<FetchStatementTestCase> fetchTestCases = new LinkedList<>();
     
     @XmlElement(name = "checkpoint")
-    private final List<CheckpointStatementTestCase> checkpointTestCases = new LinkedList<>();
+    private final List<PostgreSQLCheckpointStatementTestCase> checkpointTestCases = new LinkedList<>();
     
     @XmlElement(name = "cluster")
     private final List<PostgreSQLClusterStatementTestCase> clusterStatementTestCases = new LinkedList<>();

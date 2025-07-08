@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLC
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.postgresql.type.PostgreSQLCopyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CopyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.postgresql.PostgreSQLCopyStatementTestCase;
 
 /**
  * DML statement assert for PostgreSQL.
@@ -41,7 +41,7 @@ public final class PostgreSQLDMLStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof PostgreSQLCopyStatement) {
-            PostgreSQLCopyStatementAssert.assertIs(assertContext, (PostgreSQLCopyStatement) actual, (CopyStatementTestCase) expected);
+            PostgreSQLCopyStatementAssert.assertIs(assertContext, (PostgreSQLCopyStatement) actual, (PostgreSQLCopyStatementTestCase) expected);
         }
     }
 }

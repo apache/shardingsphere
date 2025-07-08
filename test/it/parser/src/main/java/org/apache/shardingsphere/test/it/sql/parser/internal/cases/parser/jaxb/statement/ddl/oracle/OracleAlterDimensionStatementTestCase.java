@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Create rollback segment statement test case.
+ * Alter dimension statement test case for Oracle.
  */
-public final class CreateRollbackSegmentStatementTestCase extends SQLParserTestCase {
+public final class OracleAlterDimensionStatementTestCase extends SQLParserTestCase {
 }

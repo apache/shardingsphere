@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Drop flashback archive statement test case.
+ * Alter cluster statement test case for Oracle.
  */
-public final class DropFlashbackArchiveStatementTestCase extends SQLParserTestCase {
+public final class OracleAlterClusterStatementTestCase extends SQLParserTestCase {
 }

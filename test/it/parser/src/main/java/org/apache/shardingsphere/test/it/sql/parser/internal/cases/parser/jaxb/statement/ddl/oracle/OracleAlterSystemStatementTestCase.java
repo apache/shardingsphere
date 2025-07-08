@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Create event trigger statement test case.
+ * Alter system statement test case for Oracle.
  */
-public final class CreateEventTriggerStatementTestCase extends SQLParserTestCase {
+public final class OracleAlterSystemStatementTestCase extends SQLParserTestCase {
 }

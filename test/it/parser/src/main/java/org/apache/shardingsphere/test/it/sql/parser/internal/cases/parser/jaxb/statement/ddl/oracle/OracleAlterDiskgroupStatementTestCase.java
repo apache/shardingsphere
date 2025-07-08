@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.oracle;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Load data statement test case.
+ * Alter diskgroup statement test case for Oracle.
  */
-@Getter
-@Setter
-public final class LoadDataStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedSimpleTable table;
+public final class OracleAlterDiskgroupStatementTestCase extends SQLParserTestCase {
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.postgresql;
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Alter rollback segment statement test case.
+ * Checkpoint statement test case for PostgreSQL.
  */
-public final class AlterRollbackSegmentStatementTestCase extends SQLParserTestCase {
+public final class PostgreSQLCheckpointStatementTestCase extends SQLParserTestCase {
 }

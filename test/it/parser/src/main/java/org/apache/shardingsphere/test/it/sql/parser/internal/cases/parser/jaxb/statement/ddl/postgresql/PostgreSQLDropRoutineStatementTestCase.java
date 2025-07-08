@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.postgresql;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-
-import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Load xml statement test case.
+ * Drop routine statement test case for PostgreSQL.
  */
-@Getter
-@Setter
-public final class LoadXMLStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedSimpleTable table;
+public final class PostgreSQLDropRoutineStatementTestCase extends SQLParserTestCase {
 }

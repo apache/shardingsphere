@@ -15,14 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.mysql;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Handler statement test case.
+ * Load data statement test case for MySQL.
  */
 @Getter
-public final class HandlerStatementTestCase extends SQLParserTestCase {
+@Setter
+public final class MySQLLoadDataStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement
+    private ExpectedSimpleTable table;
 }
