@@ -10279,4 +10279,34 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_instruction_nodes">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="T2.Loc.query('.')" start-index="7" stop-index="23">
+                <expr>
+                    <function start-index="7" stop-index="23" text="T2.Loc.query('.')" function-name="T2.Loc.query">
+                        <parameter>
+                            <literal-expression value="." start-index="20" stop-index="22"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <join-table join-type="CROSS">
+                <left>
+                    <simple-table name="T" start-index="30" stop-index="30"/>
+                </left>
+                <right>
+                    <function-table table-alias="T2" column-names="Loc" start-index="43" stop-index="89">
+                        <table-function function-name="Instructions.nodes" text="Instructions.nodes('/root/Location')" start-index="43" stop-index="78">
+                            <parameter>
+                                <literal-expression value="/root/Location" start-index="61" stop-index="77"/>
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

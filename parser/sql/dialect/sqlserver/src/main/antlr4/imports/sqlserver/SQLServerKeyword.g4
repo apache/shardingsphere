@@ -1986,3 +1986,15 @@ LAST_VALUE
 GRAPH
     : G R A P H
     ;
+
+NODES
+    : N O D E S
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+EXIST
+    : E X I S T
+    ;
