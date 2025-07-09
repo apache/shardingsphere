@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockCont
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 
 import java.sql.SQLException;
@@ -48,7 +49,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         LockContext lockContext = new StandaloneLockContext();
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(param, repository, computeNodeInstanceContext);
+        MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
         return new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
     }
     

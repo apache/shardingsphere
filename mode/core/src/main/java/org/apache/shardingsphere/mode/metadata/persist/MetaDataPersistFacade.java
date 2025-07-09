@@ -78,6 +78,10 @@ public final class MetaDataPersistFacade {
         statisticsService = new StatisticsPersistService(repository);
     }
     
+    public MetaDataPersistFacade(final PersistRepository repository) {
+        this(repository, true);
+    }
+    
     /**
      * Persist global rule configurations.
      *

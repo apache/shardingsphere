@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
@@ -79,6 +80,7 @@ class MetaDataContextsFactoryTest {
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(Collections.singleton(database));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
+        when(metaDataPersistFacade.getRepository()).thenReturn(repository);
     }
     
     @Test
@@ -91,7 +93,7 @@ class MetaDataContextsFactoryTest {
         when(repository.query("/rules/global_fixture/active_version")).thenReturn(String.valueOf(0));
         when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: global_name");
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
-        MetaDataContexts actual = MetaDataContextsFactory.create(createContextManagerBuilderParameter(), repository, computeNodeInstanceContext);
+        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).create(createContextManagerBuilderParameter());
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
@@ -100,13 +102,15 @@ class MetaDataContextsFactoryTest {
     
     @Test
     void assertCreateWithProxyInstanceMetaData() throws SQLException {
+        ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
+        when(computeNodeInstanceContext.getInstance().getMetaData()).thenReturn(mock(ProxyInstanceMetaData.class));
         when(repository.getChildrenKeys("/metadata")).thenReturn(Collections.singletonList("foo_db"));
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys("/rules")).thenReturn(Collections.singletonList("global_fixture"));
         when(repository.query("/rules/global_fixture/active_version")).thenReturn(String.valueOf(0));
         when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: global_name");
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
-        MetaDataContexts actual = MetaDataContextsFactory.create(createContextManagerBuilderParameter(), repository, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS));
+        MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).create(createContextManagerBuilderParameter());
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
