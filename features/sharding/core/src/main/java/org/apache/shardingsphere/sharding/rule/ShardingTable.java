@@ -38,12 +38,12 @@ import org.apache.shardingsphere.sharding.constant.ShardingTableConstants;
 import org.apache.shardingsphere.sharding.exception.metadata.DataNodeGenerateException;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -151,9 +151,9 @@ public final class ShardingTable {
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {
         if (null == tableShardingStrategyConfig) {
-            return new LinkedList<>();
+            return new ArrayList<>();
         }
-        List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
+        List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new ArrayList<>(dataSourceNames)
                 : InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
         return DataNodeUtils.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
@@ -171,7 +171,7 @@ public final class ShardingTable {
     }
     
     private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
-        List<DataNode> result = new LinkedList<>();
+        List<DataNode> result = new ArrayList<>(dataSourceNames.size());
         int index = 0;
         for (String each : dataSourceNames) {
             DataNode dataNode = new DataNode(each, logicTable);
@@ -185,7 +185,7 @@ public final class ShardingTable {
     }
     
     private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
-        List<DataNode> result = new LinkedList<>();
+        List<DataNode> result = new ArrayList<>(actualDataNodes.size());
         int index = 0;
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
