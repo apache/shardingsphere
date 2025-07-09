@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 public final class HiveDDLStatementVisitor extends HiveStatementVisitor implements DDLStatementVisitor {
-
+    
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         // 构造 CreateDatabaseStatement，并设置数据库名及 IF NOT EXISTS 标识
