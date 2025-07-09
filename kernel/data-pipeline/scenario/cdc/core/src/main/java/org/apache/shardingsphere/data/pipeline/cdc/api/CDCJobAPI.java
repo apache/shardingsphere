@@ -34,8 +34,8 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManag
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.swapper.YamlPipelineDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
@@ -150,7 +150,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         result.setDatabaseName(param.getDatabaseName());
         result.setSchemaTableNames(schemaTableNames);
         result.setFull(param.isFull());
-        result.setDecodeWithTX(param.isDecodeWithTX());
+        result.setDecodeWithTX(param.isDecodeWithTransaction());
         YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
         sinkConfig.setSinkType(sinkType.name());
         sinkConfig.setProps(sinkProps);

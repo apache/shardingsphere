@@ -47,7 +47,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
-import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobRegistry;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
@@ -116,11 +115,10 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNames;
         }
         ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new CDCExceptionWrapper(requestId, new MissingRequiredStreamDataSourceException()));
-        Map<String, List<DataNode>> actualDataNodesMap = CDCDataNodeUtils.buildDataNodesMap(database, tableNames);
-        ShardingSpherePreconditions.checkNotEmpty(actualDataNodesMap, () -> new PipelineInvalidParameterException(String.format("Not find table %s", tableNames)));
-        // TODO Add globalCSNSupported to isolate it with decodeWithTx flag, they're different. And also update CDCJobPreparer needSorting flag.
-        boolean decodeWithTx = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getTransactionOption().isSupportGlobalCSN();
-        StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new ArrayList<>(schemaTableNames), requestBody.getFull(), actualDataNodesMap, decodeWithTx);
+        Map<String, List<DataNode>> tableAndDataNodesMap = CDCDataNodeUtils.buildTableAndDataNodesMap(database, tableNames);
+        // TODO Add globalCSNSupported to isolate it with isDecodeWithTransaction flag, they're different. And also update CDCJobPreparer needSorting flag.
+        boolean isDecodeWithTransaction = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getTransactionOption().isSupportGlobalCSN();
+        StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new ArrayList<>(schemaTableNames), requestBody.getFull(), tableAndDataNodesMap, isDecodeWithTransaction);
         String jobId = jobAPI.create(parameter, CDCSinkType.SOCKET, new Properties());
         connectionContext.setJobId(jobId);
         startStreaming(jobId, connectionContext, channel);

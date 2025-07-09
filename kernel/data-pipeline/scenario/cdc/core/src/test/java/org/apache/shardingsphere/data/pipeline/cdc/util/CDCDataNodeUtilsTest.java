@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 class CDCDataNodeUtilsTest {
     
     @Test
-    void assertBuildDataNodesMap() {
+    void assertBuildTableAndDataNodesMap() {
         ShardingSphereDatabase mockDatabase = mock(ShardingSphereDatabase.class);
         RuleMetaData mockRuleMetaData = mock(RuleMetaData.class);
         ShardingRule mockShardingRule = mock(ShardingRule.class);
@@ -65,7 +65,7 @@ class CDCDataNodeUtilsTest {
         when(broadcastDataNodeRuleAttribute.findFirstActualTable("t_address")).thenReturn(Optional.of("broadcast.t_address"));
         when(broadcastDataNodeRuleAttribute.getAllDataNodes()).thenReturn(Collections.singletonMap("t_address", Collections.singletonList(new DataNode("broadcast.t_address"))));
         when(broadcastRule.getAttributes()).thenReturn(new RuleAttributes(broadcastDataNodeRuleAttribute));
-        Map<String, List<DataNode>> actual = CDCDataNodeUtils.buildDataNodesMap(mockDatabase, Arrays.asList("t_order", "t_order_item", "t_address"));
+        Map<String, List<DataNode>> actual = CDCDataNodeUtils.buildTableAndDataNodesMap(mockDatabase, Arrays.asList("t_order", "t_order_item", "t_address"));
         assertTrue(actual.containsKey("t_order"));
         assertTrue(actual.containsKey("t_order_item"));
         assertTrue(actual.containsKey("t_address"));
