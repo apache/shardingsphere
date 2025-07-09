@@ -501,6 +501,11 @@ convertExpr
 
 windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    | lagLeadFunction
+    ;
+
+lagLeadFunction
+    : funcName = (LAG | LEAD) LP_ expr (COMMA_ expr)? (COMMA_ expr)? RP_ nullTreatment? overClause
     ;
 
 nullTreatment

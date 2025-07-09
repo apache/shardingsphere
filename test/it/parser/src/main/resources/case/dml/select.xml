@@ -10396,4 +10396,156 @@
             <simple-table name="myTable" start-index="80" stop-index="86" />
         </from>
     </select>
+
+    <select sql-case-id="select_lag_over">
+        <projections start-index="7" stop-index="151">
+            <column-projection name="BusinessEntityID" start-index="7" stop-index="22" />
+            <expression-projection text="YEAR(QuotaDate)" alias="SalesYear" start-index="25" stop-index="52">
+                <expr>
+                    <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="25" stop-index="39">
+                        <parameter>
+                            <column name="QuotaDate" start-index="30" stop-index="38" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="SalesQuota" alias="CurrentQuota" start-index="55" stop-index="80" />
+            <expression-projection text="LAG(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate))" alias="PreviousQuota" start-index="83" stop-index="151">
+                <expr>
+                    <function function-name="LAG" text="LAG(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate))" start-index="83" stop-index="134">
+                        <parameter>
+                            <column name="SalesQuota" start-index="87" stop-index="96" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="99" stop-index="99" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="101" stop-index="101" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPersonQuotaHistory" start-index="158" stop-index="186">
+                <owner name="Sales" start-index="158" stop-index="162" />
+            </simple-table>
+        </from>
+        <where start-index="188" stop-index="254">
+            <expr start-index="194" stop-index="254">
+                <binary-operation-expression start-index="194" stop-index="254">
+                    <left>
+                        <binary-operation-expression start-index="194" stop-index="215">
+                            <left>
+                                <column name="BusinessEntityID" start-index="194" stop-index="209" />
+                            </left>
+                            <right>
+                                <literal-expression value="275" start-index="213" stop-index="215" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <in-expression start-index="221" stop-index="254">
+                            <not>false</not>
+                            <left>
+                                <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="221" stop-index="235">
+                                    <parameter>
+                                        <column name="QuotaDate" start-index="226" stop-index="234" />
+                                    </parameter>
+                                </function>
+                            </left>
+                            <right>
+                                <list-expression start-index="240" stop-index="254">
+                                    <items>
+                                        <literal-expression value="2005" start-index="241" stop-index="246" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="2006" start-index="248" stop-index="253" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </in-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_lead_over">
+        <projections start-index="7" stop-index="148">
+            <column-projection name="BusinessEntityID" start-index="7" stop-index="22" />
+            <expression-projection text="YEAR(QuotaDate)" alias="SalesYear" start-index="25" stop-index="52">
+                <expr>
+                    <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="25" stop-index="39">
+                        <parameter>
+                            <column name="QuotaDate" start-index="30" stop-index="38" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="SalesQuota" alias="CurrentQuota" start-index="55" stop-index="80" />
+            <expression-projection text="LEAD(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate))" alias="NextQuota" start-index="83" stop-index="148">
+                <expr>
+                    <function function-name="LEAD" text="LEAD(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate))" start-index="83" stop-index="135">
+                        <parameter>
+                            <column name="SalesQuota" start-index="88" stop-index="97" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="100" stop-index="100" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="102" stop-index="102" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPersonQuotaHistory" start-index="155" stop-index="183">
+                <owner name="Sales" start-index="155" stop-index="159" />
+            </simple-table>
+        </from>
+        <where start-index="185" stop-index="251">
+            <expr start-index="191" stop-index="251">
+                <binary-operation-expression start-index="191" stop-index="251">
+                    <left>
+                        <binary-operation-expression start-index="191" stop-index="212">
+                            <left>
+                                <column name="BusinessEntityID" start-index="191" stop-index="206" />
+                            </left>
+                            <right>
+                                <literal-expression value="275" start-index="210" stop-index="212" />
+                            </right>
+                            <operator>=</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <right>
+                        <in-expression start-index="218" stop-index="251">
+                            <not>false</not>
+                            <left>
+                                <function function-name="YEAR" text="YEAR(QuotaDate)" start-index="218" stop-index="232">
+                                    <parameter>
+                                        <column name="QuotaDate" start-index="223" stop-index="231" />
+                                    </parameter>
+                                </function>
+                            </left>
+                            <right>
+                                <list-expression start-index="237" stop-index="251">
+                                    <items>
+                                        <literal-expression value="2005" start-index="238" stop-index="243" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="2006" start-index="245" stop-index="250" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </in-expression>
+                    </right>
+                    <operator>AND</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

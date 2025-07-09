@@ -325,4 +325,6 @@
     <sql-case id="select_instruction_nodes" value="SELECT T2.Loc.query('.') FROM T CROSS APPLY Instructions.nodes('/root/Location') AS T2(Loc) " db-types="SQLServer"/>
     <sql-case id="select_cross_apply_changetable_version" value="SELECT e.[Emp ID], e.SSN, e.FirstName, e.LastName, c.SYS_CHANGE_VERSION, c.SYS_CHANGE_CONTEXT FROM Employees AS e CROSS APPLY CHANGETABLE (VERSION Employees, ([Emp ID], SSN), (e.[Emp ID], e.SSN)) AS c;" db-types="SQLServer"/>
     <sql-case id="select_ai_generate_embeddings" value="SELECT id, AI_GENERATE_EMBEDDINGS(large_text USE MODEL MyAzureOpenAIModel) FROM myTable;" db-types="SQLServer"/>
+    <sql-case id="select_lag_over" value="SELECT BusinessEntityID, YEAR(QuotaDate) AS SalesYear, SalesQuota AS CurrentQuota, LAG(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate)) AS PreviousQuota FROM Sales.SalesPersonQuotaHistory WHERE BusinessEntityID = 275 AND YEAR(QuotaDate) IN ('2005','2006'); " db-types="SQLServer"/>
+    <sql-case id="select_lead_over" value="SELECT BusinessEntityID, YEAR(QuotaDate) AS SalesYear, SalesQuota AS CurrentQuota, LEAD(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate)) AS NextQuota FROM Sales.SalesPersonQuotaHistory WHERE BusinessEntityID = 275 AND YEAR(QuotaDate) IN ('2005','2006'); " db-types="SQLServer"/>
 </sql-cases>
