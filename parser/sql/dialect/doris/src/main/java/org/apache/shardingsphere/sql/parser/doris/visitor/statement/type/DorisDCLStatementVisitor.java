@@ -97,20 +97,20 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOption
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLCreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLSetPasswordStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.role.MySQLSetDefaultRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLCreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLRenameUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLSetPasswordStatement;
 
 import java.util.stream.Collectors;
 

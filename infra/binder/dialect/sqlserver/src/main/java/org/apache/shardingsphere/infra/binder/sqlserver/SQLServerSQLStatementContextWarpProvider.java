@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.sqlserver;
 
 import org.apache.shardingsphere.infra.binder.context.DialectCommonSQLStatementContextWarpProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user.SQLServerDenyUserStatement;
 
 import java.util.Collection;
 import java.util.Collections;

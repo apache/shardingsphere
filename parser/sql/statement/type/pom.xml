@@ -32,6 +32,5 @@
         <module>mysql</module>
         <module>sqlserver</module>
         <module>oracle</module>
-        <module>opengauss</module>
     </modules>
 </project>
