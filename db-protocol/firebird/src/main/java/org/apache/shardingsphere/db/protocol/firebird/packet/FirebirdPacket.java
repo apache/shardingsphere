@@ -25,11 +25,11 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
  * Database packet for Firebird.
  */
 public abstract class FirebirdPacket implements DatabasePacket {
-
+    
     @Override
     public void write(final PacketPayload payload) {
         write((FirebirdPacketPayload) payload);
     }
-
+    
     protected abstract void write(FirebirdPacketPayload payload);
 }

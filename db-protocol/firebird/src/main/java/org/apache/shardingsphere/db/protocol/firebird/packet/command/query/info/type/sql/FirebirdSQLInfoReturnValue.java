@@ -79,7 +79,7 @@ public enum FirebirdSQLInfoReturnValue {
     }
     
     /**
-     * Return true if code is select describable
+     * Return true if code is select describable.
      *
      * @param code arch type code
      * @return Is select describable
@@ -89,7 +89,7 @@ public enum FirebirdSQLInfoReturnValue {
     }
     
     /**
-     * Return true if code is bind describable
+     * Return true if code is bind describable.
      *
      * @param code arch type code
      * @return Is bind describable

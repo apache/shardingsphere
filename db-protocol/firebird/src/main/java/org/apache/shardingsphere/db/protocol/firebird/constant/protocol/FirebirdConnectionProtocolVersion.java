@@ -41,7 +41,7 @@ public final class FirebirdConnectionProtocolVersion {
     public static FirebirdConnectionProtocolVersion getInstance() {
         return INSTANCE;
     }
-
+    
     /**
      * Set Firebird protocol version for connection.
      *
@@ -51,7 +51,7 @@ public final class FirebirdConnectionProtocolVersion {
     public void setProtocolVersion(final int connectionId, final FirebirdProtocolVersion protocolVersion) {
         protocolVersionCache.put(connectionId, protocolVersion);
     }
-
+    
     /**
      * Get current Firebird protocl version for connection.
      *

@@ -40,31 +40,31 @@ import java.util.Set;
  */
 @Getter
 public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket {
-
+    
     private final FirebirdCommandPacketType type;
-
+    
     private final int statementId;
-
+    
     private final int transactionId;
-
+    
     private final List<FirebirdBinaryColumnType> parameterTypes;
-
+    
     private final int message;
-
+    
     private final List<Object> parameterValues = new ArrayList<>();
-
+    
     private final List<FirebirdBinaryColumnType> returnColumns = new ArrayList<>();
-
+    
     private int outputMessageNumber;
-
+    
     private long statementTimeout;
-
+    
     private long cursorFlags;
-
+    
     private long maxBlobSize;
-
+    
     private final FirebirdPacketPayload payload;
-
+    
     public FirebirdExecuteStatementPacket(final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
         statementId = payload.readInt4();
@@ -80,7 +80,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             }
             payload.skipPadding(length);
         }
-
+        
         for (int i = 0; i < parameterTypes.size(); i++) {
             Integer nullBit = nullBits.get(i / 8);
             if (((nullBit >> i % 8) & 1) == 0) {
@@ -91,31 +91,31 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 parameterValues.add(null);
             }
         }
-
+        
         if (isStoredProcedure()) {
             returnColumns.addAll(parseBLR(payload.readBuffer()));
             outputMessageNumber = payload.readInt4();
         }
-
+        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION16.getCode()) {
             statementTimeout = payload.readInt4Unsigned();
         }
-
+        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION18.getCode()) {
             cursorFlags = payload.readInt4Unsigned();
         }
-
+        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }
-
+        
         this.payload = payload;
         // while (msgCount-- != 0) {
         // paramsValues.add(payload.readBuffer());
         // }
-
+        
     }
-
+    
     private List<FirebirdBinaryColumnType> parseBLR(final ByteBuf blrBuffer) {
         if (!blrBuffer.isReadable()) {
             return new ArrayList<>(0);
@@ -133,7 +133,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         }
         return result;
     }
-
+    
     private int getSkipCount(final FirebirdBinaryColumnType type) {
         switch (type) {
             case VARYING:
@@ -155,7 +155,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 return 0;
         }
     }
-
+    
     /**
      * Read parameter values from packet.
      *
@@ -178,7 +178,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         // return result;
         return parameterValues;
     }
-
+    
     /**
      * Returns true if, and only if, operation is a stored procedure.
      *
@@ -187,7 +187,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     public boolean isStoredProcedure() {
         return type == FirebirdCommandPacketType.EXECUTE2;
     }
-
+    
     /**
      * Get return data.
      *
@@ -211,15 +211,15 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 writePayload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
             }
             i++;
-
+            
         }
         return writeBuffer;
     }
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
-
+    
     /**
      * Get length of packet.
      *

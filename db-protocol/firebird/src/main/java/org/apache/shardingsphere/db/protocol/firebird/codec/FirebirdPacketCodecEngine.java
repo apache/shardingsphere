@@ -36,22 +36,22 @@ import java.util.List;
  * Database packet codec for Firebird.
  */
 public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngine {
-
+    
     private static final int MESSAGE_TYPE_LENGTH = 4;
-
+    
     private static final int ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 4;
-
+    
     private static final int FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 8;
-
+    
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
-
+    
     private FirebirdCommandPacketType pendingPacketType;
-
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
         return readableBytes >= MESSAGE_TYPE_LENGTH;
     }
-
+    
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (pendingMessages.isEmpty() && isValidHeader(in.readableBytes())) {
@@ -67,14 +67,14 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
         addToBuffer(context, in, out);
     }
-
+    
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
         out.add(in.readRetainedSlice(firstPacketLength));
         if (in.readableBytes() > MESSAGE_TYPE_LENGTH) {
             decode(context, in, out);
         }
     }
-
+    
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (in.writerIndex() == in.capacity()) {
             ByteBuf bufferPart = in.readRetainedSlice(in.readableBytes());
@@ -91,7 +91,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             writePendingMessages(context, in, out);
         }
     }
-
+    
     private void writePendingMessages(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (pendingMessages.isEmpty()) {
             out.add(in.readRetainedSlice(in.readableBytes()));
@@ -102,7 +102,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             pendingMessages.clear();
         }
     }
-
+    
     @Override
     public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
@@ -115,7 +115,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // TODO send error packet
         }
     }
-
+    
     @Override
     public FirebirdPacketPayload createPacketPayload(final ByteBuf message, final Charset charset) {
         return new FirebirdPacketPayload(message, charset);
