@@ -25,4 +25,127 @@
     <create-database sql-case-id="create_database_with_file" />
     <create-database sql-case-id="create_database_oracle1" />
     <create-database sql-case-id="create_database_oracle2" />
+    <!-- Hive CREATE DATABASE Test -->
+    <!-- Basic Syntax -->
+    <create-database sql-case-id="create_database_basic" />
+    <create-schema sql-case-id="create_schema_basic" />
+
+    <!-- IF NOT EXISTS Clause -->
+    <create-database sql-case-id="create_database_if_not_exists" />
+    <create-schema sql-case-id="create_schema_if_not_exists" />
+
+    <!-- REMOTE Keyword -->
+    <create-database sql-case-id="create_remote_database_basic" />
+    <create-schema sql-case-id="create_remote_schema_basic" />
+    <create-database sql-case-id="create_remote_database_if_not_exists" />
+    <create-schema sql-case-id="create_remote_schema_if_not_exists" />
+
+    <!-- COMMENT Clause -->
+    <create-database sql-case-id="create_database_with_comment" />
+    <create-schema sql-case-id="create_schema_with_comment" />
+    <create-database sql-case-id="create_database_if_not_exists_with_comment" />
+    <create-schema sql-case-id="create_schema_if_not_exists_with_comment" />
+
+    <!-- LOCATION Clause -->
+    <create-database sql-case-id="create_database_with_location_hive" />
+    <create-schema sql-case-id="create_schema_with_location" />
+    <create-database sql-case-id="create_database_if_not_exists_with_location" />
+    <create-schema sql-case-id="create_schema_if_not_exists_with_location" />
+
+    <!-- MANAGEDLOCATION Clause -->
+    <create-database sql-case-id="create_database_with_managed_location" />
+    <create-schema sql-case-id="create_schema_with_managed_location" />
+    <create-database sql-case-id="create_database_if_not_exists_with_managed_location" />
+    <create-schema sql-case-id="create_schema_if_not_exists_with_managed_location" />
+
+    <!-- DBPROPERTIES Clause -->
+    <create-database sql-case-id="create_database_with_properties" />
+    <create-schema sql-case-id="create_schema_with_properties" />
+    <create-database sql-case-id="create_database_with_single_property" />
+    <create-schema sql-case-id="create_schema_with_single_property" />
+    <create-database sql-case-id="create_database_if_not_exists_with_properties" />
+    <create-schema sql-case-id="create_schema_if_not_exists_with_properties" />
+
+    <!-- Combined Clauses Testing -->
+    <!-- COMMENT + LOCATION -->
+    <create-database sql-case-id="create_database_with_comment_location" />
+    <create-schema sql-case-id="create_schema_with_comment_location" />
+
+    <!-- COMMENT + MANAGEDLOCATION -->
+    <create-database sql-case-id="create_database_with_comment_managedlocation" />
+    <create-schema sql-case-id="create_schema_with_comment_managedlocation" />
+
+    <!-- COMMENT + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_database_with_comment_properties" />
+    <create-schema sql-case-id="create_schema_with_comment_properties" />
+
+    <!-- LOCATION + MANAGEDLOCATION -->
+    <create-database sql-case-id="create_database_with_location_managedlocation" />
+    <create-schema sql-case-id="create_schema_with_location_managedlocation" />
+
+    <!-- LOCATION + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_database_with_location_properties" />
+    <create-schema sql-case-id="create_schema_with_location_properties" />
+
+    <!-- MANAGEDLOCATION + DBPROPERTIES -->
+    <create-database sql-case-id="create_database_with_managedlocation_properties" />
+    <create-schema sql-case-id="create_schema_with_managedlocation_properties" />
+
+    <!-- LOCATION + MANAGEDLOCATION + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_database_with_location_managedlocation_properties" />
+    <create-schema sql-case-id="create_schema_with_location_managedlocation_properties" />
+
+    <!-- COMMENT + LOCATION + MANAGEDLOCATION -->
+    <create-database sql-case-id="create_database_with_comment_location_managedlocation" />
+    <create-schema sql-case-id="create_schema_with_comment_location_managedlocation" />
+
+    <!-- COMMENT + MANAGEDLOCATION + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_database_with_comment_managedlocation_properties" />
+    <create-schema sql-case-id="create_schema_with_comment_managedlocation_properties" />
+
+    <!-- with_all_options (COMMENT + LOCATION + MANAGEDLOCATION + DBPROPERTIES) -->
+    <create-database sql-case-id="create_database_with_all_options" />
+    <create-schema sql-case-id="create_schema_with_all_options" />
+
+    <!-- REMOTE Keyword Combined with Other Clauses -->
+    <!-- REMOTE + COMMENT + MANAGEDLOCATION -->
+    <create-database sql-case-id="create_remote_database_with_comment_managedlocation" />
+    <create-schema sql-case-id="create_remote_schema_with_comment_managedlocation" />
+
+    <!-- REMOTE + LOCATION + MANAGEDLOCATION -->
+    <create-database sql-case-id="create_remote_database_with_location_managedlocation" />
+    <create-schema sql-case-id="create_remote_schema_with_location_managedlocation" />
+
+    <!-- REMOTE + MANAGEDLOCATION + DBPROPERTIES -->
+    <create-database sql-case-id="create_remote_database_with_managedlocation_properties" />
+    <create-schema sql-case-id="create_remote_schema_with_managedlocation_properties" />
+
+    <!-- REMOTE + COMMENT + LOCATION -->
+    <create-database sql-case-id="create_remote_database_with_comment_location" />
+    <create-schema sql-case-id="create_remote_schema_with_comment_location" />
+
+    <!-- REMOTE + COMMENT + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_remote_database_with_comment_properties" />
+    <create-schema sql-case-id="create_remote_schema_with_comment_properties" />
+
+    <!-- REMOTE + LOCATION + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_remote_database_with_location_properties" />
+    <create-schema sql-case-id="create_remote_schema_with_location_properties" />
+
+    <!-- REMOTE + COMMENT + LOCATION + MANAGEDLOCATION -->
+    <create-database sql-case-id="create_remote_database_with_comment_location_managedlocation" />
+    <create-schema sql-case-id="create_remote_schema_with_comment_location_managedlocation" />
+
+    <!-- REMOTE + COMMENT + MANAGEDLOCATION + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_remote_database_with_comment_managedlocation_properties" />
+    <create-schema sql-case-id="create_remote_schema_with_comment_managedlocation_properties" />
+
+    <!-- REMOTE + LOCATION + MANAGEDLOCATION + WITH DBPROPERTIES -->
+    <create-database sql-case-id="create_remote_database_with_location_managedlocation_properties" />
+    <create-schema sql-case-id="create_remote_schema_with_location_managedlocation_properties" />
+
+    <!-- REMOTE + with_all_options -->
+    <create-database sql-case-id="create_remote_database_with_all_options" />
+    <create-schema sql-case-id="create_remote_schema_with_all_options" />
+    <!-- Hive CREATE DATABASE Test END-->
 </sql-parser-test-cases>

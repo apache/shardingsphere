@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNam
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -84,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -526,6 +528,13 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             owner.setOwner(new OwnerSegment(ctx.identifier(0).start.getStartIndex(), ctx.identifier(0).stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier(0))));
             result.setOwner(owner);
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
+        CreateDatabaseStatement result = new CreateDatabaseStatement(new IdentifierValue(ctx.identifier().getText()).getValue(),
+                null != ctx.IF() && null != ctx.NOT() && null != ctx.EXISTS());
         return result;
     }
     

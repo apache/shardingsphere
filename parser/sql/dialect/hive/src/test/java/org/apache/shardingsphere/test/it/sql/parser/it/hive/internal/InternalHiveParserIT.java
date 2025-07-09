@@ -15,17 +15,10 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.test.it.sql.parser.it.hive.internal;
 
-import Comments, DMLStatement, DDLStatement;
-
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
+import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
+@InternalSQLParserITSettings("Hive")
+public class InternalHiveParserIT extends InternalSQLParserIT{
+}
