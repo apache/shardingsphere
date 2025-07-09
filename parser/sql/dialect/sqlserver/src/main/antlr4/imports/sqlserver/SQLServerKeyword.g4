@@ -2010,3 +2010,15 @@ VERSION
 CHANGES
     : C H A N G E S
     ;
+
+MODEL
+    : M O D E L
+    ;
+
+AI_GENERATE_EMBEDDINGS
+    : A I UL_ G E N E R A T E UL_ E M B E D D I N G S
+    ;
+
+PARAMETERS
+    : P A R A M E T E R S
+    ;

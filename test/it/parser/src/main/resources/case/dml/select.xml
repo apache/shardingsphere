@@ -10375,4 +10375,25 @@
             </join-table>
         </from>l
     </select>
+
+    <select sql-case-id="select_ai_generate_embeddings">
+        <projections start-index="7" stop-index="73">
+            <column-projection name="id" start-index="7" stop-index="8" />
+            <expression-projection text="AI_GENERATE_EMBEDDINGS(large_text USE MODEL MyAzureOpenAIModel)" start-index="11" stop-index="73">
+                <expr>
+                    <function start-index="11" stop-index="73" text="AI_GENERATE_EMBEDDINGS(large_text USE MODEL MyAzureOpenAIModel)" function-name="AI_GENERATE_EMBEDDINGS">
+                        <parameter>
+                            <column name="large_text" start-index="34" stop-index="43" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="MyAzureOpenAIModel" start-index="55" stop-index="72" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="myTable" start-index="80" stop-index="86" />
+        </from>
+    </select>
 </sql-parser-test-cases>

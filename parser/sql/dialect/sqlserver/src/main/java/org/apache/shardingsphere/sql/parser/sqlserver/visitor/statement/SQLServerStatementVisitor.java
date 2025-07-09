@@ -26,7 +26,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
@@ -237,6 +236,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.St
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.XmlMethodCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -715,7 +717,29 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.changeTableFunction()) {
             return visit(ctx.changeTableFunction());
         }
+        if (null != ctx.aiFunction()) {
+            return visit(ctx.aiFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitAiFunction(final AiFunctionContext ctx) {
+        if (null != ctx.aiGenerateEmbeddingsFunction()) {
+            return visit(ctx.aiGenerateEmbeddingsFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitAiGenerateEmbeddingsFunction(final AiGenerateEmbeddingsFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.AI_GENERATE_EMBEDDINGS().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), ctx.identifier().getText()));
+        if (ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
     }
     
     @Override
@@ -724,7 +748,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
-    public ASTNode visitXmlMethodCall(final SQLServerStatementParser.XmlMethodCallContext ctx) {
+    public ASTNode visitXmlMethodCall(final XmlMethodCallContext ctx) {
         String fullMethodName;
         if (null == ctx.alias()) {
             fullMethodName = ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
