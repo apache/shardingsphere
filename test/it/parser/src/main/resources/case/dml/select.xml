@@ -10548,4 +10548,65 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_from_freetexttable_language_English">
+        <projections start-index="7" stop-index="38">
+            <column-projection name="Description" start-index="7" stop-index="24">
+                <owner name="FT_TBL" start-index="7" stop-index="12" />
+            </column-projection>
+            <column-projection name="RANK" start-index="27" stop-index="38">
+                <owner name="KEY_TBL" start-index="27" stop-index="33" />
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="ProductDescription" alias="FT_TBL" start-index="45" stop-index="83">
+                        <owner name="Production" start-index="45" stop-index="54" />
+                    </simple-table>
+                </left>
+                <right>
+                    <function-table table-alias="KEY_TBL" start-index="96" stop-index="227">
+                        <table-function function-name="FREETEXTTABLE" text="FREETEXTTABLE(Production.ProductDescription, Description, 'high level of performance', LANGUAGE N'English', 2)" start-index="96" stop-index="215">
+                            <parameter>
+                                <column name="ProductDescription" start-index="110" stop-index="152">
+                                    <owner name="Production" start-index="110" stop-index="119" />
+                                </column>
+                            </parameter>
+                            <parameter>
+                                <column name="Description" start-index="154" stop-index="164" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="high level of performance" start-index="167" stop-index="194" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="English" start-index="205" stop-index="213" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="2" start-index="215" stop-index="215" />
+                            </parameter>
+                        </table-function>
+                    </function-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="221" stop-index="263">
+                        <left>
+                            <column name="ProductDescriptionID" start-index="221" stop-index="247">
+                                <owner name="FT_TBL" start-index="221" stop-index="226" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="KEY" start-index="251" stop-index="263" start-delimiter="[" end-delimiter="]">
+                                <owner name="KEY_TBL" start-index="251" stop-index="257" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <order-by>
+            <column-item name="RANK" start-index="274" stop-index="277" order-direction="DESC" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

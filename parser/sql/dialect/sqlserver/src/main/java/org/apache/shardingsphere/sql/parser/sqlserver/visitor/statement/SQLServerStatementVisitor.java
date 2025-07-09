@@ -240,6 +240,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Xml
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FreetextTableFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -721,7 +722,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.aiFunction()) {
             return visit(ctx.aiFunction());
         }
+        if (null != ctx.freetextTableFunction()) {
+            return visit(ctx.freetextTableFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitFreetextTableFunction(final FreetextTableFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.FREETEXTTABLE().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
@@ -854,17 +867,17 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     private Collection<ExpressionSegment> getLagLeadFunctionParameters(final LagLeadFunctionContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        boolean foundLP = false;
+        boolean insideParentheses = false;
         for (int i = 0; i < ctx.getChildCount(); i++) {
             String childText = ctx.getChild(i).getText();
             if ("(".equals(childText)) {
-                foundLP = true;
+                insideParentheses = true;
                 continue;
             }
-            if (")".equals(childText) && foundLP) {
+            if (")".equals(childText) && insideParentheses) {
                 break;
             }
-            if (foundLP && ctx.getChild(i) instanceof ExprContext) {
+            if (insideParentheses && ctx.getChild(i) instanceof ExprContext) {
                 result.add((ExpressionSegment) visit(ctx.getChild(i)));
             }
         }
