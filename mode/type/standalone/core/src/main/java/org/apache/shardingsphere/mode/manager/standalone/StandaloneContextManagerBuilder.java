@@ -48,7 +48,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         LockContext lockContext = new StandaloneLockContext();
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.init(param, repository, computeNodeInstanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(param, repository, computeNodeInstanceContext);
         return new ContextManager(metaDataContexts, computeNodeInstanceContext, lockContext, repository);
     }
     

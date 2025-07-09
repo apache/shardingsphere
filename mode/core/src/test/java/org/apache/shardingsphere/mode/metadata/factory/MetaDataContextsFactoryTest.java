@@ -82,7 +82,7 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertInitWithJDBCInstanceMetaData() throws SQLException {
+    void assertCreateWithJDBCInstanceMetaData() throws SQLException {
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(computeNodeInstanceContext.getInstance().getMetaData()).thenReturn(mock(JDBCInstanceMetaData.class));
         when(repository.getChildrenKeys("/metadata")).thenReturn(Collections.singletonList("foo_db"));
@@ -91,7 +91,7 @@ class MetaDataContextsFactoryTest {
         when(repository.query("/rules/global_fixture/active_version")).thenReturn(String.valueOf(0));
         when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: global_name");
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
-        MetaDataContexts actual = MetaDataContextsFactory.init(initContextManagerBuilderParameter(), repository, computeNodeInstanceContext);
+        MetaDataContexts actual = MetaDataContextsFactory.create(createContextManagerBuilderParameter(), repository, computeNodeInstanceContext);
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
@@ -99,21 +99,21 @@ class MetaDataContextsFactoryTest {
     }
     
     @Test
-    void assertInitWithProxyInstanceMetaData() throws SQLException {
+    void assertCreateWithProxyInstanceMetaData() throws SQLException {
         when(repository.getChildrenKeys("/metadata")).thenReturn(Collections.singletonList("foo_db"));
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys("/rules")).thenReturn(Collections.singletonList("global_fixture"));
         when(repository.query("/rules/global_fixture/active_version")).thenReturn(String.valueOf(0));
         when(repository.query("/rules/global_fixture/versions/0")).thenReturn("name: global_name");
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
-        MetaDataContexts actual = MetaDataContextsFactory.init(initContextManagerBuilderParameter(), repository, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS));
+        MetaDataContexts actual = MetaDataContextsFactory.create(createContextManagerBuilderParameter(), repository, mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
         assertThat(actual.getMetaData().getAllDatabases().size(), is(1));
     }
     
-    private ContextManagerBuilderParameter initContextManagerBuilderParameter() {
+    private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo", new MockedDataSource()), Collections.emptyList());
         return new ContextManagerBuilderParameter(null, Collections.singletonMap("foo_db", databaseConfig), Collections.emptyMap(),
                 Collections.emptyList(), new Properties(), Collections.emptyList(), null);

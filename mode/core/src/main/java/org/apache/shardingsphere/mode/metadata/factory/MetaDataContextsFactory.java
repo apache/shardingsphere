@@ -66,7 +66,7 @@ public final class MetaDataContextsFactory {
     private final ComputeNodeInstanceContext instanceContext;
     
     /**
-     * Init meta data contexts.
+     * Create meta data contexts.
      *
      * @param param context manager builder parameter
      * @param repository persist repository
@@ -74,7 +74,7 @@ public final class MetaDataContextsFactory {
      * @return meta data contexts result
      * @throws SQLException SQL exception
      */
-    public static MetaDataContexts init(final ContextManagerBuilderParameter param, final PersistRepository repository, final ComputeNodeInstanceContext instanceContext) throws SQLException {
+    public static MetaDataContexts create(final ContextManagerBuilderParameter param, final PersistRepository repository, final ComputeNodeInstanceContext instanceContext) throws SQLException {
         MetaDataContextsInitFactory initFactory = containsRegisteredDatabases(repository)
                 ? new RegisterCenterMetaDataContextsInitFactory(repository, instanceContext)
                 : new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext, param.getProps());
