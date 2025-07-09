@@ -80,7 +80,7 @@ class MetaDataPersistServiceTest {
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        metaDataPersistFacade = new MetaDataPersistFacade(mock(PersistRepository.class));
+        metaDataPersistFacade = new MetaDataPersistFacade(mock(PersistRepository.class), true);
         setField("dataSourceUnitService", dataSourceUnitService);
         setField("databaseMetaDataFacade", databaseMetaDataFacade);
         setField("databaseRuleService", databaseRuleService);
