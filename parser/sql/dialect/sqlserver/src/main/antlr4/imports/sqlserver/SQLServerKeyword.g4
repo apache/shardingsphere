@@ -2022,3 +2022,11 @@ AI_GENERATE_EMBEDDINGS
 PARAMETERS
     : P A R A M E T E R S
     ;
+
+LAG
+    : L A G
+    ;
+
+LEAD
+    : L E A D
+    ;

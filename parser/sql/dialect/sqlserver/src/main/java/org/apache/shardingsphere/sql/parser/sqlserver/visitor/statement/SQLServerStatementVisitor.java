@@ -239,6 +239,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cha
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.XmlMethodCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -835,8 +836,38 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        if (null != ctx.lagLeadFunction()) {
+            return visit(ctx.lagLeadFunction());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitLagLeadFunction(final LagLeadFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> parameters = getLagLeadFunctionParameters(ctx);
+        result.getParameters().addAll(parameters);
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getLagLeadFunctionParameters(final LagLeadFunctionContext ctx) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        boolean foundLP = false;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            String childText = ctx.getChild(i).getText();
+            if ("(".equals(childText)) {
+                foundLP = true;
+                continue;
+            }
+            if (")".equals(childText) && foundLP) {
+                break;
+            }
+            if (foundLP && ctx.getChild(i) instanceof ExprContext) {
+                result.add((ExpressionSegment) visit(ctx.getChild(i)));
+            }
+        }
         return result;
     }
     
