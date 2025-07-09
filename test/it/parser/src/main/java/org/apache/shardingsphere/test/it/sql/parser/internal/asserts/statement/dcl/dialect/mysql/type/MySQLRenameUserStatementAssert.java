@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLRenameUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLRenameUserStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.RenameUserStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.dialect.mysql.MySQLRenameUserStatementTestCase;
 
 /**
  * Rename user statement assert for MySQL.
@@ -36,6 +36,6 @@ public final class MySQLRenameUserStatementAssert {
      * @param actual actual rename user statement
      * @param expected expected rename user statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRenameUserStatement actual, final RenameUserStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRenameUserStatement actual, final MySQLRenameUserStatementTestCase expected) {
     }
 }

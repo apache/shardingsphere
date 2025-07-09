@@ -235,6 +235,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.XmlMethodCallContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FreetextTableFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -602,6 +608,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
         }
+        if (null != ctx.xmlMethodCall()) {
+            return visit(ctx.xmlMethodCall());
+        }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
         }
@@ -707,7 +716,75 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.trimFunction()) {
             return visit(ctx.trimFunction());
         }
+        if (null != ctx.changeTableFunction()) {
+            return visit(ctx.changeTableFunction());
+        }
+        if (null != ctx.aiFunction()) {
+            return visit(ctx.aiFunction());
+        }
+        if (null != ctx.freetextTableFunction()) {
+            return visit(ctx.freetextTableFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitFreetextTableFunction(final FreetextTableFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.FREETEXTTABLE().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAiFunction(final AiFunctionContext ctx) {
+        if (null != ctx.aiGenerateEmbeddingsFunction()) {
+            return visit(ctx.aiGenerateEmbeddingsFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitAiGenerateEmbeddingsFunction(final AiGenerateEmbeddingsFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.AI_GENERATE_EMBEDDINGS().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), ctx.identifier().getText()));
+        if (ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitChangeTableFunction(final ChangeTableFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHANGETABLE().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlMethodCall(final XmlMethodCallContext ctx) {
+        String fullMethodName;
+        if (null == ctx.alias()) {
+            fullMethodName = ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
+        } else {
+            fullMethodName = ctx.alias().getText() + "." + ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
+        }
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                fullMethodName, getOriginalText(ctx));
+        if (null == ctx.alias()) {
+            OwnerSegment owner = new OwnerSegment(ctx.columnName().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ctx.columnName().getText()));
+            result.setOwner(owner);
+        } else {
+            String ownerName = ctx.alias().getText() + "." + ctx.columnName().getText();
+            OwnerSegment owner = new OwnerSegment(ctx.alias().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ownerName));
+            result.setOwner(owner);
+        }
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     private ASTNode getFunctionSegment(final int startIndex, final int stopIndex, final String functionName, final String text, final List<ExprContext> exprList) {
@@ -772,8 +849,38 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        if (null != ctx.lagLeadFunction()) {
+            return visit(ctx.lagLeadFunction());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitLagLeadFunction(final LagLeadFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> parameters = getLagLeadFunctionParameters(ctx);
+        result.getParameters().addAll(parameters);
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getLagLeadFunctionParameters(final LagLeadFunctionContext ctx) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        boolean insideParentheses = false;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            String childText = ctx.getChild(i).getText();
+            if ("(".equals(childText)) {
+                insideParentheses = true;
+                continue;
+            }
+            if (")".equals(childText) && insideParentheses) {
+                break;
+            }
+            if (insideParentheses && ctx.getChild(i) instanceof ExprContext) {
+                result.add((ExpressionSegment) visit(ctx.getChild(i)));
+            }
+        }
         return result;
     }
     
@@ -1607,6 +1714,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.expr()) {
             ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
             FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        if (null != ctx.xmlMethodCall()) {
+            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.xmlMethodCall());
+            FunctionTableSegment result = new FunctionTableSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
             }

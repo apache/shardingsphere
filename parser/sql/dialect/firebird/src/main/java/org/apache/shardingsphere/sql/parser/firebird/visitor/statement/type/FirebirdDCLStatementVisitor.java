@@ -25,10 +25,10 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Gran
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
 
 /**
  * DCL statement visitor for Firebird.

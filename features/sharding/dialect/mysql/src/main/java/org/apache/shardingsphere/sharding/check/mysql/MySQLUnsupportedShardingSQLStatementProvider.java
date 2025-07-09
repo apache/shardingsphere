@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.check.mysql;
 
 import org.apache.shardingsphere.sharding.checker.sql.dml.DialectUnsupportedShardingSQLStatementProvider;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;

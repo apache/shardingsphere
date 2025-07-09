@@ -121,7 +121,7 @@ unreservedWord
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
     | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
-    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE
+    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE
     ;
 
 databaseName
@@ -286,6 +286,7 @@ simpleExpr
     | literals
     | columnName
     | variableName
+    | xmlMethodCall
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | CURRENT OF GLOBAL? expr
@@ -317,7 +318,40 @@ distinct
 specialFunction
     : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
     | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
-    | trimFunction
+    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction
+    ;
+
+freetextTableFunction
+    : FREETEXTTABLE LP_ expr COMMA_ expr COMMA_ expr (COMMA_ LANGUAGE expr)? (COMMA_ expr)? RP_
+    ;
+
+aiFunction
+    : aiGenerateEmbeddingsFunction
+    ;
+
+aiGenerateEmbeddingsFunction
+    : AI_GENERATE_EMBEDDINGS LP_ expr USE MODEL identifier (PARAMETERS expr)? RP_
+    ;
+
+changeTableFunction
+    : CHANGETABLE LP_ changeTableMode tableName (COMMA_ changeTableParams)* RP_
+    ;
+
+changeTableMode
+    : VERSION | CHANGES
+    ;
+
+changeTableParams
+    : LP_ expr (COMMA_ expr)* RP_
+    | expr
+    ;
+
+xmlMethodCall
+    : (alias DOT_)? columnName DOT_ xmlMethodName LP_ (expr (COMMA_ expr)*)? RP_
+    ;
+
+xmlMethodName
+    : NODES | QUERY | VALUE | EXIST | MODIFY
     ;
 
 trimFunction
@@ -471,6 +505,11 @@ convertExpr
 
 windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    | lagLeadFunction
+    ;
+
+lagLeadFunction
+    : funcName = (LAG | LEAD) LP_ expr (COMMA_ expr)? (COMMA_ expr)? RP_ nullTreatment? overClause
     ;
 
 nullTreatment
