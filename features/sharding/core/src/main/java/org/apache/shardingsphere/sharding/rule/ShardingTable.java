@@ -102,7 +102,7 @@ public final class ShardingTable {
     
     public ShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
-        List<String> dataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        Collection<String> dataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
@@ -166,7 +166,7 @@ public final class ShardingTable {
         dataSourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
     }
     
-    private boolean isEmptyDataNodes(final List<String> dataNodes) {
+    private boolean isEmptyDataNodes(final Collection<String> dataNodes) {
         return null == dataNodes || dataNodes.isEmpty();
     }
     
@@ -184,7 +184,7 @@ public final class ShardingTable {
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
+    private List<DataNode> generateDataNodes(final Collection<String> actualDataNodes, final Collection<String> dataSourceNames) {
         List<DataNode> result = new ArrayList<>(actualDataNodes.size());
         int index = 0;
         for (String each : actualDataNodes) {
@@ -241,7 +241,7 @@ public final class ShardingTable {
         return actualTables.contains(actualTableName);
     }
     
-    private void checkRule(final List<String> dataNodes) {
+    private void checkRule(final Collection<String> dataNodes) {
         ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
                 () -> new MissingRequiredDataNodesException(logicTable));
     }
