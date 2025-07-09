@@ -2030,3 +2030,7 @@ LAG
 LEAD
     : L E A D
     ;
+
+FREETEXTTABLE
+    : F R E E T E X T T A B L E
+    ;
