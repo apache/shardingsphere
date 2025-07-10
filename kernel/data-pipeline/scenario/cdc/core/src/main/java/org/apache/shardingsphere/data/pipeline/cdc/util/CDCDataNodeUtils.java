@@ -19,14 +19,11 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * CDC data node utils.
@@ -51,27 +47,25 @@ public final class CDCDataNodeUtils {
      * @throws PipelineInvalidParameterException thrown invalid parameter exception when can't get data nodes.
      */
     public static Map<String, List<DataNode>> buildTableAndDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        Optional<BroadcastRule> broadcastRule = database.getRuleMetaData().findSingleRule(BroadcastRule.class);
-        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        ShardingSpherePreconditions.checkNotEmpty(tableNames, () -> new PipelineInvalidParameterException("Tables can not empty."));
         Map<String, List<DataNode>> result = new HashMap<>(tableNames.size(), 1F);
+        Collection<DataNodeRuleAttribute> attributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
         // TODO support virtual data source name
         for (String each : tableNames) {
-            if (singleRule.isPresent() && singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().containsKey(each)) {
-                result.put(each, new ArrayList<>(singleRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().get(each)));
-                continue;
-            }
-            if (broadcastRule.isPresent() && broadcastRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).findFirstActualTable(each).isPresent()) {
-                result.put(each, Collections.singletonList(broadcastRule.get().getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().get(each).iterator().next()));
-                continue;
-            }
-            if (shardingRule.isPresent() && shardingRule.get().findShardingTable(each).isPresent()) {
-                result.put(each, shardingRule.get().getShardingTable(each).getActualDataNodes());
-                continue;
-            }
-            throw new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each));
+            Collection<DataNode> dataNodes = findDataNodes(each, attributes);
+            ShardingSpherePreconditions.checkNotEmpty(dataNodes, () -> new PipelineInvalidParameterException(String.format("Not find actual data nodes of `%s`", each)));
+            result.put(each, new ArrayList<>(dataNodes));
         }
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new PipelineInvalidParameterException(String.format("Not find table %s", tableNames)));
         return result;
+    }
+    
+    private static Collection<DataNode> findDataNodes(final String tableName, final Collection<DataNodeRuleAttribute> attributes) {
+        for (DataNodeRuleAttribute each : attributes) {
+            Collection<DataNode> dataNodes = each.getDataNodesByTableName(tableName);
+            if (!dataNodes.isEmpty()) {
+                return each.isReplicaBasedDistribution() ? Collections.singleton(dataNodes.iterator().next()) : dataNodes;
+            }
+        }
+        return Collections.emptyList();
     }
 }
