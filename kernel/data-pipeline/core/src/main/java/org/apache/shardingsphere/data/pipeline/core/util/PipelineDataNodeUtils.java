@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.util;
+package org.apache.shardingsphere.data.pipeline.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * CDC data node utils.
+ * Pipeline data node utils.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CDCDataNodeUtils {
+public final class PipelineDataNodeUtils {
     
     /**
      * Build table and data nodes map.
