@@ -10612,11 +10612,18 @@
 
     <select sql-case-id="select_stdifference_tostring">
         <projections start-index="7" stop-index="36">
-            <expression-projection text="@g.STDifference(@h).ToString()" start-index="7" stop-index="36">
+            <expression-projection text="@g.STDifference(@h).ToString()" start-index="27" stop-index="36">
                 <expr>
-                    <function start-index="7" stop-index="36" text="@g.STDifference(@h).ToString()" function-name="@g.STDifference.ToString">
+                    <function start-index="27" stop-index="36" text="@g.STDifference(@h).ToString()" function-name="ToString">
                         <parameter>
-                            <column name="@h" start-index="23" stop-index="24" />
+                            <function start-index="7" stop-index="21" text="@g.STDifference(@h).ToString()" function-name="STDifference">
+                                <parameter>
+                                    <column name="@g" start-index="7" stop-index="8" />
+                                </parameter>
+                                <parameter>
+                                    <column name="@h" start-index="23" stop-index="24" />
+                                </parameter>
+                            </function>
                         </parameter>
                     </function>
                 </expr>

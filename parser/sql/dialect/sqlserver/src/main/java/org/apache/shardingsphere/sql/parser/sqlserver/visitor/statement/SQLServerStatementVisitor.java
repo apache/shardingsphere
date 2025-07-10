@@ -627,17 +627,22 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitVariableMethodCall(final VariableMethodCallContext ctx) {
-        StringBuilder fullMethodName = new StringBuilder(ctx.variableName().getText());
+        ExpressionSegment currentExpr =
+                new ColumnSegment(ctx.variableName().getStart().getStartIndex(), ctx.variableName().getStop().getStopIndex(), new IdentifierValue(ctx.variableName().getText()));
         for (int i = 0; i < ctx.methodName().size(); i++) {
-            fullMethodName.append(".").append(ctx.methodName(i).getText());
-        }
-        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), fullMethodName.toString(), getOriginalText(ctx));
-        if (null != ctx.expr()) {
-            for (SQLServerStatementParser.ExprContext each : ctx.expr()) {
-                result.getParameters().add((ExpressionSegment) visit(each));
+            String methodName = ctx.methodName(i).getText();
+            int startIndex = (i == 0) ? ctx.variableName().getStart().getStartIndex() : ctx.methodName(i).getStart().getStartIndex();
+            int endIndex = (i == ctx.methodName().size() - 1) ? ctx.getStop().getStopIndex() : ctx.methodName(i).getStop().getStopIndex();
+            FunctionSegment methodFunction = new FunctionSegment(startIndex, endIndex, methodName, getOriginalText(ctx));
+            methodFunction.getParameters().add(currentExpr);
+            if (i == 0 && null != ctx.expr()) {
+                for (SQLServerStatementParser.ExprContext exprCtx : ctx.expr()) {
+                    methodFunction.getParameters().add((ExpressionSegment) visit(exprCtx));
+                }
             }
+            currentExpr = methodFunction;
         }
-        return result;
+        return currentExpr;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {
