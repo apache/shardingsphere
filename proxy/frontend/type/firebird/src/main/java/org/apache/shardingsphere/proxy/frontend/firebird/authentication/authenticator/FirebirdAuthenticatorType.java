@@ -29,20 +29,20 @@ import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenti
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdAuthenticatorType implements AuthenticatorType {
-
-    //SRP authenticators uses the same auth algorithm but different hash algorithms
+    
+    // SRP authenticators uses the same auth algorithm but different hash algorithms
     SRP(FirebirdSRPAuthenticator.class),
-
+    
     SRP224(FirebirdSRPAuthenticator.class),
-
+    
     SRP256(FirebirdSRPAuthenticator.class, true),
-
+    
     SRP384(FirebirdSRPAuthenticator.class),
-
+    
     SRP512(FirebirdSRPAuthenticator.class),
-
+    
     LEGACY_AUTH(FirebirdLegacyAuthenticator.class);
-
+    
     private final Class<? extends FirebirdAuthenticator> authenticatorClass;
     
     private final boolean isDefault;

@@ -33,11 +33,11 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdSQLInfoExecutor implements CommandExecutor {
-
+    
     private final FirebirdInfoPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems())));

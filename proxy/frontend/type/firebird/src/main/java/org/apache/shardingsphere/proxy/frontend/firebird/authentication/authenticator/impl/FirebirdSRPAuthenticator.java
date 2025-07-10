@@ -28,7 +28,7 @@ import org.firebirdsql.util.ByteArrayHelper;
  * @see <a href=https://github.com/FirebirdSQL/jaybird/blob/Branch_5_0/src/main/org/firebirdsql/gds/ng/wire/auth/legacy/LegacyAuthenticationPlugin.java>Jaybird implementation</a>
  */
 public final class FirebirdSRPAuthenticator implements FirebirdAuthenticator {
-
+    
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         FirebirdSRPAuthenticationData authData = (FirebirdSRPAuthenticationData) authInfo[1];

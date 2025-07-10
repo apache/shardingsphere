@@ -36,14 +36,14 @@ import java.util.Collections;
 public final class FirebirdCommitTransactionCommandExecutor implements CommandExecutor {
     
     private final FirebirdCommitTransactionPacket packet;
-
+    
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         if (!connectionSession.isAutoCommit()) {
             BackendTransactionManager backendTransactionManager = new BackendTransactionManager(connectionSession.getDatabaseConnectionManager());
-            //TODO add rollback and return exception
+            // TODO add rollback and return exception
             backendTransactionManager.commit();
         }
         return Collections.singleton(new FirebirdGenericResponsePacket());

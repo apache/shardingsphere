@@ -34,10 +34,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
-    final List<FirebirdInfoPacketType> infoItems;
-
+    private final List<FirebirdInfoPacketType> infoItems;
+    
     @Override
-    protected void write(FirebirdPacketPayload payload) {
+    protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
@@ -47,11 +47,11 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
         }
     }
     
-    private void parseSQLInfo(FirebirdPacketPayload data, FirebirdSQLInfoPacketType type) {
-        //TODO implement other request types handle
+    private void parseSQLInfo(final FirebirdPacketPayload data, final FirebirdSQLInfoPacketType type) {
+        // TODO implement other request types handle
         switch (type) {
             case RECORDS:
-                //TODO handle actual update count
+                // TODO handle actual update count
                 data.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
                 data.writeInt2LE(0);
                 data.writeInt1(FirebirdSQLInfoReturnValue.SELECT.getCode());

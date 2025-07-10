@@ -59,11 +59,11 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
             BUILD_NO,
             SERVER_NAME);
     
-    final List<FirebirdInfoPacketType> infoItems;
-
+    private final List<FirebirdInfoPacketType> infoItems;
+    
     @Override
-    protected void write(FirebirdPacketPayload payload) {
-        for (FirebirdInfoPacketType type : infoItems) {
+    protected void write(final FirebirdPacketPayload payload) {
+        for (final FirebirdInfoPacketType type : infoItems) {
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {
@@ -72,8 +72,8 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
         }
     }
     
-    private void parseDatabaseInfo(FirebirdPacketPayload data, FirebirdDatabaseInfoPacketType type) {
-        //TODO implement other request types handle
+    private void parseDatabaseInfo(final FirebirdPacketPayload data, final FirebirdDatabaseInfoPacketType type) {
+        // TODO implement other request types handle
         switch (type) {
             case DB_SQL_DIALECT:
                 data.writeInt1(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode());

@@ -38,19 +38,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
-    final List<FirebirdSQLInfoPacketType> requestedItems;
+    private final List<FirebirdSQLInfoPacketType> requestedItems;
     
-    final int index;
+    private final int index;
     
-    final ShardingSphereTable table;
+    private final ShardingSphereTable table;
     
-    final ShardingSphereColumn column;
+    private final ShardingSphereColumn column;
     
-    final String tableAlias;
+    private final String tableAlias;
     
-    final String columnAlias;
+    private final String columnAlias;
     
-    final String owner;
+    private final String owner;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {

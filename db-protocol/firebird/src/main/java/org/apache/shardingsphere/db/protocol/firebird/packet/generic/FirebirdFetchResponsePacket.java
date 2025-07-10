@@ -71,8 +71,7 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
             if (cell.getData() != null) {
                 FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
                 type.write(payload, cell.getData());
-            }
-            else {
+            } else {
                 byte nullBitsByte = payload.getByteBuf().getByte(i / 8);
                 payload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
             }

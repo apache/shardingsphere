@@ -56,11 +56,11 @@ import java.util.Optional;
  * Authentication engine for Firebird.
  */
 public final class FirebirdAuthenticationEngine implements AuthenticationEngine {
-
+    
     private FirebirdSRPAuthenticationData authData;
-
+    
     private FirebirdAuthenticationMethod plugin;
-
+    
     private AuthenticationResult currentAuthResult;
     
     private int connectionId;
@@ -85,12 +85,12 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
             case ATTACH:
                 return processAttach(context, fdbPacketPayload, rule);
             case CONT_AUTH:
-                //TODO implement CONT_AUTH
+                // TODO implement CONT_AUTH
             default:
                 throw new FirebirdProtocolException("Wrong operation %s during authentication phase", type.name());
         }
     }
-
+    
     private AuthenticationResult processAttach(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
         FirebirdAttachPacket attachPacket = new FirebirdAttachPacket(payload);
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(FirebirdCharacterSets.findCharacterSet(attachPacket.getEncoding()));
@@ -98,7 +98,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         context.writeAndFlush(new FirebirdGenericResponsePacket());
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
     }
-
+    
     private void login(final String databaseName, final String username, final FirebirdAttachPacket attachPacket, final AuthorityRule rule) {
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(databaseName) || ProxyContext.getInstance().databaseExists(databaseName), () -> new UnknownDatabaseException(databaseName));
         Grantee grantee = new Grantee(username, "");
@@ -106,7 +106,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         user.ifPresent(shardingSphereUser -> new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule)
                 .newInstance(shardingSphereUser).authenticate(shardingSphereUser, new Object[]{attachPacket.getEncPassword(), authData, attachPacket.getAuthData()}));
     }
-
+    
     private AuthenticationResult processConnect(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
         FirebirdConnectPacket connectPacket = new FirebirdConnectPacket(payload);
         FirebirdAcceptPacket acceptPacket = new FirebirdAcceptPacket(connectPacket.getUserProtocols());
@@ -128,12 +128,12 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         currentAuthResult = AuthenticationResultBuilder.continued(username, connectPacket.getHost(), connectPacket.getDatabase());
         return currentAuthResult;
     }
-
+    
     private String getPluginName(final AuthorityRule rule, final ShardingSphereUser user) {
         String pluginName = rule.getAuthenticatorType(user);
         return !pluginName.isEmpty() ? pluginName
                 :
-                //default plugin name
+                // default plugin name
                 Arrays.stream(FirebirdAuthenticatorType.class.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new).name();
     }
 }

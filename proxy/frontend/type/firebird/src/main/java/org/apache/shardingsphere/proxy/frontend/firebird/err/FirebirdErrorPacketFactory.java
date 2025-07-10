@@ -32,9 +32,9 @@ import java.sql.SQLException;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdErrorPacketFactory {
-
+    
     private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-
+    
     /**
      * Create new instance of Firebird error packet.
      *

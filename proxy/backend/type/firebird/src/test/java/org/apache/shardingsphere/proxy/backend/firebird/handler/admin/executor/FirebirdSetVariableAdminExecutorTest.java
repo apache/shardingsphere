@@ -40,6 +40,7 @@ import static org.mockito.Mockito.when;
 class FirebirdSetVariableAdminExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
     @Test
     void assertExecute() {
         SetStatement setStatement = new SetStatement(Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "key"), "value")));

@@ -36,7 +36,7 @@ import java.util.Collections;
 public final class FirebirdRollbackTransactionCommandExecutor implements CommandExecutor {
     
     private final FirebirdRollbackTransactionPacket packet;
-
+    
     private final ConnectionSession connectionSession;
     
     @Override
@@ -48,4 +48,3 @@ public final class FirebirdRollbackTransactionCommandExecutor implements Command
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }
-

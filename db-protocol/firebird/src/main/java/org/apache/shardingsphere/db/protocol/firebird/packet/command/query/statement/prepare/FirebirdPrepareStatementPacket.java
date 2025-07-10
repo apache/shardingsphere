@@ -53,7 +53,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     private final FirebirdPacketPayload payload;
     
-    public FirebirdPrepareStatementPacket(FirebirdPacketPayload payload) {
+    public FirebirdPrepareStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         transactionId = payload.readInt4();
         statementId = payload.readInt4();
@@ -66,7 +66,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         this.payload = payload;
     }
     
-    private void parseInfo(ByteBuf buffer) {
+    private void parseInfo(final ByteBuf buffer) {
         while (buffer.isReadable()) {
             infoItems.add(FirebirdSQLInfoPacketType.valueOf(buffer.readByte()));
         }
@@ -76,6 +76,11 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         return statementId != 0xFFFF;
     }
     
+    /**
+     * Move to the next info item.
+     *
+     * @return {@code true} if there is a next item, {@code false} otherwise
+     */
     public boolean nextItem() {
         ++currentItemIdx;
         return currentItemIdx < infoItems.size();
@@ -95,12 +100,12 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     }
     
     /**
-     * Get length of packet
+     * Get length of packet.
      *
      * @param payload Firebird packet payload
      * @return Length of packet
      */
-    public static int getLength(FirebirdPacketPayload payload) {
+    public static int getLength(final FirebirdPacketPayload payload) {
         int length = 16;
         length += payload.getBufferLength(length);
         length += payload.getBufferLength(length);

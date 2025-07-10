@@ -35,7 +35,7 @@ import java.util.Collections;
 public final class FirebirdStartTransactionCommandExecutor implements CommandExecutor {
     
     private final FirebirdStartTransactionPacket packet;
-
+    
     private final ConnectionSession connectionSession;
     
     @Override

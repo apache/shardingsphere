@@ -33,9 +33,9 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdAllocateStatementCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdAllocateStatementPacket packet;
-
+    
     private final ConnectionSession connectionSession;
     
     @Override

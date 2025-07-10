@@ -38,11 +38,11 @@ import java.util.List;
 public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     
     @Setter
-    FirebirdSQLInfoReturnValue type;
+    private FirebirdSQLInfoReturnValue type;
     
-    List<FirebirdReturnColumnPacket> describeSelect = new ArrayList<>();
+    private List<FirebirdReturnColumnPacket> describeSelect = new ArrayList<>();
     
-    List<FirebirdReturnColumnPacket> describeBind = new ArrayList<>();
+    private List<FirebirdReturnColumnPacket> describeBind = new ArrayList<>();
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
@@ -60,17 +60,17 @@ public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
         writeCode(FirebirdCommonInfoPacketType.END, payload);
     }
     
-    static void writeCode(FirebirdInfoPacketType code, FirebirdPacketPayload payload) {
+    static void writeCode(final FirebirdInfoPacketType code, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
     }
     
-    static void writeInt(FirebirdInfoPacketType code, int value, FirebirdPacketPayload payload) {
+    static void writeInt(final FirebirdInfoPacketType code, final int value, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
         payload.writeInt2LE(4);
         payload.writeInt4LE(value);
     }
     
-    static void writeString(FirebirdInfoPacketType code, String value, FirebirdPacketPayload payload) {
+    static void writeString(final FirebirdInfoPacketType code, final String value, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
         byte[] valueBytes = value.getBytes(payload.getCharset());
         payload.writeInt2LE(valueBytes.length);
