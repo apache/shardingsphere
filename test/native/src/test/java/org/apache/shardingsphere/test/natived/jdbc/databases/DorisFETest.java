@@ -36,25 +36,25 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-@Testcontainers
 @EnabledInNativeImage
-class OpenGaussTest {
+@Testcontainers
+class DorisFETest {
     
-    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.opengauss.";
-    
-    private final String password = "Enmo@123";
+    private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.doris.";
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("opengauss/opengauss-server:7.0.0-RC1")
-            .withEnv("GS_PASSWORD", password)
-            .withExposedPorts(5432);
+    private final GenericContainer<?> container = new GenericContainer<>("dyrnq/doris:3.0.5")
+            .withEnv("RUN_MODE", "standalone")
+            .withEnv("SKIP_CHECK_ULIMIT", "true")
+            .withExposedPorts(9030)
+            .withStartupTimeout(Duration.ofMinutes(10L));
     
     private DataSource logicDataSource;
     
@@ -79,49 +79,79 @@ class OpenGaussTest {
     
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        jdbcUrlPrefix = "jdbc:opengauss://localhost:" + container.getMappedPort(5432) + "/";
+        jdbcUrlPrefix = "jdbc:mysql://localhost:" + container.getMappedPort(9030) + "/";
         logicDataSource = createDataSource();
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
-        testShardingService.processSuccess();
+        testShardingService.processSuccessWithoutTransactions();
         testShardingService.cleanEnvironment();
     }
     
     private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInPostgres();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInPostgres();
-        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
     }
     
-    private Connection openConnection() throws SQLException {
-        Properties props = new Properties();
-        props.setProperty("user", "gaussdb");
-        props.setProperty("password", password);
-        return DriverManager.getConnection(jdbcUrlPrefix + "postgres", props);
-    }
-    
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
     private DataSource createDataSource() throws SQLException {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection().close();
+            try (Connection connection = DriverManager.getConnection(jdbcUrlPrefix, "root", null)) {
+                assertThat(connection.createStatement().executeQuery("SELECT `host`, `join`, `alive` FROM frontends()").next(), is(true));
+                assertThat(connection.createStatement().executeQuery("SELECT `host`, `alive` FROM backends()").next(), is(true));
+            }
             return true;
         });
         try (
-                Connection connection = openConnection();
+                Connection connection = DriverManager.getConnection(jdbcUrlPrefix, "root", null);
                 Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE DATABASE demo_ds_0");
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
+        Stream.of("demo_ds_0", "demo_ds_1", "demo_ds_2").forEach(this::initDatabase);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/opengauss.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/doris.yaml?placeholder-type=system_props");
         System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
         System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
         System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
         return new HikariDataSource(config);
+    }
+    
+    /**
+     * TODO `shardingsphere-parser-sql-doris` module does not support `create table` statements yet.
+     * Doris FE does not support the use of `PRIMARY KEY`.
+     *
+     * @param databaseName database name
+     * @throws RuntimeException Runtime exception
+     */
+    @SuppressWarnings("SqlNoDataSourceInspection")
+    private void initDatabase(final String databaseName) {
+        try (
+                Connection con = DriverManager.getConnection(jdbcUrlPrefix + databaseName, "root", null);
+                Statement stmt = con.createStatement()) {
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_order (\n"
+                    + "    order_id BIGINT NOT NULL AUTO_INCREMENT,\n"
+                    + "    order_type INT(11),\n"
+                    + "    user_id INT NOT NULL,\n"
+                    + "    address_id BIGINT NOT NULL,\n"
+                    + "    status VARCHAR(50)\n"
+                    + ")\n"
+                    + "UNIQUE KEY (order_id) DISTRIBUTED BY HASH(order_id) PROPERTIES ('replication_num' = '1')");
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_order_item \n"
+                    + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT,\n"
+                    + "order_id BIGINT NOT NULL,\n"
+                    + "user_id INT NOT NULL,\n"
+                    + "phone VARCHAR(50),\n"
+                    + "status VARCHAR(50))\n"
+                    + "UNIQUE KEY (order_item_id) DISTRIBUTED BY HASH(order_item_id) PROPERTIES ('replication_num' = '1')");
+            stmt.execute("CREATE TABLE IF NOT EXISTS t_address ("
+                    + "address_id BIGINT NOT NULL,\n"
+                    + "address_name VARCHAR(100) NOT NULL)\n"
+                    + "UNIQUE KEY (address_id) DISTRIBUTED BY HASH(address_id) PROPERTIES ('replication_num' = '1')");
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
