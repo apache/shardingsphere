@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -73,9 +72,7 @@ public enum FirebirdSQLInfoReturnValue {
      * @return Firebird dpb type
      */
     public static FirebirdSQLInfoReturnValue valueOf(final int code) {
-        FirebirdSQLInfoReturnValue result = FIREBIRD_DATABASE_INFO_RETURN_VALUES_CACHE.get(code);
-        Preconditions.checkNotNull(result, "Cannot find code '%d' in database info type", code);
-        return result;
+        return FIREBIRD_DATABASE_INFO_RETURN_VALUES_CACHE.get(code);
     }
     
     /**

@@ -57,9 +57,10 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
     private void parseInfo(final ByteBuf buffer, final Function<Integer, FirebirdInfoPacketType> valueOf) {
         while (buffer.isReadable()) {
             int code = buffer.readByte();
-            try {
-                infoItems.add(valueOf.apply(code));
-            } catch (final IllegalArgumentException ignored) {
+            FirebirdInfoPacketType type = valueOf.apply(code);
+            if (type != null) {
+                infoItems.add(type);
+            } else {
                 infoItems.add(FirebirdCommonInfoPacketType.valueOf(code));
             }
         }

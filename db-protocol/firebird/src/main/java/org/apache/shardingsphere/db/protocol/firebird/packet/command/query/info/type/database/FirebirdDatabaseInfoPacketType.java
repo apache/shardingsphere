@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.database;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
@@ -158,9 +157,7 @@ public enum FirebirdDatabaseInfoPacketType implements FirebirdInfoPacketType {
      * @return Firebird dpb type
      */
     public static FirebirdDatabaseInfoPacketType valueOf(final int code) {
-        FirebirdDatabaseInfoPacketType result = FIREBIRD_DATABASE_INFO_TYPE_CACHE.get(code);
-        Preconditions.checkNotNull(result, "Cannot find code '%d' in database info type", code);
-        return result;
+        return FIREBIRD_DATABASE_INFO_TYPE_CACHE.get(code);
     }
     
     /**
