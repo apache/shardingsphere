@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
@@ -241,6 +242,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiF
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FreetextTableFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableMethodCallContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -611,10 +613,31 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.xmlMethodCall()) {
             return visit(ctx.xmlMethodCall());
         }
+        if (null != ctx.variableMethodCall()) {
+            return visit(ctx.variableMethodCall());
+        }
+        if (null != ctx.variableName()) {
+            return visit(ctx.variableName());
+        }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
         }
         return visitRemainSimpleExpr(ctx);
+    }
+    
+    @Override
+    public ASTNode visitVariableMethodCall(final VariableMethodCallContext ctx) {
+        StringBuilder fullMethodName = new StringBuilder(ctx.variableName().getText());
+        for (int i = 0; i < ctx.methodName().size(); i++) {
+            fullMethodName.append(".").append(ctx.methodName(i).getText());
+        }
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), fullMethodName.toString(), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (SQLServerStatementParser.ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     private ASTNode visitRemainSimpleExpr(final SimpleExprContext ctx) {

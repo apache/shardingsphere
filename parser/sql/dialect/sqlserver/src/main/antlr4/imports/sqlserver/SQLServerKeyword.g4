@@ -2034,3 +2034,67 @@ LEAD
 FREETEXTTABLE
     : F R E E T E X T T A B L E
     ;
+
+STDIFFERENCE
+    : S T D I F F E R E N C E
+    ;
+
+STINTERSECTION
+    : S T I N T E R S E C T I O N
+    ;
+
+STUNION
+    : S T U N I O N
+    ;
+
+STBUFFER
+    : S T B U F F E R
+    ;
+
+STDISJOINT
+    : S T D I S J O I N T
+    ;
+
+STDISTANCE
+    : S T D I S T A N C E
+    ;
+
+STENDPOINT
+    : S T E N D P O I N T
+    ;
+
+STEQUALS
+    : S T E Q U A L S
+    ;
+
+STGEOMETRYN
+    : S T G E O M E T R Y N
+    ;
+
+STGEOMETRYTYPE
+    : S T G E O M E T R Y T Y P E
+    ;
+
+STISEMPTY
+    : S T I S E M P T Y
+    ;
+
+STISVALID
+    : S T I S V A L I D
+    ;
+
+STWITHIN
+    : S T W I T H I N
+    ;
+
+TOSTRING
+    : T O S T R I N G
+    ;
+
+STGEOMFROMTEXT
+    : S T G E O M F R O M T E X T
+    ;
+
+STGEOMFROMWKB
+    : S T G E O M F R O M W K B
+    ;
