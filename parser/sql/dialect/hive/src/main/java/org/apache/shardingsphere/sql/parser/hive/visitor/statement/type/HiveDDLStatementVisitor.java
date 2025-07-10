@@ -24,11 +24,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
+/**
+ * DDL statement visitor for Hive.
+ */
 public final class HiveDDLStatementVisitor extends HiveStatementVisitor implements DDLStatementVisitor {
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        // 构造 CreateDatabaseStatement，并设置数据库名及 IF NOT EXISTS 标识
         return new CreateDatabaseStatement(new IdentifierValue(ctx.identifier().getText()).getValue(),
                 null != ctx.IF() && null != ctx.NOT() && null != ctx.EXISTS());
     }

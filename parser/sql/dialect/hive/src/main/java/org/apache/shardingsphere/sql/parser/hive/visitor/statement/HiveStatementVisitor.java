@@ -530,14 +530,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
         }
         return result;
     }
-    
-    @Override
-    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        CreateDatabaseStatement result = new CreateDatabaseStatement(new IdentifierValue(ctx.identifier().getText()).getValue(),
-                null != ctx.IF() && null != ctx.NOT() && null != ctx.EXISTS());
-        return result;
-    }
-    
+
     /**
      * Get original text.
      *

@@ -21,5 +21,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 
 @InternalSQLParserITSettings("Hive")
-public class InternalHiveParserIT extends InternalSQLParserIT {
+class InternalHiveParserIT extends InternalSQLParserIT {
 }

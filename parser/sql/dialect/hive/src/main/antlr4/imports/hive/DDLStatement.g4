@@ -20,11 +20,15 @@ grammar DDLStatement;
 import BaseRule;
 
 createDatabase
-    : CREATE REMOTE? (DATABASE | SCHEMA) (IF NOT EXISTS)? identifier
-      (COMMENT string_)? 
-      (LOCATION string_)?
-      (MANAGEDLOCATION string_)?
-      (WITH DBPROPERTIES LP_ dbProperties RP_)?
+    : CREATE REMOTE? (DATABASE | SCHEMA) (ifNotExists)? identifier
+      COMMENT string_?
+      LOCATION string_?
+      MANAGEDLOCATION string_?
+      WITH DBPROPERTIES LP_ dbProperties RP_?
+    ;
+
+ifNotExists
+    :IF NOT EXISTS
     ;
 
 dbProperties
