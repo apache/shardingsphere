@@ -54,11 +54,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-encrypt-distsql-handler</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -190,6 +185,12 @@
             <scope>test</scope>
         </dependency>
         
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
