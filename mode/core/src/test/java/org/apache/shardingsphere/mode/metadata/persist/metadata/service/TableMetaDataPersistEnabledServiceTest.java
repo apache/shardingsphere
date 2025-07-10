@@ -36,9 +36,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TableMetaDataPersistServiceTest {
+class TableMetaDataPersistEnabledServiceTest {
     
-    private TableMetaDataPersistService persistService;
+    private TableMetaDataPersistEnabledService persistService;
     
     @Mock
     private PersistRepository repository;
@@ -46,7 +46,7 @@ class TableMetaDataPersistServiceTest {
     @BeforeEach
     void setUp() {
         VersionPersistService versionPersistService = new VersionPersistService(repository);
-        persistService = new TableMetaDataPersistService(repository, versionPersistService);
+        persistService = new TableMetaDataPersistEnabledService(repository, versionPersistService);
     }
     
     @Test
