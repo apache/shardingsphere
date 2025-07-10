@@ -70,7 +70,7 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
         while (userInfo.isReadable()) {
             FirebirdUserDataType type = FirebirdUserDataType.valueOf(userInfo.readUnsignedByte());
             int length = userInfo.readUnsignedByte();
-            ByteBuf data = userInfo.readRetainedSlice(length);
+            ByteBuf data = userInfo.readSlice(length);
             if (type == FirebirdUserDataType.CNCT_SPECIFIC_DATA) {
                 // specific data can be split into chunks and (i think) can be in payload in random order
                 int step = data.readUnsignedByte();

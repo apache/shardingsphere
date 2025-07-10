@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird start transaction command executor.
+ * Firebird rollback statement command executor.
  */
 @RequiredArgsConstructor
 public final class FirebirdRollbackTransactionCommandExecutor implements CommandExecutor {

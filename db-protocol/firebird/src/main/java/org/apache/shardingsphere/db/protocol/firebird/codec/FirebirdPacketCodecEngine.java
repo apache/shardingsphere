@@ -79,12 +79,14 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         if (in.writerIndex() == in.capacity()) {
             ByteBuf bufferPart = in.readRetainedSlice(in.readableBytes());
             CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
-            result.addComponents(true, pendingMessages).addComponent(true, bufferPart);
+            result.addComponents(true, pendingMessages).addComponent(true, bufferPart.retainedSlice());
             FirebirdPacketPayload payload = new FirebirdPacketPayload(result, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
             if (FirebirdCommandPacketFactory.isValidLength(pendingPacketType, payload, result.readableBytes(), context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get())) {
                 out.add(result);
+                bufferPart.release();
                 pendingMessages.clear();
             } else {
+                result.release();
                 pendingMessages.add(bufferPart);
             }
         } else {

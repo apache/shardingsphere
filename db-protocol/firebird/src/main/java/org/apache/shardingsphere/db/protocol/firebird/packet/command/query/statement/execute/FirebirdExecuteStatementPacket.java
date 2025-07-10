@@ -19,8 +19,6 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.stat
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
-import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -110,9 +108,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         }
         
         this.payload = payload;
-        // while (msgCount-- != 0) {
-        // paramsValues.add(payload.readBuffer());
-        // }
         
     }
     
@@ -165,17 +160,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
      * @throws SQLException SQL exception
      */
     public List<Object> readParameters(final List<FirebirdBinaryColumnType> paramTypes, final Set<Integer> longDataIndexes) throws SQLException {
-        // List<Object> result = new ArrayList<>(paramTypes.size());
-        // for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
-        // if (longDataIndexes.contains(paramIndex)) {
-        // result.add(null);
-        // continue;
-        // }
-        // FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex));
-        // Object value = binaryProtocolValue.read(payload);
-        // result.add(value);
-        // }
-        // return result;
         return parameterValues;
     }
     
@@ -186,34 +170,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
      */
     public boolean isStoredProcedure() {
         return type == FirebirdCommandPacketType.EXECUTE2;
-    }
-    
-    /**
-     * Get return data.
-     *
-     * @param row Returned row
-     * @return Return data
-     */
-    public ByteBuf getReturnData(final BinaryRow row) {
-        ByteBuf writeBuffer = payload.getByteBuf().alloc().buffer();
-        FirebirdPacketPayload writePayload = new FirebirdPacketPayload(writeBuffer, payload.getCharset());
-        int nullBits = (returnColumns.size() + 7) / 8;
-        nullBits += (4 - nullBits) & 3;
-        writePayload.getByteBuf().writeZero(nullBits);
-        int i = 0;
-        for (BinaryCell cell : row.getCells()) {
-            FirebirdBinaryColumnType returnType = returnColumns.get(i);
-            if (cell.getData() != null) {
-                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(returnType);
-                type.write(writePayload, cell.getData());
-            } else {
-                byte nullBitsByte = writePayload.getByteBuf().getByte(i / 8);
-                writePayload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
-            }
-            i++;
-            
-        }
-        return writeBuffer;
     }
     
     @Override

@@ -66,7 +66,7 @@ public final class FirebirdParameterBuffer {
                 return true;
             case STRING:
                 int length = traditionalStyle ? parameterBuffer.readByte() : parameterBuffer.readIntLE();
-                return parameterBuffer.readRetainedSlice(length).toString(StandardCharsets.UTF_8);
+                return parameterBuffer.readSlice(length).toString(StandardCharsets.UTF_8);
             default:
                 throw new FirebirdProtocolException("Unsupported format type %s", type.getFormat().name());
         }

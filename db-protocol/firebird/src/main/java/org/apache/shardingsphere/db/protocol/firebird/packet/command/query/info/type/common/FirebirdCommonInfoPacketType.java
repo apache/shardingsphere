@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common;
 
 import com.google.common.base.Preconditions;
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,15 +63,15 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
     /**
      * Parse and write Firebird common information packet based on the given type.
      *
-     * @param data ByteBuf to write data to
+     * @param data payload to write data to
      * @param type type of common info packet
      * @throws FirebirdProtocolException if the common info packet type is unknown
      */
-    public static void parseCommonInfo(final ByteBuf data, final FirebirdCommonInfoPacketType type) {
+    public static void parseCommonInfo(final FirebirdPacketPayload data, final FirebirdCommonInfoPacketType type) {
         // TODO implement other request types handle
         switch (type) {
             case END:
-                data.writeByte(END.getCode());
+                data.writeInt1(END.getCode());
                 break;
             default:
                 throw new FirebirdProtocolException("Unknown common information request type %d", type.getCode());

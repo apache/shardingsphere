@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Database info command executor for Firebird.
+ * Unsupported command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdSQLInfoExecutor implements CommandExecutor {
-
-    private final FirebirdInfoPacket packet;
-
-    private final ConnectionSession connectionSession;
-
+public final class FirebirdUnsupportedCommandExecutor implements CommandExecutor {
+    
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems())));
+        // TODO send proper error packet
+        return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

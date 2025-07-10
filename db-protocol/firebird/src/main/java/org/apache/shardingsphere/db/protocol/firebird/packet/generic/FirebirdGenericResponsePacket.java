@@ -40,7 +40,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     
     private long id;
     
-    private ByteBuf data;
+    private FirebirdPacket data;
     
     private byte[] statusVector = getEmptyStatusVector();
     
@@ -67,13 +67,13 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     }
     
     /**
-     * Set data buffer.
+     * Set return data packet.
      *
-     * @param buffer data buffer to set
+     * @param packet data packet to set
      * @return this instance with updated data
      */
-    public FirebirdGenericResponsePacket setData(final ByteBuf buffer) {
-        data = buffer;
+    public FirebirdGenericResponsePacket setData(final FirebirdPacket packet) {
+        data = packet;
         return this;
     }
     
@@ -124,6 +124,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         
         byte[] vec = new byte[buf.readableBytes()];
         buf.readBytes(vec);
+        buf.release();
         this.statusVector = vec;
         return this;
     }
@@ -134,7 +135,12 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         payload.writeInt4(handle);
         payload.writeInt8(id);
         if (data != null) {
-            payload.writeBuffer(data);
+            payload.getByteBuf().writeZero(4);
+            int index = payload.getByteBuf().readableBytes();
+            data.write(payload);
+            int length = payload.getByteBuf().readableBytes() - index;
+            payload.getByteBuf().setInt(index - 4, length);
+            payload.getByteBuf().writeBytes(new byte[(4 - length) & 3]);
         } else {
             payload.writeBuffer(new byte[0]);
         }

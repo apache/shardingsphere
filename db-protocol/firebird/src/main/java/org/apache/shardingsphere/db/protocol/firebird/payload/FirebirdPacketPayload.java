@@ -128,6 +128,15 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
+     * Write 4 byte fixed length integer in little-endian to byte buffers.
+     *
+     * @param value 4 byte fixed length integer
+     */
+    public void writeInt4LE(final int value) {
+        byteBuf.writeIntLE(value);
+    }
+    
+    /**
      * Read 8 byte fixed length integer from byte buffers.
      *
      * @return 8 byte fixed length integer
@@ -152,7 +161,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @return ByteBuf consisting of a specified number of bytes
      */
     public ByteBuf readBytes(final int count) {
-        return byteBuf.readRetainedSlice(count);
+        return byteBuf.readSlice(count);
     }
     
     /**
@@ -171,7 +180,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      */
     public ByteBuf readBuffer() {
         int length = byteBuf.readInt();
-        ByteBuf buffer = byteBuf.readRetainedSlice(length);
+        ByteBuf buffer = byteBuf.readSlice(length);
         skipPadding(length);
         return buffer;
     }

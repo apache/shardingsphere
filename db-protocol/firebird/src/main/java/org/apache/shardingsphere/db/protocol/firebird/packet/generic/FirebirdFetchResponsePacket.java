@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
@@ -38,28 +37,12 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
     
     private final int count;
     
-    private final ByteBuf data;
+    private final BinaryRow data;
     
-    public FirebirdFetchResponsePacket(final BinaryRow row, final FirebirdPacketPayload payload) {
+    public FirebirdFetchResponsePacket(final BinaryRow row) {
         status = ISCConstants.FETCH_OK;
         count = 1;
-        ByteBuf writeBuffer = payload.getByteBuf().alloc().buffer();
-        FirebirdPacketPayload writePayload = new FirebirdPacketPayload(writeBuffer, payload.getCharset());
-        int nullBits = (row.getCells().size() + 7) / 8;
-        nullBits += (4 - nullBits) & 3;
-        writePayload.getByteBuf().writeZero(nullBits);
-        int i = 0;
-        for (BinaryCell cell : row.getCells()) {
-            if (cell.getData() != null) {
-                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
-                type.write(writePayload, cell.getData());
-            } else {
-                byte nullBitsByte = writePayload.getByteBuf().getByte(i / 8);
-                writePayload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
-            }
-            i++;
-        }
-        data = writeBuffer;
+        data = row;
     }
     
     public FirebirdFetchResponsePacket() {
@@ -73,8 +56,27 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
         payload.writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
         payload.writeInt4(status);
         payload.writeInt4(count);
-        if (data != null) {
-            payload.getByteBuf().writeBytes(data);
+        writeData(payload, data);
+    }
+    
+    static void writeData(final FirebirdPacketPayload payload, final BinaryRow data) {
+        if (data == null) {
+            return;
+        }
+        int nullBits = (data.getCells().size() + 7) / 8;
+        nullBits += (4 - nullBits) & 3;
+        payload.getByteBuf().writeZero(nullBits);
+        int i = 0;
+        for (BinaryCell cell : data.getCells()) {
+            if (cell.getData() != null) {
+                FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
+                type.write(payload, cell.getData());
+            }
+            else {
+                byte nullBitsByte = payload.getByteBuf().getByte(i / 8);
+                payload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
+            }
+            i++;
         }
     }
 }

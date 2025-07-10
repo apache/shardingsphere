@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
-import io.netty.buffer.ByteBuf;
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
@@ -31,24 +31,22 @@ public final class FirebirdSQLResponsePacket extends FirebirdPacket {
     
     private final int messageCount;
     
-    private final ByteBuf data;
+    private final BinaryRow data;
     
     public FirebirdSQLResponsePacket() {
         messageCount = 0;
         data = null;
     }
     
-    public FirebirdSQLResponsePacket(final ByteBuf data) {
+    public FirebirdSQLResponsePacket(final BinaryRow row) {
         messageCount = 1;
-        this.data = data;
+        data = row;
     }
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.SQL_RESPONSE.getValue());
         payload.writeInt4(messageCount);
-        if (data != null) {
-            payload.getByteBuf().writeBytes(data);
-        }
+        FirebirdFetchResponsePacket.writeData(payload, data);
     }
 }

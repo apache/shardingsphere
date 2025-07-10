@@ -44,7 +44,6 @@ public final class FirebirdAcceptDataPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        // auth data
         if (salt.length != 0 && !publicKey.isEmpty()) {
             payload.writeInt4(salt.length + publicKey.length() + 4);
             payload.writeInt2LE(salt.length);

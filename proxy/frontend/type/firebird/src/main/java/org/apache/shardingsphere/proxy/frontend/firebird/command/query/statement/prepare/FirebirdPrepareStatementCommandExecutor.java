@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
-import io.netty.buffer.ByteBuf;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdPrepareStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementReturnPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine.ProjectionEngine;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -56,6 +54,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -127,123 +126,99 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts) {
-        ByteBuf data = packet.getPayload().getByteBuf().alloc().buffer();
-        int statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
+        FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
+        FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
             switch (packet.getCurrentItem()) {
                 case STMT_TYPE:
-                    writeInt(FirebirdSQLInfoPacketType.STMT_TYPE, statementType, data);
+                    returnPacket.setType(statementType);
                     break;
                 case SELECT:
-                    writeCode(FirebirdSQLInfoPacketType.SELECT, data);
-                    if (FirebirdSQLInfoReturnValue.isSelectDescribable(statementType)) {
-                        processDescribe(sqlStatementContext, metaDataContexts, data, true);
+                    if (FirebirdSQLInfoReturnValue.isSelectDescribable(statementType.getCode())) {
+                        processDescribe(sqlStatementContext, metaDataContexts, returnPacket.getDescribeSelect(), true);
                     } else {
-                        skipDescribe(data);
+                        skipDescribe();
                     }
                     break;
                 case BIND:
-                    writeCode(FirebirdSQLInfoPacketType.BIND, data);
-                    if (FirebirdSQLInfoReturnValue.isBindDescribable(statementType)) {
-                        processDescribe(sqlStatementContext, metaDataContexts, data, false);
+                    if (FirebirdSQLInfoReturnValue.isBindDescribable(statementType.getCode())) {
+                        processDescribe(sqlStatementContext, metaDataContexts, returnPacket.getDescribeBind(), false);
                     } else {
-                        skipDescribe(data);
+                        skipDescribe();
                     }
                     break;
                 default:
                     throw new FirebirdProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
             }
         }
-        writeCode(FirebirdCommonInfoPacketType.END, data);
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(data));
-    }
-    
-    private void writeCode(final FirebirdInfoPacketType code, final ByteBuf buffer) {
-        buffer.writeByte(code.getCode());
-    }
-    
-    private void writeInt(final FirebirdInfoPacketType code, final int value, final ByteBuf buffer) {
-        buffer.writeByte(code.getCode());
-        buffer.writeShortLE(4);
-        buffer.writeIntLE(value);
-    }
-    
-    private void writeString(final FirebirdInfoPacketType code, final String value, final ByteBuf buffer) {
-        buffer.writeByte(code.getCode());
-        byte[] valueBytes = value != null ? value.getBytes(packet.getPayload().getCharset()) : new byte[0];
-        buffer.writeShortLE(valueBytes.length);
-        buffer.writeBytes(valueBytes);
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
     }
 
-    private int getFirebirdStatementType(final SQLStatement statement) {
+    private FirebirdSQLInfoReturnValue getFirebirdStatementType(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            return FirebirdSQLInfoReturnValue.SELECT.getCode();
+            return FirebirdSQLInfoReturnValue.SELECT;
         }
         if (statement instanceof InsertStatement) {
             if (((InsertStatement) statement).getReturning().isPresent()) {
                 returningSegment = ((InsertStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode();
+                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
             }
-            return FirebirdSQLInfoReturnValue.INSERT.getCode();
+            return FirebirdSQLInfoReturnValue.INSERT;
         }
         if (statement instanceof UpdateStatement) {
             if (((UpdateStatement) statement).getReturning().isPresent()) {
                 returningSegment = ((UpdateStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode();
+                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
             }
-            return FirebirdSQLInfoReturnValue.UPDATE.getCode();
+            return FirebirdSQLInfoReturnValue.UPDATE;
         }
         if (statement instanceof DeleteStatement) {
             if (((DeleteStatement) statement).getReturning().isPresent()) {
                 returningSegment = ((DeleteStatement) statement).getReturning().orElse(null);
-                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE.getCode();
+                return FirebirdSQLInfoReturnValue.EXEC_PROCEDURE;
             }
-            return FirebirdSQLInfoReturnValue.DELETE.getCode();
+            return FirebirdSQLInfoReturnValue.DELETE;
         }
         if (statement instanceof DDLStatement) {
-            return FirebirdSQLInfoReturnValue.DDL.getCode();
+            return FirebirdSQLInfoReturnValue.DDL;
         }
         if (statement instanceof StartTransactionStatement) {
-            return FirebirdSQLInfoReturnValue.START_TRANS.getCode();
+            return FirebirdSQLInfoReturnValue.START_TRANS;
         }
         if (statement instanceof CommitStatement) {
-            return FirebirdSQLInfoReturnValue.COMMIT.getCode();
+            return FirebirdSQLInfoReturnValue.COMMIT;
         }
         if (statement instanceof RollbackStatement) {
-            return FirebirdSQLInfoReturnValue.ROLLBACK.getCode();
+            return FirebirdSQLInfoReturnValue.ROLLBACK;
         }
         if (statement instanceof SavepointStatement) {
-            return FirebirdSQLInfoReturnValue.SAVEPOINT.getCode();
+            return FirebirdSQLInfoReturnValue.SAVEPOINT;
         }
-        return 0;
+        return null;
     }
     
-    private void skipDescribe(final ByteBuf buffer) {
+    private void skipDescribe() {
         while (packet.getCurrentItem() != FirebirdSQLInfoPacketType.DESCRIBE_END) {
             packet.nextItem();
         }
-        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, 0, buffer);
     }
 
-    private void processDescribe(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final ByteBuf buffer, final boolean returnAll) {
+    private void processDescribe(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final List<FirebirdReturnColumnPacket> describeColumns, final boolean returnAll) {
         //TODO add exception if the first item is not DESCRIBE_VARS
         packet.nextItem();
         List<FirebirdSQLInfoPacketType> requestedItems = new ArrayList<>(11);
         while (packet.nextItem()) {
             requestedItems.add(packet.getCurrentItem());
             if (packet.getCurrentItem() == FirebirdSQLInfoPacketType.DESCRIBE_END) {
-                ByteBuf describeBuffer = packet.getPayload().getByteBuf().alloc().buffer();
-                int count = returnAll
-                        ? processReturnValues(sqlStatementContext, metaDataContexts, describeBuffer, requestedItems)
-                        : processParameters(sqlStatementContext, metaDataContexts, describeBuffer, requestedItems);
-                writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, count, buffer);
-                buffer.writeBytes(describeBuffer, describeBuffer.readableBytes());
+                int count = returnAll ?
+                        processReturnValues(sqlStatementContext, metaDataContexts, describeColumns, requestedItems) :
+                        processParameters(sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
                 return;
             }
         }
     }
     
-    private int processReturnValues(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final ByteBuf buffer,
+    private int processReturnValues(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final List<FirebirdReturnColumnPacket> describeColumns,
                                     final List<FirebirdSQLInfoPacketType> requestedItems) {
         String databaseName = connectionSession.getCurrentDatabaseName();
         String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
@@ -255,15 +230,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
-                processColumn(buffer, requestedItems, table, column, ((ColumnProjection) each).getOwner(), each.getAlias(), ++columnCount);
+                processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner(), each.getAlias(), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection((ExpressionProjection) each, buffer, requestedItems, ++columnCount);
+                processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof AggregationProjection) {
                 String functionName = ((AggregationProjection) each).getType().name();
-                processCustomColumn(null, functionName, each.getAlias(), getFunctionType(functionName), buffer, requestedItems, ++columnCount);
+                processCustomColumn(null, functionName, each.getAlias(), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof SubqueryProjection) {
                 SubqueryProjection subquery = (SubqueryProjection) each;
-                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias(), Types.INTEGER, buffer, requestedItems, ++columnCount);
+                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias(), Types.INTEGER, describeColumns, requestedItems, ++columnCount);
             }
         }
         return columnCount;
@@ -326,28 +301,28 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result;
     }
     
-    private int processParameters(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems) {
+    private int processParameters(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final List<FirebirdReturnColumnPacket> describeColumns, final List<FirebirdSQLInfoPacketType> requestedItems) {
         if (sqlStatementContext instanceof InsertStatementContext) {
-            return processInsertStatement((InsertStatementContext) sqlStatementContext, metaDataContexts, buffer, requestedItems);
+            return processInsertStatement((InsertStatementContext) sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
         }
         List<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
-        int parametersCount = (sqlStatementContext.getSqlStatement()).getParameterMarkers().size();
+        int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         String databaseName = connectionSession.getCurrentDatabaseName();
         String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName);
         int columnCount = 0;
         for (ColumnSegment columnSegment : affectedColumns) {
             ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-            processColumn(buffer, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier), Optional.ofNullable(columnSegment.getIdentifier()), ++columnCount);
+            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier), Optional.ofNullable(columnSegment.getIdentifier()), ++columnCount);
         }
         for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
-            processCustomColumn(null, null, Optional.empty(), 12, buffer, requestedItems, ++columnCount);
+            processCustomColumn(null, null, Optional.empty(), 12, describeColumns, requestedItems, ++columnCount);
         }
         return columnCount;
     }
     
-    private int processInsertStatement(final InsertStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts,
-                                       final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems) {
+    private int processInsertStatement(final InsertStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final List<FirebirdReturnColumnPacket> describeColumns,
+                                       final List<FirebirdSQLInfoPacketType> requestedItems) {
         Collection<String> tableNames = getTableNames(sqlStatementContext);
         List<String> affectedColumns = new ArrayList<>();
         for (InsertValueContext context : sqlStatementContext.getInsertValueContexts()) {
@@ -360,7 +335,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             ShardingSphereTable table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName);
             for (String columnName : affectedColumns) {
                 ShardingSphereColumn column = table.getColumn(columnName);
-                processColumn(buffer, requestedItems, table, column, Optional.empty(), Optional.empty(), ++columnCount);
+                processColumn(describeColumns, requestedItems, table, column, Optional.empty(), Optional.empty(), ++columnCount);
             }
         }
         return columnCount;
@@ -416,15 +391,15 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
 
-    private void processExpressionProjection(final ExpressionProjection expr, final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+    private void processExpressionProjection(final ExpressionProjection expr, final List<FirebirdReturnColumnPacket> describeColumns, final List<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         final ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
-            processCustomColumn(null, functionName, expr.getAlias(), getFunctionType(functionName), buffer, requestedItems, columnCount);
+            processCustomColumn(null, functionName, expr.getAlias(), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
             int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
-            processCustomColumn(null, operationName, expr.getAlias(), operationType, buffer, requestedItems, columnCount);
+            processCustomColumn(null, operationName, expr.getAlias(), operationType, describeColumns, requestedItems, columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
             int type = Types.NULL;
@@ -437,7 +412,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             } else if (value instanceof Number) {
                 type = Types.NUMERIC;
             }
-            processCustomColumn(null, null, expr.getAlias(), type, buffer, requestedItems, columnCount);
+            processCustomColumn(null, null, expr.getAlias(), type, describeColumns, requestedItems, columnCount);
         }
     }
     
@@ -477,53 +452,17 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void processCustomColumn(final String tableName, final String columnName, final Optional<IdentifierValue> columnAlias, final int dataType,
-                                     final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+                                     final List<FirebirdReturnColumnPacket> describeColumns, final List<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
         ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, true, true, false, false);
-        processColumn(buffer, requestedItems, table, column, Optional.empty(), columnAlias, columnCount);
+        processColumn(describeColumns, requestedItems, table, column, Optional.empty(), columnAlias, columnCount);
     }
     
-    private void processColumn(final ByteBuf buffer, final List<FirebirdSQLInfoPacketType> requestedItems, final ShardingSphereTable table, final ShardingSphereColumn column,
-                               final Optional<IdentifierValue> tableAlias, final Optional<IdentifierValue> columnAlias, final int idx) {
-        //SQLDA_SEQ uses 1-based index
-        for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
-            switch (requestedItem) {
-                case SQLDA_SEQ:
-                    writeInt(FirebirdSQLInfoPacketType.SQLDA_SEQ, idx, buffer);
-                    break;
-                case TYPE:
-                    writeInt(FirebirdSQLInfoPacketType.TYPE, FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getValue() + 1, buffer);
-                    break;
-                case SUB_TYPE:
-                    writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getSubtype(), buffer);
-                    break;
-                case SCALE:
-                    writeInt(FirebirdSQLInfoPacketType.SCALE, 0, buffer);
-                    break;
-                case LENGTH:
-                    writeInt(FirebirdSQLInfoPacketType.LENGTH, FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType()).getLength(), buffer);
-                    break;
-                case FIELD:
-                    writeString(FirebirdSQLInfoPacketType.FIELD, column.getName(), buffer);
-                    break;
-                case ALIAS:
-                    writeString(FirebirdSQLInfoPacketType.ALIAS, columnAlias.map(IdentifierValue::getValue).orElse(column.getName()), buffer);
-                    break;
-                case RELATION:
-                    writeString(FirebirdSQLInfoPacketType.RELATION, table.getName(), buffer);
-                    break;
-                case RELATION_ALIAS:
-                    writeString(FirebirdSQLInfoPacketType.RELATION_ALIAS, tableAlias.map(IdentifierValue::getValue).orElse(table.getName()), buffer);
-                    break;
-                case OWNER:
-                    writeString(FirebirdSQLInfoPacketType.OWNER, connectionSession.getConnectionContext().getGrantee().getUsername(), buffer);
-                    break;
-                case DESCRIBE_END:
-                    writeCode(FirebirdSQLInfoPacketType.DESCRIBE_END, buffer);
-                    break;
-                default:
-                    throw new FirebirdProtocolException("Unknown statement info request type %d", requestedItem);
-            }
-        }
+    private void processColumn(final List<FirebirdReturnColumnPacket> describeColumns, final List<FirebirdSQLInfoPacketType> requestedItems, final ShardingSphereTable table,
+                               final ShardingSphereColumn column, final Optional<IdentifierValue> tableAlias, final Optional<IdentifierValue> columnAlias, final int idx) {
+        String tableAliasString = tableAlias.map(IdentifierValue::getValue).orElse(table.getName());
+        String columnAliasString = columnAlias.map(IdentifierValue::getValue).orElse(column.getName());
+        String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner));
     }
 }

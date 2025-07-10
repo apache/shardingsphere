@@ -40,12 +40,6 @@ public final class FirebirdFetchStatementCommandExecutor implements CommandExecu
 
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        //        Collection<DatabasePacket> result = new ArrayList<>(FirebirdStatementQueryCache.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId()));
-        //        if (result.size() > packet.getFetchSize()) {
-        //            result = new ArrayList<>(FirebirdStatementQueryCache.getInstance().get(connectionSession.getConnectionId(), packet.getStatementId()).subList(0, packet.getFetchSize()));
-        //        }
-        //        result.add(new FirebirdFetchResponsePacket());
-        //        return result;
         return Collections.singleton(new FirebirdFetchResponsePacket());
     }
 }
