@@ -32,6 +32,6 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         return new CreateDatabaseStatement(new IdentifierValue(ctx.identifier().getText()).getValue(),
-                null != ctx.IF() && null != ctx.NOT() && null != ctx.EXISTS());
+                null != ctx.ifNotExists());
     }
 }
