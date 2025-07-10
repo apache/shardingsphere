@@ -121,6 +121,7 @@ jobs:
           winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
           rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
           ./test/native/src/test/resources/test-native/ps1/wait-for-rancher-desktop-backend.ps1
+          rdctl shell sudo sysctl -w vm.max_map_count=2000000
           "PATH=$env:PATH" >> $env:GITHUB_ENV
       - uses: graalvm/setup-graalvm@v1
         with:
@@ -135,4 +136,6 @@ jobs:
         run: ./mvnw -PgenerateMetadata -e -T 1C clean test
       - name: Run nativeTest with GraalVM CE
         if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e clean test
+        run: |
+          sudo sysctl -w vm.max_map_count=2000000
+          ./mvnw -PnativeTestInShardingSphere -e clean test

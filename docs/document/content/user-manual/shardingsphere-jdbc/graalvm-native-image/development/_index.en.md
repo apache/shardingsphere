@@ -77,6 +77,11 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
+To ensure that the Apache Doris Linux Container used in the unit test can be started normally, 
+developers need to ensure that the system's `vm.max_map_count` is greater than or equal to `2000000`.
+If the result of executing `sysctl vm.max_map_count` shows that the value of `vm.max_map_count` is less than `2000000`,
+the developer can add a line `vm.max_map_count=2000000` to the `/etc/sysctl.conf` file and execute `sudo sysctl -p` to apply the change.
+
 ### Windows
 
 It is assumed that the developer is on a fresh Windows 11 Home 24H2 instance with `git-for-windows/git` and `PowerShell/PowerShell` installed and configured.
@@ -115,6 +120,13 @@ wsl --install
 After enabling WSL2, 
 download and install `rancher-sandbox/rancher-desktop` from https://rancherdesktop.io/ and set up `Container Engine` using `dockerd(moby)`.
 This article does not discuss changing the default logging driver in `/etc/docker/daemon.json` of the Linux distribution `rancher-desktop`.
+
+Affected by https://github.com/rancher-sandbox/rancher-desktop/issues/713 ,
+developer need to execute the following command in PowerShell 7 each time developer start or restart Rancher Desktop to prevent the failure to start the Linux Container of Apache Doris required for unit testing.
+
+```shell
+rdctl shell sudo sysctl -w vm.max_map_count=2000000
+```
 
 ### Windows Server
 

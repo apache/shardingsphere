@@ -45,6 +45,6 @@
   }]},
   "bundles":[{
     "name":"org.firebirdsql.jaybird.version",
-    "locales":["zh-CN", "en_US"]
+    "locales":["zh-CN", "en"]
   }]
 }

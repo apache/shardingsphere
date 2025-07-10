@@ -63,12 +63,7 @@ public final class TestShardingService {
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
     public void processSuccess() throws SQLException {
-        final Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
-        extracted();
-        deleteData(orderIds);
-        assertThat(orderRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+        processSuccessWithoutTransactions();
         orderItemRepository.assertRollbackWithTransactions();
     }
     
@@ -128,13 +123,16 @@ public final class TestShardingService {
     }
     
     /**
-     * Process success in Presto Iceberg Connector.
+     * Process success in Presto Iceberg Connector or Doris FE.
      * There are bugs with Presto's transaction support, see <a href="https://github.com/prestodb/presto/issues/25204">prestodb/presto#25204</a> .
      * Can't execute {@code orderItemRepository.assertRollbackWithTransactions();} here.
+     * There is a bug with Doris FE's support for transaction rollback.
+     * Statements that have been successfully executed in a single transaction unit will not be rolled back.
+     * Refer to <a href="https://doris.apache.org/docs/3.0/data-operate/transaction#failed-statements-within-a-transaction">Failed Statements Within a Transaction</a> .
      *
      * @throws SQLException SQL exception
      */
-    public void processSuccessInPresto() throws SQLException {
+    public void processSuccessWithoutTransactions() throws SQLException {
         final Collection<Long> orderIds = insertData(Statement.RETURN_GENERATED_KEYS);
         extracted();
         deleteData(orderIds);

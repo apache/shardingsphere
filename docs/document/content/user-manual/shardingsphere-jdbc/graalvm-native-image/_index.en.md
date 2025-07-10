@@ -306,6 +306,3 @@ If developers use `org.apache.hive:hive-jdbc` directly, they should handle depen
 
 8. Due to https://github.com/oracle/graal/issues/7979 , 
 the Oracle JDBC Driver corresponding to the `com.oracle.database.jdbc:ojdbc8` Maven module cannot be used under GraalVM Native Image.
-
-9. Due to https://github.com/apache/doris/issues/9426, when connecting to Apache Doris FE via Shardinghere JDBC,
-   users need to provide GraalVM Reachability Metadata related to the `apache/doris` integration module.

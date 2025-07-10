@@ -20,11 +20,8 @@ package org.apache.shardingsphere.test.natived.proxy.transactions.base;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
-import org.apache.seata.config.ConfigurationFactory;
-import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
-import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
+import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +41,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +50,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
-@Disabled("TODO Executing this unit test in Github Actions Runner may cause connection leaks in other unit tests. Pending investigation.")
+@Disabled("See https://github.com/apache/incubator-seata/issues/7523 .")
 @Testcontainers
 class SeataTest {
     
@@ -97,10 +95,7 @@ class SeataTest {
     void afterEach() {
         Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         System.clearProperty(serviceDefaultGroupListKey);
-        proxyTestingServer.close();
-        TmNettyRemotingClient.getInstance().destroy();
-        RmNettyRemotingClient.getInstance().destroy();
-        ConfigurationFactory.reload();
+        proxyTestingServer.close(Collections.singletonList("sharding_db"));
     }
     
     /**

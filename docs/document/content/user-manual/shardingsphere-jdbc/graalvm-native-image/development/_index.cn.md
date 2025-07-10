@@ -74,6 +74,10 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
+为了确保单元测试使用的 Apache Doris 的 Linux Container 可正常启动，开发者需要确保系统的 `vm.max_map_count` 大于或等于 `2000000`。
+若执行 `sysctl vm.max_map_count` 的结果显示 `vm.max_map_count` 的值小于 `2000000`，
+开发者可为 `/etc/sysctl.conf` 文件追加一行 `vm.max_map_count=2000000`，并执行 `sudo sysctl -p` 来应用更改。
+
 ### Windows
 
 假设贡献者处于新的 Windows 11 Home 24H2 实例下，且已安装和配置 `git-for-windows/git` 和 `PowerShell/PowerShell`。
@@ -108,6 +112,13 @@ wsl --install
 
 完成 WSL2 的启用后，在 https://rancherdesktop.io/ 下载和安装 `rancher-sandbox/rancher-desktop`，并设置使用 `dockerd(moby)` 的 `Container Engine`。
 本文不讨论更改 Linux 发行版 `rancher-desktop` 的 `/etc/docker/daemon.json` 的默认 logging driver。
+
+受 https://github.com/rancher-sandbox/rancher-desktop/issues/713 影响，每次启动或重启 Rancher Desktop 后，
+需要在 PowerShell 7 执行如下命令，以防止无法启动单元测试所需的 Apache Doris 的 Linux Container。
+
+```shell
+rdctl shell sudo sysctl -w vm.max_map_count=2000000
+```
 
 ### Windows Server
 
