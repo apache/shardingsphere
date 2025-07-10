@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCr
 /**
  * Table coordinator type node path.
  */
-@NodePathEntity("${tableCoordinatorPath}/$coordinatorType}")
+@NodePathEntity("${tableCoordinatorPath}/${coordinatorType}")
 @Getter
 public final class TableCoordinatorTypeNodePath implements NodePath {
     
