@@ -60,6 +60,12 @@ public final class CDCDataNodeUtils {
     }
     
     private static Collection<DataNode> findDataNodes(final String tableName, final Collection<DataNodeRuleAttribute> attributes) {
-        return attributes.stream().filter(each -> each.getAllDataNodes().containsKey(tableName)).findFirst().map(each -> each.getAllDataNodes().get(tableName)).orElse(Collections.emptyList());
+        for (DataNodeRuleAttribute each : attributes) {
+            Collection<DataNode> dataNodes = each.getDataNodesByTableName(tableName);
+            if (!dataNodes.isEmpty()) {
+                return each.isReplicaBasedDistribution() ? Collections.singleton(dataNodes.iterator().next()) : dataNodes;
+            }
+        }
+        return Collections.emptyList();
     }
 }
