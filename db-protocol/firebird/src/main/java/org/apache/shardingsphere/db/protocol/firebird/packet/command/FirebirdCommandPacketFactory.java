@@ -27,8 +27,8 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
