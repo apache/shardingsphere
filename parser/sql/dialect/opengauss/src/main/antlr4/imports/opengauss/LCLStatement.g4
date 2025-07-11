@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
-grammar LCLStatement;
+parser grammar LCLStatement;
 
 import DMLStatement;
+
+options {
+    tokenVocab = ModeLexer;
+}
 
 lock
     : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?

@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
-grammar OpenGaussStatement;
+parser grammar OpenGaussStatementParser;
 
-import Comments, TCLStatement, LCLStatement, DCLStatement, DALStatement, StoreProcedure;
+import TCLStatement, LCLStatement, DCLStatement, DALStatement, StoreProcedure;
+
+options {
+    tokenVocab = OpenGaussStatementLexer;
+}
 
 execute
     : (select

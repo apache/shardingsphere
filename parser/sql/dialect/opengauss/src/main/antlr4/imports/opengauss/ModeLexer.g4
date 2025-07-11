@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-parser grammar StoreProcedure;
+lexer grammar ModeLexer;
 
-import BaseRule;
+import Symbol, OpenGaussKeyword, Keyword, Comments, Literals;
 
-options {tokenVocab = ModeLexer;}
+BEGIN_DOLLAR_STRING_CONSTANT
+   : '$' TAG? '$'
+   {pushTag();} -> pushMode (DOLLAR_QUOTED_STRING_MODE)
+   ;
 
-call
-    : CALL funcName LP_ callClauses? RP_
-    ;
+fragment TAG
+   : IDENTIFIER_START_CHAR_ STRICT_IDENTIFIER_CHAR_*
+   ;
 
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
-    ;
+mode DOLLAR_QUOTED_STRING_MODE;
+
+DOLLAR_TEXT
+   : ~ '$'+
+   | '$' ~ '$'*
+   ;
+
+END_DOLLAR_STRING_CONSTANT
+   : ('$' TAG? '$')
+   {isTag()}?
+   {popTag();} -> popMode
+   ;
