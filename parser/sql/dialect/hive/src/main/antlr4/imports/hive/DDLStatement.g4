@@ -24,7 +24,7 @@ createDatabase
     ;
 
 ifNotExists
-    :IF NOT EXISTS
+    : IF NOT EXISTS
     ;
 
 dbProperties
