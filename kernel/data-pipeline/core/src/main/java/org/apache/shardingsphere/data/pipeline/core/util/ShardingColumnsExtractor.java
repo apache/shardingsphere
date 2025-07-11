@@ -48,7 +48,8 @@ public final class ShardingColumnsExtractor {
      * @param logicTableNames logic table names
      * @return table and sharding columns map
      */
-    public Map<ShardingSphereIdentifier, Set<String>> getTableAndShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Collection<ShardingSphereIdentifier> logicTableNames) {
+    public Map<ShardingSphereIdentifier, Set<String>> getTableAndShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
+                                                                                    final Collection<ShardingSphereIdentifier> logicTableNames) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();

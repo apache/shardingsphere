@@ -68,7 +68,8 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
         Set<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
         Map<ShardingSphereIdentifier, Set<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor().getTableAndShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, tableAndShardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
+        ImporterConfiguration importerConfig =
+                buildImporterConfiguration(jobConfig, processConfig, tableAndShardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         return new MigrationTaskConfiguration(incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfigs, incrementalDumperContext, importerConfig);
     }
     
