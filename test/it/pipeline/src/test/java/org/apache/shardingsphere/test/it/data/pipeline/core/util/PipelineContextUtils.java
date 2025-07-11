@@ -218,9 +218,8 @@ public final class PipelineContextUtils {
         Set<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
         Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = new HashMap<>();
         Collection<YamlRuleConfiguration> yamlRuleConfigs = ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules();
-        Map<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> requiredColumnsExtractors = OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs);
-        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : requiredColumnsExtractors.entrySet()) {
-            tableAndRequiredColumnsMap.putAll(entry.getValue().getTableAndRequiredColumnsMap(yamlRuleConfigs, targetTableNames));
+        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs).entrySet()) {
+            tableAndRequiredColumnsMap.putAll(entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), targetTableNames));
         }
         ImporterConfiguration importerConfig = buildImporterConfiguration(
                 jobConfig, processConfig, tableAndRequiredColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
