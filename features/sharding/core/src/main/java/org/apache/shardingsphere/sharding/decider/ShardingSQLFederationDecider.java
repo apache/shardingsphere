@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -65,7 +64,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         if (tableNames.isEmpty()) {
             return false;
         }
-        includedDataNodes.addAll(getTableDataNodes(rule, database, tableNames));
+        appendTableDataNodes(rule, database, tableNames, includedDataNodes);
         if (isAllShardingTables(selectStatementContext, tableNames) && isSubqueryAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
             return false;
         }
@@ -85,6 +84,9 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     private boolean isSubqueryAllSameShardingConditions(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,
                                                         final ShardingSphereDatabase database, final ShardingRule rule) {
         if (!selectStatementContext.isContainsSubquery()) {
+            return false;
+        }
+        if (selectStatementContext.isContainsCombine()) {
             return false;
         }
         ShardingConditions shardingConditions = createShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule);
@@ -109,12 +111,11 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         return 1 == tableNames.size() && selectStatementContext.isContainsJoinQuery() && !rule.isBindingTablesUseShardingColumnsJoin(selectStatementContext, tableNames);
     }
     
-    private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        Collection<DataNode> result = new HashSet<>();
+    private void appendTableDataNodes(final ShardingRule rule, final ShardingSphereDatabase database, final Collection<String> tableNames, final Collection<DataNode> includedDataNodes) {
+        DataNodes dataNodes = new DataNodes(database.getRuleMetaData().getRules());
         for (String each : tableNames) {
-            rule.findShardingTable(each).ifPresent(optional -> result.addAll(new DataNodes(database.getRuleMetaData().getRules()).getDataNodes(each)));
+            rule.findShardingTable(each).ifPresent(optional -> includedDataNodes.addAll(dataNodes.getDataNodes(each)));
         }
-        return result;
     }
     
     @Override
