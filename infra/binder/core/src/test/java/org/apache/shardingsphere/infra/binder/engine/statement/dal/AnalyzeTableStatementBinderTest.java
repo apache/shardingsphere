@@ -57,13 +57,13 @@ class AnalyzeTableStatementBinderTest {
     
     @Test
     void assertBind() {
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.getSchema("foo_db")).thenReturn(schema);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
+        final SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
         final AnalyzeTableStatement original = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, databaseType, original);
         
