@@ -82,7 +82,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Select SQL statement context.
@@ -277,9 +276,19 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains partial distinct aggregation
      */
     public boolean isContainsPartialDistinctAggregation() {
-        Collection<Projection> aggregationProjections = projectionsContext.getProjections().stream().filter(AggregationProjection.class::isInstance).collect(Collectors.toList());
+        Collection<Projection> aggregationProjections = getAggregationProjections(projectionsContext.getProjections());
         Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
         return aggregationProjections.size() > 1 && !aggregationDistinctProjections.isEmpty() && aggregationProjections.size() != aggregationDistinctProjections.size();
+    }
+    
+    private Collection<Projection> getAggregationProjections(final Collection<Projection> projections) {
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (each instanceof AggregationProjection) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     /**
