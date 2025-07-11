@@ -211,9 +211,10 @@ public final class PipelineContextUtils {
         IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(jobConfig).createDumperContext(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
         Collection<CreateTableConfiguration> createTableConfigs = buildCreateTableConfigurations(jobConfig, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         Set<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
-        Map<ShardingSphereIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
+        Map<ShardingSphereIdentifier, Set<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor().getTableAndShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, shardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
+        ImporterConfiguration importerConfig =
+                buildImporterConfiguration(jobConfig, processConfig, tableAndShardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         return new MigrationTaskConfiguration(incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfigs, incrementalDumperContext, importerConfig);
     }
     

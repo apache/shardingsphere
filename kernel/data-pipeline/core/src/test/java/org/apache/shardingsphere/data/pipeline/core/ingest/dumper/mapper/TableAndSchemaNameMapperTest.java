@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -48,5 +49,11 @@ class TableAndSchemaNameMapperTest {
     @Test
     void assertConstructFromCollection() {
         assertThat(new TableAndSchemaNameMapper(Arrays.asList("public.t_order", "t_order_item")).getSchemaName("t_order"), is("public"));
+    }
+    
+    @Test
+    void assertGetQualifiedTables() {
+        TableAndSchemaNameMapper tableAndSchemaNameMapper = new TableAndSchemaNameMapper(Collections.singletonMap("foo_tbl", "foo_schema"));
+        assertThat(tableAndSchemaNameMapper.getQualifiedTables(), is(Collections.singletonList(new QualifiedTable("foo_schema", "foo_tbl"))));
     }
 }

@@ -42,13 +42,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ShardingColumnsExtractor {
     
     /**
-     * Get sharding columns map.
+     * Get table and sharding columns map.
      *
      * @param yamlRuleConfigs YAML rule configurations
      * @param logicTableNames logic table names
-     * @return sharding columns map
+     * @return table and sharding columns map
      */
-    public Map<ShardingSphereIdentifier, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Collection<ShardingSphereIdentifier> logicTableNames) {
+    public Map<ShardingSphereIdentifier, Set<String>> getTableAndShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
+                                                                                    final Collection<ShardingSphereIdentifier> logicTableNames) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();

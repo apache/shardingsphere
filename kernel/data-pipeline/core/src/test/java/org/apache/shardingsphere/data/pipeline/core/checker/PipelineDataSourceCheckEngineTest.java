@@ -40,6 +40,7 @@ import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,8 +96,8 @@ class PipelineDataSourceCheckEngineTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
-        when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new QualifiedTable(null, "t_order")));
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class, RETURNS_DEEP_STUBS);
+        when(importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()).thenReturn(Collections.singleton(new QualifiedTable(null, "t_order")));
         assertDoesNotThrow(() -> pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
     
@@ -106,8 +107,8 @@ class PipelineDataSourceCheckEngineTest {
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class);
-        when(importerConfig.getQualifiedTables()).thenReturn(Collections.singleton(new QualifiedTable(null, "t_order")));
+        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class, RETURNS_DEEP_STUBS);
+        when(importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()).thenReturn(Collections.singleton(new QualifiedTable(null, "t_order")));
         assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSources(dataSources, importerConfig));
     }
     
