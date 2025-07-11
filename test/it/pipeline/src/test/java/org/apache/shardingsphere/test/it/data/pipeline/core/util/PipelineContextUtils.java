@@ -108,7 +108,7 @@ public final class PipelineContextUtils {
         ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
         ContextManager contextManager = getContextManager(rootConfig);
         ClusterPersistRepository persistRepository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
-        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistFacade(persistRepository));
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistFacade(persistRepository, true));
         PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(),
                 contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
         PipelineContextManager.putContext(contextKey, pipelineContext);
@@ -211,9 +211,10 @@ public final class PipelineContextUtils {
         IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(jobConfig).createDumperContext(jobConfig.getJobShardingDataNodes().get(jobShardingItem));
         Collection<CreateTableConfiguration> createTableConfigs = buildCreateTableConfigurations(jobConfig, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         Set<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
-        Map<ShardingSphereIdentifier, Set<String>> shardingColumnsMap = new ShardingColumnsExtractor().getShardingColumnsMap(
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor().getTableAndShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, shardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
+        ImporterConfiguration importerConfig =
+                buildImporterConfiguration(jobConfig, processConfig, tableAndShardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         return new MigrationTaskConfiguration(incrementalDumperContext.getCommonContext().getDataSourceName(), createTableConfigs, incrementalDumperContext, importerConfig);
     }
     
@@ -233,11 +234,12 @@ public final class PipelineContextUtils {
     }
     
     private static ImporterConfiguration buildImporterConfiguration(final MigrationJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
-                                                                    final Map<ShardingSphereIdentifier, Set<String>> shardingColumnsMap, final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
+                                                                    final Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap,
+                                                                    final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
         int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
         JobRateLimitAlgorithm writeRateLimitAlgorithm = new TransmissionProcessContext(jobConfig.getJobId(), pipelineProcessConfig).getWriteRateLimitAlgorithm();
         int retryTimes = jobConfig.getRetryTimes();
         int concurrency = jobConfig.getConcurrency();
-        return new ImporterConfiguration(jobConfig.getTarget(), shardingColumnsMap, tableAndSchemaNameMapper, batchSize, writeRateLimitAlgorithm, retryTimes, concurrency);
+        return new ImporterConfiguration(jobConfig.getTarget(), tableAndShardingColumnsMap, tableAndSchemaNameMapper, batchSize, writeRateLimitAlgorithm, retryTimes, concurrency);
     }
 }

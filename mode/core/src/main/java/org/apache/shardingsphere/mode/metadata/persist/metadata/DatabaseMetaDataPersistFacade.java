@@ -31,9 +31,11 @@ import org.apache.shardingsphere.mode.exception.LoadTableMetaDataFailedException
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistDisabledService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
+import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.sql.SQLException;
@@ -56,11 +58,15 @@ public final class DatabaseMetaDataPersistFacade {
     
     private final ViewMetaDataPersistService view;
     
-    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final VersionPersistService versionPersistService) {
+    public DatabaseMetaDataPersistFacade(final PersistRepository repository, final VersionPersistService versionPersistService, final boolean persistSchemasEnabled) {
         database = new DatabaseMetaDataPersistService(repository);
-        schema = new SchemaMetaDataPersistService(repository, versionPersistService);
-        table = new TableMetaDataPersistService(repository, versionPersistService);
+        if (persistSchemasEnabled) {
+            table = new TableMetaDataPersistEnabledService(repository, versionPersistService);
+        } else {
+            table = new TableMetaDataPersistDisabledService(repository);
+        }
         view = new ViewMetaDataPersistService(repository, versionPersistService);
+        schema = new SchemaMetaDataPersistService(repository, table, view);
     }
     
     /**

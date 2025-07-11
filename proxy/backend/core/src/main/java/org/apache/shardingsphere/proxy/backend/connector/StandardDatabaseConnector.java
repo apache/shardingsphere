@@ -252,14 +252,14 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
-    
+
     private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
         DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, database.getProtocolType());
         return !databaseConnectionManager.getConnectionSession().isAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement
                 && dialectDatabaseMetaData.getTransactionOption().isDDLNeedImplicitCommit();
     }
-    
-    private ResultSet doExecuteFederation() {
+
+    private ResultSet doExecuteFederation() throws SQLException {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDialectDatabaseMetaData();
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
                 && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();

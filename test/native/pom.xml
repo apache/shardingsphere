@@ -209,6 +209,12 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

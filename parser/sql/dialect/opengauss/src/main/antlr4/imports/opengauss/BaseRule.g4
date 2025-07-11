@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+parser grammar BaseRule;
 
-import Keyword, OpenGaussKeyword, Symbol, Literals;
+options {
+    tokenVocab = ModeLexer;
+}
 
 parameterMarker
     : QUESTION_ literalsType?
@@ -115,7 +117,7 @@ literalsType
     ;
 
 identifier
-    : UNICODE_ESCAPE? IDENTIFIER_ uescape? |  unreservedWord
+    : UNICODE_ESCAPE? IDENTIFIER_ uescape? | unreservedWord
     ;
 
 uescape
@@ -646,6 +648,7 @@ funcName
 aexprConst
     : numberConst
     | STRING_
+    | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | constTypeName STRING_

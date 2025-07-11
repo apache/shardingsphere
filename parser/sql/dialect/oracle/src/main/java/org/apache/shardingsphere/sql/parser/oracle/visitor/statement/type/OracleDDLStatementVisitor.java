@@ -831,6 +831,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             result.getColumns().addAll(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
         }
         result.setIndex((IndexSegment) visit(ctx.indexName()));
+        if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
+            result.getIndex().setUniqueKey(true);
+        }
         return result;
     }
     

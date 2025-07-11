@@ -261,6 +261,7 @@ class PortalTest {
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        when(preparedStatement.getHintValueContext()).thenReturn(new HintValueContext());
         when(preparedStatement.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThrows(IllegalStateException.class, () -> new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager).describe());
     }

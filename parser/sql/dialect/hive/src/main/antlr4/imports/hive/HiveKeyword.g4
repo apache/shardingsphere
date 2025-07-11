@@ -3142,3 +3142,19 @@ ZONE
     : Z O N E
     ;
 
+REMOTE
+    : R E M O T E
+    ;
+
+LOCATION
+    : L O C A T I O N
+    ;
+
+MANAGEDLOCATION
+    : M A N A G E D L O C A T I O N
+    ;
+
+DBPROPERTIES
+    : D B P R O P E R T I E S
+    ;
+

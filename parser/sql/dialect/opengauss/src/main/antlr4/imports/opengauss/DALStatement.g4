@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DALStatement;
+parser grammar DALStatement;
 
 import DDLStatement;
+
+options {tokenVocab = ModeLexer;}
 
 show
     : SHOW (varName | TIME ZONE | TRANSACTION ISOLATION LEVEL | SESSION AUTHORIZATION | ALL)

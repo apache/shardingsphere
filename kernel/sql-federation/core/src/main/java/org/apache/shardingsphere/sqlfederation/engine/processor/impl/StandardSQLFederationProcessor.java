@@ -136,7 +136,8 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
         List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        SQLFederationResultSet result = new SQLFederationResultSet(enumerator, schemaPlus, expandProjections, selectStatementContext.getDatabaseType(), executionPlan.getResultColumnType());
+        SQLFederationResultSet result =
+                new SQLFederationResultSet(enumerator, schemaPlus, expandProjections, selectStatementContext.getDatabaseType(), executionPlan.getResultColumnType(), federationContext.getProcessId());
         if (federationContext.isPreview()) {
             federationContext.getPreviewExecutionUnits().addAll(executorContext.getPreviewExecutionUnits());
         }
