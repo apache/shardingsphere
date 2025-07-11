@@ -15,19 +15,14 @@
  * limitations under the License.
  */
 
-parser grammar StoreProcedure;
+lexer grammar OpenGaussStatementLexer;
 
-import BaseRule;
+import ModeLexer;
 
-options {tokenVocab = ModeLexer;}
+options {
+    superClass = OpenGaussLexerBase;
+}
 
-call
-    : CALL funcName LP_ callClauses? RP_
-    ;
-
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
-    ;
+@header {
+    import org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussLexerBase;
+}
