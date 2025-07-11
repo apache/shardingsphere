@@ -49,7 +49,7 @@ public final class ShardingColumnsExtractor {
      * @return table and sharding columns map
      */
     public Map<ShardingSphereIdentifier, Collection<String>> getTableAndShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
-                                                                                    final Collection<ShardingSphereIdentifier> logicTableNames) {
+                                                                                           final Collection<ShardingSphereIdentifier> logicTableNames) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();
