@@ -136,7 +136,7 @@ public final class CDCJob implements PipelineJob {
     private CDCTaskConfiguration buildTaskConfiguration(final CDCJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration processConfig) {
         TableAndSchemaNameMapper mapper = new TableAndSchemaNameMapper(jobConfig.getSchemaTableNames());
         IncrementalDumperContext dumperContext = buildDumperContext(jobConfig, jobShardingItem, mapper);
-        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, jobConfig.getSchemaTableNames(), mapper);
+        ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, processConfig, mapper);
         return new CDCTaskConfiguration(dumperContext, importerConfig);
     }
     
@@ -148,22 +148,27 @@ public final class CDCJob implements PipelineJob {
         return new IncrementalDumperContext(dumperCommonContext, jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
-                                                             final Collection<String> schemaTableNames, final TableAndSchemaNameMapper mapper) {
+                                                             final TableAndSchemaNameMapper mapper) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
-        Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = new HashMap<>();
-        Collection<YamlRuleConfiguration> yamlRuleConfigs = jobConfig.getDataSourceConfig().getRootConfig().getRules();
-        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs).entrySet()) {
-            tableAndRequiredColumnsMap.putAll(
-                    entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), schemaTableNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet())));
-        }
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = getTableAndRequiredColumnsMap(jobConfig);
         PipelineWriteConfiguration write = pipelineProcessConfig.getWrite();
         JobRateLimitAlgorithm writeRateLimitAlgorithm = null == write.getRateLimiter()
                 ? null
                 : TypedSPILoader.getService(JobRateLimitAlgorithm.class, write.getRateLimiter().getType(), write.getRateLimiter().getProps());
         return new ImporterConfiguration(dataSourceConfig, tableAndRequiredColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final CDCJobConfiguration jobConfig) {
+        Map<ShardingSphereIdentifier, Collection<String>> result = new HashMap<>();
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = jobConfig.getDataSourceConfig().getRootConfig().getRules();
+        Collection<ShardingSphereIdentifier> targetTableNames = jobConfig.getSchemaTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
+        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs).entrySet()) {
+            result.putAll(entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), targetTableNames));
+        }
+        return result;
     }
     
     private void initTasks(final Collection<CDCJobItemContext> jobItemContexts,
