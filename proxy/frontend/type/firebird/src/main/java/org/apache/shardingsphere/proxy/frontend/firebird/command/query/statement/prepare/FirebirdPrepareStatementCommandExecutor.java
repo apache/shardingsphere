@@ -211,8 +211,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         while (packet.nextItem()) {
             requestedItems.add(packet.getCurrentItem());
             if (packet.getCurrentItem() == FirebirdSQLInfoPacketType.DESCRIBE_END) {
-                // int count = returnAll ? processReturnValues(sqlStatementContext, metaDataContexts, describeColumns, requestedItems)
-                // : processParameters(sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
+                if (returnAll) {
+                    processReturnValues(sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
+                } else {
+                    processParameters(sqlStatementContext, metaDataContexts, describeColumns, requestedItems);
+                }
                 return;
             }
         }
