@@ -10609,4 +10609,25 @@
             <column-item name="RANK" start-index="274" stop-index="277" order-direction="DESC" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_stdifference_tostring">
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="@g.STDifference(@h).ToString()" start-index="27" stop-index="36">
+                <expr>
+                    <function start-index="27" stop-index="36" text="@g.STDifference(@h).ToString()" function-name="ToString">
+                        <parameter>
+                            <function start-index="7" stop-index="21" text="@g.STDifference(@h).ToString()" function-name="STDifference">
+                                <parameter>
+                                    <column name="@g" start-index="7" stop-index="8" />
+                                </parameter>
+                                <parameter>
+                                    <column name="@h" start-index="23" stop-index="24" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
