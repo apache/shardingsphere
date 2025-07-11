@@ -90,8 +90,8 @@ class PipelineDataSourceSinkTest {
     }
     
     private ImporterConfiguration mockImporterConfiguration() {
-        Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap = Collections.singletonMap(new ShardingSphereIdentifier("test_table"), Collections.singleton("user"));
-        return new ImporterConfiguration(dataSourceConfig, tableAndShardingColumnsMap, new TableAndSchemaNameMapper(Collections.emptyMap()), 1000, null, 3, 3);
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = Collections.singletonMap(new ShardingSphereIdentifier("test_table"), Collections.singleton("user"));
+        return new ImporterConfiguration(dataSourceConfig, tableAndRequiredColumnsMap, new TableAndSchemaNameMapper(Collections.emptyMap()), 1000, null, 3, 3);
     }
     
     private PipelineDataSourceManager mockPipelineDataSourceManager() throws SQLException {

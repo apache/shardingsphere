@@ -44,7 +44,7 @@ public final class ImporterConfiguration {
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
     @Getter(AccessLevel.NONE)
-    private final Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap;
+    private final Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap;
     
     private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
@@ -63,7 +63,7 @@ public final class ImporterConfiguration {
      * @return sharding columns
      */
     public Collection<String> getShardingColumns(final String logicTableName) {
-        return tableAndShardingColumnsMap.getOrDefault(new ShardingSphereIdentifier(logicTableName), Collections.emptyList());
+        return tableAndRequiredColumnsMap.getOrDefault(new ShardingSphereIdentifier(logicTableName), Collections.emptyList());
     }
     
     /**
