@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryPropertyKey;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -83,7 +82,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void updateShardingRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
-        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(yamlRootConfig.getRules());
+        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = yamlRootConfig.getRules().stream()
+                .filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast);
         if (yamlShardingRuleConfig.isPresent()) {
             enableRangeQueryForInline(yamlShardingRuleConfig.get());
             removeAuditStrategy(yamlShardingRuleConfig.get());
