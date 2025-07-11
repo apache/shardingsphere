@@ -23,7 +23,7 @@ The possible Maven dependencies are as follows.
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-hive</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -600,7 +600,7 @@ create table IF NOT EXISTS t_order
 ```
 
 The second option is to use Iceberg tables. The possible table creation process is as follows. Apache Iceberg table format is expected to replace the traditional Hive table format in the next few years.
-Refer to https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-free/ .
+Refer to https://lists.apache.org/thread/cfwxjd8tjt2wwz54crdjy2qsgzjnfxfm .
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile

@@ -1151,6 +1151,20 @@
                                 </includes>
                             </configuration>
                         </plugin>
+                        <!--TODO See https://github.com/graalvm/native-build-tools/issues/727 .-->
+                        <plugin>
+                            <artifactId>maven-jar-plugin</artifactId>
+                            <version>${maven-jar-plugin.version}</version>
+                            <executions>
+                                <execution>
+                                    <id>jar-in-test-phase</id>
+                                    <goals>
+                                        <goal>jar</goal>
+                                    </goals>
+                                    <phase>test</phase>
+                                </execution>
+                            </executions>
+                        </plugin>
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
                             <artifactId>native-maven-plugin</artifactId>
