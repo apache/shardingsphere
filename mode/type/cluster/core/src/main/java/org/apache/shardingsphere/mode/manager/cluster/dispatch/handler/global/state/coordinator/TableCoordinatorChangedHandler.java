@@ -63,7 +63,7 @@ public final class TableCoordinatorChangedHandler implements GlobalDataChangedEv
         if (!NodePathSearcher.isMatchedPath(eventKey, TableCoordinatorTypeNodePath.createTableSearchCriteria())) {
             return;
         }
-        NodePath path = new TableCoordinatorTypeNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER);
+        NodePath path = new TableCoordinatorTypeNodePath(NodePathPattern.QUALIFIED_IDENTIFIER, NodePathPattern.IDENTIFIER);
         String qualifiedTableName = NodePathSearcher.get(eventKey, new NodePathSearchCriteria(path, true, 1));
         String coordinatorType = NodePathSearcher.get(eventKey, new NodePathSearchCriteria(path, false, 2));
         if (Strings.isNullOrEmpty(qualifiedTableName) || Strings.isNullOrEmpty(coordinatorType)) {

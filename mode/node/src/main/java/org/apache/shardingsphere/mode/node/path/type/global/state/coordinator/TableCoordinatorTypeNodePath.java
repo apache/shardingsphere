@@ -48,6 +48,6 @@ public final class TableCoordinatorTypeNodePath implements NodePath {
      * @return created search criteria
      */
     public static NodePathSearchCriteria createTableSearchCriteria() {
-        return new NodePathSearchCriteria(new TableCoordinatorTypeNodePath(NodePathPattern.IDENTIFIER, NodePathPattern.IDENTIFIER), false, 1);
+        return new NodePathSearchCriteria(new TableCoordinatorTypeNodePath(NodePathPattern.QUALIFIED_IDENTIFIER, NodePathPattern.IDENTIFIER), false, 1);
     }
 }
