@@ -157,7 +157,7 @@
         <table>
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
-        <index name="order_index" start-index="20" stop-index="30" />
+        <index name="order_index" start-index="20" stop-index="30" unique-key="true" />
         <column start-index="44" stop-index="51" name="order_id" />
     </create-index>
     

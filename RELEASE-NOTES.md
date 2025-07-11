@@ -51,6 +51,7 @@
 1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
 1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 1. SQL Parser: Support Hive CREATE DATABASE statment parse - [#35929](https://github.com/apache/shardingsphere/pull/35929)
+1. SQL Parser: Support sql parser extract unique index - [#35941](https://github.com/apache/shardingsphere/pull/35941)
 
 ### Bug Fixes
 
