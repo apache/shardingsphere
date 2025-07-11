@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.sharding;
 
 import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -28,35 +27,31 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Sharding columns extractor.
+ * Pipeline sharding columns extractor.
  */
-public final class ShardingColumnsExtractor implements PipelineRequiredColumnsExtractor<YamlShardingRuleConfiguration> {
+public final class PipelineShardingColumnsExtractor implements PipelineRequiredColumnsExtractor<YamlShardingRuleConfiguration> {
     
     @Override
-    public Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
+    public Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final YamlShardingRuleConfiguration yamlRuleConfig,
                                                                                            final Collection<ShardingSphereIdentifier> logicTableNames) {
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
-        if (!shardingRuleConfig.isPresent()) {
-            return Collections.emptyMap();
-        }
-        Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultDatabaseShardingStrategy());
-        Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultTableShardingStrategy());
+        ShardingRuleConfiguration ruleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
+        Set<String> defaultDatabaseShardingColumns = extractShardingColumns(ruleConfig.getDefaultDatabaseShardingStrategy());
+        Set<String> defaultTableShardingColumns = extractShardingColumns(ruleConfig.getDefaultTableShardingStrategy());
         // TODO check is it need to be ConcurrentHashMap?
         // TODO check is it need to be ShardingSphereIdentifier with column names?
-        Map<ShardingSphereIdentifier, Collection<String>> result = new ConcurrentHashMap<>(shardingRuleConfig.get().getTables().size(), 1F);
-        for (ShardingTableRuleConfiguration each : shardingRuleConfig.get().getTables()) {
+        Map<ShardingSphereIdentifier, Collection<String>> result = new ConcurrentHashMap<>(ruleConfig.getTables().size(), 1F);
+        for (ShardingTableRuleConfiguration each : ruleConfig.getTables()) {
             ShardingSphereIdentifier logicTableName = new ShardingSphereIdentifier(each.getLogicTable());
             if (logicTableNames.contains(logicTableName)) {
                 Collection<String> shardingColumns = new HashSet<>();
@@ -65,7 +60,7 @@ public final class ShardingColumnsExtractor implements PipelineRequiredColumnsEx
                 result.put(logicTableName, shardingColumns);
             }
         }
-        for (ShardingAutoTableRuleConfiguration each : shardingRuleConfig.get().getAutoTables()) {
+        for (ShardingAutoTableRuleConfiguration each : ruleConfig.getAutoTables()) {
             ShardingSphereIdentifier logicTableName = new ShardingSphereIdentifier(each.getLogicTable());
             if (logicTableNames.contains(logicTableName)) {
                 result.put(logicTableName, extractShardingColumns(each.getShardingStrategy()));

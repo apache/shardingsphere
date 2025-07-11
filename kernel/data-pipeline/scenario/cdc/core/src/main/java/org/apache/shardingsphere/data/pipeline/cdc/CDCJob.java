@@ -155,10 +155,9 @@ public final class CDCJob implements PipelineJob {
                 jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
         Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = new HashMap<>();
         Collection<YamlRuleConfiguration> yamlRuleConfigs = jobConfig.getDataSourceConfig().getRootConfig().getRules();
-        Map<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> requiredColumnsExtractors = OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs);
-        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : requiredColumnsExtractors.entrySet()) {
+        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs).entrySet()) {
             tableAndRequiredColumnsMap.putAll(
-                    entry.getValue().getTableAndRequiredColumnsMap(yamlRuleConfigs, schemaTableNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet())));
+                    entry.getValue().getTableAndRequiredColumnsMap(entry.getKey(), schemaTableNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet())));
         }
         PipelineWriteConfiguration write = pipelineProcessConfig.getWrite();
         JobRateLimitAlgorithm writeRateLimitAlgorithm = null == write.getRateLimiter()

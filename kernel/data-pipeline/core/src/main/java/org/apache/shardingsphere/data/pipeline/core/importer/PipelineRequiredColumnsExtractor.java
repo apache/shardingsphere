@@ -36,9 +36,9 @@ public interface PipelineRequiredColumnsExtractor<T extends YamlRuleConfiguratio
     /**
      * Get table and required columns map.
      *
-     * @param yamlRuleConfigs YAML rule configurations
+     * @param yamlRuleConfig YAML rule configuration
      * @param logicTableNames logic table names
      * @return table and required columns map
      */
-    Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(Collection<YamlRuleConfiguration> yamlRuleConfigs, Collection<ShardingSphereIdentifier> logicTableNames);
+    Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(T yamlRuleConfig, Collection<ShardingSphereIdentifier> logicTableNames);
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.sharding.ShardingColumnsExtractor
+org.apache.shardingsphere.data.pipeline.sharding.PipelineShardingColumnsExtractor
