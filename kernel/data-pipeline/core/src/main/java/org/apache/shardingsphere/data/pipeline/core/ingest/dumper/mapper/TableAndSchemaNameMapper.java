@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper;
 
+import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Table and schema name mapper.
  */
+@Getter
 @ToString
 public final class TableAndSchemaNameMapper {
     

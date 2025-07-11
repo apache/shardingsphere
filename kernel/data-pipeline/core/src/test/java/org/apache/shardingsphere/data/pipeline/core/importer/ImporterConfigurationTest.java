@@ -54,8 +54,7 @@ class ImporterConfigurationTest {
     
     @Test
     void assertGetQualifiedTables() {
-        TableAndSchemaNameMapper tableAndSchemaNameMapper = mock(TableAndSchemaNameMapper.class);
-        when(tableAndSchemaNameMapper.getSchemaName("foo_tbl")).thenReturn("foo_schema");
+        TableAndSchemaNameMapper tableAndSchemaNameMapper = new TableAndSchemaNameMapper(Collections.singletonMap("foo_tbl", "foo_schema"));
         ImporterConfiguration importerConfig = new ImporterConfiguration(mock(PipelineDataSourceConfiguration.class),
                 Collections.singletonMap(new ShardingSphereIdentifier("foo_tbl"), Collections.singleton("foo_col")), tableAndSchemaNameMapper, 1, mock(JobRateLimitAlgorithm.class), 1, 1);
         assertThat(importerConfig.getQualifiedTables(), is(Collections.singletonList(new QualifiedTable("foo_schema", "foo_tbl"))));
