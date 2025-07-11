@@ -184,6 +184,7 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @param callback callback
      * @param federationContext federation context
      * @return result set
+     * @throws SQLException SQL exception
      * @throws SQLFederationUnsupportedSQLException SQL federation unsupported SQL exception
      */
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
