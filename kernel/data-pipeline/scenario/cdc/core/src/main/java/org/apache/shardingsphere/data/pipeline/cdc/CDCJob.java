@@ -71,7 +71,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -149,7 +148,7 @@ public final class CDCJob implements PipelineJob {
                                                              final Collection<String> schemaTableNames, final TableAndSchemaNameMapper mapper) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
-        Map<ShardingSphereIdentifier, Set<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor()
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor()
                 .getTableAndShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), schemaTableNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet()));
         PipelineWriteConfiguration write = pipelineProcessConfig.getWrite();
         JobRateLimitAlgorithm writeRateLimitAlgorithm = null == write.getRateLimiter() ? null
