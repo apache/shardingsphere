@@ -40,6 +40,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDa
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
@@ -62,14 +63,17 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineProcessConf
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.data.pipeline.core.util.ShardingColumnsExtractor;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -144,16 +148,23 @@ public final class CDCJob implements PipelineJob {
         return new IncrementalDumperContext(dumperCommonContext, jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private ImporterConfiguration buildImporterConfiguration(final CDCJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
                                                              final Collection<String> schemaTableNames, final TableAndSchemaNameMapper mapper) {
         PipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(
                 jobConfig.getDataSourceConfig().getType(), jobConfig.getDataSourceConfig().getParameter());
-        Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor()
-                .getTableAndShardingColumnsMap(jobConfig.getDataSourceConfig().getRootConfig().getRules(), schemaTableNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet()));
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = new HashMap<>();
+        Collection<YamlRuleConfiguration> yamlRuleConfigs = jobConfig.getDataSourceConfig().getRootConfig().getRules();
+        Map<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> requiredColumnsExtractors = OrderedSPILoader.getServices(PipelineRequiredColumnsExtractor.class, yamlRuleConfigs);
+        for (Entry<YamlRuleConfiguration, PipelineRequiredColumnsExtractor> entry : requiredColumnsExtractors.entrySet()) {
+            tableAndRequiredColumnsMap.putAll(
+                    entry.getValue().getTableAndRequiredColumnsMap(yamlRuleConfigs, schemaTableNames.stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet())));
+        }
         PipelineWriteConfiguration write = pipelineProcessConfig.getWrite();
-        JobRateLimitAlgorithm writeRateLimitAlgorithm = null == write.getRateLimiter() ? null
+        JobRateLimitAlgorithm writeRateLimitAlgorithm = null == write.getRateLimiter()
+                ? null
                 : TypedSPILoader.getService(JobRateLimitAlgorithm.class, write.getRateLimiter().getType(), write.getRateLimiter().getProps());
-        return new ImporterConfiguration(dataSourceConfig, tableAndShardingColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
+        return new ImporterConfiguration(dataSourceConfig, tableAndRequiredColumnsMap, mapper, write.getBatchSize(), writeRateLimitAlgorithm, 0, 1);
     }
     
     private void initTasks(final Collection<CDCJobItemContext> jobItemContexts,
