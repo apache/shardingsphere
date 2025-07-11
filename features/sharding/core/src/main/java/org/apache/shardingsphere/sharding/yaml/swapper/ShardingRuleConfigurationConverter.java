@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.util.Collection;
@@ -32,16 +31,6 @@ import java.util.Optional;
 // TODO Move to pipeline module
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRuleConfigurationConverter {
-    
-    /**
-     * Find and convert sharding rule configuration from YAML.
-     *
-     * @param yamlRuleConfigs YAML rule configurations
-     * @return sharding rule configuration
-     */
-    public static Optional<ShardingRuleConfiguration> findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        return findYamlShardingRuleConfiguration(yamlRuleConfigs).map(each -> new YamlShardingRuleConfigurationSwapper().swapToObject(each));
-    }
     
     /**
      * Find YAML sharding rule configuration.

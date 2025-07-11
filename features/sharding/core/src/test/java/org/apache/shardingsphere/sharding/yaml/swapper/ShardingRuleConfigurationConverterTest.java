@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,14 +42,6 @@ class ShardingRuleConfigurationConverterTest {
         tableRuleConfig.setActualDataNodes("ds_${0..1}.table_${0..2}");
         yamlShardingRuleConfig.getTables().put("LOGIC_TABLE", tableRuleConfig);
         yamlRuleConfig = Collections.singletonList(yamlShardingRuleConfig);
-    }
-    
-    @Test
-    void assertFindAndConvertShardingRuleConfiguration() {
-        Optional<ShardingRuleConfiguration> actual = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfig);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getTables().size(), is(1));
-        assertThat(actual.get().getTables().iterator().next().getLogicTable(), is("LOGIC_TABLE"));
     }
     
     @Test
