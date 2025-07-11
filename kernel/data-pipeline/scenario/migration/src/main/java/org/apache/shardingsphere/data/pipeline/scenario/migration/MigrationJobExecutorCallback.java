@@ -66,7 +66,7 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
         IncrementalDumperContext incrementalDumperContext = new MigrationIncrementalDumperContextCreator(jobConfig).createDumperContext(jobConfig.getJobDataNodeLine(jobShardingItem));
         Collection<CreateTableConfiguration> createTableConfigs = buildCreateTableConfigurations(jobConfig, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
         Set<ShardingSphereIdentifier> targetTableNames = jobConfig.getTargetTableNames().stream().map(ShardingSphereIdentifier::new).collect(Collectors.toSet());
-        Map<ShardingSphereIdentifier, Set<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor().getTableAndShardingColumnsMap(
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap = new ShardingColumnsExtractor().getTableAndShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), targetTableNames);
         ImporterConfiguration importerConfig =
                 buildImporterConfiguration(jobConfig, processConfig, tableAndShardingColumnsMap, incrementalDumperContext.getCommonContext().getTableAndSchemaNameMapper());
@@ -87,7 +87,7 @@ public final class MigrationJobExecutorCallback implements DistributedPipelineJo
     }
     
     private ImporterConfiguration buildImporterConfiguration(final MigrationJobConfiguration jobConfig, final PipelineProcessConfiguration pipelineProcessConfig,
-                                                             final Map<ShardingSphereIdentifier, Set<String>> tableAndShardingColumnsMap, final TableAndSchemaNameMapper mapper) {
+                                                             final Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap, final TableAndSchemaNameMapper mapper) {
         int batchSize = pipelineProcessConfig.getWrite().getBatchSize();
         JobRateLimitAlgorithm writeRateLimitAlgorithm = new TransmissionProcessContext(jobConfig.getJobId(), pipelineProcessConfig).getWriteRateLimitAlgorithm();
         int retryTimes = jobConfig.getRetryTimes();

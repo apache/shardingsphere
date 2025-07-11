@@ -28,10 +28,10 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Importer configuration.
@@ -44,7 +44,7 @@ public final class ImporterConfiguration {
     private final PipelineDataSourceConfiguration dataSourceConfig;
     
     @Getter(AccessLevel.NONE)
-    private final Map<ShardingSphereIdentifier, Set<String>> tableAndShardingColumnsMap;
+    private final Map<ShardingSphereIdentifier, Collection<String>> tableAndShardingColumnsMap;
     
     private final TableAndSchemaNameMapper tableAndSchemaNameMapper;
     
@@ -62,8 +62,8 @@ public final class ImporterConfiguration {
      * @param logicTableName logic table name
      * @return sharding columns
      */
-    public Set<String> getShardingColumns(final String logicTableName) {
-        return tableAndShardingColumnsMap.getOrDefault(new ShardingSphereIdentifier(logicTableName), Collections.emptySet());
+    public Collection<String> getShardingColumns(final String logicTableName) {
+        return tableAndShardingColumnsMap.getOrDefault(new ShardingSphereIdentifier(logicTableName), Collections.emptyList());
     }
     
     /**

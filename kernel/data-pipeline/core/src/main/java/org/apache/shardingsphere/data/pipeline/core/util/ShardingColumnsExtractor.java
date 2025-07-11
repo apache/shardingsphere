@@ -48,8 +48,8 @@ public final class ShardingColumnsExtractor {
      * @param logicTableNames logic table names
      * @return table and sharding columns map
      */
-    public Map<ShardingSphereIdentifier, Set<String>> getTableAndShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
-                                                                                    final Collection<ShardingSphereIdentifier> logicTableNames) {
+    public Map<ShardingSphereIdentifier, Collection<String>> getTableAndShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
+                                                                                           final Collection<ShardingSphereIdentifier> logicTableNames) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();
@@ -58,11 +58,11 @@ public final class ShardingColumnsExtractor {
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultTableShardingStrategy());
         // TODO check is it need to be ConcurrentHashMap?
         // TODO check is it need to be ShardingSphereIdentifier with column names?
-        Map<ShardingSphereIdentifier, Set<String>> result = new ConcurrentHashMap<>(shardingRuleConfig.get().getTables().size(), 1F);
+        Map<ShardingSphereIdentifier, Collection<String>> result = new ConcurrentHashMap<>(shardingRuleConfig.get().getTables().size(), 1F);
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.get().getTables()) {
             ShardingSphereIdentifier logicTableName = new ShardingSphereIdentifier(each.getLogicTable());
             if (logicTableNames.contains(logicTableName)) {
-                Set<String> shardingColumns = new HashSet<>();
+                Collection<String> shardingColumns = new HashSet<>();
                 shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
                 shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
                 result.put(logicTableName, shardingColumns);
