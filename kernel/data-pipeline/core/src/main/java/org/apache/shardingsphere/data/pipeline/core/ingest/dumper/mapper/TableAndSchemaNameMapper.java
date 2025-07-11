@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper;
 
-import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collection;
@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 /**
  * Table and schema name mapper.
  */
-@Getter
 @ToString
 public final class TableAndSchemaNameMapper {
     
@@ -76,5 +75,14 @@ public final class TableAndSchemaNameMapper {
      */
     public String getSchemaName(final ShardingSphereIdentifier logicTableName) {
         return mapping.get(logicTableName);
+    }
+    
+    /**
+     * Get qualified tables.
+     *
+     * @return qualified tables
+     */
+    public Collection<QualifiedTable> getQualifiedTables() {
+        return mapping.entrySet().stream().map(entry -> new QualifiedTable(entry.getValue(), entry.getKey().getValue())).collect(Collectors.toList());
     }
 }

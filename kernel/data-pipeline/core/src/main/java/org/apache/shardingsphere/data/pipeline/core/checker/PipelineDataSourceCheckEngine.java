@@ -90,7 +90,7 @@ public final class PipelineDataSourceCheckEngine {
     private void checkEmptyTable(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
         try {
             for (DataSource each : dataSources) {
-                for (QualifiedTable qualifiedTable : importerConfig.getQualifiedTables()) {
+                for (QualifiedTable qualifiedTable : importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()) {
                     ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName()));
                 }
             }
