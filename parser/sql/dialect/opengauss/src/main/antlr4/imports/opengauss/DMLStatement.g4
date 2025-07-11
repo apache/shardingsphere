@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DMLStatement;
+parser grammar DMLStatement;
 
 import BaseRule;
+
+options {tokenVocab = ModeLexer;}
 
 insert
     : withClause? INSERT INTO insertTarget insertRest optOnDuplicateKey? returningClause?
@@ -188,7 +190,7 @@ forLockingItem
 
 nowaitOrSkip
     : NOWAIT
-    | 'skip' LOCKED
+    | APOSTROPHE_SKIP LOCKED
     ;
 
 forLockingStrength

@@ -247,7 +247,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
                 : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
     }
     
-    private ResultSet doExecuteFederation() {
+    private ResultSet doExecuteFederation() throws SQLException {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDialectDatabaseMetaData();
         boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
                 && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();

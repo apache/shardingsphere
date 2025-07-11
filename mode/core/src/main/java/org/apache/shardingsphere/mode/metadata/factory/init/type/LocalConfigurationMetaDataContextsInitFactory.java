@@ -50,8 +50,10 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
     
     private final ComputeNodeInstanceContext instanceContext;
     
+    private final boolean persistSchemasEnabled;
+    
     public LocalConfigurationMetaDataContextsInitFactory(final PersistRepository repository, final ComputeNodeInstanceContext instanceContext, final Properties props) {
-        boolean persistSchemasEnabled = new ConfigurationProperties(props).getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
+        persistSchemasEnabled = new ConfigurationProperties(props).getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
         persistFacade = new MetaDataPersistFacade(repository, persistSchemasEnabled);
         this.instanceContext = instanceContext;
     }
@@ -82,7 +84,9 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
             if (schema.isEmpty()) {
                 persistFacade.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
             }
-            persistFacade.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
+            if (persistSchemasEnabled) {
+                persistFacade.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
+            }
         }));
         for (Entry<String, DatabaseStatistics> databaseStatisticsEntry : metaDataContexts.getStatistics().getDatabaseStatisticsMap().entrySet()) {
             for (Entry<String, SchemaStatistics> schemaStatisticsEntry : databaseStatisticsEntry.getValue().getSchemaStatisticsMap().entrySet()) {

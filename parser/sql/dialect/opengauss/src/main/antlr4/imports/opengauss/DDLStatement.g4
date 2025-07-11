@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-grammar DDLStatement;
+parser grammar DDLStatement;
 
 import DMLStatement;
+
+options {tokenVocab = ModeLexer;}
 
 createTable
     : CREATE createTableSpecification TABLE ifNotExists? tableName
@@ -1428,7 +1430,11 @@ transformTypeList
     ;
 
 funcAs
-    : identifier | STRING_ (COMMA_ identifier|STRING_)?
+    : funcDefinition (COMMA_ funcDefinition)?
+    ;
+
+funcDefinition
+    : identifier | aexprConst
     ;
 
 funcReturn

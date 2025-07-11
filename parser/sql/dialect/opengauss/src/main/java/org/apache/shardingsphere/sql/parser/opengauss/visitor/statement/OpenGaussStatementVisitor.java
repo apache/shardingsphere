@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AliasClauseContext;
@@ -116,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Win
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParserBaseVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -214,7 +214,7 @@ import java.util.Optional;
  * Statement visitor for openGauss.
  */
 @Getter(AccessLevel.PROTECTED)
-public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVisitor<ASTNode> {
+public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParserBaseVisitor<ASTNode> {
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     

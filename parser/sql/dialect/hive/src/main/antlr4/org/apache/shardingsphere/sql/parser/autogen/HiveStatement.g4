@@ -17,7 +17,7 @@
 
 grammar HiveStatement;
 
-import Comments, DMLStatement;
+import Comments, DMLStatement, DDLStatement;
 
 // TODO correct hive SQL parsing according to official documentation
 execute
@@ -25,6 +25,8 @@ execute
     | insert
     | update
     | delete
+    | createDatabase
+    | dropDatabase
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

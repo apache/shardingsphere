@@ -29,16 +29,21 @@ import java.util.Collections;
  */
 public final class SingleTableMapperRuleAttribute implements TableMapperRuleAttribute {
     
-    private final Collection<String> logicTableMapper;
+    private final Collection<String> logicalTableNames;
     
     public SingleTableMapperRuleAttribute(final Collection<Collection<DataNode>> singleTableDataNodes) {
-        logicTableMapper = new CaseInsensitiveSet<>(singleTableDataNodes.size(), 1F);
-        singleTableDataNodes.forEach(each -> logicTableMapper.add(each.iterator().next().getTableName()));
+        logicalTableNames = createLogicalTableNames(singleTableDataNodes);
+    }
+    
+    private Collection<String> createLogicalTableNames(final Collection<Collection<DataNode>> singleTableDataNodes) {
+        Collection<String> result = new CaseInsensitiveSet<>(singleTableDataNodes.size(), 1F);
+        singleTableDataNodes.forEach(each -> result.add(each.iterator().next().getTableName()));
+        return result;
     }
     
     @Override
     public Collection<String> getLogicTableNames() {
-        return logicTableMapper;
+        return logicalTableNames;
     }
     
     @Override

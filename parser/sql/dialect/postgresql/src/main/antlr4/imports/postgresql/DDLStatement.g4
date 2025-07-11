@@ -1441,7 +1441,11 @@ transformTypeList
     ;
 
 funcAs
-    : identifier | STRING_ (COMMA_ identifier|STRING_)?
+    : funcDefinition (COMMA_ funcDefinition)?
+    ;
+
+funcDefinition
+    : identifier | aexprConst
     ;
 
 funcReturn

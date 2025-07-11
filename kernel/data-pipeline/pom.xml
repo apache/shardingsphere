@@ -31,6 +31,7 @@
         <module>api</module>
         <module>core</module>
         <module>dialect</module>
+        <module>feature</module>
         <module>distsql</module>
         <module>scenario</module>
     </modules>

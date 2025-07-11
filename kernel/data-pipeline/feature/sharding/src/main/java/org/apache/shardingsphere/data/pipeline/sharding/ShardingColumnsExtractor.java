@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.util;
+package org.apache.shardingsphere.data.pipeline.sharding;
 
+import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -25,6 +26,8 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import java.util.Arrays;
@@ -39,16 +42,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Sharding columns extractor.
  */
-public final class ShardingColumnsExtractor {
+public final class ShardingColumnsExtractor implements PipelineRequiredColumnsExtractor<YamlShardingRuleConfiguration> {
     
-    /**
-     * Get sharding columns map.
-     *
-     * @param yamlRuleConfigs YAML rule configurations
-     * @param logicTableNames logic table names
-     * @return sharding columns map
-     */
-    public Map<ShardingSphereIdentifier, Set<String>> getShardingColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs, final Collection<ShardingSphereIdentifier> logicTableNames) {
+    @Override
+    public Map<ShardingSphereIdentifier, Collection<String>> getTableAndRequiredColumnsMap(final Collection<YamlRuleConfiguration> yamlRuleConfigs,
+                                                                                           final Collection<ShardingSphereIdentifier> logicTableNames) {
         Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRuleConfigs);
         if (!shardingRuleConfig.isPresent()) {
             return Collections.emptyMap();
@@ -57,11 +55,11 @@ public final class ShardingColumnsExtractor {
         Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.get().getDefaultTableShardingStrategy());
         // TODO check is it need to be ConcurrentHashMap?
         // TODO check is it need to be ShardingSphereIdentifier with column names?
-        Map<ShardingSphereIdentifier, Set<String>> result = new ConcurrentHashMap<>(shardingRuleConfig.get().getTables().size(), 1F);
+        Map<ShardingSphereIdentifier, Collection<String>> result = new ConcurrentHashMap<>(shardingRuleConfig.get().getTables().size(), 1F);
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.get().getTables()) {
             ShardingSphereIdentifier logicTableName = new ShardingSphereIdentifier(each.getLogicTable());
             if (logicTableNames.contains(logicTableName)) {
-                Set<String> shardingColumns = new HashSet<>();
+                Collection<String> shardingColumns = new HashSet<>();
                 shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
                 shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
                 result.put(logicTableName, shardingColumns);
@@ -84,5 +82,15 @@ public final class ShardingColumnsExtractor {
             return new HashSet<>(Arrays.asList(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns().split(",")));
         }
         return Collections.emptySet();
+    }
+    
+    @Override
+    public int getOrder() {
+        return ShardingOrder.ORDER;
+    }
+    
+    @Override
+    public Class<YamlShardingRuleConfiguration> getTypeClass() {
+        return YamlShardingRuleConfiguration.class;
     }
 }
