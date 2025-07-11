@@ -36,7 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,13 +58,13 @@ class AnalyzeTableStatementBinderTest {
     @Test
     void assertBind() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
-        AnalyzeTableStatement original = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(database);
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.getSchema("foo_db")).thenReturn(schema);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
+        final AnalyzeTableStatement original = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, databaseType, original);
         
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
