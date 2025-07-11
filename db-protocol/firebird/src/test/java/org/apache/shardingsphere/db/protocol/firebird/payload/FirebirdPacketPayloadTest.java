@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package payload;
+package org.apache.shardingsphere.db.protocol.firebird.payload;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

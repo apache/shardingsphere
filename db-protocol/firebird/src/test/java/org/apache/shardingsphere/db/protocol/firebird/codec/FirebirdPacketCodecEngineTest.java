@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package codec;
+package org.apache.shardingsphere.db.protocol.firebird.codec;
 
-import org.apache.shardingsphere.db.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
