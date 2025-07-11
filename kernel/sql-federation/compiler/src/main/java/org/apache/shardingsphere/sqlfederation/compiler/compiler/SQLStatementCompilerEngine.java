@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.sqlfederation.compiler.compiler;
 
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.cache.ExecutionPlanCacheKey;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 
 /**
  * SQL statement compiler engine.
  */
+@Slf4j
 public final class SQLStatementCompilerEngine {
     
     private final LoadingCache<ExecutionPlanCacheKey, SQLFederationExecutionPlan> executionPlanCache;
@@ -42,6 +44,10 @@ public final class SQLStatementCompilerEngine {
      * @return SQL federation execution plan
      */
     public SQLFederationExecutionPlan compile(final ExecutionPlanCacheKey cacheKey, final boolean useCache) {
+        if (log.isDebugEnabled()) {
+            String cacheExists = null != executionPlanCache.get(cacheKey) ? "exists" : "not exists";
+            log.debug("Execution plan cache {} for SQL: {}, useCache: {}.", cacheExists, cacheKey.getSql(), useCache);
+        }
         return useCache ? executionPlanCache.get(cacheKey) : cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getDatabaseType());
     }
 }

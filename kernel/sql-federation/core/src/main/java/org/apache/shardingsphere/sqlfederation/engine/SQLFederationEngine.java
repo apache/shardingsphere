@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -100,6 +102,8 @@ public final class SQLFederationEngine implements AutoCloseable {
     private SchemaPlus schemaPlus;
     
     private ResultSet resultSet;
+    
+    private String processId;
     
     public SQLFederationEngine(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics,
                                final JDBCExecutor jdbcExecutor) {
@@ -183,10 +187,13 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @throws SQLFederationUnsupportedSQLException SQL federation unsupported SQL exception
      */
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                  final SQLFederationContext federationContext) {
+                                  final SQLFederationContext federationContext) throws SQLException {
         queryContext = federationContext.getQueryContext();
+        processId = federationContext.getProcessId();
         logSQL(queryContext, federationContext.getMetaData().getProps());
         try {
+            processEngine.executeSQL(new ExecutionGroupContext<>(Collections.emptyList(),
+                    new ExecutionGroupReportContext(processId, currentDatabaseName, queryContext.getConnectionContext().getGrantee())), queryContext);
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
             CompilerContext compilerContext = sqlFederationRule.getCompilerContext();
             SQLFederationRelConverter converter = new SQLFederationRelConverter(compilerContext,
@@ -200,9 +207,8 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            close();
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
-        } finally {
-            processEngine.completeSQLExecution(federationContext.getProcessId());
         }
     }
     

@@ -65,7 +65,8 @@ class SQLFederationResultSetTest {
     void setUp() {
         enumerator = createEnumerator();
         federationResultSet =
-                new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createExpandProjections(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), mock(RelDataType.class));
+                new SQLFederationResultSet(enumerator, mock(SQLFederationSchema.class), createExpandProjections(), TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), mock(RelDataType.class),
+                        "1");
     }
     
     private List<Projection> createExpandProjections() {

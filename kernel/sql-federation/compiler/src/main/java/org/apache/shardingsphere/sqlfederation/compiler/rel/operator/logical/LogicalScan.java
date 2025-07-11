@@ -92,8 +92,12 @@ public final class LogicalScan extends TableScan {
             return false;
         }
         LogicalScan otherLogicalScan = (LogicalScan) other;
-        return traitSet.equals(otherLogicalScan.getTraitSet()) && pushDownRelBuilder.peek().deepEquals(otherLogicalScan.pushDownRelBuilder.peek())
+        return traitSet.equals(otherLogicalScan.getTraitSet()) && safePeek(this).deepEquals(safePeek(otherLogicalScan))
                 && hints.equals(otherLogicalScan.hints) && getRowType().equalsSansFieldNames(otherLogicalScan.getRowType());
+    }
+    
+    private RelNode safePeek(final LogicalScan logicalScan) {
+        return 0 == logicalScan.getPushDownRelBuilder().size() ? logicalScan : logicalScan.getPushDownRelBuilder().peek();
     }
     
     @Override
