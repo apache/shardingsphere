@@ -156,4 +156,38 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     public static FirebirdGenericResponsePacket getPacket() {
         return new FirebirdGenericResponsePacket();
     }
+    
+    /**
+     * Extract error code from status vector.
+     *
+     * @return error code
+     */
+    public int getErrorCode() {
+        if (statusVector == null || statusVector.length < 8) {
+            return -1;
+        }
+        ByteBuf buf = Unpooled.wrappedBuffer(statusVector);
+        buf.readInt();
+        return buf.readInt();
+    }
+    
+    /**
+     * Extract error message from status vector.
+     *
+     * @return error message
+     */
+    public String getErrorMessage() {
+        if (statusVector == null || statusVector.length < 16) {
+            return "";
+        }
+        ByteBuf buf = Unpooled.wrappedBuffer(statusVector);
+        buf.readInt();
+        buf.readInt();
+        buf.readInt();
+        int msgLen = buf.readInt();
+        byte[] msgBytes = new byte[msgLen];
+        buf.readBytes(msgBytes);
+        return new String(msgBytes, StandardCharsets.UTF_8);
+    }
+    
 }
