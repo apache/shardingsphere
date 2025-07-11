@@ -112,7 +112,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     private Collection<ExecutionUnit> getExecutionUnits(final ContextManager contextManager, final String schemaName, final ShardingSphereMetaData metaData,
-                                                        final QueryContext queryContext) {
+                                                        final QueryContext queryContext) throws SQLException {
         JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionContext.getQueryContext().getConnectionContext());
         SQLFederationEngine federationEngine = new SQLFederationEngine(database.getName(), schemaName, metaData, contextManager.getMetaDataContexts().getStatistics(), jdbcExecutor);
         if (federationEngine.decide(queryContext, metaData.getGlobalRuleMetaData())) {
@@ -132,7 +132,8 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         toBePreviewedStatementContext.setCursorStatementContext(cursorStatementContext);
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData, final SQLFederationEngine federationEngine) {
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final ShardingSphereMetaData metaData,
+                                                                  final SQLFederationEngine federationEngine) throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(metaData);
         SQLFederationContext context = new SQLFederationContext(true, queryContext, metaData,
