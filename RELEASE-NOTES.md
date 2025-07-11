@@ -50,10 +50,10 @@
 1. SQL Parser: Support Oracle multiple backslash literal parsing - [#35784](https://github.com/apache/shardingsphere/pull/35784)
 1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
 1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
-1. SQL Parser: Support Hive CREATE DATABASE statment parse - [#35929](https://github.com/apache/shardingsphere/pull/35929)
+1. SQL Parser: Support Hive CREATE DATABASE statement parse - [#35929](https://github.com/apache/shardingsphere/pull/35929)
 1. SQL Parser: Support sql parser extract unique index - [#35941](https://github.com/apache/shardingsphere/pull/35941)
 1. SQL Parser: Support postgresql and opengauss create function with $$ symbol parse [#35947](https://github.com/apache/shardingsphere/pull/35947)
-
+1. SQL Parser: Support Hive DROP DATABASE statement parse - [#35948](https://github.com/apache/shardingsphere/pull/35948)
 ### Bug Fixes
 
 1. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
