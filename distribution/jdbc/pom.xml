@@ -167,6 +167,12 @@
                 
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -336,6 +342,17 @@
             </dependencies>
         </profile>
         
+        <profile>
+            <id>feature-broadcast</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>feature-readwrite-splitting</id>
             <dependencies>

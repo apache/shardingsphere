@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
+import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.CoordinatorType;
+import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.TableCoordinatorTypeNodePath;
 import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -33,6 +39,8 @@ public final class TableMetaDataPersistDisabledService implements TableMetaDataP
     
     private final PersistRepository repository;
     
+    private final YamlTableSwapper swapper = new YamlTableSwapper();
+    
     @Override
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
         return new LinkedList<>();
@@ -45,16 +53,26 @@ public final class TableMetaDataPersistDisabledService implements TableMetaDataP
     
     @Override
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
-        // TODO Implement persist logic if needed
+        for (ShardingSphereTable each : tables) {
+            TableCoordinatorTypeNodePath tableCoordinatorTypeNodePath = new TableCoordinatorTypeNodePath(Joiner.on(".").join(databaseName, schemaName, each.getName()),
+                    CoordinatorType.CREATE.name());
+            repository.persist(NodePathGenerator.toPath(tableCoordinatorTypeNodePath), YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
+            repository.delete(NodePathGenerator.toPath(tableCoordinatorTypeNodePath.getTableCoordinatorPath()));
+        }
     }
     
     @Override
     public void drop(final String databaseName, final String schemaName, final String tableName) {
-        // TODO Implement drop logic if needed
+        TableCoordinatorTypeNodePath tableCoordinatorTypeNodePath = new TableCoordinatorTypeNodePath(Joiner.on(".").join(databaseName, schemaName, tableName),
+                CoordinatorType.DROP.name());
+        repository.persist(NodePathGenerator.toPath(tableCoordinatorTypeNodePath), tableName);
+        repository.delete(NodePathGenerator.toPath(tableCoordinatorTypeNodePath.getTableCoordinatorPath()));
     }
     
     @Override
     public void drop(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
-        // TODO Implement drop logic if needed
+        for (ShardingSphereTable each : tables) {
+            drop(databaseName, schemaName, each.getName());
+        }
     }
 }

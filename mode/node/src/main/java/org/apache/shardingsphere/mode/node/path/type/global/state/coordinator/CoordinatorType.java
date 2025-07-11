@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.mode.node.path.type.global.state.coordinator;
 
-import Comments, DMLStatement, DDLStatement;
-
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Coordinator type.
+ */
+public enum CoordinatorType {
+    
+    CREATE, DROP
+}

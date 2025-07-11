@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.mode.node.path.type.global.state.coordinator;
 
-import Comments, DMLStatement, DDLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Table coordinator node path.
+ */
+@NodePathEntity("/states/coordinator/schemas/table/${qualifiedTableName}")
+@RequiredArgsConstructor
+@Getter
+public final class TableCoordinatorNodePath implements NodePath {
+    
+    private final String qualifiedTableName;
+}

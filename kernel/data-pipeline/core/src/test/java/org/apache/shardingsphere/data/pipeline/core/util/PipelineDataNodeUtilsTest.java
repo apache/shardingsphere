@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.util;
+package org.apache.shardingsphere.data.pipeline.core.util;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class CDCDataNodeUtilsTest {
+class PipelineDataNodeUtilsTest {
     
     @Test
     void assertBuildTableAndDataNodesMap() {
@@ -48,7 +48,7 @@ class CDCDataNodeUtilsTest {
         when(ruleMetaData.getAttributes(DataNodeRuleAttribute.class)).thenReturn(Arrays.asList(notReplicaBasedDistributionDataNodeRuleAttribute, replicaBasedDistributionDataNodeRuleAttribute));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        Map<String, List<DataNode>> actual = CDCDataNodeUtils.buildTableAndDataNodesMap(database, Arrays.asList("foo_tbl", "bar_tbl"));
+        Map<String, List<DataNode>> actual = PipelineDataNodeUtils.buildTableAndDataNodesMap(database, Arrays.asList("foo_tbl", "bar_tbl"));
         assertThat(actual.size(), is(2));
         assertThat(actual.get("foo_tbl"), is(Collections.singletonList(new DataNode("foo_ds.foo_tbl"))));
         assertThat(actual.get("bar_tbl"), is(Collections.singletonList(new DataNode("foo_ds.bar_tbl"))));
@@ -60,6 +60,6 @@ class CDCDataNodeUtilsTest {
         when(ruleMetaData.getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        assertThrows(PipelineInvalidParameterException.class, () -> CDCDataNodeUtils.buildTableAndDataNodesMap(database, Collections.singleton("foo_tbl")));
+        assertThrows(PipelineInvalidParameterException.class, () -> PipelineDataNodeUtils.buildTableAndDataNodesMap(database, Collections.singleton("foo_tbl")));
     }
 }

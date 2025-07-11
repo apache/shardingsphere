@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+grammar DDLStatement;
 
-import Comments, DMLStatement, DDLStatement;
+import BaseRule;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createDatabase
-    ) (SEMI_ EOF? | EOF)
-    | EOF
+createDatabase
+    : CREATE REMOTE? (DATABASE | SCHEMA) ifNotExists? identifier (COMMENT string_)? (LOCATION string_)? (MANAGEDLOCATION string_)? (WITH DBPROPERTIES LP_ dbProperties RP_)?
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
+    ;
+
+dbProperties
+    : dbProperty (COMMA_ dbProperty)*
+    ;
+
+dbProperty
+    : string_ EQ_ string_
     ;
