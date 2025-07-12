@@ -86,6 +86,16 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, true),
                 new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_order_item", Arrays.asList(
+                new ShardingSphereColumn("item_id", Types.BIGINT, true, false, false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_order_extend", Arrays.asList(
+                new ShardingSphereColumn("extend_id", Types.BIGINT, true, false, false, true, false, false),
+                new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.add(new ShardingSphereTable("t_order_type", Arrays.asList(
+                new ShardingSphereColumn("type_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("type_name", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
         return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
     }
     
