@@ -32,7 +32,7 @@ public interface TransactionalErrorAllowedSQLStatementHandler extends DatabaseTy
     /**
      * Judge SQL statement can be executed continuously if exceptions occur during transactional SQL executing.
      *
-     * @param sqlStatement statement to be judged
+     * @param sqlStatement SQL statement to be judged
      * @throws SQLException SQL exception
      */
     void judgeContinueToExecute(SQLStatement sqlStatement) throws SQLException;
