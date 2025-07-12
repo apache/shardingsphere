@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
@@ -38,9 +40,11 @@ import java.util.Optional;
  */
 public final class OracleDALStatementVisitor extends OracleStatementVisitor implements DALStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @Override
     public ASTNode visitAlterResourceCost(final AlterResourceCostContext ctx) {
-        return new OracleAlterResourceCostStatement();
+        return new OracleAlterResourceCostStatement(databaseType);
     }
     
     @Override
@@ -48,7 +52,7 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
         OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
-        ExplainStatement result = new ExplainStatement(getExplainableSQLStatement(ctx, visitor).orElse(null));
+        ExplainStatement result = new ExplainStatement(databaseType, getExplainableSQLStatement(ctx, visitor).orElse(null));
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
         return result;
@@ -72,11 +76,11 @@ public final class OracleDALStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
-        return new ShowStatement("");
+        return new ShowStatement(databaseType, "");
     }
     
     @Override
     public ASTNode visitSpool(final SpoolContext ctx) {
-        return new OracleSpoolStatement(null == ctx.spoolFileName() ? null : ctx.spoolFileName().getText());
+        return new OracleSpoolStatement(databaseType, null == ctx.spoolFileName() ? null : ctx.spoolFileName().getText());
     }
 }

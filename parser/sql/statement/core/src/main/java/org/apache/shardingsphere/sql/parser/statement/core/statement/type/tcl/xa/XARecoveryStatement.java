@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * XA recovery statement.
  */
 public final class XARecoveryStatement extends XAStatement {
+    
+    public XARecoveryStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

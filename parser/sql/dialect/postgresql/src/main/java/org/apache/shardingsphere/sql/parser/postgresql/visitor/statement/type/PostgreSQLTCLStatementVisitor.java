@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
@@ -54,12 +56,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa
  */
 public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisitor implements TCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        SetTransactionStatement result = new SetTransactionStatement();
+        SetTransactionStatement result = new SetTransactionStatement(databaseType);
         if (null != ctx.transactionModeList()) {
             for (TransactionModeItemContext each : ctx.transactionModeList().transactionModeItem()) {
-                result = new SetTransactionStatement(null, getTransactionIsolationLevel(each.isoLevel()), getTransactionAccessType(each));
+                result = new SetTransactionStatement(databaseType, null, getTransactionIsolationLevel(each.isoLevel()), getTransactionAccessType(each));
             }
         }
         return result;
@@ -99,66 +103,66 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new BeginTransactionStatement();
+        return new BeginTransactionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAbort(final AbortContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(ctx.colId().getText());
+        return new SavepointStatement(databaseType, ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        return new RollbackStatement(ctx.colId().getText());
+        return new RollbackStatement(databaseType, ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        return new ReleaseSavepointStatement(ctx.colId().getText());
+        return new ReleaseSavepointStatement(databaseType, ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
-        return new BeginTransactionStatement();
+        return new BeginTransactionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitEnd(final EndContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new SetConstraintsStatement();
+        return new SetConstraintsStatement(databaseType);
     }
     
     @Override
     public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
-        return new XAPrepareStatement(ctx.gid().getText());
+        return new XAPrepareStatement(databaseType, ctx.gid().getText());
     }
     
     @Override
     public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new XACommitStatement(ctx.gid().getText());
+        return new XACommitStatement(databaseType, ctx.gid().getText());
     }
     
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new XARollbackStatement(ctx.gid().getText());
+        return new XARollbackStatement(databaseType, ctx.gid().getText());
     }
 }

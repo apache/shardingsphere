@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Listen statement for PostgreSQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLListenStatement extends DDLStatement {
     
     private final String channelName;
+    
+    public PostgreSQLListenStatement(final DatabaseType databaseType, final String channelName) {
+        super(databaseType);
+        this.channelName = channelName;
+    }
 }

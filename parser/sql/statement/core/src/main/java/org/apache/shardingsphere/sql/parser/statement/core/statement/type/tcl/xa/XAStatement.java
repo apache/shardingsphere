@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 /**
  * XA statement.
  */
 public abstract class XAStatement extends TCLStatement {
+    
+    public XAStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

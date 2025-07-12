@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbsoluteCountContext;
@@ -261,10 +263,12 @@ import java.util.stream.Collectors;
  */
 public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisitor implements DDLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
@@ -297,7 +301,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -327,12 +331,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterAggregate(final AlterAggregateContext ctx) {
-        return new PostgreSQLAlterAggregateStatement();
+        return new PostgreSQLAlterAggregateStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDefaultPrivileges(final AlterDefaultPrivilegesContext ctx) {
-        return new PostgreSQLAlterDefaultPrivilegesStatement();
+        return new PostgreSQLAlterDefaultPrivilegesStatement(databaseType);
     }
     
     @Override
@@ -379,22 +383,22 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterForeignTable(final AlterForeignTableContext ctx) {
-        return new PostgreSQLAlterForeignTableStatement();
+        return new PostgreSQLAlterForeignTableStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterGroup(final AlterGroupContext ctx) {
-        return new PostgreSQLAlterGroupStatement();
+        return new PostgreSQLAlterGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterPackage(final AlterPackageContext ctx) {
-        return new AlterPackageStatement();
+        return new AlterPackageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
-        return new AlterMaterializedViewStatement();
+        return new AlterMaterializedViewStatement(databaseType);
     }
     
     @Override
@@ -419,7 +423,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterDomain(final AlterDomainContext ctx) {
-        return new AlterDomainStatement();
+        return new AlterDomainStatement(databaseType);
     }
     
     @Override
@@ -512,7 +516,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
-        DropTableStatement result = new DropTableStatement();
+        DropTableStatement result = new DropTableStatement(databaseType);
         result.setIfExists(null != ctx.ifExists());
         result.setContainsCascade(containsCascade);
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
@@ -522,13 +526,13 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
+        return new TruncateStatement(databaseType, ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement();
+        CreateIndexStatement result = new CreateIndexStatement(databaseType);
         result.setIfNotExists(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
@@ -579,7 +583,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement();
+        AlterIndexStatement result = new AlterIndexStatement(databaseType);
         result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
         if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
             result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
@@ -597,7 +601,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement();
+        DropIndexStatement result = new DropIndexStatement(databaseType);
         result.setIfExists(null != ctx.ifExists());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
         return result;
@@ -638,33 +642,33 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new AlterFunctionStatement();
+        return new AlterFunctionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement();
+        return new AlterProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement();
+        return new CreateFunctionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        return new CreateProcedureStatement();
+        return new CreateProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DropFunctionStatement();
+        return new DropFunctionStatement(databaseType);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement();
+        DropViewStatement result = new DropViewStatement(databaseType);
         result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue());
         return result;
@@ -672,7 +676,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        CreateViewStatement result = new CreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement(databaseType);
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
@@ -682,7 +686,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        AlterViewStatement result = new AlterViewStatement();
+        AlterViewStatement result = new AlterViewStatement(databaseType);
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
@@ -694,73 +698,73 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(((IdentifierValue) visit(ctx.name())).getValue(), null != ctx.ifExists());
+        return new DropDatabaseStatement(databaseType, ((IdentifierValue) visit(ctx.name())).getValue(), null != ctx.ifExists());
     }
     
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
-        return new DropServerStatement();
+        return new DropServerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new DropProcedureStatement();
+        return new DropProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropPublication(final DropPublicationContext ctx) {
-        return new PostgreSQLDropPublicationStatement();
+        return new PostgreSQLDropPublicationStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropCast(final DropCastContext ctx) {
-        return new PostgreSQLDropCastStatement();
+        return new PostgreSQLDropCastStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropRule(final DropRuleContext ctx) {
-        return new PostgreSQLDropRuleStatement();
+        return new PostgreSQLDropRuleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(((IdentifierValue) visit(ctx.name())).getValue(), false);
+        return new CreateDatabaseStatement(databaseType, ((IdentifierValue) visit(ctx.name())).getValue(), false);
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        return new CreateSequenceStatement(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
+        return new CreateSequenceStatement(databaseType, ((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        return new AlterSequenceStatement(((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
+        return new AlterSequenceStatement(databaseType, ((SimpleTableSegment) visit(ctx.qualifiedName())).getTableName().getIdentifier().getValue());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        return new DropSequenceStatement(((CollectionValue) visit(ctx.qualifiedNameList())).getValue());
+        return new DropSequenceStatement(databaseType, ((CollectionValue) visit(ctx.qualifiedNameList())).getValue());
     }
     
     @Override
     public ASTNode visitDropSynonym(final DropSynonymContext ctx) {
-        return new DropSynonymStatement();
+        return new DropSynonymStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropType(final DropTypeContext ctx) {
-        return new DropTypeStatement();
+        return new DropTypeStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
-        return new DropDirectoryStatement();
+        return new DropDirectoryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        PrepareStatement result = new PrepareStatement();
+        PrepareStatement result = new PrepareStatement(databaseType);
         if (null != ctx.preparableStmt().select()) {
             result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
         }
@@ -778,67 +782,67 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
-        return new DeallocateStatement();
+        return new DeallocateStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
-        return new CreateSynonymStatement();
+        return new CreateSynonymStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateAggregate(final CreateAggregateContext ctx) {
-        return new PostgreSQLCreateAggregateStatement();
+        return new PostgreSQLCreateAggregateStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreatePublication(final CreatePublicationContext ctx) {
-        return new PostgreSQLCreatePublicationStatement();
+        return new PostgreSQLCreatePublicationStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDirectory(final CreateDirectoryContext ctx) {
-        return new CreateDirectoryStatement();
+        return new CreateDirectoryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new CreateTablespaceStatement();
+        return new CreateTablespaceStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new AlterTablespaceStatement(null, null);
+        return new AlterTablespaceStatement(databaseType, null, null);
     }
     
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
-        return new DropTablespaceStatement();
+        return new DropTablespaceStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDomain(final DropDomainContext ctx) {
-        return new DropDomainStatement();
+        return new DropDomainStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDomain(final CreateDomainContext ctx) {
-        return new CreateDomainStatement();
+        return new CreateDomainStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateRule(final CreateRuleContext ctx) {
-        return new PostgreSQLCreateRuleStatement();
+        return new PostgreSQLCreateRuleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateLanguage(final CreateLanguageContext ctx) {
-        return new PostgreSQLCreateLanguageStatement();
+        return new PostgreSQLCreateLanguageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        CreateSchemaStatement result = new CreateSchemaStatement();
+        CreateSchemaStatement result = new CreateSchemaStatement(databaseType);
         if (null != ctx.createSchemaClauses().colId()) {
             result.setSchemaName(new IdentifierValue(ctx.createSchemaClauses().colId().getText()));
         }
@@ -850,7 +854,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterSchema(final AlterSchemaContext ctx) {
-        AlterSchemaStatement result = new AlterSchemaStatement();
+        AlterSchemaStatement result = new AlterSchemaStatement(databaseType);
         result.setSchemaName((IdentifierValue) visit(ctx.name().get(0)));
         if (ctx.name().size() > 1) {
             result.setRenameSchema((IdentifierValue) visit(ctx.name().get(1)));
@@ -861,7 +865,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
-        DropSchemaStatement result = new DropSchemaStatement();
+        DropSchemaStatement result = new DropSchemaStatement(databaseType);
         result.getSchemaNames().addAll(((CollectionValue<IdentifierValue>) visit(ctx.nameList())).getValue());
         result.setContainsCascade(null != ctx.dropBehavior() && null != ctx.dropBehavior().CASCADE());
         return result;
@@ -882,97 +886,97 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterLanguage(final AlterLanguageContext ctx) {
-        return new PostgreSQLAlterLanguageStatement();
+        return new PostgreSQLAlterLanguageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterSynonym(final AlterSynonymContext ctx) {
-        return new AlterSynonymStatement();
+        return new AlterSynonymStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDirectory(final AlterDirectoryContext ctx) {
-        return new AlterDirectoryStatement();
+        return new AlterDirectoryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterRule(final AlterRuleContext ctx) {
-        return new PostgreSQLAlterRuleStatement();
+        return new PostgreSQLAlterRuleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterType(final AlterTypeContext ctx) {
-        return new AlterTypeStatement();
+        return new AlterTypeStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropLanguage(final DropLanguageContext ctx) {
-        return new PostgreSQLDropLanguageStatement();
+        return new PostgreSQLDropLanguageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateConversion(final CreateConversionContext ctx) {
-        return new PostgreSQLCreateConversionStatement();
+        return new PostgreSQLCreateConversionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateCast(final CreateCastContext ctx) {
-        return new PostgreSQLCreateCastStatement();
+        return new PostgreSQLCreateCastStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateType(final CreateTypeContext ctx) {
-        return new CreateTypeStatement();
+        return new CreateTypeStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropConversion(final DropConversionContext ctx) {
-        return new PostgreSQLDropConversionStatement();
+        return new PostgreSQLDropConversionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterConversion(final AlterConversionContext ctx) {
-        return new PostgreSQLAlterConversionStatement();
+        return new PostgreSQLAlterConversionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateTextSearch(final CreateTextSearchContext ctx) {
-        return new PostgreSQLCreateTextSearchStatement();
+        return new PostgreSQLCreateTextSearchStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterTextSearchDictionary(final AlterTextSearchDictionaryContext ctx) {
-        return new PostgreSQLAlterTextSearchStatement();
+        return new PostgreSQLAlterTextSearchStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterTextSearchTemplate(final AlterTextSearchTemplateContext ctx) {
-        return new PostgreSQLAlterTextSearchStatement();
+        return new PostgreSQLAlterTextSearchStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterTextSearchParser(final AlterTextSearchParserContext ctx) {
-        return new PostgreSQLAlterTextSearchStatement();
+        return new PostgreSQLAlterTextSearchStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateExtension(final CreateExtensionContext ctx) {
-        return new PostgreSQLCreateExtensionStatement();
+        return new PostgreSQLCreateExtensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterExtension(final AlterExtensionContext ctx) {
-        return new PostgreSQLAlterExtensionStatement();
+        return new PostgreSQLAlterExtensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropExtension(final DropExtensionContext ctx) {
-        return new PostgreSQLDropExtensionStatement();
+        return new PostgreSQLDropExtensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        return new PostgreSQLDeclareStatement((CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
+        return new PostgreSQLDeclareStatement(databaseType, (CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
     }
     
     @Override
@@ -983,12 +987,12 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
         }
-        return new CommentStatement();
+        return new CommentStatement(databaseType);
     }
     
     @SuppressWarnings("unchecked")
     private CommentStatement commentOnColumn(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement();
+        CommentStatement result = new CommentStatement(databaseType);
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
         columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
@@ -999,7 +1003,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @SuppressWarnings("unchecked")
     private CommentStatement commentOnTable(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement();
+        CommentStatement result = new CommentStatement(databaseType);
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
         result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         setTableSegment(result, nameSegmentIterator);
@@ -1018,7 +1022,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCursor(final CursorContext ctx) {
-        return new CursorStatement((CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
+        return new CursorStatement(databaseType, (CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
     }
     
     @Override
@@ -1028,17 +1032,17 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitClose(final CloseContext ctx) {
-        return new CloseStatement(null == ctx.cursorName() ? null : (CursorNameSegment) visit(ctx.cursorName()), null != ctx.ALL());
+        return new CloseStatement(databaseType, null == ctx.cursorName() ? null : (CursorNameSegment) visit(ctx.cursorName()), null != ctx.ALL());
     }
     
     @Override
     public ASTNode visitMove(final MoveContext ctx) {
-        return new MoveStatement((CursorNameSegment) visit(ctx.cursorName()), null == ctx.direction() ? null : (DirectionSegment) visit(ctx.direction()));
+        return new MoveStatement(databaseType, (CursorNameSegment) visit(ctx.cursorName()), null == ctx.direction() ? null : (DirectionSegment) visit(ctx.direction()));
     }
     
     @Override
     public ASTNode visitFetch(final FetchContext ctx) {
-        return new FetchStatement((CursorNameSegment) visit(ctx.cursorName()), null == ctx.direction() ? null : (DirectionSegment) visit(ctx.direction()));
+        return new FetchStatement(databaseType, (CursorNameSegment) visit(ctx.cursorName()), null == ctx.direction() ? null : (DirectionSegment) visit(ctx.direction()));
     }
     
     @Override

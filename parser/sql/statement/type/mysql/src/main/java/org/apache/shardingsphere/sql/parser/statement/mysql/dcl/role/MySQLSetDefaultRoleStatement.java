@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dcl.role;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Set default role statement for MySQL.
  */
 public final class MySQLSetDefaultRoleStatement extends DCLStatement {
+    
+    public MySQLSetDefaultRoleStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

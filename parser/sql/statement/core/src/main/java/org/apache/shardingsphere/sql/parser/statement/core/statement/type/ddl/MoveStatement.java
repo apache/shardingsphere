@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -29,13 +29,18 @@ import java.util.Optional;
 /**
  * Move statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MoveStatement extends DDLStatement {
     
     private final CursorNameSegment cursorName;
     
     private final DirectionSegment direction;
+    
+    public MoveStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final DirectionSegment direction) {
+        super(databaseType);
+        this.cursorName = cursorName;
+        this.direction = direction;
+    }
     
     /**
      * Get direction.

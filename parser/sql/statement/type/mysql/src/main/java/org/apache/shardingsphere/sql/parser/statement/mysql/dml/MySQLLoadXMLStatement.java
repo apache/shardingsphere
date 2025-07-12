@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
@@ -27,11 +27,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DM
 /**
  * Load xml statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLLoadXMLStatement extends DMLStatement {
     
     private final SimpleTableSegment table;
+    
+    public MySQLLoadXMLStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
+        super(databaseType);
+        this.table = table;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

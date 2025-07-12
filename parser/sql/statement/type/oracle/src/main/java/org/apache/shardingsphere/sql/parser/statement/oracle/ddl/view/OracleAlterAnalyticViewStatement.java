@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter analytic view statement for Oracle.
  */
 public final class OracleAlterAnalyticViewStatement extends DDLStatement {
+    
+    public OracleAlterAnalyticViewStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

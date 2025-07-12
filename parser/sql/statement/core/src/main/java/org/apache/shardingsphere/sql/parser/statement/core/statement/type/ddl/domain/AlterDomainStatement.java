@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter domain statement.
  */
 public final class AlterDomainStatement extends DDLStatement {
+    
+    public AlterDomainStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

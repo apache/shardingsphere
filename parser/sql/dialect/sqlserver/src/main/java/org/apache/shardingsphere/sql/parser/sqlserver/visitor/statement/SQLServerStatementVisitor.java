@@ -24,10 +24,14 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ApproxFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
@@ -38,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Bit
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
@@ -58,6 +63,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Del
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FreetextTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GraphAggFunctionContext;
@@ -80,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Jso
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonKeyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonNullClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonObjectFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeInsertClauseContext;
@@ -139,6 +146,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.XmlMethodCallContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
@@ -235,12 +243,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.XmlMethodCallContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FreetextTableFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -253,6 +255,8 @@ import java.util.stream.Collectors;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
@@ -1074,7 +1078,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
@@ -1293,7 +1297,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         if (null != ctx.outputClause()) {
             result.setOutput((OutputSegment) visit(ctx.outputClause()));
@@ -1303,7 +1307,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setExec((ExecSegment) visit(ctx.exec()));
         return result;
@@ -1384,7 +1388,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         if (null != ctx.outputClause()) {
@@ -1403,7 +1407,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
         if (null != ctx.outputClause()) {
@@ -1435,7 +1439,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new UpdateStatement(databaseType);
         if (null != ctx.withClause()) {
             result.setWith((WithSegment) visit(ctx.withClause()));
         }
@@ -1503,7 +1507,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement();
+        DeleteStatement result = new DeleteStatement(databaseType);
         if (null != ctx.withClause()) {
             result.setWith((WithSegment) visit(ctx.withClause()));
         }
@@ -1779,7 +1783,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(databaseType);
         if (null != ctx.createTableAsSelect()) {
             result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
             result.setSelectStatement((SelectStatement) visit(ctx.createTableAsSelect().select()));
@@ -1805,7 +1809,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 indexSegments.add((IndexSegment) visit(indexNameContext));
             }
         }
-        return new SQLServerUpdateStatisticsStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+        return new SQLServerUpdateStatisticsStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
                 indexSegments, null == ctx.statisticsWithClause() ? null : (StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
     }
     
@@ -1882,7 +1886,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement();
+        MergeStatement result = new MergeStatement(databaseType);
         result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
         if (null != ctx.withClause()) {
             result.setWith((WithSegment) visit(ctx.withClause()));
@@ -1951,7 +1955,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new UpdateStatement(databaseType);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         return result;
     }

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter package statement.
  */
 public final class AlterPackageStatement extends DDLStatement {
+    
+    public AlterPackageStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter profile statement for Oracle.
  */
 public final class OracleAlterProfileStatement extends DDLStatement {
+    
+    public OracleAlterProfileStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

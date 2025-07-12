@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 
@@ -30,13 +32,15 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQL
  */
 public final class MySQLShowIndexStatementBinder implements SQLStatementBinder<MySQLShowIndexStatement> {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Override
     public MySQLShowIndexStatement bind(final MySQLShowIndexStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
     private MySQLShowIndexStatement copy(final MySQLShowIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        MySQLShowIndexStatement result = new MySQLShowIndexStatement(boundTable, sqlStatement.getFromDatabase().orElse(null));
+        MySQLShowIndexStatement result = new MySQLShowIndexStatement(databaseType, boundTable, sqlStatement.getFromDatabase().orElse(null));
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

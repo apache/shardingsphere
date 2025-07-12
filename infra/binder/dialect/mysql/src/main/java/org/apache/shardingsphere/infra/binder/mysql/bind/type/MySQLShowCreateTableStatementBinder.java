@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 
@@ -30,13 +32,15 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQL
  */
 public final class MySQLShowCreateTableStatementBinder implements SQLStatementBinder<MySQLShowCreateTableStatement> {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Override
     public MySQLShowCreateTableStatement bind(final MySQLShowCreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getTable(), binderContext, LinkedHashMultimap.create()));
     }
     
     private MySQLShowCreateTableStatement copy(final MySQLShowCreateTableStatement sqlStatement, final SimpleTableSegment boundTable) {
-        MySQLShowCreateTableStatement result = new MySQLShowCreateTableStatement(boundTable);
+        MySQLShowCreateTableStatement result = new MySQLShowCreateTableStatement(databaseType, boundTable);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

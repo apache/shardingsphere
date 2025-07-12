@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableBroadcastRouteSQLStatementAttribute;
@@ -28,10 +28,14 @@ import java.util.Collection;
 /**
  * Analyze table statement.
  */
-@RequiredArgsConstructor
 public final class AnalyzeTableStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
+    
+    public AnalyzeTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
+        super(databaseType);
+        this.tables = tables;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

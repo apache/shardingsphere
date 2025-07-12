@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.group;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter group statement for PostgreSQL.
  */
 public final class PostgreSQLAlterGroupStatement extends DDLStatement {
+    
+    public PostgreSQLAlterGroupStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

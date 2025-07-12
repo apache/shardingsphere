@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -27,7 +27,6 @@ import java.util.Optional;
 /**
  * Set transaction statement.
  */
-@RequiredArgsConstructor
 public final class SetTransactionStatement extends TCLStatement {
     
     private final OperationScope scope;
@@ -36,8 +35,15 @@ public final class SetTransactionStatement extends TCLStatement {
     
     private final TransactionAccessType accessMode;
     
-    public SetTransactionStatement() {
-        this(null, null, null);
+    public SetTransactionStatement(final DatabaseType databaseType) {
+        this(databaseType, null, null, null);
+    }
+    
+    public SetTransactionStatement(final DatabaseType databaseType, final OperationScope scope, final TransactionIsolationLevel isolationLevel, final TransactionAccessType accessMode) {
+        super(databaseType);
+        this.scope = scope;
+        this.isolationLevel = isolationLevel;
+        this.accessMode = accessMode;
     }
     
     /**

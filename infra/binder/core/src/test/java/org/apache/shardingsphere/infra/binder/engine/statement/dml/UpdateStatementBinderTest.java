@@ -52,7 +52,7 @@ class UpdateStatementBinderTest {
     
     @Test
     void assertBind() {
-        UpdateStatement updateStatement = new UpdateStatement();
+        UpdateStatement updateStatement = new UpdateStatement(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         updateStatement.setTable(simpleTableSegment);
         updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),

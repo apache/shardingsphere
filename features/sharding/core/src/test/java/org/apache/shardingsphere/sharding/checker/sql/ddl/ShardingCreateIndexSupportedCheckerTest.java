@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -44,6 +46,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ShardingCreateIndexSupportedCheckerTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private ShardingRule rule;
     
@@ -52,7 +56,7 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenTableExistIndexNotExistForPostgreSQL() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement();
+        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -62,7 +66,7 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenTableNotExistIndexNotExistForPostgreSQL() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement();
+        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -72,7 +76,7 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenTableExistIndexExistForPostgreSQL() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement();
+        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -83,7 +87,7 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWithoutIndexNameWhenTableExistIndexNotExistForPostgreSQL() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement();
+        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setAnonymousIndexStartIndex(10);
@@ -94,7 +98,7 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWithoutIndexNameWhenTableNotExistIndexNotExistForPostgreSQL() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement();
+        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setAnonymousIndexStartIndex(10);
@@ -105,7 +109,7 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWithoutIndexNameWhenTableExistIndexExistForPostgreSQL() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement();
+        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setAnonymousIndexStartIndex(10);

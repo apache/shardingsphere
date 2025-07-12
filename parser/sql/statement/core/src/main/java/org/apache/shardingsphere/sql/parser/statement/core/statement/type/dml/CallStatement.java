@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.List;
@@ -26,11 +26,16 @@ import java.util.List;
 /**
  * Call statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CallStatement extends DMLStatement {
     
     private final String procedureName;
     
     private final List<ExpressionSegment> parameters;
+    
+    public CallStatement(final DatabaseType databaseType, final String procedureName, final List<ExpressionSegment> parameters) {
+        super(databaseType);
+        this.procedureName = procedureName;
+        this.parameters = parameters;
+    }
 }

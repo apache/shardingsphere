@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop logfile group statement for MySQL.
  */
 public final class MySQLDropLogfileGroupStatement extends DDLStatement {
+    
+    public MySQLDropLogfileGroupStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

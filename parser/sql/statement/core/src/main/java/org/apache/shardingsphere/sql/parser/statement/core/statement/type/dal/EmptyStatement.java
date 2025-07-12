@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * Empty statement.
  */
 public final class EmptyStatement extends DALStatement {
+    
+    public EmptyStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

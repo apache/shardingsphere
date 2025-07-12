@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show create trigger statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowCreateTriggerStatement extends DALStatement {
     
     private final String name;
+    
+    public MySQLShowCreateTriggerStatement(final DatabaseType databaseType, final String name) {
+        super(databaseType);
+        this.name = name;
+    }
 }

@@ -17,29 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.hive.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropDatabaseContext;
+import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * DDL statement visitor for Hive.
  */
 public final class HiveDDLStatementVisitor extends HiveStatementVisitor implements DDLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
+    
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(new IdentifierValue(ctx.identifier().getText()).getValue(),
-                null != ctx.ifNotExists());
+        return new CreateDatabaseStatement(databaseType, new IdentifierValue(ctx.identifier().getText()).getValue(), null != ctx.ifNotExists());
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(new IdentifierValue(ctx.identifier().getText()).getValue(),
-                null != ctx.ifExists());
+        return new DropDatabaseStatement(databaseType, new IdentifierValue(ctx.identifier().getText()).getValue(), null != ctx.ifExists());
     }
 }

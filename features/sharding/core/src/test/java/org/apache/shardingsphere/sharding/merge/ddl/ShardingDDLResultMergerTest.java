@@ -79,7 +79,7 @@ class ShardingDDLResultMergerTest {
     }
     
     private CursorHeldSQLStatementContext createCursorHeldSQLStatementContext(final ShardingSphereDatabase database) {
-        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(databaseType, new FetchStatement(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
+        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(databaseType, new FetchStatement(databaseType, new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }

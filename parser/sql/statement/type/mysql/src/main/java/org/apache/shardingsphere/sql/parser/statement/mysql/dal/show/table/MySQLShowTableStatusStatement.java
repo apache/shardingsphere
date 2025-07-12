@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -32,13 +32,18 @@ import java.util.Optional;
 /**
  * Show table status statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowTableStatusStatement extends DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    public MySQLShowTableStatusStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
+        super(databaseType);
+        this.fromDatabase = fromDatabase;
+        this.filter = filter;
+    }
     
     /**
      * Get from database.

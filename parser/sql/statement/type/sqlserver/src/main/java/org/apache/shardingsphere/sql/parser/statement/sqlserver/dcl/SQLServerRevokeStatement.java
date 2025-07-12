@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
@@ -31,4 +32,8 @@ import java.util.LinkedList;
 public final class SQLServerRevokeStatement extends RevokeStatement {
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    public SQLServerRevokeStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

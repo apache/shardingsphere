@@ -25,8 +25,10 @@ import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -60,6 +62,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(SQLStatementContextExtractor.class)
 class BroadcastRouteEngineFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private BroadcastRule rule;
     
@@ -83,7 +87,7 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithCursorContextAvailableAndIsAllBroadcastTables() {
         CursorHeldSQLStatementContext sqlStatementContext = mock(CursorHeldSQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new CloseStatement(mock(), false));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new CloseStatement(databaseType, mock(), false));
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastUnicastRouteEngine.class));

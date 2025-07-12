@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.OptionHintSegment;
@@ -62,6 +63,10 @@ public final class MergeStatement extends DMLStatement {
     private OptionHintSegment optionHint;
     
     private Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
+    
+    public MergeStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get update statement.

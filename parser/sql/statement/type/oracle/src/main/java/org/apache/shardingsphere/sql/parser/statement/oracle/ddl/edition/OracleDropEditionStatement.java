@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.edition;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop edition statement for Oracle.
  */
 public final class OracleDropEditionStatement extends DDLStatement {
+    
+    public OracleDropEditionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

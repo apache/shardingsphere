@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create outline statement for Oracle.
  */
 public final class OracleCreateOutlineStatement extends DDLStatement {
+    
+    public OracleCreateOutlineStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

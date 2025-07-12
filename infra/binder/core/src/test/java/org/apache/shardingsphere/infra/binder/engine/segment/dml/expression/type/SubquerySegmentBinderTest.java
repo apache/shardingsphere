@@ -64,7 +64,7 @@ class SubquerySegmentBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));

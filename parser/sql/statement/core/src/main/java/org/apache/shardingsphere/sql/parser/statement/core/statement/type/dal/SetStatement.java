@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 
 import java.util.List;
@@ -26,9 +26,13 @@ import java.util.List;
 /**
  * Set statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SetStatement extends DALStatement {
     
     private final List<VariableAssignSegment> variableAssigns;
+    
+    public SetStatement(final DatabaseType databaseType, final List<VariableAssignSegment> variableAssigns) {
+        super(databaseType);
+        this.variableAssigns = variableAssigns;
+    }
 }

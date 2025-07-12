@@ -191,7 +191,7 @@ class ProxyBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, databaseType, sql, new EmptyStatement(), connectionSession, new HintValueContext());
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, databaseType, sql, new EmptyStatement(databaseType), connectionSession, new HintValueContext());
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
     

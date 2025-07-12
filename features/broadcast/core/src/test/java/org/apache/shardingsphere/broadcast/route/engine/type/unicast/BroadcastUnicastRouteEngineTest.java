@@ -22,9 +22,11 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
@@ -50,6 +52,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BroadcastUnicastRouteEngineTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private BroadcastRule rule;
@@ -83,7 +87,7 @@ class BroadcastUnicastRouteEngineTest {
     
     @Test
     void assertRouteToFirstDataSourceWithDropViewStatementContext() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new DropViewStatement());
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new DropViewStatement(databaseType));
         assertRoute(sqlStatementContext, is("ds_0"));
     }
     

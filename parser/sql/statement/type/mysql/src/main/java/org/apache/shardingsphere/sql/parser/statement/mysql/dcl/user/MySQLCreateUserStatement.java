@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.TLSOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserResourceSegment;
@@ -41,4 +42,8 @@ public final class MySQLCreateUserStatement extends CreateUserStatement {
     private UserResourceSegment userResource;
     
     private PasswordOrLockOptionSegment passwordOrLockOption;
+    
+    public MySQLCreateUserStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

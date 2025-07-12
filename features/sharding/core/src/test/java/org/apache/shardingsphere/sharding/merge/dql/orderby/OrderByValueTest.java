@@ -61,7 +61,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForAsc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
@@ -95,7 +95,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForDesc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());
@@ -124,7 +124,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToWhenEqual() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(createOrderBySegment());

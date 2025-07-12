@@ -57,7 +57,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,
                                  final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new UpdateStatement(sqlStatement.getDatabaseType());
         result.setWith(boundWith);
         result.setTable(boundTable);
         result.setFrom(boundFrom);

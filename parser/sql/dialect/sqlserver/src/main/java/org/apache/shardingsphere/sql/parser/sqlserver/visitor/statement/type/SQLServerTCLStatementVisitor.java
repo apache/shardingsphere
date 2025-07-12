@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BeginDistributedTransactionContext;
@@ -44,9 +46,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa
  */
 public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisitor implements TCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(null, getTransactionIsolationLevel(ctx.isolationLevel()), null);
+        return new SetTransactionStatement(databaseType, null, getTransactionIsolationLevel(ctx.isolationLevel()), null);
     }
     
     private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationLevelContext ctx) {
@@ -67,37 +71,37 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetImplicitTransactions(final SetImplicitTransactionsContext ctx) {
-        return new SetAutoCommitStatement("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
+        return new SetAutoCommitStatement(databaseType, "ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
     }
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new BeginTransactionStatement();
+        return new BeginTransactionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCommitWork(final CommitWorkContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(databaseType);
     }
     
     @Override
     public ASTNode visitRollbackWork(final RollbackWorkContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(null);
+        return new SavepointStatement(databaseType, null);
     }
     
     @Override
@@ -108,6 +112,6 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
         } else if (null != ctx.transactionVariableName()) {
             xid = ctx.transactionVariableName().getText();
         }
-        return new XABeginStatement(xid);
+        return new XABeginStatement(databaseType, xid);
     }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CallContext;
@@ -38,19 +40,21 @@ import java.util.Collections;
  */
 public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisitor implements DMLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new CallStatement(null, Collections.emptyList());
+        return new CallStatement(databaseType, null, Collections.emptyList());
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement(Collections.emptyList());
+        return new DoStatement(databaseType, Collections.emptyList());
     }
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
-        return new PostgreSQLCopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
+        return new PostgreSQLCopyStatement(databaseType, null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
@@ -29,13 +29,18 @@ import java.util.Collection;
 /**
  * Flush statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLFlushStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
     
     private final boolean flushTable;
+    
+    public MySQLFlushStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean flushTable) {
+        super(databaseType);
+        this.tables = tables;
+        this.flushTable = flushTable;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Database administration statement.
  */
 public abstract class DALStatement extends SQLStatement {
+    
+    public DALStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Lock control statement.
  */
 public abstract class LCLStatement extends SQLStatement {
+    
+    public LCLStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

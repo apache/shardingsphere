@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.process;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show process list statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowProcessListStatement extends DALStatement {
     
     private final boolean full;
+    
+    public MySQLShowProcessListStatement(final DatabaseType databaseType, final boolean full) {
+        super(databaseType);
+        this.full = full;
+    }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnalyzeTableContext;
@@ -42,14 +44,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLCheckpointStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLVacuumStatement;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -60,21 +62,23 @@ import java.util.List;
  */
 public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisitor implements DALStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         if (null != ctx.varName()) {
-            return new ShowStatement(ctx.varName().getText());
+            return new ShowStatement(databaseType, ctx.varName().getText());
         }
         if (null != ctx.ZONE()) {
-            return new ShowStatement("timezone");
+            return new ShowStatement(databaseType, "timezone");
         }
         if (null != ctx.ISOLATION()) {
-            return new ShowStatement("transaction_isolation");
+            return new ShowStatement(databaseType, "transaction_isolation");
         }
         if (null != ctx.AUTHORIZATION()) {
-            return new ShowStatement("session_authorization");
+            return new ShowStatement(databaseType, "session_authorization");
         }
-        return new ShowStatement("ALL");
+        return new ShowStatement(databaseType, "ALL");
     }
     
     @Override
@@ -87,7 +91,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
             }
             variableAssigns.add(variableAssignSegment);
         }
-        return new SetStatement(variableAssigns);
+        return new SetStatement(databaseType, variableAssigns);
     }
     
     @Override
@@ -108,13 +112,13 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new PostgreSQLResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
+        return new PostgreSQLResetParameterStatement(databaseType, null == ctx.ALL() ? ctx.identifier().getText() : "ALL");
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        return new AnalyzeTableStatement(null == ctx.vacuumRelationList() ? Collections.emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
+        return new AnalyzeTableStatement(databaseType, null == ctx.vacuumRelationList() ? Collections.emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
     }
     
     @Override
@@ -130,17 +134,17 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitLoad(final LoadContext ctx) {
-        return new PostgreSQLLoadStatement();
+        return new PostgreSQLLoadStatement(databaseType);
     }
     
     @Override
     public ASTNode visitVacuum(final VacuumContext ctx) {
-        return new PostgreSQLVacuumStatement();
+        return new PostgreSQLVacuumStatement(databaseType);
     }
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        return new ExplainStatement((SQLStatement) visit(ctx.explainableStmt()));
+        return new ExplainStatement(databaseType, (SQLStatement) visit(ctx.explainableStmt()));
     }
     
     @Override
@@ -174,11 +178,11 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new PostgreSQLCheckpointStatement();
+        return new PostgreSQLCheckpointStatement(databaseType);
     }
     
     @Override
     public ASTNode visitEmptyStatement(final EmptyStatementContext ctx) {
-        return new EmptyStatement();
+        return new EmptyStatement(databaseType);
     }
 }

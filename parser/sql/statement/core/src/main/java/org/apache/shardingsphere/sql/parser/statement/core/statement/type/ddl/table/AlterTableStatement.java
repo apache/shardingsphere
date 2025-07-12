@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.t
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
@@ -93,6 +94,10 @@ public final class AlterTableStatement extends DDLStatement {
     private final Collection<RenameColumnSegment> renameColumnDefinitions = new LinkedList<>();
     
     private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
+    
+    public AlterTableStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get rename table.

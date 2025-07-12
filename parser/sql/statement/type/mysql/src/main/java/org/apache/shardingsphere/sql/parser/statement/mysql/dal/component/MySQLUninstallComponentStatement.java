@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.component;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.List;
@@ -26,9 +26,13 @@ import java.util.List;
 /**
  * Uninstall component statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLUninstallComponentStatement extends DALStatement {
     
     private final List<String> components;
+    
+    public MySQLUninstallComponentStatement(final DatabaseType databaseType, final List<String> components) {
+        super(databaseType);
+        this.components = components;
+    }
 }

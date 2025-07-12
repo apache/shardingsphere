@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
@@ -31,6 +33,7 @@ import java.util.LinkedList;
 /**
  * SQL statement.
  */
+@RequiredArgsConstructor
 @Getter
 public class SQLStatement implements ASTNode {
     
@@ -41,6 +44,8 @@ public class SQLStatement implements ASTNode {
     private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     
     private final Collection<CommentSegment> comments = new LinkedList<>();
+    
+    private final DatabaseType databaseType;
     
     /**
      * Get count of parameters.

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.List;
@@ -26,9 +26,13 @@ import java.util.List;
 /**
  * Do statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DoStatement extends DMLStatement {
     
     private final List<ExpressionSegment> parameters;
+    
+    public DoStatement(final DatabaseType databaseType, final List<ExpressionSegment> parameters) {
+        super(databaseType);
+        this.parameters = parameters;
+    }
 }

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Notify statement for PostgreSQL.
  */
 public final class PostgreSQLNotifyStmtStatement extends DDLStatement {
+    
+    public PostgreSQLNotifyStmtStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

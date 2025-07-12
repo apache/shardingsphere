@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.show;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show relay log events statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowRelayLogEventsStatement extends DALStatement {
     
@@ -34,4 +33,11 @@ public final class MySQLShowRelayLogEventsStatement extends DALStatement {
     private final LimitSegment limit;
     
     private final String channel;
+    
+    public MySQLShowRelayLogEventsStatement(final DatabaseType databaseType, final String logName, final LimitSegment limit, final String channel) {
+        super(databaseType);
+        this.logName = logName;
+        this.limit = limit;
+        this.channel = channel;
+    }
 }

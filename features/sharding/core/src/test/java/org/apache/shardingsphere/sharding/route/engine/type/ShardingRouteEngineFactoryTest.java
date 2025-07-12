@@ -76,6 +76,8 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingRouteEngineFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private ShardingRule shardingRule;
     
@@ -130,7 +132,7 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDCLForSingleTable() {
-        GrantStatement sqlStatement = new GrantStatement();
+        GrantStatement sqlStatement = new GrantStatement(databaseType);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
@@ -229,7 +231,7 @@ class ShardingRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCursorStatementWithShardingTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        when(cursorStatementContext.getSqlStatement()).thenReturn(new CursorStatement(null, null));
+        when(cursorStatementContext.getSqlStatement()).thenReturn(new CursorStatement(databaseType, null, null));
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);
@@ -245,7 +247,7 @@ class ShardingRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForCursorStatementWithSingleTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        when(cursorStatementContext.getSqlStatement()).thenReturn(new CursorStatement(null, null));
+        when(cursorStatementContext.getSqlStatement()).thenReturn(new CursorStatement(databaseType, null, null));
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);
         when(cursorStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
