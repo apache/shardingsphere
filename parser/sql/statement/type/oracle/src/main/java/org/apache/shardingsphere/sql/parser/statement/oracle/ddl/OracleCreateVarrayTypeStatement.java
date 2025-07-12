@@ -33,12 +33,12 @@ public final class OracleCreateVarrayTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     
-    private final boolean editionable;
+    private final boolean isEditionable;
     
     /** default -1 means that the size is not specified. */
     private final int size;
     
-    private final boolean notNull;
+    private final boolean isNotNull;
     
     private final boolean isPersistable;
     
@@ -47,13 +47,13 @@ public final class OracleCreateVarrayTypeStatement extends CreateTypeStatement {
     private final DataTypeSegment dataType;
     
     public OracleCreateVarrayTypeStatement(final DatabaseType databaseType,
-                                           final boolean isReplace, final boolean editionable, final int size, final boolean notNull,
+                                           final boolean isReplace, final boolean isEditionable, final int size, final boolean isNotNull,
                                            final boolean isPersistable, final TypeSegment typeSegment, final DataTypeSegment dataType) {
         super(databaseType);
         this.isReplace = isReplace;
-        this.editionable = editionable;
+        this.isEditionable = isEditionable;
         this.size = size;
-        this.notNull = notNull;
+        this.isNotNull = isNotNull;
         this.isPersistable = isPersistable;
         this.typeSegment = typeSegment;
         this.dataType = dataType;
