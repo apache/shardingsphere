@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
@@ -55,10 +54,8 @@ class SchemaMetaDataPersistServiceTest {
     private ViewMetaDataPersistService viewMetaDataPersistService;
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
+    void setUp() {
         persistService = new SchemaMetaDataPersistService(repository, tableMetaDataPersistService, viewMetaDataPersistService);
-        Plugins.getMemberAccessor().set(SchemaMetaDataPersistService.class.getDeclaredField("tableMetaDataPersistService"), persistService, tableMetaDataPersistService);
-        Plugins.getMemberAccessor().set(SchemaMetaDataPersistService.class.getDeclaredField("viewMetaDataPersistService"), persistService, viewMetaDataPersistService);
     }
     
     @Test
