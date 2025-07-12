@@ -134,6 +134,12 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-proxy-dialect-firebird</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -194,6 +200,11 @@
                 <dependency>
                     <groupId>com.mysql</groupId>
                     <artifactId>mysql-connector-j</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.firebirdsql.jdbc</groupId>
+                    <artifactId>jaybird</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
