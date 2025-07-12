@@ -566,7 +566,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new AlterTablespaceStatement(databaseType, 
+        return new AlterTablespaceStatement(databaseType,
                 null == ctx.tablespaceName() ? null
                         : new TablespaceSegment(
                                 ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())),
@@ -901,7 +901,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAnalyze(final AnalyzeContext ctx) {
-        return new OracleAnalyzeStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
+        return new OracleAnalyzeStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override
@@ -1017,12 +1018,14 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
-        return new OracleFlashbackTableStatement(databaseType, (SimpleTableSegment) visit(ctx.tableName()), null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
+        return new OracleFlashbackTableStatement(databaseType, (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
     }
     
     @Override
     public ASTNode visitPurge(final PurgeContext ctx) {
-        return new OraclePurgeStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
+        return new OraclePurgeStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override

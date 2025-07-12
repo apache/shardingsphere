@@ -584,7 +584,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
-        MySQLShowEventsStatement result = new MySQLShowEventsStatement(databaseType, 
+        MySQLShowEventsStatement result = new MySQLShowEventsStatement(databaseType,
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;

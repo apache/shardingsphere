@@ -44,7 +44,7 @@ public final class OracleCreateSubTypeStatement extends CreateTypeStatement {
     private final Collection<TypeDefinitionSegment> typeDefinitions;
     
     public OracleCreateSubTypeStatement(final DatabaseType databaseType,
-                                        final boolean isReplace, final boolean isEditionable, final boolean isFinal, 
+                                        final boolean isReplace, final boolean isEditionable, final boolean isFinal,
                                         final boolean isInstantiable, final TypeSegment typeSegment, final Collection<TypeDefinitionSegment> typeDefinitions) {
         super(databaseType);
         this.isReplace = isReplace;

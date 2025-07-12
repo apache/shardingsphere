@@ -57,7 +57,8 @@ public final class OracleTCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return null == ctx.savepointClause().savepointName() ? new RollbackStatement(databaseType) : new RollbackStatement(databaseType, ((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
+        return null == ctx.savepointClause().savepointName() ? new RollbackStatement(databaseType)
+                : new RollbackStatement(databaseType, ((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
     }
     
     @Override

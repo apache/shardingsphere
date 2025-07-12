@@ -236,7 +236,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        return new SQLServerCreateLoginStatement(databaseType, 
+        return new SQLServerCreateLoginStatement(databaseType,
                 null == ctx.ignoredNameIdentifier()
                         ? null
                         : new LoginSegment(

@@ -42,8 +42,8 @@ public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatem
     private final DataTypeSegment dataType;
     
     public OracleCreateNestedTableTypeStatement(final DatabaseType databaseType,
-                                           final boolean isReplace, final boolean editionable, final boolean notNull,
-                                           final boolean isPersistable, final TypeSegment typeSegment, final DataTypeSegment dataType) {
+                                                final boolean isReplace, final boolean editionable, final boolean notNull,
+                                                final boolean isPersistable, final TypeSegment typeSegment, final DataTypeSegment dataType) {
         super(databaseType);
         this.isReplace = isReplace;
         this.editionable = editionable;
