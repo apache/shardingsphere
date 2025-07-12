@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.natived.proxy.databases;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
+import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +37,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
 
 @SuppressWarnings("SqlNoDataSourceInspection")
@@ -75,7 +76,7 @@ class PostgresTest {
     
     @AfterEach
     void afterEach() {
-        proxyTestingServer.close();
+        proxyTestingServer.close(Collections.singletonList("sharding_db"));
     }
     
     /**

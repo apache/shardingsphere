@@ -178,6 +178,14 @@
   "allPublicMethods": true
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.jdbc.databases.DorisFETest"},
+  "name":"org.apache.shardingsphere.test.natived.jdbc.databases.DorisFETest",
+  "allDeclaredFields": true,
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true
+},
+{
   "condition":{"typeReachable":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest"},
   "name":"org.apache.shardingsphere.test.natived.proxy.databases.MySQLTest",
   "allDeclaredConstructors": true,
