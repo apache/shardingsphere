@@ -1432,9 +1432,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCursorDefinition(final CursorDefinitionContext ctx) {
-        SQLStatement statement = visitSelect0(ctx.select());
-        getCursorStatements().put(null != ctx.variableName().identifier() ? new IdentifierValue(ctx.variableName().getText()).getValue()
-                : new StringLiteralValue(ctx.variableName().getText()).getValue(), statement);
+        SQLStatement sqlStatement = visitSelect0(ctx.select());
+        getCursorStatements().put(null != ctx.variableName().identifier()
+                ? new IdentifierValue(ctx.variableName().getText()).getValue()
+                : new StringLiteralValue(ctx.variableName().getText()).getValue(), sqlStatement);
         return defaultResult();
     }
     
