@@ -104,7 +104,7 @@ public final class SimpleTableSegmentBinder {
     }
     
     private static IdentifierValue getDatabaseName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getDatabaseType()).getDialectDatabaseMetaData();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         Optional<OwnerSegment> owner = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? segment.getOwner().flatMap(OwnerSegment::getOwner) : segment.getOwner();
         IdentifierValue result = new IdentifierValue(owner.map(optional -> optional.getIdentifier().getValue()).orElse(binderContext.getCurrentDatabaseName()));
         ShardingSpherePreconditions.checkNotNull(result.getValue(), NoDatabaseSelectedException::new);
@@ -124,7 +124,7 @@ public final class SimpleTableSegmentBinder {
             return segment.getOwner().get().getIdentifier();
         }
         // TODO getSchemaName according to search path
-        DatabaseType databaseType = binderContext.getDatabaseType();
+        DatabaseType databaseType = binderContext.getSqlStatement().getDatabaseType();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
         Optional<String> defaultSystemSchema = databaseTypeRegistry.getDialectDatabaseMetaData().getSchemaOption().getDefaultSystemSchema();
         return defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())
@@ -242,7 +242,7 @@ public final class SimpleTableSegmentBinder {
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
             TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
             Collection<ProjectionSegment> subqueryProjections =
-                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getDatabaseType(),
+                    SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(),
                             TableSourceType.TEMPORARY_TABLE);
             return new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         }
@@ -264,7 +264,7 @@ public final class SimpleTableSegmentBinder {
                                                                                                      final IdentifierValue databaseName, final IdentifierValue schemaName,
                                                                                                      final SQLStatementBinderContext binderContext, final IdentifierValue tableName) {
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(binderContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         for (ShardingSphereColumn each : schema.getTable(tableName.getValue()).getAllColumns()) {
             ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(createColumnSegment(segment, databaseName, schemaName, each, quoteCharacter, tableName));
             columnProjectionSegment.setVisible(each.isVisible());

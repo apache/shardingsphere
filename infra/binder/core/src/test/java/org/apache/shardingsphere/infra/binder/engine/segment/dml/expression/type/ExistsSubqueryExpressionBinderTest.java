@@ -42,7 +42,7 @@ class ExistsSubqueryExpressionBinderTest {
         SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, selectStatement, "t_test"));
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock(), mock());
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock());
         ExistsSubqueryExpression actual = ExistsSubqueryExpressionBinder.bind(existsSubqueryExpression, binderContext, LinkedHashMultimap.create());
         assertThat(actual.getStartIndex(), is(existsSubqueryExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(existsSubqueryExpression.getStopIndex()));

@@ -65,7 +65,7 @@ class InsertStatementBinderTest {
                 new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, insertStatement));
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertThat(actual, not(insertStatement));
         assertTrue(actual.getTable().isPresent());
         assertTrue(insertStatement.getTable().isPresent());
@@ -110,7 +110,7 @@ class InsertStatementBinderTest {
         insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement, ""));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, insertStatement));
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertThat(actual, not(insertStatement));
         assertTrue(actual.getTable().isPresent());
         assertTrue(insertStatement.getTable().isPresent());
@@ -134,7 +134,7 @@ class InsertStatementBinderTest {
         insertStatement.setInsertSelect(new SubquerySegment(0, 0, subSelectStatement, ""));
         insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                 new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, insertStatement));
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertThat(actual, not(insertStatement));
         assertTrue(actual.getTable().isPresent());
         assertTrue(insertStatement.getTable().isPresent());

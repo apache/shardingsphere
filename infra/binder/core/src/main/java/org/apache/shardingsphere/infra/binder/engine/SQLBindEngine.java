@@ -61,7 +61,7 @@ public final class SQLBindEngine {
     }
     
     private SQLStatement bind(final SQLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement.getDatabaseType(), statement);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
         Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, statement.getDatabaseType());
         if (dialectSQLBindEngine.isPresent()) {
             Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(statement, binderContext);
