@@ -37,6 +37,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,7 +96,8 @@ class DorisFETest {
     
     @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
     private DataSource createDataSource() throws SQLException {
-        Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
+        Awaitility.await().timeout(1L, TimeUnit.HOURS).pollDelay(1L, TimeUnit.MINUTES).until(() -> true);
+        Awaitility.await().atMost(Duration.ofMinutes(1L)).until(() -> {
             try (Connection connection = DriverManager.getConnection(jdbcUrlPrefix, "root", null)) {
                 assertThat(connection.createStatement().executeQuery("SELECT `host`, `join`, `alive` FROM frontends()").next(), is(true));
                 assertThat(connection.createStatement().executeQuery("SELECT `host`, `alive` FROM backends()").next(), is(true));
