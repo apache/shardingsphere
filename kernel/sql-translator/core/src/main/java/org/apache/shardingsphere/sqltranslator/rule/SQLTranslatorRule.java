@@ -63,7 +63,7 @@ public final class SQLTranslatorRule implements GlobalRule {
      */
     public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext,
                                           final DatabaseType storageType, final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
-        DatabaseType sqlParserType = queryContext.getSqlStatementContext().getDatabaseType();
+        DatabaseType sqlParserType = queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType();
         if (sqlParserType.equals(storageType) || null == storageType) {
             return new SQLTranslatorContext(sql, parameters);
         }

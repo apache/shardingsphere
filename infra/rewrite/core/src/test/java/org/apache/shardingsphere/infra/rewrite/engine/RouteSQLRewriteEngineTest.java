@@ -56,7 +56,7 @@ class RouteSQLRewriteEngineTest {
         ShardingSphereDatabase database = mockDatabase(databaseType);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         QueryContext queryContext = mockQueryContext(sqlStatementContext, "SELECT ?");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
         RouteUnit routeUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
@@ -94,7 +94,7 @@ class RouteSQLRewriteEngineTest {
         when(statementContext.getOrderByContext().getItems()).thenReturn(Collections.emptyList());
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(false);
         DatabaseType databaseType = mock(DatabaseType.class);
-        when(statementContext.getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase(databaseType);
         QueryContext queryContext = mockQueryContext(statementContext, "SELECT ?");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
@@ -118,7 +118,7 @@ class RouteSQLRewriteEngineTest {
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
-        when(statementContext.getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase(databaseType);
         QueryContext queryContext = mockQueryContext(statementContext, "INSERT INTO tbl VALUES (?)");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
@@ -140,7 +140,7 @@ class RouteSQLRewriteEngineTest {
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
-        when(statementContext.getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase(databaseType);
         QueryContext queryContext = mockQueryContext(statementContext, "INSERT INTO tbl VALUES (?)");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
@@ -164,7 +164,7 @@ class RouteSQLRewriteEngineTest {
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
-        when(statementContext.getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase(databaseType);
         QueryContext queryContext = mockQueryContext(statementContext, "INSERT INTO tbl VALUES (?)");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
@@ -187,7 +187,7 @@ class RouteSQLRewriteEngineTest {
         when(statementContext.getGroupedParameters()).thenReturn(Collections.singletonList(Collections.singletonList(1)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
-        when(statementContext.getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase(databaseType);
         QueryContext queryContext = mockQueryContext(statementContext, "INSERT INTO tbl VALUES (?)");
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);

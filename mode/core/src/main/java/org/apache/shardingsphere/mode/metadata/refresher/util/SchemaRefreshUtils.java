@@ -38,6 +38,6 @@ public final class SchemaRefreshUtils {
      */
     public static String getSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
+                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName())).toLowerCase();
     }
 }
