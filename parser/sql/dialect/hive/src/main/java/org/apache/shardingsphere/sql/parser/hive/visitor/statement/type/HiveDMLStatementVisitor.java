@@ -114,6 +114,9 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WhereCla
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -1400,5 +1403,15 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         getParameterMarkerSegments().add(result);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
+        return new MySQLLoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
+    }
+
+    @Override
+    public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
+        return visit(ctx.loadDataStatement());
     }
 }

@@ -1023,6 +1023,14 @@ INFILE
     : I N F I L E
     ;
 
+INPATH
+    : I N P A T H
+    ;
+
+INPUTFORMAT
+    : I N P U T F O R M A T
+    ;
+
 INITIAL_SIZE
     : I N I T I A L UL_ S I Z E
     ;
@@ -1763,6 +1771,10 @@ OVER
     : O V E R
     ;
 
+OVERWRITE
+    : O V E R W R I T E
+    ;
+
 OWNER
     : O W N E R
     ;
@@ -2273,6 +2285,10 @@ SENSITIVE
 
 SEPARATOR
     : S E P A R A T O R
+    ;
+
+SERDE
+    : S E R D E
     ;
 
 SERIAL
@@ -3157,4 +3173,3 @@ MANAGEDLOCATION
 DBPROPERTIES
     : D B P R O P E R T I E S
     ;
-
