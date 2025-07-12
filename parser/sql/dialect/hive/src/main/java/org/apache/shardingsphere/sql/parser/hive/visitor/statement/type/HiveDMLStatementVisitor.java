@@ -1409,7 +1409,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
         return new MySQLLoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
-
+    
     @Override
     public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
         return visit(ctx.loadDataStatement());
