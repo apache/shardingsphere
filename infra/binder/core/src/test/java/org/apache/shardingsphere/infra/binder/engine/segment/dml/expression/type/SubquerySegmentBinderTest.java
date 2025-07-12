@@ -73,7 +73,7 @@ class SubquerySegmentBinderTest {
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
         selectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, selectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
-        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, selectStatement);
+        SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), selectStatement);
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
         boundNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(
                 new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_order_item"), new IdentifierValue("user_id"), TableSourceType.TEMPORARY_TABLE));

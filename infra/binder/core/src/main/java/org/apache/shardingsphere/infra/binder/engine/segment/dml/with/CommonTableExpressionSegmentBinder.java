@@ -94,7 +94,7 @@ public final class CommonTableExpressionSegmentBinder {
     private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final Collection<ColumnSegment> definitionColumns,
                                                                                                                final SQLStatementBinderContext binderContext, final SelectStatement selectStatement) {
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                selectStatement.getProjections().getProjections(), new IdentifierValue(""), binderContext.getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+                selectStatement.getProjections().getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
         Collection<ProjectionSegment> boundDefinitionColumns = createBoundDefinitionColumns(definitionColumns, subqueryProjections);
         Collection<ProjectionSegment> boundProjectionSegments = definitionColumns.isEmpty() ? subqueryProjections : new LinkedList<>(boundDefinitionColumns);

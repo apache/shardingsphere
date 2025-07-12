@@ -34,7 +34,7 @@ class FunctionExpressionSegmentBinderTest {
     @Test
     void assertBindFunctionExpressionSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "CONCAT", "('%','abc','%')");
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "foo_db", new HintValueContext(), mock(), mock());
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(new ShardingSphereMetaData(), "foo_db", new HintValueContext(), mock());
         FunctionSegment actual = FunctionExpressionSegmentBinder.bind(functionSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
         assertThat(actual.getStartIndex(), is(functionSegment.getStartIndex()));
         assertThat(actual.getStopIndex(), is(functionSegment.getStopIndex()));

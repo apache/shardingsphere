@@ -87,7 +87,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SQLStatementBinderContext binderContext, final ProjectionsSegment boundProjections) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                boundProjections.getProjections(), new IdentifierValue(""), binderContext.getDatabaseType(), TableSourceType.MIXED_TABLE);
+                boundProjections.getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.MIXED_TABLE);
         result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.MIXED_TABLE));
         return result;
     }
