@@ -48,7 +48,8 @@ public final class ShardingDALResultMerger implements ResultMerger {
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext sqlStatementContext,
                               final ShardingSphereDatabase database, final ConnectionContext connectionContext) throws SQLException {
         ShardingSphereSchema schema = getSchema(sqlStatementContext, database);
-        Optional<DialectShardingDALResultMerger> dialectResultMerger = DatabaseTypedSPILoader.findService(DialectShardingDALResultMerger.class, sqlStatementContext.getDatabaseType());
+        Optional<DialectShardingDALResultMerger> dialectResultMerger = DatabaseTypedSPILoader.findService(
+                DialectShardingDALResultMerger.class, sqlStatementContext.getSqlStatement().getDatabaseType());
         if (dialectResultMerger.isPresent()) {
             Optional<MergedResult> mergedResult = dialectResultMerger.get().merge(databaseName, rule, sqlStatementContext, schema, queryResults);
             if (mergedResult.isPresent()) {
@@ -59,7 +60,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
     }
     
     private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
         return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
     }
 }

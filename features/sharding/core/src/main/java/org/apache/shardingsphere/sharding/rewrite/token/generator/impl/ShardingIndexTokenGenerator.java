@@ -53,7 +53,7 @@ public final class ShardingIndexTokenGenerator implements CollectionSQLTokenGene
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class).map(optional -> !optional.getIndexes().isEmpty()).orElse(false)
-                && new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getIndexOption().isSchemaUniquenessLevel();
+                && new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getIndexOption().isSchemaUniquenessLevel();
     }
     
     @Override

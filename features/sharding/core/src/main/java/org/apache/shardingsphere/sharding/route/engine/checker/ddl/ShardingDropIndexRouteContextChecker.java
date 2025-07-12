@@ -48,7 +48,7 @@ public final class ShardingDropIndexRouteContextChecker implements ShardingRoute
         if (logicTableName.isPresent()) {
             validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, logicTableName.get());
         } else {
-            String defaultSchemaName = new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDefaultSchemaName(database.getName());
+            String defaultSchemaName = new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
             for (IndexSegment each : indexSegments) {
                 ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue()).map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
                 logicTableName = schema.getAllTables().stream().filter(table -> table.containsIndex(each.getIndexName().getIdentifier().getValue())).findFirst().map(ShardingSphereTable::getName);

@@ -48,6 +48,6 @@ public final class SQLStatementCompilerEngine {
             String cacheExists = null != executionPlanCache.get(cacheKey) ? "exists" : "not exists";
             log.debug("Execution plan cache {} for SQL: {}, useCache: {}.", cacheExists, cacheKey.getSql(), useCache);
         }
-        return useCache ? executionPlanCache.get(cacheKey) : cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getDatabaseType());
+        return useCache ? executionPlanCache.get(cacheKey) : cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getSqlStatement().getDatabaseType().getType());
     }
 }

@@ -27,6 +27,6 @@ public final class ExecutionPlanCacheLoader implements CacheLoader<ExecutionPlan
     
     @Override
     public SQLFederationExecutionPlan load(final ExecutionPlanCacheKey cacheKey) {
-        return cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getDatabaseType());
+        return cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getSqlStatement().getDatabaseType().getType());
     }
 }

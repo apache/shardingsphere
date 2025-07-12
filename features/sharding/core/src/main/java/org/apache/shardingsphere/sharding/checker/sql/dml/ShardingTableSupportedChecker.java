@@ -37,7 +37,7 @@ public final class ShardingTableSupportedChecker implements SupportedSQLChecker<
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return DatabaseTypedSPILoader.findService(DialectUnsupportedShardingSQLStatementProvider.class, sqlStatementContext.getDatabaseType())
+        return DatabaseTypedSPILoader.findService(DialectUnsupportedShardingSQLStatementProvider.class, sqlStatementContext.getSqlStatement().getDatabaseType())
                 .map(optional -> optional.getUnsupportedSQLStatementTypes().contains(sqlStatementContext.getSqlStatement().getClass())).orElse(false);
     }
     

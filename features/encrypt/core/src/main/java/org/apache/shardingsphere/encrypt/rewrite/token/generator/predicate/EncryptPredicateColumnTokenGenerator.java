@@ -26,12 +26,12 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -72,24 +73,24 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         Collection<SelectStatementContext> allSubqueryContexts = SQLStatementContextExtractor.getAllSubqueryContexts(sqlStatementContext);
         Collection<WhereSegment> whereSegments = SQLStatementContextExtractor.getWhereSegments((WhereContextAvailable) sqlStatementContext, allSubqueryContexts);
         Collection<ExpressionSegment> expressions = getAllExpressions(whereSegments);
-        return generateSQLTokens(expressions, sqlStatementContext);
+        return generateSQLTokens(expressions, sqlStatementContext.getSqlStatement());
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ExpressionSegment> expressions, final SQLStatementContext sqlStatementContext) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ExpressionSegment> expressions, final SQLStatement sqlStatement) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ExpressionSegment each : expressions) {
-            result.addAll(generateSQLTokens(sqlStatementContext, each));
+            result.addAll(generateSQLTokens(sqlStatement, each));
         }
         return result;
     }
     
-    private Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final ExpressionSegment expression) {
+    private Collection<SQLToken> generateSQLTokens(final SQLStatement sqlStatement, final ExpressionSegment expression) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getColumnBoundInfo().getOriginalTable().getValue());
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue())) {
                 EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(each.getColumnBoundInfo().getOriginalColumn().getValue());
-                result.addAll(buildSubstitutableColumnNameTokens(encryptColumn, each, expression, sqlStatementContext.getDatabaseType()));
+                result.addAll(buildSubstitutableColumnNameTokens(encryptColumn, each, expression, sqlStatement.getDatabaseType()));
             }
         }
         return result;

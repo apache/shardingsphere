@@ -36,10 +36,10 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -94,7 +94,7 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
             } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment) {
                 TableExtractor tableExtractor = new TableExtractor();
                 tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
-                result.add(getDerivedProjectionText((DerivedProjection) each, tableExtractor, routeUnit, selectStatementContext.getDatabaseType()));
+                result.add(getDerivedProjectionText((DerivedProjection) each, tableExtractor, routeUnit, selectStatementContext.getSqlStatement().getDatabaseType()));
             } else if (each instanceof DerivedProjection) {
                 result.add(getDerivedProjectionText(each));
             }

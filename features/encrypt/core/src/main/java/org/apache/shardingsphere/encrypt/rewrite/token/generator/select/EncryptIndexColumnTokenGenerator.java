@@ -64,7 +64,7 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
         for (ColumnSegment each : sqlStatementContext.getSqlStatement().getAttributes()
                 .findAttribute(IndexSQLStatementAttribute.class).map(IndexSQLStatementAttribute::getIndexColumns).orElse(Collections.emptyList())) {
             if (encryptTable.isEncryptColumn(each.getIdentifier().getValue())) {
-                generateSQLToken(encryptTable, each, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
+                generateSQLToken(encryptTable, each, sqlStatementContext.getSqlStatement().getDatabaseType()).ifPresent(result::add);
             }
         }
         return result;

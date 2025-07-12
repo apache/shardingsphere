@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.NoTablelessRouteInfoException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.engine.tableless.type.broadcast.TablelessDataSourceBroadcastRouteEngine;
@@ -74,7 +73,7 @@ public final class TablelessRouteEngineFactory {
         }
         // TODO remove this logic when proxy and jdbc support all dal statement @duanzhengqiang
         if (sqlStatement instanceof DALStatement) {
-            return getDALRouteEngine((DALStatement) sqlStatement, database, queryContext.getSqlStatementContext().getDatabaseType());
+            return getDALRouteEngine((DALStatement) sqlStatement, database);
         }
         // TODO Support more TCL statements by transaction module, then remove this.
         if (sqlStatement instanceof TCLStatement) {
@@ -119,11 +118,12 @@ public final class TablelessRouteEngineFactory {
         return sqlStatement instanceof CreateSchemaStatement || sqlStatement instanceof AlterSchemaStatement || sqlStatement instanceof DropSchemaStatement;
     }
     
-    private static TablelessRouteEngine getDALRouteEngine(final DALStatement sqlStatement, final ShardingSphereDatabase database, final DatabaseType databaseType) {
+    private static TablelessRouteEngine getDALRouteEngine(final DALStatement sqlStatement, final ShardingSphereDatabase database) {
         if (sqlStatement instanceof SetStatement || sqlStatement.getAttributes().findAttribute(TablelessDataSourceBroadcastRouteSQLStatementAttribute.class).isPresent()) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }
-        Optional<DialectDALStatementBroadcastRouteDecider> dialectDALStatementBroadcastRouteDecider = DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType);
+        Optional<DialectDALStatementBroadcastRouteDecider> dialectDALStatementBroadcastRouteDecider = DatabaseTypedSPILoader.findService(
+                DialectDALStatementBroadcastRouteDecider.class, sqlStatement.getDatabaseType());
         if (dialectDALStatementBroadcastRouteDecider.map(optional -> optional.isDataSourceBroadcastRoute(sqlStatement)).orElse(false)) {
             return new TablelessDataSourceBroadcastRouteEngine();
         }

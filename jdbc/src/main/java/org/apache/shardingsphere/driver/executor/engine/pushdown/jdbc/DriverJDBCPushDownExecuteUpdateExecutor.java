@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.sql.Connection;
@@ -110,7 +111,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine =
                     new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props);
             if (pushDownMetaDataRefreshEngine.isNeedRefresh(executionContext.getSqlStatementContext())) {
-                if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
+                if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                     connection.commit();
                 }
                 pushDownMetaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
@@ -137,9 +138,9 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
         return result;
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !connection.getAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
+    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {

@@ -60,10 +60,10 @@ class SQLFederationEngineTest {
     
     @Test
     void assertDecideWhenSelectStatementContainsSystemSchema() throws SQLException {
-        Collection<ShardingSphereRule> globalRules =
-                Collections.singleton(new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(SQLFederationCacheOption.class)), Collections.emptyList()));
+        Collection<ShardingSphereRule> globalRules = Collections.singleton(
+                new SQLFederationRule(new SQLFederationRuleConfiguration(false, false, mock(SQLFederationCacheOption.class)), Collections.emptyList()));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singletonList("information_schema"));
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("information_schema"));
         QueryContext queryContext = mock(QueryContext.class);
@@ -99,7 +99,7 @@ class SQLFederationEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyList());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(selectStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(selectStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
@@ -128,7 +128,7 @@ class SQLFederationEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(globalRules), Collections.emptyList());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(selectStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(selectStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
@@ -147,7 +147,7 @@ class SQLFederationEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(databaseRules), Collections.emptyList());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(selectStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(selectStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
@@ -166,7 +166,7 @@ class SQLFederationEngineTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(databaseRules), Collections.emptyList());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(selectStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(selectStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);

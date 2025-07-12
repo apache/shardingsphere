@@ -60,7 +60,7 @@ class DatabaseConnectorFactoryTest {
         when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
@@ -84,7 +84,7 @@ class DatabaseConnectorFactoryTest {
         when(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).thenReturn("foo_db");
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);

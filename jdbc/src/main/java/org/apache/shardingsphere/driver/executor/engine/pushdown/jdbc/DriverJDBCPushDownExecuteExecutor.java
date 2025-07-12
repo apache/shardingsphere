@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
@@ -104,7 +105,7 @@ public final class DriverJDBCPushDownExecuteExecutor {
             processEngine.executeSQL(executionGroupContext, executionContext.getQueryContext());
             List<Boolean> results = jdbcExecutor.execute(executionGroupContext,
                     new ExecuteCallbackFactory(prepareEngine.getType()).newInstance(database, executeCallback, executionContext.getSqlStatementContext().getSqlStatement()));
-            if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
+            if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                 connection.commit();
             }
             new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, metaData.getProps())
@@ -131,9 +132,9 @@ public final class DriverJDBCPushDownExecuteExecutor {
         return result;
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !connection.getAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
+    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
     }
     
     /**

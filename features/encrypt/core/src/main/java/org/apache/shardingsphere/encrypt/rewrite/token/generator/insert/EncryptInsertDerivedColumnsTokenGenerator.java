@@ -60,7 +60,7 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();
         }
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> derivedColumnNames = getDerivedColumnNames(encryptTable.get(), each);

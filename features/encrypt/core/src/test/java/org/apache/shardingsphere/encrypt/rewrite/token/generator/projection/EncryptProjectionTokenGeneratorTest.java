@@ -93,7 +93,7 @@ class EncryptProjectionTokenGeneratorTest {
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSubqueryType()).thenReturn(null);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projections);
         when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         SimpleTableSegment doctorOneTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor1")));
@@ -115,7 +115,7 @@ class EncryptProjectionTokenGeneratorTest {
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSubqueryType()).thenReturn(null);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projections);
         when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         SimpleTableSegment sameDoctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
@@ -133,7 +133,7 @@ class EncryptProjectionTokenGeneratorTest {
         when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSubqueryType()).thenReturn(null);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement().getProjections()).thenReturn(projections);
         when(sqlStatementContext.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));

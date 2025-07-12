@@ -144,7 +144,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     }
     
     private void checkBackendReady(final SQLStatementContext sqlStatementContext) {
-        boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
+        boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getSqlStatement().getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new EmptyStorageUnitException(database.getName()));
         ShardingSpherePreconditions.checkState(isSystemSchema || database.isComplete(), () -> new EmptyRuleException(database.getName()));
     }
@@ -235,7 +235,7 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
-        proxySQLExecutor.checkExecutePrerequisites(executionContext);
+        proxySQLExecutor.checkExecutePrerequisites(executionContext.getSqlStatementContext());
         Collection<AdvancedProxySQLExecutor> advancedExecutors = ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class);
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
                 ? proxySQLExecutor.execute(executionContext)
@@ -248,12 +248,13 @@ public final class StandardDatabaseConnector implements DatabaseConnector {
     }
     
     private ResultSet doExecuteFederation() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(queryContext.getSqlStatementContext().getDatabaseType()).getDialectDatabaseMetaData();
-        boolean isReturnGeneratedKeys = queryContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData();
+        boolean isReturnGeneratedKeys = sqlStatement instanceof InsertStatement
                 && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();
         DatabaseType protocolType = database.getProtocolType();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(driverType, protocolType, database.getResourceMetaData(),
-                queryContext.getSqlStatementContext().getSqlStatement(), this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
+                sqlStatement, this, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown(), true);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, contextManager.getMetaDataContexts());
         SQLFederationContext context = new SQLFederationContext(
                 false, queryContext, contextManager.getMetaDataContexts().getMetaData(), databaseConnectionManager.getConnectionSession().getProcessId());

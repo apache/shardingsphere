@@ -58,7 +58,7 @@ class ShardingDALResultMergerTest {
     void assertMergeWithNotTableAvailable() throws SQLException {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         assertThat(resultMerger.merge(queryResults, sqlStatementContext, mock(), mock()), instanceOf(TransparentMergedResult.class));
     }
     
@@ -66,7 +66,7 @@ class ShardingDALResultMergerTest {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(dalStatement);
         when(result.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        when(result.getDatabaseType()).thenReturn(databaseType);
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         return result;
     }
 }

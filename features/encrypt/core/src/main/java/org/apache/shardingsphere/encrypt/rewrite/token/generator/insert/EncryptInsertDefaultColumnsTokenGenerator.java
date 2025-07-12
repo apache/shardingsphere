@@ -97,7 +97,7 @@ public final class EncryptInsertDefaultColumnsTokenGenerator implements Optional
             ShardingSpherePreconditions.checkState(derivedInsertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
             InsertSelectColumnsEncryptorChecker.checkIsSame(derivedInsertColumns, projections, rule);
         }
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         return new UseDefaultInsertColumnsToken(
                 insertColumnsSegment.get().getStopIndex(), getColumnNames(insertStatementContext, rule.getEncryptTable(tableName), insertStatementContext.getColumnNames()), quoteCharacter);
     }

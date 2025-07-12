@@ -54,7 +54,7 @@ public final class FederationMetaDataRefreshEngine {
     @SuppressWarnings("unchecked")
     public void refresh(final SQLStatementContext sqlStatementContext) {
         findFederationMetaDataRefresher(sqlStatementContext).ifPresent(optional -> optional.refresh(metaDataManagerPersistService,
-                sqlStatementContext.getDatabaseType(), database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
+                sqlStatementContext.getSqlStatement().getDatabaseType(), database, SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), sqlStatementContext.getSqlStatement()));
     }
     
     @SuppressWarnings("rawtypes")

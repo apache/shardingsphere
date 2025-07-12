@@ -48,9 +48,9 @@ class SingleSQLFederationDeciderTest {
     
     @Test
     void assertDecideWhenNotContainsSingleTable() {
-        SelectStatementContext select = createStatementContext();
+        SelectStatementContext select = mockStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
-        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), mock(SingleRule.class), includedDataNodes));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), mock(SingleRule.class), includedDataNodes));
         assertTrue(includedDataNodes.isEmpty());
     }
     
@@ -58,10 +58,10 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWhenAllSingleTablesInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        SelectStatementContext select = createStatementContext();
+        SelectStatementContext select = mockStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
-        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(2));
     }
     
@@ -69,10 +69,10 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWhenAllSingleTablesNotInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        SelectStatementContext select = createStatementContext();
+        SelectStatementContext select = mockStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>();
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
-        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(2));
     }
     
@@ -80,10 +80,10 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWhenAllTablesInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        SelectStatementContext select = createStatementContext();
+        SelectStatementContext select = mockStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", "t_user")));
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(true);
-        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
     }
     
@@ -91,10 +91,10 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWhenAllTablesNotInSameComputeNode() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
-        SelectStatementContext select = createStatementContext();
+        SelectStatementContext select = mockStatementContext();
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", "t_user")));
         when(rule.isAllTablesInSameComputeNode(includedDataNodes, qualifiedTables)).thenReturn(false);
-        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(RuleMetaData.class), mockDatabase(), rule, includedDataNodes));
         assertThat(includedDataNodes.size(), is(3));
     }
     
@@ -108,13 +108,13 @@ class SingleSQLFederationDeciderTest {
         return result;
     }
     
-    private SelectStatementContext createStatementContext() {
+    private SelectStatementContext mockStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         return result;
     }
     
-    private ShardingSphereDatabase createDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         return result;

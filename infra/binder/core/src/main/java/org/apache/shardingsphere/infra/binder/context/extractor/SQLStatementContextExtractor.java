@@ -64,7 +64,7 @@ public final class SQLStatementContextExtractor {
             return tableNames;
         }
         return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class)
-                .map(optional -> getTableNames(database, sqlStatementContext.getDatabaseType(), optional.getIndexes())).orElse(Collections.emptyList());
+                .map(optional -> getTableNames(database, sqlStatementContext.getSqlStatement().getDatabaseType(), optional.getIndexes())).orElse(Collections.emptyList());
     }
     
     private static Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {

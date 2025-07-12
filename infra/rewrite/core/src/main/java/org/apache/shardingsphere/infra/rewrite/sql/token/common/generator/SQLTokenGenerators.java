@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -63,7 +64,7 @@ public final class SQLTokenGenerators {
                                             final SQLStatementContext sqlStatementContext, final List<Object> params, final ConnectionContext connectionContext) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : generators) {
-            setUpSQLTokenGenerator(each, params, database, sqlStatementContext, result, connectionContext);
+            setUpSQLTokenGenerator(each, params, database, sqlStatementContext.getSqlStatement().getDatabaseType(), result, connectionContext);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
@@ -77,13 +78,13 @@ public final class SQLTokenGenerators {
     }
     
     private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> params, final ShardingSphereDatabase database,
-                                        final SQLStatementContext sqlStatementContext, final List<SQLToken> previousSQLTokens, final ConnectionContext connectionContext) {
+                                        final DatabaseType databaseType, final List<SQLToken> previousSQLTokens, final ConnectionContext connectionContext) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(params);
         }
         if (sqlTokenGenerator instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) sqlTokenGenerator).setSchemas(database.getAllSchemas().stream().collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each)));
-            ((SchemaMetaDataAware) sqlTokenGenerator).setDefaultSchema(database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName())));
+            ((SchemaMetaDataAware) sqlTokenGenerator).setDefaultSchema(database.getSchema(new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(database.getName())));
         }
         if (sqlTokenGenerator instanceof PreviousSQLTokensAware) {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);

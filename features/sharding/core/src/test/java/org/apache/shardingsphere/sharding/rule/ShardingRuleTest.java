@@ -628,8 +628,7 @@ class ShardingRuleTest {
     void assertIsAllBindingTableWithJoinQueryWithoutJoinCondition() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
@@ -643,12 +642,11 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setFrom(joinTable);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -664,8 +662,8 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setFrom(joinTable);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
@@ -674,7 +672,6 @@ class ShardingRuleTest {
                 new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("SUB_LOGIC_TABLE"))));
         TablesContext tablesContext = new TablesContext(tableSegments, Collections.emptyMap());
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         assertFalse(createMaximumShardingRule().isBindingTablesUseShardingColumnsJoin(sqlStatementContext, Arrays.asList("LOGIC_TABLE", "SUB_LOGIC_TABLE")));
@@ -699,12 +696,11 @@ class ShardingRuleTest {
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         BinaryOperationExpression condition = createBinaryOperationExpression(databaseJoin, tableJoin, AND);
         when(joinTable.getCondition()).thenReturn(condition);
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getFrom()).thenReturn(Optional.of(joinTable));
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setFrom(joinTable);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(new WhereSegment(0, 0, condition)));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);

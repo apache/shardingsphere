@@ -106,7 +106,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
         return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     
