@@ -22,7 +22,7 @@ the possible Maven dependencies are as follows,
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-firebird</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-firebird</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>

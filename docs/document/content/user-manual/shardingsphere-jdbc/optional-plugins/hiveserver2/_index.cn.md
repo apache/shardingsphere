@@ -22,7 +22,7 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-hive</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
@@ -589,7 +589,7 @@ create table IF NOT EXISTS t_order
 ```
 
 第2种选择是使用 Iceberg 表，可能的建表流程如下。Apache Iceberg 表格式有望在未来几年取代传统的 Hive 表格式， 
-参考 https://blog.cloudera.com/from-hive-tables-to-iceberg-tables-hassle-free/ 。
+参考 https://lists.apache.org/thread/cfwxjd8tjt2wwz54crdjy2qsgzjnfxfm 。
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile

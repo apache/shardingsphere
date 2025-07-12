@@ -22,7 +22,7 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
