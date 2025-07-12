@@ -60,25 +60,25 @@ public final class SQLBindEngine {
         return SQLStatementContextFactory.newInstance(metaData, sqlStatement.getDatabaseType(), boundSQLStatement, params, currentDatabaseName);
     }
     
-    private SQLStatement bind(final SQLStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, statement);
-        Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, statement.getDatabaseType());
+    private SQLStatement bind(final SQLStatement sqlStatement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, sqlStatement);
+        Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, sqlStatement.getDatabaseType());
         if (dialectSQLBindEngine.isPresent()) {
-            Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(statement, binderContext);
+            Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(sqlStatement, binderContext);
             if (boundSQLStatement.isPresent()) {
                 return boundSQLStatement.get();
             }
         }
-        if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine().bind((DMLStatement) statement, binderContext);
+        if (sqlStatement instanceof DMLStatement) {
+            return new DMLStatementBindEngine().bind((DMLStatement) sqlStatement, binderContext);
         }
-        if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine().bind((DDLStatement) statement, binderContext);
+        if (sqlStatement instanceof DDLStatement) {
+            return new DDLStatementBindEngine().bind((DDLStatement) sqlStatement, binderContext);
         }
-        if (statement instanceof DALStatement) {
-            return new DALStatementBindEngine().bind((DALStatement) statement, binderContext);
+        if (sqlStatement instanceof DALStatement) {
+            return new DALStatementBindEngine().bind((DALStatement) sqlStatement, binderContext);
         }
-        return statement;
+        return sqlStatement;
     }
     
     private boolean isNeedBind() {
