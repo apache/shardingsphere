@@ -39,24 +39,19 @@ public final class ProxySQLComQueryParser {
      *
      * @param sql SQL to be parsed
      * @param databaseType database type
+     * @param connectionSession connection session
      * @return SQL statement
      */
-    public static SQLStatement parse(final String sql, final DatabaseType databaseType) {
+    public static SQLStatement parse(final String sql, final DatabaseType databaseType, final ConnectionSession connectionSession) {
+        DatabaseType parserDatabaseType = getParserDatabaseType(databaseType, connectionSession);
         if (SQLUtils.trimComment(sql).isEmpty()) {
-            return new EmptyStatement(databaseType);
+            return new EmptyStatement(parserDatabaseType);
         }
         SQLParserRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return rule.getSQLParserEngine(databaseType).parse(sql, false);
+        return rule.getSQLParserEngine(parserDatabaseType).parse(sql, false);
     }
     
-    /**
-     * Get parser database type.
-     *
-     * @param defaultDatabaseType default database type
-     * @param connectionSession connection session
-     * @return parser database type
-     */
-    public static DatabaseType getParserDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
+    private static DatabaseType getParserDatabaseType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getUsedDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
