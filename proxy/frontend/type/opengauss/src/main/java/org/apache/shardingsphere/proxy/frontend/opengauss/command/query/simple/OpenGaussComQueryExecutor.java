@@ -72,7 +72,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
         DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
         DatabaseType parserDatabaseType = ProxySQLComQueryParser.getParserDatabaseType(protocolDatabaseType, connectionSession);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), parserDatabaseType);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolDatabaseType, parserDatabaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolDatabaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
     }
     
     @Override

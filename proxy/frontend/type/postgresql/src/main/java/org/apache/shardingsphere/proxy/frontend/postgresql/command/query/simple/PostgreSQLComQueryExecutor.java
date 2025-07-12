@@ -72,7 +72,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         DatabaseType parserDatabaseType = ProxySQLComQueryParser.getParserDatabaseType(protocolDatabaseType, connectionSession);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), parserDatabaseType);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolDatabaseType, parserDatabaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolDatabaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
     }
     
     @Override

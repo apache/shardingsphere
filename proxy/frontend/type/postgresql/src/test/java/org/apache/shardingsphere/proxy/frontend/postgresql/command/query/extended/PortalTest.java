@@ -113,8 +113,7 @@ class PortalTest {
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), eq(databaseType), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
-                .thenReturn(proxyBackendHandler);
+        when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class))).thenReturn(proxyBackendHandler);
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
