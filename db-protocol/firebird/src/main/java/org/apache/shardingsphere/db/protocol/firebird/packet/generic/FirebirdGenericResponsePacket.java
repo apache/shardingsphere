@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 /**
  * Generic response data packet for Firebird.
@@ -42,7 +39,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     
     private FirebirdPacket data;
     
-    private byte[] statusVector = getEmptyStatusVector();
+    private FirebirdStatusVector statusVector;
     
     /**
      * Set handle value.
@@ -78,54 +75,13 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     }
     
     /**
-     * Set status vector.
-     *
-     * @param buffer status vector to set
-     * @return this instance with updated status vector
-     */
-    public FirebirdGenericResponsePacket setStatusVector(final byte[] buffer) {
-        statusVector = buffer;
-        return this;
-    }
-    
-    /**
      * Set error status vector based on the given SQL exception.
      *
      * @param ex SQL exception
      * @return this instance with updated status vector
      */
     public FirebirdGenericResponsePacket setErrorStatusVector(final SQLException ex) {
-        int gdsCode = ex.getErrorCode();
-        boolean isFirebirdCode = gdsCode >= 335544321 && gdsCode != 335544382;
-        if (!isFirebirdCode) {
-            gdsCode = 335544382;
-        }
-        
-        String rawMessage = ex.getMessage();
-        int idx = rawMessage.indexOf(';');
-        String message = idx >= 0 ? rawMessage.substring(idx + 1).trim() : rawMessage;
-        int stateIdx = message.indexOf(" [SQLState:");
-        if (stateIdx >= 0) {
-            message = message.substring(0, stateIdx).trim();
-        }
-        
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeInt(1);
-        buf.writeInt(gdsCode);
-        buf.writeInt(2);
-        byte[] msgBytes = message.getBytes(StandardCharsets.UTF_8);
-        buf.writeInt(msgBytes.length);
-        buf.writeBytes(msgBytes);
-        int pad = (4 - (msgBytes.length % 4)) % 4;
-        if (pad > 0) {
-            buf.writeZero(pad);
-        }
-        buf.writeInt(0);
-        
-        byte[] vec = new byte[buf.readableBytes()];
-        buf.readBytes(vec);
-        buf.release();
-        this.statusVector = vec;
+        statusVector = new FirebirdStatusVector(ex);
         return this;
     }
     
@@ -144,13 +100,11 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         } else {
             payload.writeBuffer(new byte[0]);
         }
-        payload.writeBytes(statusVector);
-    }
-    
-    private static byte[] getEmptyStatusVector() {
-        byte[] statusVector = new byte[4];
-        Arrays.fill(statusVector, (byte) 0);
-        return statusVector;
+        if (statusVector != null) {
+            statusVector.write(payload);
+        } else {
+            payload.getByteBuf().writeZero(4);
+        }
     }
     
     public static FirebirdGenericResponsePacket getPacket() {
@@ -163,12 +117,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      * @return error code
      */
     public int getErrorCode() {
-        if (statusVector == null || statusVector.length < 8) {
-            return -1;
-        }
-        ByteBuf buf = Unpooled.wrappedBuffer(statusVector);
-        buf.readInt();
-        return buf.readInt();
+        return statusVector == null ? -1 : statusVector.getGdsCode();
     }
     
     /**
@@ -177,17 +126,6 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      * @return error message
      */
     public String getErrorMessage() {
-        if (statusVector == null || statusVector.length < 16) {
-            return "";
-        }
-        ByteBuf buf = Unpooled.wrappedBuffer(statusVector);
-        buf.readInt();
-        buf.readInt();
-        buf.readInt();
-        int msgLen = buf.readInt();
-        byte[] msgBytes = new byte[msgLen];
-        buf.readBytes(msgBytes);
-        return new String(msgBytes, StandardCharsets.UTF_8);
+        return statusVector == null ? "" : statusVector.getErrorMessage();
     }
-    
 }
