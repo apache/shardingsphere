@@ -109,7 +109,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForPgDatabase() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("datname"))));
         result.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("datcompatibility"))));
@@ -174,7 +174,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForVersion() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "VERSION()", new FunctionSegment(0, 0, "VERSION", "VERSION()")));
         return result;
@@ -211,7 +211,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForGsPasswordDeadlineAndIntervalToNum() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         FunctionSegment intervalToNumFunction = new FunctionSegment(0, 0, "intervaltonum", "intervaltonum(gs_password_deadline())");
         intervalToNumFunction.getParameters().add(new FunctionSegment(0, 0, "gs_password_deadline", "gs_password_deadline()"));
@@ -256,7 +256,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForGsPasswordNotifyTime() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections()
                 .add(new ExpressionProjectionSegment(0, 0, "gs_password_notifytime()", new FunctionSegment(0, 0, "gs_password_notifytime", "gs_password_notifytime()")));

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -43,6 +44,10 @@ public final class CommentStatement extends DDLStatement {
     private IdentifierValue comment;
     
     private IndexTypeSegment indexType;
+    
+    public CommentStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get index type.

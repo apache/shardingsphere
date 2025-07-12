@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.i
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
@@ -57,6 +58,10 @@ public final class CreateIndexStatement extends DDLStatement {
     private LockTableSegment lockTable;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    public CreateIndexStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get anonymous index start index.

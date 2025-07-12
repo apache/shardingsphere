@@ -18,17 +18,22 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop database statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropDatabaseStatement extends DDLStatement {
     
     private final String databaseName;
     
     private final boolean ifExists;
+    
+    public DropDatabaseStatement(final DatabaseType databaseType, final String databaseName, final boolean ifExists) {
+        super(databaseType);
+        this.databaseName = databaseName;
+        this.ifExists = ifExists;
+    }
 }

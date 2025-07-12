@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter logfile group statement for MySQL.
  */
 public final class MySQLAlterLogfileGroupStatement extends DDLStatement {
+    
+    public MySQLAlterLogfileGroupStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -41,7 +41,7 @@ public final class DropTableStatementBinder implements SQLStatementBinder<DropTa
     }
     
     private DropTableStatement copy(final DropTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
-        DropTableStatement result = new DropTableStatement();
+        DropTableStatement result = new DropTableStatement(sqlStatement.getDatabaseType());
         result.getTables().addAll(boundTables);
         result.setIfExists(sqlStatement.isIfExists());
         result.setContainsCascade(sqlStatement.isContainsCascade());

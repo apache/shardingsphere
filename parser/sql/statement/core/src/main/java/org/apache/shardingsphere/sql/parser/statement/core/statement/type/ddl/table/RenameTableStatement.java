@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -31,11 +31,15 @@ import java.util.LinkedList;
 /**
  * Rename table statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class RenameTableStatement extends DDLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables;
+    
+    public RenameTableStatement(final DatabaseType databaseType, final Collection<RenameTableDefinitionSegment> renameTables) {
+        super(databaseType);
+        this.renameTables = renameTables;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

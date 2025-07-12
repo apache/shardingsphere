@@ -52,7 +52,7 @@ class DeleteStatementBinderTest {
     
     @Test
     void assertBind() {
-        DeleteStatement deleteStatement = new DeleteStatement();
+        DeleteStatement deleteStatement = new DeleteStatement(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         deleteStatement.setTable(simpleTableSegment);
         deleteStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),

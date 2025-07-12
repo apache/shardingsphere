@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.rule;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create rule statement for PostgreSQL.
  */
 public final class PostgreSQLCreateRuleStatement extends DDLStatement {
+    
+    public PostgreSQLCreateRuleStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

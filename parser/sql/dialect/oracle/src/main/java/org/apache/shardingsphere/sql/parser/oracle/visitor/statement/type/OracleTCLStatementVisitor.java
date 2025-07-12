@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
@@ -26,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Savepo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
@@ -41,33 +43,36 @@ import java.util.Collections;
  */
 public final class OracleTCLStatementVisitor extends OracleStatementVisitor implements TCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement();
+        return new SetTransactionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return null == ctx.savepointClause().savepointName() ? new RollbackStatement() : new RollbackStatement(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
+        return null == ctx.savepointClause().savepointName() ? new RollbackStatement(databaseType)
+                : new RollbackStatement(databaseType, ((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(((IdentifierValue) visit(ctx.savepointName())).getValue());
+        return new SavepointStatement(databaseType, ((IdentifierValue) visit(ctx.savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new SetConstraintsStatement();
+        return new SetConstraintsStatement(databaseType);
     }
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(Collections.emptyList());
+        return new LockStatement(databaseType, Collections.emptyList());
     }
 }

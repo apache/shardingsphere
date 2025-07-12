@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Spool statement for Oracle.
  */
-@RequiredArgsConstructor
 @Getter
 public final class OracleSpoolStatement extends DALStatement {
     
     private final String fileName;
+    
+    public OracleSpoolStatement(final DatabaseType databaseType, final String fileName) {
+        super(databaseType);
+        this.fileName = fileName;
+    }
 }

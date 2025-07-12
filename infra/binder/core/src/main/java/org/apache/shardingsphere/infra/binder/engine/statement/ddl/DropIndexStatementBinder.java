@@ -39,7 +39,7 @@ public final class DropIndexStatementBinder implements SQLStatementBinder<DropIn
     }
     
     private DropIndexStatement copy(final DropIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        DropIndexStatement result = new DropIndexStatement();
+        DropIndexStatement result = new DropIndexStatement(sqlStatement.getDatabaseType());
         result.setSimpleTable(boundTable);
         result.getIndexes().addAll(sqlStatement.getIndexes());
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);

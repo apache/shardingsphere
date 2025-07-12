@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.plugin;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Uninstall plugin statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLUninstallPluginStatement extends DALStatement {
     
     private final String pluginName;
+    
+    public MySQLUninstallPluginStatement(final DatabaseType databaseType, final String pluginName) {
+        super(databaseType);
+        this.pluginName = pluginName;
+    }
 }

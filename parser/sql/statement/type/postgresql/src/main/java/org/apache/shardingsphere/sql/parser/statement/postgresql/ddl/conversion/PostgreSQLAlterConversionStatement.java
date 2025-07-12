@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.conversion;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter conversion statement for PostgreSQL.
  */
 public final class PostgreSQLAlterConversionStatement extends DDLStatement {
+    
+    public PostgreSQLAlterConversionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

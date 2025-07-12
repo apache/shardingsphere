@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.index;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -29,7 +29,6 @@ import java.util.Collection;
 /**
  * Cache index statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLCacheIndexStatement extends DALStatement {
     
@@ -39,4 +38,11 @@ public final class MySQLCacheIndexStatement extends DALStatement {
     
     private final PartitionDefinitionSegment partitionDefinition;
     
+    public MySQLCacheIndexStatement(final DatabaseType databaseType,
+                                    final IdentifierValue name, final Collection<CacheTableIndexSegment> tableIndexes, final PartitionDefinitionSegment partitionDefinition) {
+        super(databaseType);
+        this.name = name;
+        this.tableIndexes = tableIndexes;
+        this.partitionDefinition = partitionDefinition;
+    }
 }

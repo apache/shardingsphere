@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.operator;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create operator statement.
  */
 public final class CreateOperatorStatement extends DDLStatement {
+    
+    public CreateOperatorStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

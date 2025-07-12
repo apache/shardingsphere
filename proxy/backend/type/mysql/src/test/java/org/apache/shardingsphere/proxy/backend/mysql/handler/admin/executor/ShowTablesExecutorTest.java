@@ -74,7 +74,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithoutFilter() throws SQLException {
-        ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(null, null, false), databaseType);
+        ShowTablesExecutor executor = new ShowTablesExecutor(new MySQLShowTablesStatement(databaseType, null, null, false), databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -107,7 +107,7 @@ class ShowTablesExecutorTest {
     void assertShowTablesExecutorWithLikeFilter() throws SQLException {
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account%")));
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(null, showFilterSegment, false);
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
@@ -127,7 +127,7 @@ class ShowTablesExecutorTest {
     void assertShowTablesExecutorWithSpecificTable() throws SQLException {
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_account")));
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(null, showFilterSegment, false);
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
@@ -143,7 +143,7 @@ class ShowTablesExecutorTest {
     void assertShowTablesExecutorWithUpperCase() throws SQLException {
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "T_TEST")));
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(null, showFilterSegment, false);
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
@@ -159,7 +159,7 @@ class ShowTablesExecutorTest {
     void assertShowTablesExecutorWithLowerCase() throws SQLException {
         ShowFilterSegment showFilterSegment = mock(ShowFilterSegment.class);
         when(showFilterSegment.getLike()).thenReturn(Optional.of(new ShowLikeSegment(0, 10, "t_test")));
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(null, showFilterSegment, false);
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(databaseType, null, showFilterSegment, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         Collection<ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mockContextManager(databases);
@@ -173,7 +173,8 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTableFromUncompletedDatabase() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))), null, false);
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement(
+                databaseType, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))), null, false);
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, databaseType);
         ContextManager contextManager = mockContextManager(mockDatabases());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

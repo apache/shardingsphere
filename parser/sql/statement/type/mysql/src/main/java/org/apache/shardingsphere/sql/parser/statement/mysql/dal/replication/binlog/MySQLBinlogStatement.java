@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Binlog statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLBinlogStatement extends DALStatement {
     
     private final String base64Str;
+    
+    public MySQLBinlogStatement(final DatabaseType databaseType, final String base64Str) {
+        super(databaseType);
+        this.base64Str = base64Str;
+    }
 }

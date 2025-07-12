@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallArgumentContext;
@@ -56,13 +58,15 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisitor implements DMLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
         String procedureName = ((IdentifierValue) visit(ctx.identifier())).getValue();
         List<ExpressionSegment> params = null == ctx.callArguments()
                 ? Collections.emptyList()
                 : ctx.callArguments().callArgument().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        return new CallStatement(procedureName, params);
+        return new CallStatement(databaseType, procedureName, params);
     }
     
     @Override
@@ -76,7 +80,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement(Collections.emptyList());
+        return new DoStatement(databaseType, Collections.emptyList());
     }
     
     @Override
@@ -92,7 +96,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCopyWithTableOrQuery(final CopyWithTableOrQueryContext ctx) {
-        return new PostgreSQLCopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
+        return new PostgreSQLCopyStatement(databaseType, null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
                 null == ctx.columnNames() ? Collections.emptyList() : ((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue(),
                 null == ctx.preparableStmt() ? null : extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
     }
@@ -113,14 +117,14 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCopyWithTableOrQueryBinaryCsv(final CopyWithTableOrQueryBinaryCsvContext ctx) {
-        return new PostgreSQLCopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
+        return new PostgreSQLCopyStatement(databaseType, null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
                 null == ctx.columnNames() ? Collections.emptyList() : ((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue(),
                 null == ctx.preparableStmt() ? null : extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
     }
     
     @Override
     public ASTNode visitCopyWithTableBinary(final CopyWithTableBinaryContext ctx) {
-        return new PostgreSQLCopyStatement(null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
+        return new PostgreSQLCopyStatement(databaseType, null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override

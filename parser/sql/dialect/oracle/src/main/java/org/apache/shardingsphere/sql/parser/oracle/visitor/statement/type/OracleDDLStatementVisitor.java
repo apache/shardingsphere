@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
@@ -368,9 +370,11 @@ import java.util.stream.Collectors;
  */
 public final class OracleDDLStatementVisitor extends OracleStatementVisitor implements DDLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        CreateViewStatement result = new CreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement(databaseType);
         result.setReplaceView(null != ctx.REPLACE());
         OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
@@ -385,7 +389,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -407,7 +411,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         TypeSegment typeSegment = (TypeSegment) visit(ctx.plsqlTypeSource().typeName());
         if (null != ctx.plsqlTypeSource().objectSubTypeDef()) {
             ObjectSubTypeDefContext objectSubTypeDefContext = ctx.plsqlTypeSource().objectSubTypeDef();
-            return new OracleCreateSubTypeStatement(isReplace, isEditionable,
+            return new OracleCreateSubTypeStatement(databaseType, isReplace, isEditionable,
                     null == objectSubTypeDefContext.finalClause() || null == objectSubTypeDefContext.finalClause().NOT(),
                     null == objectSubTypeDefContext.instantiableClause() || null == objectSubTypeDefContext.instantiableClause().NOT(),
                     typeSegment,
@@ -420,13 +424,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     private ASTNode visitCreateTypeObjectBaseTypeDef(final ObjectBaseTypeDefContext ctx, final boolean isReplace, final boolean isEditionable, final TypeSegment typeSegment) {
         if (null != ctx.objectTypeDef()) {
             ObjectTypeDefContext objectTypeDefContext = ctx.objectTypeDef();
-            return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
+            return new OracleCreateObjectTypeStatement(databaseType, isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
                     null == objectTypeDefContext.instantiableClause() || null == objectTypeDefContext.instantiableClause().NOT(),
                     null == objectTypeDefContext.persistableClause() || null == objectTypeDefContext.persistableClause().NOT(),
                     typeSegment, objectTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
         } else if (null != ctx.varrayTypeSpec()) {
             VarrayTypeSpecContext varrayTypeSpecContext = ctx.varrayTypeSpec();
-            return new OracleCreateVarrayTypeStatement(isReplace, isEditionable,
+            return new OracleCreateVarrayTypeStatement(databaseType, isReplace, isEditionable,
                     null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
                     null != varrayTypeSpecContext.typeSpec().NULL(),
                     null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
@@ -434,7 +438,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     (DataTypeSegment) visit(varrayTypeSpecContext.typeSpec().dataType()));
         } else {
             NestedTableTypeSpecContext nestedTableTypeSpecContext = ctx.nestedTableTypeSpec();
-            return new OracleCreateNestedTableTypeStatement(isReplace, isEditionable,
+            return new OracleCreateNestedTableTypeStatement(databaseType, isReplace, isEditionable,
                     null != nestedTableTypeSpecContext.typeSpec().NULL(),
                     null == nestedTableTypeSpecContext.typeSpec().persistableClause() || null == nestedTableTypeSpecContext.typeSpec().persistableClause().NOT(),
                     typeSegment,
@@ -536,7 +540,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -562,7 +566,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        return new AlterTablespaceStatement(
+        return new AlterTablespaceStatement(databaseType,
                 null == ctx.tablespaceName() ? null
                         : new TablespaceSegment(
                                 ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())),
@@ -721,34 +725,34 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropContext(final DropContextContext ctx) {
-        return new OracleDropContextStatement();
+        return new OracleDropContextStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement();
+        DropTableStatement result = new DropTableStatement(databaseType);
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitDropDatabaseLink(final DropDatabaseLinkContext ctx) {
-        return new OracleDropDatabaseLinkStatement();
+        return new OracleDropDatabaseLinkStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDatabaseLink(final AlterDatabaseLinkContext ctx) {
-        return new OracleAlterDatabaseLinkStatement();
+        return new OracleAlterDatabaseLinkStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDatabaseDictionary(final AlterDatabaseDictionaryContext ctx) {
-        return new OracleAlterDatabaseDictionaryStatement();
+        return new OracleAlterDatabaseDictionaryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        AlterViewStatement result = new AlterViewStatement();
+        AlterViewStatement result = new AlterViewStatement(databaseType);
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setConstraintDefinition((ConstraintDefinitionSegment) getAlterViewConstraintDefinition(ctx));
         return result;
@@ -767,65 +771,65 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropPackage(final DropPackageContext ctx) {
-        return new DropPackageStatement();
+        return new DropPackageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterPackage(final AlterPackageContext ctx) {
-        return new AlterPackageStatement();
+        return new AlterPackageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
-        return new CreateSynonymStatement();
+        return new CreateSynonymStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropSynonym(final DropSynonymContext ctx) {
-        return new DropSynonymStatement();
+        return new DropSynonymStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDirectory(final CreateDirectoryContext ctx) {
-        return new CreateDirectoryStatement();
+        return new CreateDirectoryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement();
+        DropViewStatement result = new DropViewStatement(databaseType);
         result.getViews().add((SimpleTableSegment) visit(ctx.viewName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateEdition(final CreateEditionContext ctx) {
-        return new OracleCreateEditionStatement();
+        return new OracleCreateEditionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new DropTriggerStatement();
+        return new DropTriggerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement();
+        return new CreateTriggerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
-        return new AlterTriggerStatement();
+        return new AlterTriggerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(databaseType, Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement();
+        CreateIndexStatement result = new CreateIndexStatement(databaseType);
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
             result.getColumns().addAll(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
@@ -863,46 +867,47 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement();
+        AlterIndexStatement result = new AlterIndexStatement(databaseType);
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement();
+        DropIndexStatement result = new DropIndexStatement(databaseType);
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
     @Override
     public ASTNode visitAlterSynonym(final AlterSynonymContext ctx) {
-        return new AlterSynonymStatement();
+        return new AlterSynonymStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterSession(final AlterSessionContext ctx) {
-        return new OracleAlterSessionStatement();
+        return new OracleAlterSessionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new AlterDatabaseStatement();
+        return new AlterDatabaseStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterSystem(final AlterSystemContext ctx) {
-        return new OracleAlterSystemStatement();
+        return new OracleAlterSystemStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAnalyze(final AnalyzeContext ctx) {
-        return new OracleAnalyzeStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
+        return new OracleAnalyzeStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override
     public ASTNode visitAssociateStatistics(final AssociateStatisticsContext ctx) {
-        OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement();
+        OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement(databaseType);
         if (null != ctx.columnAssociation()) {
             for (TableNameContext each : ctx.columnAssociation().tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
@@ -933,7 +938,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDisassociateStatistics(final DisassociateStatisticsContext ctx) {
-        OracleDisassociateStatisticsStatement result = new OracleDisassociateStatisticsStatement();
+        OracleDisassociateStatisticsStatement result = new OracleDisassociateStatisticsStatement(databaseType);
         if (null != ctx.tableName()) {
             for (TableNameContext each : ctx.tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
@@ -977,22 +982,22 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAuditTraditional(final AuditTraditionalContext ctx) {
-        return new OracleAuditStatement();
+        return new OracleAuditStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAuditUnified(final AuditUnifiedContext ctx) {
-        return new OracleAuditStatement();
+        return new OracleAuditStatement(databaseType);
     }
     
     @Override
     public ASTNode visitNoAudit(final NoAuditContext ctx) {
-        return new OracleNoAuditStatement();
+        return new OracleNoAuditStatement(databaseType);
     }
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement();
+        CommentStatement result = new CommentStatement(databaseType);
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }
@@ -1008,52 +1013,54 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitFlashbackDatabase(final FlashbackDatabaseContext ctx) {
-        return new OracleFlashbackDatabaseStatement();
+        return new OracleFlashbackDatabaseStatement(databaseType);
     }
     
     @Override
     public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
-        return new OracleFlashbackTableStatement((SimpleTableSegment) visit(ctx.tableName()), null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
+        return new OracleFlashbackTableStatement(databaseType, (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
     }
     
     @Override
     public ASTNode visitPurge(final PurgeContext ctx) {
-        return new OraclePurgeStatement(null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
+        return new OraclePurgeStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override
     public ASTNode visitRename(final RenameContext ctx) {
-        return new OracleRenameStatement();
+        return new OracleRenameStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(null, false);
+        return new CreateDatabaseStatement(databaseType, null, false);
     }
     
     @Override
     public ASTNode visitCreateDatabaseLink(final CreateDatabaseLinkContext ctx) {
-        return new OracleCreateDatabaseLinkStatement();
+        return new OracleCreateDatabaseLinkStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDimension(final CreateDimensionContext ctx) {
-        return new OracleCreateDimensionStatement();
+        return new OracleCreateDimensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDimension(final AlterDimensionContext ctx) {
-        return new OracleAlterDimensionStatement();
+        return new OracleAlterDimensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDimension(final DropDimensionContext ctx) {
-        return new OracleDropDimensionStatement();
+        return new OracleDropDimensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
-        return new DropDirectoryStatement();
+        return new DropDirectoryStatement(databaseType);
     }
     
     @Override
@@ -1071,7 +1078,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getSqlStatementsInPlsql(), getProcedureCallNames());
+        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(databaseType, getSqlStatementsInPlsql(), getProcedureCallNames());
         result.setFunctionName(visitFunctionName(ctx.plsqlFunctionSource()));
         result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         return result;
@@ -1091,227 +1098,227 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropEdition(final DropEditionContext ctx) {
-        return new OracleDropEditionStatement();
+        return new OracleDropEditionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropOutline(final DropOutlineContext ctx) {
-        return new OracleDropOutlineStatement();
+        return new OracleDropOutlineStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterOutline(final AlterOutlineContext ctx) {
-        return new OracleAlterOutlineStatement();
+        return new OracleAlterOutlineStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterAnalyticView(final AlterAnalyticViewContext ctx) {
-        return new OracleAlterAnalyticViewStatement();
+        return new OracleAlterAnalyticViewStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterAttributeDimension(final AlterAttributeDimensionContext ctx) {
-        return new OracleAlterAttributeDimensionStatement();
+        return new OracleAlterAttributeDimensionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        return new CreateSequenceStatement(ctx.sequenceName().getText());
+        return new CreateSequenceStatement(databaseType, ctx.sequenceName().getText());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        return new AlterSequenceStatement(null);
+        return new AlterSequenceStatement(databaseType, null);
     }
     
     @Override
     public ASTNode visitCreateContext(final CreateContextContext ctx) {
-        return new OracleCreateContextStatement();
+        return new OracleCreateContextStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateSPFile(final CreateSPFileContext ctx) {
-        return new OracleCreateSPFileStatement();
+        return new OracleCreateSPFileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreatePFile(final CreatePFileContext ctx) {
-        return new OracleCreatePFileStatement();
+        return new OracleCreatePFileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateControlFile(final CreateControlFileContext ctx) {
-        return new OracleCreateControlFileStatement();
+        return new OracleCreateControlFileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateFlashbackArchive(final CreateFlashbackArchiveContext ctx) {
-        return new OracleCreateFlashbackArchiveStatement();
+        return new OracleCreateFlashbackArchiveStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterFlashbackArchive(final AlterFlashbackArchiveContext ctx) {
-        return new OracleAlterFlashbackArchiveStatement();
+        return new OracleAlterFlashbackArchiveStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropFlashbackArchive(final DropFlashbackArchiveContext ctx) {
-        return new OracleDropFlashbackArchiveStatement();
+        return new OracleDropFlashbackArchiveStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateDiskgroup(final CreateDiskgroupContext ctx) {
-        return new OracleCreateDiskgroupStatement();
+        return new OracleCreateDiskgroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDiskgroup(final DropDiskgroupContext ctx) {
-        return new OracleDropDiskgroupStatement();
+        return new OracleDropDiskgroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateRollbackSegment(final CreateRollbackSegmentContext ctx) {
-        return new OracleCreateRollbackSegmentStatement();
+        return new OracleCreateRollbackSegmentStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropRollbackSegment(final DropRollbackSegmentContext ctx) {
-        return new OracleDropRollbackSegmentStatement();
+        return new OracleDropRollbackSegmentStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropTableSpace(final DropTableSpaceContext ctx) {
-        return new DropTablespaceStatement();
+        return new DropTablespaceStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateLockdownProfile(final CreateLockdownProfileContext ctx) {
-        return new OracleCreateLockdownProfileStatement();
+        return new OracleCreateLockdownProfileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropLockdownProfile(final DropLockdownProfileContext ctx) {
-        return new OracleDropLockdownProfileStatement();
+        return new OracleDropLockdownProfileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateInmemoryJoinGroup(final CreateInmemoryJoinGroupContext ctx) {
-        return new OracleCreateInMemoryJoinGroupStatement();
+        return new OracleCreateInMemoryJoinGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterInmemoryJoinGroup(final AlterInmemoryJoinGroupContext ctx) {
-        return new OracleAlterInMemoryJoinGroupStatement();
+        return new OracleAlterInMemoryJoinGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropInmemoryJoinGroup(final DropInmemoryJoinGroupContext ctx) {
-        return new OracleDropInMemoryJoinGroupStatement();
+        return new OracleDropInMemoryJoinGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateRestorePoint(final CreateRestorePointContext ctx) {
-        return new OracleCreateRestorePointStatement();
+        return new OracleCreateRestorePointStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropRestorePoint(final DropRestorePointContext ctx) {
-        return new OracleDropRestorePointStatement();
+        return new OracleDropRestorePointStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterOperator(final AlterOperatorContext ctx) {
-        return new AlterOperatorStatement();
+        return new AlterOperatorStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterProfile(final AlterProfileContext ctx) {
-        return new OracleAlterProfileStatement();
+        return new OracleAlterProfileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterRollbackSegment(final AlterRollbackSegmentContext ctx) {
-        return new OracleAlterRollbackSegmentStatement();
+        return new OracleAlterRollbackSegmentStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
-        return new DropOperatorStatement();
+        return new DropOperatorStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        return new DropSequenceStatement(Collections.emptyList());
+        return new DropSequenceStatement(databaseType, Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterLibrary(final AlterLibraryContext ctx) {
-        return new OracleAlterLibraryStatement();
+        return new OracleAlterLibraryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropType(final DropTypeContext ctx) {
-        return new DropPackageStatement();
+        return new DropPackageStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterMaterializedZonemap(final AlterMaterializedZonemapContext ctx) {
-        return new OracleAlterMaterializedZoneMapStatement();
+        return new OracleAlterMaterializedZoneMapStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterJava(final AlterJavaContext ctx) {
-        return new OracleAlterJavaStatement();
+        return new OracleAlterJavaStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterAuditPolicy(final AlterAuditPolicyContext ctx) {
-        return new OracleAlterAuditPolicyStatement();
+        return new OracleAlterAuditPolicyStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterCluster(final AlterClusterContext ctx) {
-        return new OracleAlterClusterStatement();
+        return new OracleAlterClusterStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterDiskgroup(final AlterDiskgroupContext ctx) {
-        return new OracleAlterDiskgroupStatement();
+        return new OracleAlterDiskgroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
-        return new OracleAlterIndexTypeStatement();
+        return new OracleAlterIndexTypeStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
-        return new AlterMaterializedViewStatement();
+        return new AlterMaterializedViewStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterMaterializedViewLog(final AlterMaterializedViewLogContext ctx) {
-        return new OracleAlterMaterializedViewLogStatement();
+        return new OracleAlterMaterializedViewLogStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new AlterFunctionStatement();
+        return new AlterFunctionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterHierarchy(final AlterHierarchyContext ctx) {
-        return new OracleAlterHierarchyStatement();
+        return new OracleAlterHierarchyStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterLockdownProfile(final AlterLockdownProfileContext ctx) {
-        return new OracleAlterLockdownProfileStatement();
+        return new OracleAlterLockdownProfileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterPluggableDatabase(final AlterPluggableDatabaseContext ctx) {
-        return new OracleAlterPluggableDatabaseStatement();
+        return new OracleAlterPluggableDatabaseStatement(databaseType);
     }
     
     @Override
@@ -1334,7 +1341,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement();
+        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement(databaseType);
         result.getProcedureCallNames().addAll(getProcedureCallNames());
         result.getProcedureBodyEndNameSegments().addAll(getProcedureBodyEndNameSegments());
         result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
@@ -1636,131 +1643,131 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.body() && null != ctx.body().statement()) {
             ctx.body().statement().forEach(this::visit);
         }
-        return new OraclePLSQLBlockStatement();
+        return new OraclePLSQLBlockStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement();
+        return new AlterProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new DropProcedureStatement();
+        return new DropProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropIndexType(final DropIndexTypeContext ctx) {
-        return new OracleDropIndexTypeStatement();
+        return new OracleDropIndexTypeStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropProfile(final DropProfileContext ctx) {
-        return new OracleDropProfileStatement();
+        return new OracleDropProfileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropPluggableDatabase(final DropPluggableDatabaseContext ctx) {
-        return new OracleDropPluggableDatabaseStatement();
+        return new OracleDropPluggableDatabaseStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropJava(final DropJavaContext ctx) {
-        return new OracleDropJavaStatement();
+        return new OracleDropJavaStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DropFunctionStatement();
+        return new DropFunctionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropLibrary(final DropLibraryContext ctx) {
-        return new OracleDropLibraryStatement();
+        return new OracleDropLibraryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropCluster(final DropClusterContext ctx) {
-        return new OracleDropClusterStatement();
+        return new OracleDropClusterStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
-        return new DropMaterializedViewStatement();
+        return new DropMaterializedViewStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropMaterializedViewLog(final DropMaterializedViewLogContext ctx) {
-        return new OracleDropMaterializedViewLogStatement();
+        return new OracleDropMaterializedViewLogStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropMaterializedZonemap(final DropMaterializedZonemapContext ctx) {
-        return new OracleDropMaterializedZoneMapStatement();
+        return new OracleDropMaterializedZoneMapStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new CreateTablespaceStatement();
+        return new CreateTablespaceStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new CreateMaterializedViewStatement();
+        return new CreateMaterializedViewStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateMaterializedViewLog(final CreateMaterializedViewLogContext ctx) {
-        return new OracleCreateMaterializedViewLogStatement();
+        return new OracleCreateMaterializedViewLogStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateCluster(final CreateClusterContext ctx) {
-        return new OracleCreateClusterStatement();
+        return new OracleCreateClusterStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSystemAction(final SystemActionContext ctx) {
-        return new OracleSystemActionStatement();
+        return new OracleSystemActionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterType(final AlterTypeContext ctx) {
-        return new AlterTypeStatement();
+        return new AlterTypeStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateJava(final CreateJavaContext ctx) {
-        return new OracleCreateJavaStatement();
+        return new OracleCreateJavaStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateLibrary(final CreateLibraryContext ctx) {
-        return new OracleCreateLibraryStatement();
+        return new OracleCreateLibraryStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSwitch(final SwitchContext ctx) {
-        return new OracleSwitchStatement();
+        return new OracleSwitchStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateProfile(final CreateProfileContext ctx) {
-        return new OracleCreateProfileStatement();
+        return new OracleCreateProfileStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(null, false);
+        return new DropDatabaseStatement(databaseType, null, false);
     }
     
     @Override
     public ASTNode visitCreateOperator(final CreateOperatorContext ctx) {
-        return new CreateOperatorStatement();
+        return new CreateOperatorStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateOutline(final CreateOutlineContext ctx) {
-        return new OracleCreateOutlineStatement();
+        return new OracleCreateOutlineStatement(databaseType);
     }
 }

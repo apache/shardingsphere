@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LockContext;
@@ -38,9 +40,11 @@ import java.util.List;
  */
 public final class DorisLCLStatementVisitor extends DorisStatementVisitor implements LCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Doris");
+    
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
+        return new LockStatement(databaseType, null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
     }
     
     private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {
@@ -57,6 +61,6 @@ public final class DorisLCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitUnlock(final UnlockContext ctx) {
-        return new UnlockStatement();
+        return new UnlockStatement(databaseType);
     }
 }

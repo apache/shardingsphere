@@ -18,17 +18,22 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Kill statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLKillStatement extends DALStatement {
     
     private final String processId;
     
     private final String scope;
+    
+    public MySQLKillStatement(final DatabaseType databaseType, final String processId, final String scope) {
+        super(databaseType);
+        this.processId = processId;
+        this.scope = scope;
+    }
 }

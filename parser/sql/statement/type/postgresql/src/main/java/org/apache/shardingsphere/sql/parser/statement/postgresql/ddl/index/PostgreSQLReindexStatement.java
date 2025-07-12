@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.index;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Reindex statement for PostgreSQL.
  */
 public final class PostgreSQLReindexStatement extends DDLStatement {
+    
+    public PostgreSQLReindexStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

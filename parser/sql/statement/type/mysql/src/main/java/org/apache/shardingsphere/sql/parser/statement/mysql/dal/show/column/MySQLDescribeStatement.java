@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -31,13 +31,18 @@ import java.util.Optional;
 /**
  * Describe statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLDescribeStatement extends DALStatement {
     
     private final SimpleTableSegment table;
     
     private final ColumnSegment columnWildcard;
+    
+    public MySQLDescribeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment columnWildcard) {
+        super(databaseType);
+        this.table = table;
+        this.columnWildcard = columnWildcard;
+    }
     
     /**
      * Get column wildcard.

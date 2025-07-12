@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Alter role statement.
  */
 public final class AlterRoleStatement extends DCLStatement {
+    
+    public AlterRoleStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

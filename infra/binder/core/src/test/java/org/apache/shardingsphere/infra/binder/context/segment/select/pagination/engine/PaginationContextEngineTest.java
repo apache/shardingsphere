@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.pagination
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -47,9 +49,11 @@ import static org.mockito.Mockito.mock;
 
 class PaginationContextEngineTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertCreatePaginationContextWithLimitSegment() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
                 new NumberLiteralLimitValueSegment(11, 20, 200L)));
         PaginationContext paginationContext = new PaginationContextEngine(
@@ -62,11 +66,11 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithTopSegment() {
-        SelectStatement subquerySelectStatement = new SelectStatement();
+        SelectStatement subquerySelectStatement = new SelectStatement(databaseType);
         subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
         RowNumberValueSegment topValueSegment = new NumberLiteralRowNumberValueSegment(0, 0, 100L, false);
         subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, topValueSegment, ""));
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
         PaginationContext paginationContext = new PaginationContextEngine(
@@ -78,7 +82,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithoutTopSegment() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", true)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
@@ -88,7 +92,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithWhereAndRowNumberSegment() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         BinaryOperationExpression binaryOperationExpr = new BinaryOperationExpression(
                 0, 5, new ColumnSegment(0, 5, new IdentifierValue("ROW_NUMBER")), new LiteralExpressionSegment(5, 10, 100), "<", "");
@@ -104,7 +108,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithWhereAndWithoutRowNumberSegment() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         BinaryOperationExpression binaryOperationExpr = new BinaryOperationExpression(
                 0, 5, new ColumnSegment(0, 5, new IdentifierValue("ROW_NUMBER")), new LiteralExpressionSegment(5, 10, 100), "<", "");
@@ -119,7 +123,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithEmpty() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(

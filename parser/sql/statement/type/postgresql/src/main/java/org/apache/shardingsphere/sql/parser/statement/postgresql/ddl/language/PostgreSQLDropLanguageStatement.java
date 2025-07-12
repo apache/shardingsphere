@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.language;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop language statement for PostgreSQL.
  */
 public final class PostgreSQLDropLanguageStatement extends DDLStatement {
+    
+    public PostgreSQLDropLanguageStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

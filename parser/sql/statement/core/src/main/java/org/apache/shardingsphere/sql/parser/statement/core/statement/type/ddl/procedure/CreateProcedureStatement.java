@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.p
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -49,6 +50,10 @@ public class CreateProcedureStatement extends DDLStatement {
     private final List<ProcedureBodyEndNameSegment> procedureBodyEndNameSegments = new ArrayList<>();
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
+    
+    public CreateProcedureStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get procedure name segment.

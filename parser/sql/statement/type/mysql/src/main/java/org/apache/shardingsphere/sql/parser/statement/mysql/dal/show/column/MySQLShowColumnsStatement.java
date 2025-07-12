@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -33,7 +33,6 @@ import java.util.Optional;
 /**
  * Show columns statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowColumnsStatement extends DALStatement {
     
@@ -42,6 +41,13 @@ public final class MySQLShowColumnsStatement extends DALStatement {
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    public MySQLShowColumnsStatement(final DatabaseType databaseType, final SimpleTableSegment table, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
+        super(databaseType);
+        this.table = table;
+        this.fromDatabase = fromDatabase;
+        this.filter = filter;
+    }
     
     /**
      * Get from database.

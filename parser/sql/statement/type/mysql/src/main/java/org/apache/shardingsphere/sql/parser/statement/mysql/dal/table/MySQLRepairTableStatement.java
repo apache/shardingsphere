@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
@@ -27,9 +27,13 @@ import java.util.Collection;
 /**
  * Repair table statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLRepairTableStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
+    
+    public MySQLRepairTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
+        super(databaseType);
+        this.tables = tables;
+    }
 }

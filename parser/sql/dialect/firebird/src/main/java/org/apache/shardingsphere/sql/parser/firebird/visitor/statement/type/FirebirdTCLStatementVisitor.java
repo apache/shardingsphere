@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CommitContext;
@@ -34,23 +36,25 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Se
  */
 public final class FirebirdTCLStatementVisitor extends FirebirdStatementVisitor implements TCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement();
+        return new SetTransactionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(null);
+        return new SavepointStatement(databaseType, null);
     }
 }

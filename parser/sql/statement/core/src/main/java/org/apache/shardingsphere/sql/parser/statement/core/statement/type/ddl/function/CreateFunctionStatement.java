@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.f
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
@@ -44,6 +45,10 @@ public class CreateFunctionStatement extends DDLStatement {
     private RoutineBodySegment routineBody;
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
+    
+    public CreateFunctionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get function name segment.

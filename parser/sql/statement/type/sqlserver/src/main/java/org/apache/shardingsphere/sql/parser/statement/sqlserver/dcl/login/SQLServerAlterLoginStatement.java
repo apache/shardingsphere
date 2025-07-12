@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.login;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.LoginSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Alter login statement for SQLServer.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLServerAlterLoginStatement extends DCLStatement {
     
     private final LoginSegment loginSegment;
+    
+    public SQLServerAlterLoginStatement(final DatabaseType databaseType, final LoginSegment loginSegment) {
+        super(databaseType);
+        this.loginSegment = loginSegment;
+    }
 }

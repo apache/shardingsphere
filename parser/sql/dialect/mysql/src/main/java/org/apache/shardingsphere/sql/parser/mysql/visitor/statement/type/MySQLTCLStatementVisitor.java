@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.antlr.v4.runtime.Token;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
@@ -61,9 +63,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
  */
 public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implements TCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(getOperationScope(ctx.optionType()),
+        return new SetTransactionStatement(databaseType, getOperationScope(ctx.optionType()),
                 getTransactionIsolationLevel(null == ctx.transactionCharacteristics().isolationLevel() ? null : ctx.transactionCharacteristics().isolationLevel().isolationTypes()),
                 getTransactionAccessType(ctx.transactionCharacteristics().transactionAccessMode()));
     }
@@ -115,7 +119,7 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
-        return new SetAutoCommitStatement(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
+        return new SetAutoCommitStatement(databaseType, generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
     }
     
     private AutoCommitSegment generateAutoCommitSegment(final Token ctx) {
@@ -125,56 +129,56 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new BeginTransactionStatement();
+        return new BeginTransactionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(databaseType);
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return null == ctx.identifier() ? new RollbackStatement() : new RollbackStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
+        return null == ctx.identifier() ? new RollbackStatement(databaseType) : new RollbackStatement(databaseType, ((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
+        return new SavepointStatement(databaseType, ((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        return new ReleaseSavepointStatement(((IdentifierValue) visit(ctx.identifier())).getValue());
+        return new ReleaseSavepointStatement(databaseType, ((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
     public ASTNode visitXaBegin(final XaBeginContext ctx) {
-        return new XABeginStatement(ctx.xid().getText());
+        return new XABeginStatement(databaseType, ctx.xid().getText());
     }
     
     @Override
     public ASTNode visitXaPrepare(final XaPrepareContext ctx) {
-        return new XAPrepareStatement(ctx.xid().getText());
+        return new XAPrepareStatement(databaseType, ctx.xid().getText());
     }
     
     @Override
     public ASTNode visitXaCommit(final XaCommitContext ctx) {
-        return new XACommitStatement(ctx.xid().getText());
+        return new XACommitStatement(databaseType, ctx.xid().getText());
     }
     
     @Override
     public ASTNode visitXaRollback(final XaRollbackContext ctx) {
-        return new XARollbackStatement(ctx.xid().getText());
+        return new XARollbackStatement(databaseType, ctx.xid().getText());
     }
     
     @Override
     public ASTNode visitXaEnd(final XaEndContext ctx) {
-        return new XAEndStatement(ctx.xid().getText());
+        return new XAEndStatement(databaseType, ctx.xid().getText());
     }
     
     @Override
     public ASTNode visitXaRecovery(final XaRecoveryContext ctx) {
-        return new XARecoveryStatement();
+        return new XARecoveryStatement(databaseType);
     }
 }

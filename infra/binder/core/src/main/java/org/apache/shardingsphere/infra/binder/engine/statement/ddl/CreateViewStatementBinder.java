@@ -40,7 +40,7 @@ public final class CreateViewStatementBinder implements SQLStatementBinder<Creat
     }
     
     private CreateViewStatement copy(final CreateViewStatement sqlStatement, final SimpleTableSegment boundView, final SelectStatement boundSelect) {
-        CreateViewStatement result = new CreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement(sqlStatement.getDatabaseType());
         result.setView(boundView);
         result.setSelect(boundSelect);
         result.setReplaceView(sqlStatement.isReplaceView());

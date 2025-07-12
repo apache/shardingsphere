@@ -54,7 +54,7 @@ public final class PostgreSQLCopyStatementBinder implements SQLStatementBinder<P
     
     private PostgreSQLCopyStatement copy(final PostgreSQLCopyStatement sqlStatement,
                                          final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns, final PrepareStatementQuerySegment boundPrepareStatementQuery) {
-        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement(boundTable, boundColumns, boundPrepareStatementQuery);
+        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement(sqlStatement.getDatabaseType(), boundTable, boundColumns, boundPrepareStatementQuery);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
@@ -27,12 +27,17 @@ import java.util.Optional;
 /**
  * Cluster statement for PostgreSQL.
  */
-@RequiredArgsConstructor
 public final class PostgreSQLClusterStatement extends DDLStatement {
     
     private final SimpleTableSegment simpleTable;
     
     private final IndexSegment index;
+    
+    public PostgreSQLClusterStatement(final DatabaseType databaseType, final SimpleTableSegment simpleTable, final IndexSegment index) {
+        super(databaseType);
+        this.simpleTable = simpleTable;
+        this.index = index;
+    }
     
     /**
      * Get simple table.

@@ -21,9 +21,11 @@ import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
@@ -45,6 +47,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingUnicastRouteEngineTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private ShardingRule rule;
     
@@ -93,7 +97,7 @@ class ShardingUnicastRouteEngineTest {
     @Test
     void assertRoutingForBroadcastTableWithCursorStatement() {
         CursorStatementContext sqlStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new CursorStatement(null, null));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new CursorStatement(databaseType, null, null));
         RouteContext actual = new ShardingUnicastRouteEngine(sqlStatementContext, Collections.singleton("t_config"), new ConnectionContext(Collections::emptySet)).route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));

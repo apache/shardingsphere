@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
@@ -45,4 +46,8 @@ public final class MySQLRevokeStatement extends RevokeStatement {
     private String aclObject;
     
     private GrantLevelSegment level;
+    
+    public MySQLRevokeStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

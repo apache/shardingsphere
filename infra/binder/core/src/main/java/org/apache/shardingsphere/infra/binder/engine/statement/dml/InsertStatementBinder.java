@@ -67,7 +67,7 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     private InsertStatement copy(final InsertStatement sqlStatement, final WithSegment boundWith, final SimpleTableSegment boundTable,
                                  final InsertColumnsSegment boundInsertColumns, final SetAssignmentSegment boundSetAssignment, final SubquerySegment boundInsertSelect) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(sqlStatement.getDatabaseType());
         result.setWith(boundWith);
         result.setTable(boundTable);
         result.setInsertColumns(boundInsertColumns);

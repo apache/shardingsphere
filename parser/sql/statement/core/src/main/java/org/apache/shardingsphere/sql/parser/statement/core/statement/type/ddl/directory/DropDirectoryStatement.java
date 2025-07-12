@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.directory;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop directory statement.
  */
 public final class DropDirectoryStatement extends DDLStatement {
+    
+    public DropDirectoryStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

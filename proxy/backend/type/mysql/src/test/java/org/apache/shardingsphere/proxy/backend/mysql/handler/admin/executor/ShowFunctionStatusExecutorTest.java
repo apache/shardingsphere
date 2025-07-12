@@ -55,7 +55,7 @@ class ShowFunctionStatusExecutorTest {
     
     @Test
     void assertExecute() throws SQLException {
-        ShowFunctionStatusExecutor executor = new ShowFunctionStatusExecutor(new MySQLShowFunctionStatusStatement(null));
+        ShowFunctionStatusExecutor executor = new ShowFunctionStatusExecutor(new MySQLShowFunctionStatusStatement(databaseType, null));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mock(ConnectionSession.class));

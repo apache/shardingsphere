@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show other statement for MySQL.
  */
 public final class MySQLShowOtherStatement extends DALStatement {
+    
+    public MySQLShowOtherStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

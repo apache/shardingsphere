@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AccountLockPasswordExpireOptionContext;
@@ -119,9 +121,11 @@ import java.util.stream.Collectors;
  */
 public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implements DCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Override
     public ASTNode visitGrantRoleOrPrivilegeTo(final GrantRoleOrPrivilegeToContext ctx) {
-        MySQLGrantStatement result = new MySQLGrantStatement();
+        MySQLGrantStatement result = new MySQLGrantStatement(databaseType);
         fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
@@ -131,7 +135,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeOnTo(final GrantRoleOrPrivilegeOnToContext ctx) {
-        MySQLGrantStatement result = new MySQLGrantStatement();
+        MySQLGrantStatement result = new MySQLGrantStatement(databaseType);
         if (null == ctx.roleOrPrivileges()) {
             result.setAllPrivileges(true);
         } else {
@@ -149,7 +153,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitGrantProxy(final GrantProxyContext ctx) {
-        MySQLGrantStatement result = new MySQLGrantStatement();
+        MySQLGrantStatement result = new MySQLGrantStatement(databaseType);
         PrivilegeSegment privilege = new PrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), "GRANT");
         result.getRoleOrPrivileges().add(new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
         for (UsernameContext each : ctx.userList().username()) {
@@ -414,7 +418,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeFrom(final RevokeFromContext ctx) {
-        MySQLRevokeStatement result = new MySQLRevokeStatement();
+        MySQLRevokeStatement result = new MySQLRevokeStatement(databaseType);
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -428,7 +432,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeOnFrom(final RevokeOnFromContext ctx) {
-        MySQLRevokeStatement result = new MySQLRevokeStatement();
+        MySQLRevokeStatement result = new MySQLRevokeStatement(databaseType);
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -449,7 +453,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        MySQLCreateUserStatement result = new MySQLCreateUserStatement();
+        MySQLCreateUserStatement result = new MySQLCreateUserStatement(databaseType);
         for (CreateUserEntryContext each : ctx.createUserList().createUserEntry()) {
             result.getUsers().add((UserSegment) visit(each));
         }
@@ -702,41 +706,41 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement(ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
+        return new DropUserStatement(databaseType, ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement(null);
+        return new AlterUserStatement(databaseType, null);
     }
     
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new MySQLRenameUserStatement();
+        return new MySQLRenameUserStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new CreateRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new DropRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new MySQLSetDefaultRoleStatement();
+        return new MySQLSetDefaultRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new SetRoleStatement();
+        return new SetRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new MySQLSetPasswordStatement();
+        return new MySQLSetPasswordStatement(databaseType);
     }
 }

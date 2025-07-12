@@ -19,11 +19,13 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -60,6 +62,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class MySQLSetVariableAdminExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Test
     void assertExecute() throws SQLException {
         SetStatement setStatement = prepareSetStatement();
@@ -91,7 +95,7 @@ class MySQLSetVariableAdminExecutorTest {
         VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment(0, 0, maxConnectionVariableSegment, "151");
         VariableSegment characterSetClientSegment = new VariableSegment(0, 0, "character_set_client");
         VariableAssignSegment setCharacterSetClientVariableSegment = new VariableAssignSegment(0, 0, characterSetClientSegment, "'utf8mb4'");
-        return new SetStatement(Arrays.asList(setGlobalMaxConnectionAssignSegment, setCharacterSetClientVariableSegment));
+        return new SetStatement(databaseType, Arrays.asList(setGlobalMaxConnectionAssignSegment, setCharacterSetClientVariableSegment));
     }
     
     private ContextManager mockContextManager() {
@@ -104,14 +108,14 @@ class MySQLSetVariableAdminExecutorTest {
     
     @Test
     void assertSetUnknownSystemVariable() {
-        SetStatement setStatement = new SetStatement(Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), "")));
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "unknown_variable"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(UnknownSystemVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
     }
     
     @Test
     void assertSetVariableWithIncorrectScope() {
-        SetStatement setStatement = new SetStatement(Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), "")));
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "max_connections"), "")));
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         assertThrows(ErrorGlobalVariableException.class, () -> executor.execute(mock(ConnectionSession.class)));
     }

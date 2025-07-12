@@ -58,7 +58,7 @@ class SelectStatementBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projections);
         ColumnProjectionSegment orderIdProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id")));

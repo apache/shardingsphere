@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.foreigndata;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter foreign data wrapper statement for PostgreSQL.
  */
 public final class PostgreSQLAlterForeignDataWrapperStatement extends DDLStatement {
+    
+    public PostgreSQLAlterForeignDataWrapperStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

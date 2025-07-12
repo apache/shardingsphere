@@ -49,7 +49,7 @@ public final class CreateIndexStatementBinder implements SQLStatementBinder<Crea
     }
     
     private CreateIndexStatement copy(final CreateIndexStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
-        CreateIndexStatement result = new CreateIndexStatement();
+        CreateIndexStatement result = new CreateIndexStatement(sqlStatement.getDatabaseType());
         result.setTable(boundTable);
         result.getColumns().addAll(boundColumns);
         result.setIndex(sqlStatement.getIndex());

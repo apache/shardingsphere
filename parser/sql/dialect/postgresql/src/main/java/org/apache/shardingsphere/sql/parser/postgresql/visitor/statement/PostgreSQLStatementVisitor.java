@@ -24,6 +24,8 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AexprConstContext;
@@ -216,6 +218,8 @@ import java.util.Optional;
  */
 @Getter(AccessLevel.PROTECTED)
 public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementParserBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
@@ -758,7 +762,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         if (null == valuesClause) {
             SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
@@ -858,7 +862,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new UpdateStatement(databaseType);
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.setTable(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
@@ -880,7 +884,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement();
+        DeleteStatement result = new DeleteStatement(databaseType);
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
         result.setTable(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
@@ -965,7 +969,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return visit(ctx.simpleSelect());
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            SelectStatement result = new SelectStatement();
+            SelectStatement result = new SelectStatement(databaseType);
             SelectStatement left = (SelectStatement) visit(ctx.selectClauseN(0));
             result.setProjections(left.getProjections());
             left.getFrom().ifPresent(result::setFrom);
@@ -994,7 +998,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         if (null == ctx.targetList()) {
             result.setProjections(new ProjectionsSegment(-1, -1));
         } else {
@@ -1414,7 +1418,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement();
+        return new ExecuteStatement(databaseType);
     }
     
     /**

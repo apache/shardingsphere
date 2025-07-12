@@ -245,13 +245,13 @@ class ProxySQLExecutorTest {
     }
     
     private CommonSQLStatementContext createCreateTableStatementContext(final DatabaseType databaseType) {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
     private SQLStatementContext createTruncateStatementContext(final DatabaseType databaseType) {
-        TruncateStatement sqlStatement = new TruncateStatement(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
+        TruncateStatement sqlStatement = new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
         return new CommonSQLStatementContext(databaseType, sqlStatement);
     }
     
@@ -263,7 +263,7 @@ class ProxySQLExecutorTest {
     }
     
     private InsertStatementContext mockInsertStatementContext(final DatabaseType databaseType) {
-        InsertStatement sqlStatement = new InsertStatement();
+        InsertStatement sqlStatement = new InsertStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");

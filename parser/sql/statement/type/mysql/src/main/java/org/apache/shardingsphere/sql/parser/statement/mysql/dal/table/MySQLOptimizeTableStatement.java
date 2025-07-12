@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableBroadcastRouteSQLStatementAttribute;
@@ -30,11 +30,15 @@ import java.util.Collection;
 /**
  * Optimize table statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLOptimizeTableStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
+    
+    public MySQLOptimizeTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
+        super(databaseType);
+        this.tables = tables;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {
