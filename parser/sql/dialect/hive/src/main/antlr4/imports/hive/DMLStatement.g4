@@ -322,3 +322,27 @@ tableIdentOptWild
 tableAliasRefList
     : tableIdentOptWild (COMMA_ tableIdentOptWild)*
     ;
+
+loadStatement
+    : loadDataStatement
+    ;
+
+loadDataStatement
+    : LOAD DATA LOCAL? INPATH string_ overWrite? inputFormatClause? INTO TABLE tableName partitionSpec?
+    ;
+
+overWrite
+    : OVERWRITE
+    ;
+
+inputFormatClause
+    : INPUTFORMAT string_ SERDE string_
+    ;
+
+partitionSpec
+    : PARTITION LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_
+    ;
+
+partitionKeyValue
+    : identifier EQ_ (string_ | numberLiterals)
+    ;
