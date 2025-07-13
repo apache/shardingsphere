@@ -100,7 +100,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     @Test
     void assertAddColumnGenerateSQLTokens() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(databaseType, createAddColumnStatement()));
+        Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(createAddColumnStatement()));
         assertThat(actual.size(), is(4));
         Iterator<SQLToken> actualIterator = actual.iterator();
         assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
@@ -129,7 +129,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     @Test
     void assertModifyEncryptColumnGenerateSQLTokens() {
-        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(databaseType, createModifyColumnStatement())));
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(createModifyColumnStatement())));
     }
     
     private SQLStatement createModifyColumnStatement() {
@@ -143,7 +143,7 @@ class EncryptAlterTableTokenGeneratorTest {
     
     @Test
     void assertChangeEncryptColumnGenerateSQLTokens() {
-        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(databaseType, createChangeColumnStatement())));
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(createChangeColumnStatement())));
     }
     
     private SQLStatement createChangeColumnStatement() {

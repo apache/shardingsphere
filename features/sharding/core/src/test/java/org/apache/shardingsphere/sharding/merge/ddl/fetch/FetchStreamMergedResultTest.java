@@ -91,7 +91,7 @@ class FetchStreamMergedResultTest {
     }
     
     private static CursorHeldSQLStatementContext createCursorHeldSQLStatementContext(final boolean containsAllDirectionType) {
-        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(DATABASE_TYPE, createFetchStatement(containsAllDirectionType));
+        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(createFetchStatement(containsAllDirectionType));
         result.setCursorStatementContext(mockCursorStatementContext());
         return result;
     }
@@ -105,7 +105,7 @@ class FetchStreamMergedResultTest {
         CursorStatement cursorStatement = new CursorStatement(DATABASE_TYPE, null, selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), DATABASE_TYPE, Collections.emptyList(), cursorStatement, "foo_db");
+        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), cursorStatement, "foo_db");
     }
     
     private static SelectStatement mockSelectStatement() {

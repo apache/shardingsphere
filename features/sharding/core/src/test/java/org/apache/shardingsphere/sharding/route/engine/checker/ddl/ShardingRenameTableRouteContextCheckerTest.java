@@ -96,6 +96,6 @@ class ShardingRenameTableRouteContextCheckerTest {
         renameTableDefinitionSegment.setRenameTable(renameTable);
         when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TableSQLStatementAttribute(Arrays.asList(table, renameTable))));
-        return new CommonSQLStatementContext(mock(), sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
 }

@@ -84,7 +84,7 @@ class InsertStatementContextTest {
         when(schema.getName()).thenReturn("foo_db");
         when(schema.getVisibleColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.singleton(schema));
-        return new InsertStatementContext(databaseType, insertStatement, params, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
+        return new InsertStatementContext(insertStatement, params, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
     }
     
     @Test

@@ -142,7 +142,7 @@ class PortalTest {
     @Test
     void assertGetName() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("",
-                new CommonSQLStatementContext(databaseType, new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                new CommonSQLStatementContext(new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         assertThat(portal.getName(), is(""));
     }
@@ -231,7 +231,7 @@ class PortalTest {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("",
-                new CommonSQLStatementContext(databaseType, new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                new CommonSQLStatementContext(new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
@@ -246,7 +246,7 @@ class PortalTest {
         String sql = "set client_encoding = utf8";
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), null)));
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
-                sql, new CommonSQLStatementContext(databaseType, setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                sql, new CommonSQLStatementContext(setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         List<DatabasePacket> actualPackets = portal.execute(0);
@@ -268,7 +268,7 @@ class PortalTest {
     @Test
     void assertClose() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("",
-                new CommonSQLStatementContext(databaseType, new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+                new CommonSQLStatementContext(new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager).close();
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();

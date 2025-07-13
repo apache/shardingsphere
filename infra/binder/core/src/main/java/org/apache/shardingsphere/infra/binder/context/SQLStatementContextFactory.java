@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
@@ -64,80 +63,75 @@ public final class SQLStatementContextFactory {
      * Create SQL statement context.
      *
      * @param metaData metadata
-     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param params SQL parameters
      * @param currentDatabaseName current database name
      * @return SQL statement context
      */
-    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
-                                                  final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).isPresent()
-                && DatabaseTypedSPILoader.findService(DialectCommonSQLStatementContextWarpProvider.class, databaseType)
+                && DatabaseTypedSPILoader.findService(DialectCommonSQLStatementContextWarpProvider.class, sqlStatement.getDatabaseType())
                         .map(optional -> optional.getNeedToWarpSQLStatementTypes().contains(sqlStatement.getClass())).orElse(false)) {
-            return new CommonSQLStatementContext(databaseType, sqlStatement);
+            return new CommonSQLStatementContext(sqlStatement);
         }
         if (sqlStatement instanceof DMLStatement) {
-            return getDMLStatementContext(metaData, databaseType, (DMLStatement) sqlStatement, params, currentDatabaseName);
+            return getDMLStatementContext(metaData, (DMLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DDLStatement) {
-            return getDDLStatementContext(metaData, databaseType, (DDLStatement) sqlStatement, params, currentDatabaseName);
+            return getDDLStatementContext(metaData, (DDLStatement) sqlStatement, params, currentDatabaseName);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLStatementContext(databaseType, (DCLStatement) sqlStatement);
+            return getDCLStatementContext((DCLStatement) sqlStatement);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALStatementContext(metaData, databaseType, (DALStatement) sqlStatement, params, currentDatabaseName);
+            return getDALStatementContext(metaData, (DALStatement) sqlStatement, params, currentDatabaseName);
         }
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                                              final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData, final DMLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
-            return new SelectStatementContext(databaseType, (SelectStatement) sqlStatement, params, metaData, currentDatabaseName, Collections.emptyList());
+            return new SelectStatementContext((SelectStatement) sqlStatement, params, metaData, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext(databaseType, (UpdateStatement) sqlStatement);
+            return new UpdateStatementContext((UpdateStatement) sqlStatement);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext(databaseType, (DeleteStatement) sqlStatement);
+            return new DeleteStatementContext((DeleteStatement) sqlStatement);
         }
         if (sqlStatement instanceof InsertStatement) {
-            return new InsertStatementContext(databaseType, (InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
+            return new InsertStatementContext((InsertStatement) sqlStatement, params, metaData, currentDatabaseName);
         }
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                                              final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final DDLStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof CreateProcedureStatement) {
-            return new CreateProcedureStatementContext(databaseType, (CreateProcedureStatement) sqlStatement);
+            return new CreateProcedureStatementContext((CreateProcedureStatement) sqlStatement);
         }
         if (sqlStatement instanceof CreateViewStatement) {
-            return new CreateViewStatementContext(metaData, databaseType, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
+            return new CreateViewStatementContext(metaData, params, (CreateViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof AlterViewStatement) {
-            return new AlterViewStatementContext(metaData, databaseType, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
+            return new AlterViewStatementContext(metaData, params, (AlterViewStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement instanceof CursorStatement) {
-            return new CursorStatementContext(metaData, databaseType, params, (CursorStatement) sqlStatement, currentDatabaseName);
+            return new CursorStatementContext(metaData, params, (CursorStatement) sqlStatement, currentDatabaseName);
         }
         if (sqlStatement.getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
-            return new CursorHeldSQLStatementContext(databaseType, sqlStatement);
+            return new CursorHeldSQLStatementContext(sqlStatement);
         }
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDCLStatementContext(final DatabaseType databaseType, final DCLStatement sqlStatement) {
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+    private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
-                                                              final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
+    private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
-            return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);
+            return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, params, currentDatabaseName);
         }
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
 }

@@ -81,7 +81,7 @@ class ShardingInsertSupportedCheckerTest {
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        return new InsertStatementContext(databaseType, insertStatement, params, metaData, "foo_db");
+        return new InsertStatementContext(insertStatement, params, metaData, "foo_db");
     }
     
     @Test

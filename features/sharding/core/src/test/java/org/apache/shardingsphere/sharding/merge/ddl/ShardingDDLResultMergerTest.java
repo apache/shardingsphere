@@ -79,7 +79,7 @@ class ShardingDDLResultMergerTest {
     }
     
     private CursorHeldSQLStatementContext createCursorHeldSQLStatementContext(final ShardingSphereDatabase database) {
-        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(databaseType, new FetchStatement(databaseType, new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
+        CursorHeldSQLStatementContext result = new CursorHeldSQLStatementContext(new FetchStatement(databaseType, new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), null));
         result.setCursorStatementContext(createCursorStatementContext(database));
         return result;
     }
@@ -89,7 +89,7 @@ class ShardingDDLResultMergerTest {
         SelectStatement selectStatement = createSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = new SelectStatementContext(
-                databaseType, selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         when(result.getSelectStatementContext()).thenReturn(selectStatementContext);
         when(result.getSqlStatement().getSelect()).thenReturn(selectStatement);
         return result;

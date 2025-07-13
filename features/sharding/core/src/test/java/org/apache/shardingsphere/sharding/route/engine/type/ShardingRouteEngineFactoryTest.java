@@ -134,7 +134,7 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForDCLForSingleTable() {
         GrantStatement sqlStatement = new GrantStatement(databaseType);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), sqlStatement);
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.singletonList("tbl"), props);
         assertThat(actual, instanceOf(ShardingTableBroadcastRouteEngine.class));

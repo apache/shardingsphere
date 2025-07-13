@@ -61,7 +61,7 @@ class SQLRouteCountAdviceTest {
     @Test
     void assertInsertRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                databaseType, new InsertStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new InsertStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "INSERT=1");
     }
     
@@ -74,21 +74,21 @@ class SQLRouteCountAdviceTest {
     @Test
     void assertUpdateRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                databaseType, new UpdateStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new UpdateStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "UPDATE=1");
     }
     
     @Test
     void assertDeleteRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                databaseType, new DeleteStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new DeleteStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "DELETE=1");
     }
     
     @Test
     void assertSelectRoute() {
         QueryContext queryContext = new QueryContext(new CommonSQLStatementContext(
-                databaseType, new SelectStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+                new SelectStatement(databaseType)), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         assertRoute(queryContext, "SELECT=1");
     }
     
