@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
@@ -47,6 +49,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UpdateStatementContextTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private WhereSegment whereSegment;
     
@@ -69,7 +73,7 @@ class UpdateStatementContextTest {
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(table1);
         joinTableSegment.setRight(table2);
-        UpdateStatement updateStatement = new UpdateStatement();
+        UpdateStatement updateStatement = new UpdateStatement(databaseType);
         updateStatement.setWhere(whereSegment);
         updateStatement.setTable(joinTableSegment);
         updateStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));

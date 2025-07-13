@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Set password statement for MySQL.
  */
 public final class MySQLSetPasswordStatement extends DCLStatement {
+    
+    public MySQLSetPasswordStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

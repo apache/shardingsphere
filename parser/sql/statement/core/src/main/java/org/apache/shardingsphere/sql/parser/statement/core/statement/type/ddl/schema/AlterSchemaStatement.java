@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.s
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -34,6 +35,10 @@ public final class AlterSchemaStatement extends DDLStatement {
     private IdentifierValue schemaName;
     
     private IdentifierValue renameSchema;
+    
+    public AlterSchemaStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get rename schema.

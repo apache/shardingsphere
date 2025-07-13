@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.show;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show master status statement for MySQL.
  */
 public final class MySQLShowMasterStatusStatement extends DALStatement {
+    
+    public MySQLShowMasterStatusStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -68,7 +68,7 @@ public final class EncryptMergedResult extends DecoratorMergedResult {
         Object cipherValue = getMergedResult().getValue(columnIndex, Object.class);
         EncryptColumn encryptColumn = rule.get().getEncryptTable(originalTableName).getEncryptColumn(originalColumnName);
         String schemaName = selectStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(() -> new DatabaseTypeRegistry(selectStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         try {
             return encryptColumn.getCipher().decrypt(database.getName(), schemaName, originalTableName, originalColumnName, cipherValue);
             // CHECKSTYLE:OFF

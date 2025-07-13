@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop event statement for MySQL.
  */
 public final class MySQLDropEventStatement extends DDLStatement {
+    
+    public MySQLDropEventStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

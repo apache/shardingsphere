@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
@@ -204,9 +206,11 @@ import java.util.Optional;
  */
 public final class DorisDDLStatementVisitor extends DorisStatementVisitor implements DDLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Doris");
+    
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        CreateViewStatement result = new CreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement(databaseType);
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
@@ -216,7 +220,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        AlterViewStatement result = new AlterViewStatement();
+        AlterViewStatement result = new AlterViewStatement(databaseType);
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
@@ -226,7 +230,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement();
+        DropViewStatement result = new DropViewStatement(databaseType);
         result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
@@ -234,23 +238,23 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        return new CreateDatabaseStatement(databaseType, new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
     }
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new AlterDatabaseStatement();
+        return new AlterDatabaseStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        return new DropDatabaseStatement(databaseType, new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
@@ -312,7 +316,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
             return result;
@@ -518,7 +522,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             TableNameContext renameTableName = ctx.tableName(i + 1);
             renameTables.add(createRenameTableDefinitionSegment(tableName, renameTableName));
         }
-        return new RenameTableStatement(renameTables);
+        return new RenameTableStatement(databaseType, renameTables);
     }
     
     private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final TableNameContext tableName, final TableNameContext renameTableName) {
@@ -661,7 +665,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement();
+        DropTableStatement result = new DropTableStatement(databaseType);
         result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
@@ -669,13 +673,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(databaseType, Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement();
+        CreateIndexStatement result = new CreateIndexStatement(databaseType);
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -693,7 +697,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement();
+        DropIndexStatement result = new DropIndexStatement(databaseType);
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -729,7 +733,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        CreateProcedureStatement result = new CreateProcedureStatement();
+        CreateProcedureStatement result = new CreateProcedureStatement(databaseType);
         result.setProcedureName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
@@ -746,17 +750,17 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement();
+        return new AlterProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new DropProcedureStatement();
+        return new DropProcedureStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        CreateFunctionStatement result = new CreateFunctionStatement();
+        CreateFunctionStatement result = new CreateFunctionStatement(databaseType);
         result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
@@ -910,77 +914,77 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new AlterFunctionStatement();
+        return new AlterFunctionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DropFunctionStatement();
+        return new DropFunctionStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateEvent(final CreateEventContext ctx) {
-        return new MySQLCreateEventStatement();
+        return new MySQLCreateEventStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterEvent(final AlterEventContext ctx) {
-        return new MySQLAlterEventStatement();
+        return new MySQLAlterEventStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropEvent(final DropEventContext ctx) {
-        return new MySQLDropEventStatement();
+        return new MySQLDropEventStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
-        return new MySQLAlterInstanceStatement();
+        return new MySQLAlterInstanceStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
-        return new MySQLCreateLogfileGroupStatement();
+        return new MySQLCreateLogfileGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
-        return new MySQLAlterLogfileGroupStatement();
+        return new MySQLAlterLogfileGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
-        return new MySQLDropLogfileGroupStatement();
+        return new MySQLDropLogfileGroupStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateServer(final CreateServerContext ctx) {
-        return new CreateServerStatement();
+        return new CreateServerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterServer(final AlterServerContext ctx) {
-        return new AlterServerStatement();
+        return new AlterServerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
-        return new DropServerStatement();
+        return new DropServerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement();
+        return new CreateTriggerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new DropTriggerStatement();
+        return new DropTriggerStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new CreateTablespaceStatement();
+        return new CreateTablespaceStatement(databaseType);
     }
     
     @Override
@@ -995,13 +999,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
         return new AlterTablespaceStatement(
-                null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTablespace ? null : createTablespaceSegment(ctx.renameTablespace));
+                databaseType, null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTablespace ? null : createTablespaceSegment(ctx.renameTablespace));
     }
     
     @Override
     public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
         return new AlterTablespaceStatement(
-                null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTableSpace ? null : createTablespaceSegment(ctx.renameTableSpace));
+                databaseType, null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTableSpace ? null : createTablespaceSegment(ctx.renameTableSpace));
     }
     
     private TablespaceSegment createTablespaceSegment(final IdentifierContext ctx) {
@@ -1010,26 +1014,26 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
-        return new DropTablespaceStatement();
+        return new DropTablespaceStatement(databaseType);
     }
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new PrepareStatement();
+        return new PrepareStatement(databaseType);
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement();
+        return new ExecuteStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
-        return new DeallocateStatement();
+        return new DeallocateStatement(databaseType);
     }
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new CreateMaterializedViewStatement();
+        return new CreateMaterializedViewStatement(databaseType);
     }
 }

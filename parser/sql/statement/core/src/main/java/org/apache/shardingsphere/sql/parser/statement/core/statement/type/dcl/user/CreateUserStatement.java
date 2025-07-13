@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
@@ -31,4 +32,8 @@ import java.util.LinkedList;
 public class CreateUserStatement extends DCLStatement {
     
     private final Collection<UserSegment> users = new LinkedList<>();
+    
+    public CreateUserStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

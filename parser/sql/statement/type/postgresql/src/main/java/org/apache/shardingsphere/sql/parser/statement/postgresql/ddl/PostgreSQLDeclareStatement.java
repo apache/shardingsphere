@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -26,11 +26,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 /**
  * Declare statement for PostgreSQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLDeclareStatement extends DDLStatement {
     
     private final CursorNameSegment cursorName;
     
     private final SelectStatement select;
+    
+    public PostgreSQLDeclareStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final SelectStatement select) {
+        super(databaseType);
+        this.cursorName = cursorName;
+        this.select = select;
+    }
 }

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Rename statement for Oracle.
  */
 public final class OracleRenameStatement extends DDLStatement {
+    
+    public OracleRenameStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

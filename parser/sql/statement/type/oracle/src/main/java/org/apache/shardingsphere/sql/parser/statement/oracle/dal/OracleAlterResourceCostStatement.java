@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.dal;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Alter resource cost statement for Oracle.
  */
 public final class OracleAlterResourceCostStatement extends DALStatement {
+    
+    public OracleAlterResourceCostStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

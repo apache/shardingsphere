@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.CreateTypeStatement;
@@ -26,19 +26,30 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ty
 /****
  * Create nested table type statement for Oracle.
  */
-@RequiredArgsConstructor
 @Getter
 public final class OracleCreateNestedTableTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     
-    private final boolean editionable;
+    private final boolean isEditionable;
     
-    private final boolean notNull;
+    private final boolean isNotNull;
     
     private final boolean isPersistable;
     
     private final TypeSegment typeSegment;
     
     private final DataTypeSegment dataType;
+    
+    public OracleCreateNestedTableTypeStatement(final DatabaseType databaseType,
+                                                final boolean isReplace, final boolean isEditionable, final boolean isNotNull,
+                                                final boolean isPersistable, final TypeSegment typeSegment, final DataTypeSegment dataType) {
+        super(databaseType);
+        this.isReplace = isReplace;
+        this.isEditionable = isEditionable;
+        this.isNotNull = isNotNull;
+        this.isPersistable = isPersistable;
+        this.typeSegment = typeSegment;
+        this.dataType = dataType;
+    }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -38,6 +39,10 @@ public final class SQLServerDenyUserStatement extends DCLStatement {
     private SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    public SQLServerDenyUserStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

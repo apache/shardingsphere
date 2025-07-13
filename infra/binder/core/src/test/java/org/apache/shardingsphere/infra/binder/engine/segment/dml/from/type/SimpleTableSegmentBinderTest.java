@@ -47,13 +47,14 @@ class SimpleTableSegmentBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
+    @SuppressWarnings("resource")
     @Test
     void assertBindTableNotExists() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("t_not_exists")));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(
-                simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts));
+                simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts));
     }
     
     private ShardingSphereMetaData createMetaData() {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
@@ -29,11 +29,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Show create table statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowCreateTableStatement extends DALStatement {
     
     private final SimpleTableSegment table;
+    
+    public MySQLShowCreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
+        super(databaseType);
+        this.table = table;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

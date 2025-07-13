@@ -215,7 +215,7 @@ class SingleSQLRouterTest {
     }
     
     private QueryContext createQueryContext() {
-        CreateTableStatement createTableStatement = new CreateTableStatement();
+        CreateTableStatement createTableStatement = new CreateTableStatement(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, new IdentifierValue("t_order"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         createTableStatement.setTable(new SimpleTableSegment(tableNameSegment));

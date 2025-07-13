@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.collation;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter collation statement.
  */
 public final class AlterCollationStatement extends DDLStatement {
+    
+    public AlterCollationStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

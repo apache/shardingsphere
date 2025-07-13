@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.GrantContext;
@@ -31,9 +33,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.Re
  */
 public final class SQL92DCLStatementVisitor extends SQL92StatementVisitor implements DCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQL92");
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        GrantStatement result = new GrantStatement(databaseType);
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -42,7 +46,7 @@ public final class SQL92DCLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        RevokeStatement result = new RevokeStatement(databaseType);
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }

@@ -40,7 +40,7 @@ public final class AlterIndexStatementBinder implements SQLStatementBinder<Alter
     }
     
     private AlterIndexStatement copy(final AlterIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        AlterIndexStatement result = new AlterIndexStatement();
+        AlterIndexStatement result = new AlterIndexStatement(sqlStatement.getDatabaseType());
         sqlStatement.getIndex().ifPresent(result::setIndex);
         sqlStatement.getRenameIndex().ifPresent(result::setRenameIndex);
         result.setSimpleTable(boundTable);

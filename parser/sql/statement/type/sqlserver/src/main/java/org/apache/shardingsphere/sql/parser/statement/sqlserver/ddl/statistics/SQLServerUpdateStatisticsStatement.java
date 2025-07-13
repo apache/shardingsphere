@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.statistics.StatisticsStrategySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -29,7 +29,6 @@ import java.util.List;
 /**
  * Update statistics statement for SQLServer.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLServerUpdateStatisticsStatement extends DDLStatement {
     
@@ -38,4 +37,11 @@ public final class SQLServerUpdateStatisticsStatement extends DDLStatement {
     private final List<IndexSegment> indexes;
     
     private final StatisticsStrategySegment strategy;
+    
+    public SQLServerUpdateStatisticsStatement(final DatabaseType databaseType, final SimpleTableSegment table, final List<IndexSegment> indexes, final StatisticsStrategySegment strategy) {
+        super(databaseType);
+        this.table = table;
+        this.indexes = indexes;
+        this.strategy = strategy;
+    }
 }

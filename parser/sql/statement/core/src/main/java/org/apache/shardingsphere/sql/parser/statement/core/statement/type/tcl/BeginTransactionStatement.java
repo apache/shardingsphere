@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * Begin transaction statement.
  */
 public final class BeginTransactionStatement extends TCLStatement {
+    
+    public BeginTransactionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

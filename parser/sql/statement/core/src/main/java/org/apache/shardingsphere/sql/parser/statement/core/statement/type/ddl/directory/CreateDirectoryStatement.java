@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.directory;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create directory statement.
  */
 public final class CreateDirectoryStatement extends DDLStatement {
+    
+    public CreateDirectoryStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

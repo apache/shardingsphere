@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -43,9 +45,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLSystemVariableQueryExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
     @Test
     void assertTryGetSystemVariableQueryExecutorWithOtherExpressionProjection() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment variable = new VariableSegment(0, 0, "max_connections", "session");
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.max_connections", variable));
@@ -55,7 +59,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorWithUnknownVariable() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@unknown_variable", new VariableSegment(0, 0, "unknown_variable")));
         assertFalse(MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement).isPresent());
@@ -63,7 +67,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorAndExecuteWithCorrectScope() throws SQLException {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment maxConnectionsVariable = new VariableSegment(0, 0, "max_connections", "global");
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@global.max_connections", maxConnectionsVariable));
@@ -91,7 +95,7 @@ class MySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertExecuteWithIncorrectScope() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         VariableSegment variable = new VariableSegment(0, 0, "max_connections", "session");
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.max_connections", variable));

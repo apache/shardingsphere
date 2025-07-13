@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create trigger statement.
  */
 public final class CreateTriggerStatement extends DDLStatement {
+    
+    public CreateTriggerStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

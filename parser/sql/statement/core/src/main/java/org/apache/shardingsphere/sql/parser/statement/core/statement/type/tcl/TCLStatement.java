@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Transaction control statement.
  */
 public abstract class TCLStatement extends SQLStatement {
+    
+    public TCLStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

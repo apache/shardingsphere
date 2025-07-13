@@ -18,18 +18,23 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show binlog events statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowBinlogEventsStatement extends DALStatement {
     
     private final String logName;
     
     private final LimitSegment limit;
+    
+    public MySQLShowBinlogEventsStatement(final DatabaseType databaseType, final String logName, final LimitSegment limit) {
+        super(databaseType);
+        this.logName = logName;
+        this.limit = limit;
+    }
 }

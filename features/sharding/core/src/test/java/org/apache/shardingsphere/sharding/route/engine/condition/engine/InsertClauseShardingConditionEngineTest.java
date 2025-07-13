@@ -79,13 +79,12 @@ class InsertClauseShardingConditionEngineTest {
     @BeforeEach
     void setUp() {
         ShardingSphereDatabase database = mockDatabase();
-        InsertStatement insertStatement = mockInsertStatement();
+        InsertStatement insertStatement = createInsertStatement();
         shardingConditionEngine = new InsertClauseShardingConditionEngine(database, rule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_col_1", "foo_col_3"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));
         when(insertStatementContext.getInsertSelectContext()).thenReturn(null);
-        when(insertStatementContext.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(insertStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
     }
     
@@ -99,9 +98,9 @@ class InsertClauseShardingConditionEngineTest {
         return result;
     }
     
-    private InsertStatement mockInsertStatement() {
-        InsertStatement result = mock(InsertStatement.class);
-        when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
+    private InsertStatement createInsertStatement() {
+        InsertStatement result = new InsertStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         return result;
     }
     

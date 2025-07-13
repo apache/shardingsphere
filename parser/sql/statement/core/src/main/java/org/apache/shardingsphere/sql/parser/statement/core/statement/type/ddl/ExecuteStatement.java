@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * Execute statement.
  */
 public final class ExecuteStatement extends DDLStatement {
+    
+    public ExecuteStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

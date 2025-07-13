@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop profile statement for Oracle.
  */
 public final class OracleDropProfileStatement extends DDLStatement {
+    
+    public OracleDropProfileStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

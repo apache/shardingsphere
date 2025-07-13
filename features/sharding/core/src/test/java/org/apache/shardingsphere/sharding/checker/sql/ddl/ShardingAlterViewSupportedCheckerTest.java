@@ -55,10 +55,10 @@ class ShardingAlterViewSupportedCheckerTest {
     
     @Test
     void assertPreValidateAlterView() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        AlterViewStatement sqlStatement = new AlterViewStatement();
+        AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         sqlStatement.setSelect(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
@@ -72,7 +72,7 @@ class ShardingAlterViewSupportedCheckerTest {
     
     @Test
     void assertPreValidateAlterViewWithShardingTable() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         AlterViewStatement sqlStatement = mock(AlterViewStatement.class);

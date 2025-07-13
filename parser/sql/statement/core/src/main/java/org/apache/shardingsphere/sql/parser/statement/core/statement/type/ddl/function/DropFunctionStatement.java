@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop function statement.
  */
 public final class DropFunctionStatement extends DDLStatement {
+    
+    public DropFunctionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

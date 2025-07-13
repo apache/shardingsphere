@@ -87,7 +87,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         SQLStatementContext sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Collection<SimpleTableSegment> simpleTables = sqlStatementContext.getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : simpleTables) {
-            Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, sqlStatementContext.getDatabaseType(), federationContext.getQueryContext().getSql());
+            Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, sqlStatementContext.getSqlStatement().getDatabaseType(), federationContext.getQueryContext().getSql());
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).setScanImplementor(scanImplementor);
             }
@@ -119,7 +119,7 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
     public void release(final String currentDatabaseName, final String currentSchemaName, final QueryContext queryContext, final SchemaPlus schemaPlus) {
         Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext().getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : simpleTables) {
-            Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, queryContext.getSqlStatementContext().getDatabaseType(), queryContext.getSql());
+            Table table = getTable(currentDatabaseName, currentSchemaName, schemaPlus, each, queryContext.getSqlStatementContext().getSqlStatement().getDatabaseType(), queryContext.getSql());
             if (table instanceof SQLFederationTable) {
                 ((SQLFederationTable) table).clearScanImplementor();
             }
@@ -136,8 +136,8 @@ public final class StandardSQLFederationProcessor implements SQLFederationProces
         Enumerator<Object> enumerator = executablePlan.bind(new ExecutorBindContext(converter, params)).enumerator();
         SelectStatementContext selectStatementContext = (SelectStatementContext) federationContext.getQueryContext().getSqlStatementContext();
         List<Projection> expandProjections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        SQLFederationResultSet result =
-                new SQLFederationResultSet(enumerator, schemaPlus, expandProjections, selectStatementContext.getDatabaseType(), executionPlan.getResultColumnType(), federationContext.getProcessId());
+        SQLFederationResultSet result = new SQLFederationResultSet(
+                enumerator, schemaPlus, expandProjections, selectStatementContext.getSqlStatement().getDatabaseType(), executionPlan.getResultColumnType(), federationContext.getProcessId());
         if (federationContext.isPreview()) {
             federationContext.getPreviewExecutionUnits().addAll(executorContext.getPreviewExecutionUnits());
         }

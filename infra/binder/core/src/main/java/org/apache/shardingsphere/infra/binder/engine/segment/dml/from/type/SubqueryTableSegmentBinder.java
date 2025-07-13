@@ -59,7 +59,7 @@ public final class SubqueryTableSegmentBinder {
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final boolean fromWithSegment) {
         binderContext.getPivotColumnNames().addAll(segment.getPivot().map(PivotSegment::getPivotColumnNames).orElse(Collections.emptyList()));
         SQLStatementBinderContext subqueryBinderContext = new SQLStatementBinderContext(
-                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType(), segment.getSubquery().getSelect());
+                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSubquery().getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SelectStatement boundSubSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
@@ -69,7 +69,7 @@ public final class SubqueryTableSegmentBinder {
         SubqueryTableSegment result = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+                boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         SimpleTableSegmentBinderContext tableBinderContext = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         tableBinderContext.setFromWithSegment(fromWithSegment);
         tableBinderContexts.put(new CaseInsensitiveString(subqueryTableName.getValue()), tableBinderContext);

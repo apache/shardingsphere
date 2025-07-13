@@ -92,8 +92,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
         HintValueContext hintValueContext = connectionContext.getQueryContext().getHintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
         String currentDatabaseName = connectionContext.getQueryContext().getConnectionContext().getCurrentDatabaseName().orElse(null);
-        SQLStatementContext toBePreviewedStatementContext = new SQLBindEngine(
-                metaData, currentDatabaseName, hintValueContext).bind(database.getProtocolType(), toBePreviewedStatement, Collections.emptyList());
+        SQLStatementContext toBePreviewedStatementContext = new SQLBindEngine(metaData, currentDatabaseName, hintValueContext).bind(toBePreviewedStatement, Collections.emptyList());
         QueryContext queryContext = new QueryContext(
                 toBePreviewedStatementContext, toBePreviewedSQL, Collections.emptyList(), hintValueContext, connectionContext.getQueryContext().getConnectionContext(), metaData);
         if (toBePreviewedStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
@@ -107,7 +106,7 @@ public final class PreviewExecutor implements DistSQLQueryExecutor<PreviewStatem
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
         return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     

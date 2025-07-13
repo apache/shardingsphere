@@ -59,7 +59,7 @@ class ShardingResultMergerEngineTest {
     
     @Test
     void assertNewInstanceWithSelectStatement() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -80,7 +80,7 @@ class ShardingResultMergerEngineTest {
     
     @Test
     void assertNewInstanceWithOtherStatement() {
-        InsertStatement insertStatement = new InsertStatement();
+        InsertStatement insertStatement = new InsertStatement(databaseType);
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
@@ -98,7 +98,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new FetchStatement(null, null));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new FetchStatement(databaseType, null, null));
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }
 }

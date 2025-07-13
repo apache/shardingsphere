@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter procedure statement.
  */
 public final class AlterProcedureStatement extends DDLStatement {
+    
+    public AlterProcedureStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -53,6 +53,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(DatabaseTypedSPILoader.class)
 class OpenGaussAdminExecutorFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Mock
     private PostgreSQLAdminExecutorCreator postgresqlAdminExecutorFactory;
     
@@ -66,7 +68,7 @@ class OpenGaussAdminExecutorFactoryTest {
     
     @Test
     void assertNewInstanceWithSQLStatementContext() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new ShowStatement("all"));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new ShowStatement(databaseType, "all"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext);
         assertTrue(actual.isPresent());
     }

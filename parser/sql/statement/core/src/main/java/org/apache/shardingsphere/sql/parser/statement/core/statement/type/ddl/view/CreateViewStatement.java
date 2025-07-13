@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.v
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -37,4 +38,8 @@ public final class CreateViewStatement extends DDLStatement {
     private String viewDefinition;
     
     private SelectStatement select;
+    
+    public CreateViewStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

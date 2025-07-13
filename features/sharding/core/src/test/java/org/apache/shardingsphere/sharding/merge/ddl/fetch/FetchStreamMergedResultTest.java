@@ -97,12 +97,12 @@ class FetchStreamMergedResultTest {
     }
     
     private static FetchStatement createFetchStatement(final boolean containsAllDirectionType) {
-        return new FetchStatement(new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), containsAllDirectionType ? new DirectionSegment(0, 0, DirectionType.ALL) : null);
+        return new FetchStatement(DATABASE_TYPE, new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor")), containsAllDirectionType ? new DirectionSegment(0, 0, DirectionType.ALL) : null);
     }
     
     private static CursorStatementContext mockCursorStatementContext() {
         SelectStatement selectStatement = mockSelectStatement();
-        CursorStatement cursorStatement = new CursorStatement(null, selectStatement);
+        CursorStatement cursorStatement = new CursorStatement(DATABASE_TYPE, null, selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), DATABASE_TYPE, Collections.emptyList(), cursorStatement, "foo_db");

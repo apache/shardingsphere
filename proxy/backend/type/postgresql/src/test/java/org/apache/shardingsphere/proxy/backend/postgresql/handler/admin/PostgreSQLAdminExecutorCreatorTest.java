@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -87,12 +87,12 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new InsertStatement())), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new InsertStatement(databaseType))), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new ShowStatement("client_encoding")));
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new ShowStatement(databaseType, "client_encoding")));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
     }
@@ -142,13 +142,13 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSelectNonPgCatalog() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement());
+        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
         assertThat(new PostgreSQLAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithSetStatement() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new SetStatement(Collections.emptyList()));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new SetStatement(databaseType, Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
@@ -157,14 +157,14 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithResetStatement() {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
-                .create(new CommonSQLStatementContext(databaseType, new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
+                .create(new CommonSQLStatementContext(databaseType, new PostgreSQLResetParameterStatement(databaseType, "client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
     }
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new DeleteStatement());
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new DeleteStatement(databaseType));
         assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }

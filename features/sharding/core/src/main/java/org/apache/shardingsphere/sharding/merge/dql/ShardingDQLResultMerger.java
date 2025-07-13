@@ -82,7 +82,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     private MergedResult build(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                final Map<String, Integer> columnLabelIndexMap, final ShardingSphereDatabase database) throws SQLException {
-        String defaultSchemaName = new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
+        String defaultSchemaName = new DatabaseTypeRegistry(selectStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
         ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName()
                 .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         if (isNeedProcessGroupBy(selectStatementContext)) {
@@ -107,7 +107,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private void setGroupByForDistinctRow(final SelectStatementContext selectStatementContext) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(selectStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(selectStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         for (int index = 1; index <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); index++) {
             OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, dialectDatabaseMetaData.getDefaultNullsOrderType()));
             orderByItem.setIndex(index);

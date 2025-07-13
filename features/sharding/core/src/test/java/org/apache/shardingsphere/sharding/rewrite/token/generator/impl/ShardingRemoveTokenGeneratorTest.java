@@ -52,6 +52,8 @@ import static org.mockito.Mockito.when;
 
 class ShardingRemoveTokenGeneratorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     private final ShardingRemoveTokenGenerator generator = new ShardingRemoveTokenGenerator();
     
     @Test
@@ -79,7 +81,7 @@ class ShardingRemoveTokenGeneratorTest {
     }
     
     private SelectStatementContext createSelectStatementContext() {
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setProjections(createProjectionsSegment());

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Rename user statement for MySQL.
  */
 public final class MySQLRenameUserStatement extends DCLStatement {
+    
+    public MySQLRenameUserStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

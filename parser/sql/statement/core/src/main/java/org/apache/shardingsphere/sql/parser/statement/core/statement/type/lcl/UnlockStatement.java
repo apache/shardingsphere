@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * Unlock statement.
  */
 public final class UnlockStatement extends LCLStatement {
+    
+    public UnlockStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

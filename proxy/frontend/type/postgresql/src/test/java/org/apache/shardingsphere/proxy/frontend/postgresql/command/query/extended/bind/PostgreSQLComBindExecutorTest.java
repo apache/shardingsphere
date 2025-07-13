@@ -99,7 +99,7 @@ class PostgreSQLComBindExecutorTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(
-                "", new CommonSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+                "", new CommonSQLStatementContext(databaseType, new EmptyStatement(databaseType)), new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());
@@ -128,7 +128,7 @@ class PostgreSQLComBindExecutorTest {
         String statementId = "S_1";
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
-                new CommonSQLStatementContext(databaseType, new EmptyStatement()), new HintValueContext(),
+                new CommonSQLStatementContext(databaseType, new EmptyStatement(databaseType)), new HintValueContext(),
                 Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4), Arrays.asList(1, 0));
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         when(bindPacket.getStatementId()).thenReturn(statementId);

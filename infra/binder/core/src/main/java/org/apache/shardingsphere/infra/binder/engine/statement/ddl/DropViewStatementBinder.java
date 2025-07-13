@@ -41,7 +41,7 @@ public final class DropViewStatementBinder implements SQLStatementBinder<DropVie
     }
     
     private DropViewStatement copy(final DropViewStatement sqlStatement, final Collection<SimpleTableSegment> boundViews) {
-        DropViewStatement result = new DropViewStatement();
+        DropViewStatement result = new DropViewStatement(sqlStatement.getDatabaseType());
         result.getViews().addAll(boundViews);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;

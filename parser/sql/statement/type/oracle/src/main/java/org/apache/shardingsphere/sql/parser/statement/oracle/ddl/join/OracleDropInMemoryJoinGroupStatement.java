@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.join;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop in memory join group statement for Oracle.
  */
 public final class OracleDropInMemoryJoinGroupStatement extends DDLStatement {
+    
+    public OracleDropInMemoryJoinGroupStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

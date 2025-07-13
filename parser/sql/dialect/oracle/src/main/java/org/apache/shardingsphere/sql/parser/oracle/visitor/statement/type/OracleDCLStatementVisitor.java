@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterRoleContext;
@@ -47,9 +49,11 @@ import java.util.Collections;
  */
 public final class OracleDCLStatementVisitor extends OracleStatementVisitor implements DCLStatementVisitor {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        GrantStatement result = new GrantStatement(databaseType);
         if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
@@ -58,7 +62,7 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        RevokeStatement result = new RevokeStatement(databaseType);
         if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
@@ -67,36 +71,36 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+        return new CreateUserStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement(Collections.emptyList());
+        return new DropUserStatement(databaseType, Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement(null);
+        return new AlterUserStatement(databaseType, null);
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new CreateRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new AlterRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new DropRoleStatement(databaseType);
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new SetRoleStatement();
+        return new SetRoleStatement(databaseType);
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.t
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
@@ -39,6 +40,10 @@ public final class DropTableStatement extends DDLStatement {
     private boolean ifExists;
     
     private boolean containsCascade;
+    
+    public DropTableStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

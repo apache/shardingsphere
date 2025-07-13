@@ -41,7 +41,7 @@ public final class MySQLOptimizeTableStatementBinder implements SQLStatementBind
     }
     
     private MySQLOptimizeTableStatement copy(final MySQLOptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
-        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement(boundTables);
+        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement(sqlStatement.getDatabaseType(), boundTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

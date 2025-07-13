@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Revert statement for SQLServer.
  */
 public final class SQLServerRevertStatement extends DCLStatement {
+    
+    public SQLServerRevertStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

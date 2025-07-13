@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Set user statement for SQLServer.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SQLServerSetUserStatement extends DCLStatement {
     
     private final UserSegment user;
+    
+    public SQLServerSetUserStatement(final DatabaseType databaseType, final UserSegment user) {
+        super(databaseType);
+        this.user = user;
+    }
 }

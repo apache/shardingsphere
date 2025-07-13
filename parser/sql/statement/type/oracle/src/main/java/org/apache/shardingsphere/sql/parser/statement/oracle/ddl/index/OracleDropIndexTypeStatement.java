@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop index type statement for Oracle.
  */
 public final class OracleDropIndexTypeStatement extends DDLStatement {
+    
+    public OracleDropIndexTypeStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -45,7 +45,7 @@ public final class AlterViewStatementBinder implements SQLStatementBinder<AlterV
     }
     
     private AlterViewStatement copy(final AlterViewStatement sqlStatement, final SimpleTableSegment boundView, final SelectStatement boundSelect, final SimpleTableSegment boundRenameView) {
-        AlterViewStatement result = new AlterViewStatement();
+        AlterViewStatement result = new AlterViewStatement(sqlStatement.getDatabaseType());
         result.setView(boundView);
         result.setSelect(boundSelect);
         result.setRenameView(boundRenameView);
