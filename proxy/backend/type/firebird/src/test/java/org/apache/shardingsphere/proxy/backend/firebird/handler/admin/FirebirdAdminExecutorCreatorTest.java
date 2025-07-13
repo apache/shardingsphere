@@ -49,13 +49,13 @@ class FirebirdAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(databaseType, new InsertStatement(databaseType))), is(Optional.empty()));
+        assertThat(new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(new InsertStatement(databaseType))), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithShowSQLStatement() {
         Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
-                new CommonSQLStatementContext(databaseType, new ShowStatement(databaseType, "server_version")));
+                new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(FirebirdShowVariableExecutor.class));
     }
@@ -69,7 +69,7 @@ class FirebirdAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSetStatement() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(databaseType, new SetStatement(databaseType, Collections.emptyList()));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SetStatement(databaseType, Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(sqlStatementContext, "SET NAMES utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(FirebirdSetVariableAdminExecutor.class));
@@ -77,7 +77,7 @@ class FirebirdAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(databaseType, new DeleteStatement(databaseType));
+        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new DeleteStatement(databaseType));
         assertThat(new FirebirdAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
 }
