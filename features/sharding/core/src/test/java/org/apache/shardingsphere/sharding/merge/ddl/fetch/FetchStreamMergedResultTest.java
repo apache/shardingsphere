@@ -110,6 +110,7 @@ class FetchStreamMergedResultTest {
     
     private static SelectStatement mockSelectStatement() {
         SelectStatement result = mock(SelectStatement.class);
+        when(result.getDatabaseType()).thenReturn(DATABASE_TYPE);
         when(result.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(result.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
         return result;

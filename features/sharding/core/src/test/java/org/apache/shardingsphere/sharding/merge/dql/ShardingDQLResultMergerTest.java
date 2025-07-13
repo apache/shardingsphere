@@ -133,6 +133,7 @@ class ShardingDQLResultMergerTest {
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
+        when(subSelectStatement.getDatabaseType()).thenReturn(oracleDatabaseType);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
@@ -199,6 +200,7 @@ class ShardingDQLResultMergerTest {
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
+        when(subSelectStatement.getDatabaseType()).thenReturn(oracleDatabaseType);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
@@ -271,6 +273,7 @@ class ShardingDQLResultMergerTest {
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
+        when(subSelectStatement.getDatabaseType()).thenReturn(oracleDatabaseType);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
@@ -343,6 +346,7 @@ class ShardingDQLResultMergerTest {
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
+        when(subSelectStatement.getDatabaseType()).thenReturn(oracleDatabaseType);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
@@ -416,6 +420,7 @@ class ShardingDQLResultMergerTest {
         SubqueryTableSegment subqueryTableSegment = mock(SubqueryTableSegment.class);
         SubquerySegment subquerySegment = mock(SubquerySegment.class);
         SelectStatement subSelectStatement = mock(SelectStatement.class);
+        when(subSelectStatement.getDatabaseType()).thenReturn(oracleDatabaseType);
         ProjectionsSegment subProjectionsSegment = mock(ProjectionsSegment.class);
         when(subSelectStatement.getProjections()).thenReturn(subProjectionsSegment);
         when(subquerySegment.getSelect()).thenReturn(subSelectStatement);
