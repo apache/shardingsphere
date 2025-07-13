@@ -38,6 +38,5 @@
             <artifactId>jaybird</artifactId>
             <scope>compile</scope>
         </dependency>
-        
     </dependencies>
 </project>
