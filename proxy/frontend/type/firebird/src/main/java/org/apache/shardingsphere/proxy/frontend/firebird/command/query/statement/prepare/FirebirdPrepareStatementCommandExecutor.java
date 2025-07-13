@@ -76,10 +76,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.De
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
@@ -110,7 +110,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(),
-                connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(databaseType, sqlStatement, Collections.emptyList());
+                connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement, Collections.emptyList());
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet
                 .getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry()
@@ -182,7 +182,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (statement instanceof DDLStatement) {
             return FirebirdSQLInfoReturnValue.DDL;
         }
-        if (statement instanceof StartTransactionStatement) {
+        if (statement instanceof BeginTransactionStatement) {
             return FirebirdSQLInfoReturnValue.START_TRANS;
         }
         if (statement instanceof CommitStatement) {
