@@ -122,6 +122,7 @@ class TablelessRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForDataSourceBroadcastRoute() {
         DALStatement sqlStatement = mock(DALStatement.class);
+        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         DialectDALStatementBroadcastRouteDecider dialectDALStatementBroadcastRouteDecider = mock(DialectDALStatementBroadcastRouteDecider.class);
         when(dialectDALStatementBroadcastRouteDecider.isDataSourceBroadcastRoute(sqlStatement)).thenReturn(true);
