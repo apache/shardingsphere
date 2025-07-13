@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
@@ -39,8 +37,6 @@ import java.util.Optional;
  */
 public final class MySQLShowColumnsStatementBinder implements SQLStatementBinder<MySQLShowColumnsStatement> {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
     @Override
     public MySQLShowColumnsStatement bind(final MySQLShowColumnsStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
@@ -50,7 +46,7 @@ public final class MySQLShowColumnsStatementBinder implements SQLStatementBinder
     }
     
     private MySQLShowColumnsStatement copy(final MySQLShowColumnsStatement sqlStatement, final SimpleTableSegment boundTable, final ShowFilterSegment boundFilter) {
-        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(databaseType, boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
+        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(sqlStatement.getDatabaseType(), boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
