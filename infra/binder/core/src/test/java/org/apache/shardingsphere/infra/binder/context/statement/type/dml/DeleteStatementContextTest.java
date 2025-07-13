@@ -53,7 +53,7 @@ class DeleteStatementContextTest {
         tableSegment.setLeft(new SimpleTableSegment(createTableNameSegment("foo_tbl")));
         tableSegment.setRight(new SimpleTableSegment(createTableNameSegment("bar_tbl")));
         deleteStatement.setTable(tableSegment);
-        DeleteStatementContext actual = new DeleteStatementContext(mock(), deleteStatement);
+        DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

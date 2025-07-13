@@ -256,12 +256,12 @@ class ProxySQLExecutorTest {
     private CommonSQLStatementContext createCreateTableStatementContext(final DatabaseType databaseType) {
         CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
     private SQLStatementContext createTruncateStatementContext(final DatabaseType databaseType) {
         TruncateStatement sqlStatement = new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
     private CursorStatementContext mockCursorStatementContext() {
@@ -276,6 +276,6 @@ class ProxySQLExecutorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new InsertStatementContext(databaseType, sqlStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
+        return new InsertStatementContext(sqlStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
     }
 }

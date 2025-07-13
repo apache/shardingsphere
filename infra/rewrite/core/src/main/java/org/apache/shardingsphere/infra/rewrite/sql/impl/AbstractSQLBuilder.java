@@ -47,8 +47,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         result.append(sql, 0, sqlTokens.get(0).getStartIndex());
         Optional<SQLToken> previousToken = Optional.empty();
         for (SQLToken each : sqlTokens) {
-            if (isContainsAttachableToken(each, previousToken.orElse(null))
-                    || each.getStartIndex() > previousToken.map(SQLToken::getStopIndex).orElse(0)) {
+            if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousToken.map(SQLToken::getStopIndex).orElse(0)) {
                 appendRewriteSQL(each, result);
                 previousToken = Optional.of(each);
             }

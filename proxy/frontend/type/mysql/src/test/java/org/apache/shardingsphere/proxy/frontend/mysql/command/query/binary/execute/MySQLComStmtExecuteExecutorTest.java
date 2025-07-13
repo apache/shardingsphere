@@ -118,7 +118,7 @@ class MySQLComStmtExecuteExecutorTest {
                 .thenReturn(new MySQLServerPreparedStatement("UPDATE tbl SET col=1 WHERE id = ?", updateStatementContext, new HintValueContext(), Collections.emptyList()));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
                 .thenReturn(
-                        new MySQLServerPreparedStatement("COMMIT", new CommonSQLStatementContext(databaseType, new CommitStatement(databaseType)), new HintValueContext(), Collections.emptyList()));
+                        new MySQLServerPreparedStatement("COMMIT", new CommonSQLStatementContext(new CommitStatement(databaseType)), new HintValueContext(), Collections.emptyList()));
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData());

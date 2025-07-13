@@ -68,7 +68,7 @@ class ProcessEngineTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ProcessEngine().executeSQL(executionGroupContext,
-                new QueryContext(new UpdateStatementContext(mock(), getSQLStatement()), null, null, new HintValueContext(), connectionContext, metaData));
+                new QueryContext(new UpdateStatementContext(getSQLStatement()), null, null, new HintValueContext(), connectionContext, metaData));
         verify(processRegistry).add(any());
     }
     

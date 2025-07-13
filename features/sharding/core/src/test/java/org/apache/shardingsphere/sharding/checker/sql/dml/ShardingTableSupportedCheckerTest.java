@@ -53,12 +53,12 @@ class ShardingTableSupportedCheckerTest {
     
     @Test
     void assertCheckWithoutShardingTable() {
-        assertDoesNotThrow(() -> new ShardingTableSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
+        assertDoesNotThrow(() -> new ShardingTableSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWithShardingTable() {
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingTableSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingTableSupportedChecker().check(rule, mock(), mock(), new CommonSQLStatementContext(sqlStatement)));
     }
 }

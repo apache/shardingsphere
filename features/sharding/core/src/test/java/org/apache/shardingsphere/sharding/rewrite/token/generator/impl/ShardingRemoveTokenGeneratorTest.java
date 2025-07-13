@@ -87,9 +87,8 @@ class ShardingRemoveTokenGeneratorTest {
         selectStatement.setProjections(createProjectionsSegment());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         return new SelectStatementContext(
-                databaseType, selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     private ProjectionsSegment createProjectionsSegment() {

@@ -57,7 +57,7 @@ public final class SQLBindEngine {
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
         SQLStatement boundSQLStatement = isNeedBind() ? bind(sqlStatement) : sqlStatement;
-        return SQLStatementContextFactory.newInstance(metaData, sqlStatement.getDatabaseType(), boundSQLStatement, params, currentDatabaseName);
+        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, params, currentDatabaseName);
     }
     
     private SQLStatement bind(final SQLStatement sqlStatement) {

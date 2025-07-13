@@ -65,7 +65,7 @@ class ShardingAlterViewSupportedCheckerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, databaseType, Collections.emptyList(), sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, Collections.emptyList(), sqlStatement, "foo_db");
         when(rule.isShardingTable("t_order")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
@@ -82,7 +82,7 @@ class ShardingAlterViewSupportedCheckerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, databaseType, Collections.emptyList(), sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(metaData, Collections.emptyList(), sqlStatement, "foo_db");
         when(rule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(EngagedViewException.class, () -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
@@ -92,7 +92,7 @@ class ShardingAlterViewSupportedCheckerTest {
         AlterViewStatement sqlStatement = mock(AlterViewStatement.class);
         when(sqlStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_view"))));
         when(sqlStatement.getRenameView()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new")))));
-        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(mock(ShardingSphereMetaData.class), databaseType, Collections.emptyList(), sqlStatement, "foo_db");
+        AlterViewStatementContext sqlStatementContext = new AlterViewStatementContext(mock(ShardingSphereMetaData.class), Collections.emptyList(), sqlStatement, "foo_db");
         assertDoesNotThrow(() -> new ShardingAlterViewSupportedChecker().check(rule, mock(), mock(), sqlStatementContext));
     }
 }
