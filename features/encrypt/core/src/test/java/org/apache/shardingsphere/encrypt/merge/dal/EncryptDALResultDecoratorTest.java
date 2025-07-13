@@ -90,7 +90,7 @@ class EncryptDALResultDecoratorTest {
     
     private SQLStatementContext mockTableInfoInResultSetAvailableStatementContext() {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseType()).thenReturn(databaseType);
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(1, 7, new IdentifierValue("foo_tbl")));
         when(result.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(simpleTableSegment));
         SQLStatement sqlStatement = mock(SQLStatement.class);

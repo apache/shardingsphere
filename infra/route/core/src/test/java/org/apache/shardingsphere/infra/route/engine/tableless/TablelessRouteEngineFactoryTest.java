@@ -47,6 +47,7 @@ import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -68,7 +69,7 @@ class TablelessRouteEngineFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SQLStatementContext sqlStatementContext;
     
     @Mock
@@ -79,7 +80,7 @@ class TablelessRouteEngineFactoryTest {
     
     @BeforeEach
     void setUp() {
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
         when(tablesContext.getTableNames()).thenReturn(new LinkedList<>());
     }
@@ -121,6 +122,7 @@ class TablelessRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForDataSourceBroadcastRoute() {
         DALStatement sqlStatement = mock(DALStatement.class);
+        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         DialectDALStatementBroadcastRouteDecider dialectDALStatementBroadcastRouteDecider = mock(DialectDALStatementBroadcastRouteDecider.class);
         when(dialectDALStatementBroadcastRouteDecider.isDataSourceBroadcastRoute(sqlStatement)).thenReturn(true);
@@ -134,6 +136,7 @@ class TablelessRouteEngineFactoryTest {
     @Test
     void assertNewInstanceForInstanceBroadcastRoute() {
         DALStatement sqlStatement = mock(DALStatement.class);
+        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         DialectDALStatementBroadcastRouteDecider dialectDALStatementBroadcastRouteDecider = mock(DialectDALStatementBroadcastRouteDecider.class);
         when(dialectDALStatementBroadcastRouteDecider.isInstanceBroadcastRoute(sqlStatement)).thenReturn(true);

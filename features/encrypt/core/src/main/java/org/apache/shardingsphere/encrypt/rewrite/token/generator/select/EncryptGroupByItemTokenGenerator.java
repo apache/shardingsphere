@@ -77,7 +77,7 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
         for (OrderByItem each : getGroupByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                generateSQLToken(columnSegment, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
+                generateSQLToken(columnSegment, sqlStatementContext.getSqlStatement().getDatabaseType()).ifPresent(result::add);
             }
         }
         return result;

@@ -53,7 +53,7 @@ class GenericSQLRewriteEngineTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         QueryContext queryContext = mockQueryContext(sqlStatementContext);
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, database, mock(RuleMetaData.class)).rewrite(new SQLRewriteContext(database, queryContext), queryContext);
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
@@ -76,7 +76,7 @@ class GenericSQLRewriteEngineTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         QueryContext queryContext = mockQueryContext(sqlStatementContext);
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, database, mock(RuleMetaData.class)).rewrite(new SQLRewriteContext(database, queryContext), queryContext);
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));

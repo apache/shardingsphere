@@ -67,7 +67,7 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowShowTablesStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowTablesStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowTablesStatement(databaseType, null, null, false));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingLogicTablesMergedResult.class));
@@ -75,7 +75,7 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowTableStatusStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowTableStatusStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowTableStatusStatement(databaseType, null, null));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingShowTableStatusMergedResult.class));
@@ -83,7 +83,7 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowIndexStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowIndexStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowIndexStatement(databaseType, null, null));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingShowIndexMergedResult.class));
@@ -91,17 +91,16 @@ class MySQLShardingDALResultMergerTest {
     
     @Test
     void assertMergeForShowCreateTableStatement() throws SQLException {
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(mock(MySQLShowCreateTableStatement.class));
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(new MySQLShowCreateTableStatement(databaseType, null));
         Optional<MergedResult> actual = resultMerger.merge("foo_db", mock(), sqlStatementContext, mock(), queryResults);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLShardingShowCreateTableMergedResult.class));
     }
     
-    private SQLStatementContext mockSQLStatementContext(final DALStatement dalStatement) {
+    private SQLStatementContext mockSQLStatementContext(final DALStatement sqlStatement) {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(dalStatement);
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         when(result.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
-        when(result.getDatabaseType()).thenReturn(databaseType);
         return result;
     }
 }
