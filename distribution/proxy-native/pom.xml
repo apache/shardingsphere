@@ -453,6 +453,17 @@
         </profile>
         
         <profile>
+            <id>mode-repo-memory</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>mode-repo-jdbc</id>
             <dependencies>
                 <dependency>
