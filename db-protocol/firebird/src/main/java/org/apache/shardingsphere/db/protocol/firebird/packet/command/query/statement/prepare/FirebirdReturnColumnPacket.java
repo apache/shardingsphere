@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -28,17 +26,15 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Firebird allocate statement packet.
  */
-@Getter
-@Setter
 @RequiredArgsConstructor
 public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
-    private final List<FirebirdSQLInfoPacketType> requestedItems;
+    private final Collection<FirebirdSQLInfoPacketType> requestedItems;
     
     private final int index;
     
