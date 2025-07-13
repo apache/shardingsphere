@@ -213,7 +213,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @return ByteBuf consisting of a variable number of bytes
      */
     public String readString() {
-        return this.readBuffer().toString(charset);
+        return readBuffer().toString(charset);
     }
     
     /**
