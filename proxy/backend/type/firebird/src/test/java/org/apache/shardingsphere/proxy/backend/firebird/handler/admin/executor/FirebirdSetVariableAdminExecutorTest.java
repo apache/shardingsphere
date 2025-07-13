@@ -43,7 +43,7 @@ class FirebirdSetVariableAdminExecutorTest {
     
     @Test
     void assertExecute() {
-        SetStatement setStatement = new SetStatement(Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "key"), "value")));
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "key"), "value")));
         FirebirdSetVariableAdminExecutor executor = new FirebirdSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
