@@ -42,10 +42,9 @@ Introduce Maven dependencies and exclude the outdated Maven dependency of `org.a
 </project>
 ```
 
-Affected by Calcite, `commons-lang:commons-lang` and `org.apache.commons:commons-pool2` used by ShardingSphere JDBC have dependency conflicts with Seata Client.
-Users need to consider whether to resolve dependency conflicts based on actual scenarios. 
-If dependency conflicts are not resolved, 
-build tools such as Maven will randomly use a version of the conflicting dependency in the classpath.
+Affected by Calcite, `commons-lang:commons-lang` used by ShardingSphere JDBC has a dependency conflict with Seata Client.
+Users need to consider whether to resolve the dependency conflict based on the actual situation. 
+If the dependency conflict is not resolved, Maven and other build tools will randomly use a version of the conflicting dependency in the classpath.
 
 When using ShardingSphere's Seata integration module, 
 the database instance connected to ShardingSphere should implement both ShardingSphere's dialect parsing support and Seata AT mode's dialect parsing support.

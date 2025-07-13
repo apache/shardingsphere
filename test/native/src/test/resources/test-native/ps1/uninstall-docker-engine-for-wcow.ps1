@@ -176,10 +176,10 @@ public static extern int HcsDestroyLayer(string layerPath);
             }
             return $results
         } -ArgumentList @(,$layerDirs)
-        if ($job | Wait-Job -Timeout 120)
+        if (Wait-Job $job -Timeout 120)
         {
-            $results = $job | Receive-Job
-            $job | Remove-Job
+            $results = Receive-Job $job
+            Remove-Job $job
         }
         else
         {

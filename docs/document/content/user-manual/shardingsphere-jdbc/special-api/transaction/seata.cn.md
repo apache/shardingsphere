@@ -41,7 +41,7 @@ ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.3.0` 或更高�
 </project>
 ```
 
-受 Calcite 的影响，ShardingSphere JDBC 使用的 `commons-lang:commons-lang` 和 `org.apache.commons:commons-pool2` 与 Seata Client 存在依赖冲突，
+受 Calcite 的影响，ShardingSphere JDBC 使用的 `commons-lang:commons-lang` 与 Seata Client 存在依赖冲突，
 需用户根据实际情景考虑是否需要解决依赖冲突。如果不解决依赖冲突，Maven 等构建工具会在 classpath 随机使用一个冲突依赖的版本。
 
 使用 ShardingSphere 的 Seata 集成模块时，ShardingSphere 连接的数据库实例应同时实现 ShardingSphere 的方言解析支持与 Seata AT 模式的方言解析支持。
