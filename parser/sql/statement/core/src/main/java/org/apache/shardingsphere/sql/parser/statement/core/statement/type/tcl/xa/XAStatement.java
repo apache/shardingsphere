@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TC
  */
 public abstract class XAStatement extends TCLStatement {
     
-    public XAStatement(final DatabaseType databaseType) {
+    protected XAStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }
