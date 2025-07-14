@@ -24,8 +24,9 @@ import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenti
 import org.firebirdsql.util.ByteArrayHelper;
 
 /**
- * Legacy authenticator for Firebird.
- * @see <a href=https://github.com/FirebirdSQL/jaybird/blob/Branch_5_0/src/main/org/firebirdsql/gds/ng/wire/auth/legacy/LegacyAuthenticationPlugin.java>Jaybird implementation</a>
+ * SRP authenticator for Firebird.
+ * 
+ * @see <a href=https://github.com/FirebirdSQL/jaybird/blob/Branch_5_0/src/main/org/firebirdsql/gds/ng/wire/auth/srp/SrpAuthenticationPlugin.java>Jaybird implementation</a>
  */
 public final class FirebirdSRPAuthenticator implements FirebirdAuthenticator {
     

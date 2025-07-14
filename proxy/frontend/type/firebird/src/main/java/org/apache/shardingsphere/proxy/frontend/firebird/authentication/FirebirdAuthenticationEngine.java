@@ -131,9 +131,9 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     
     private String getPluginName(final AuthorityRule rule, final ShardingSphereUser user) {
         String pluginName = rule.getAuthenticatorType(user);
-        return !pluginName.isEmpty() ? pluginName
-                :
+        return pluginName.isEmpty()
                 // default plugin name
-                Arrays.stream(FirebirdAuthenticatorType.class.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new).name();
+                ? Arrays.stream(FirebirdAuthenticatorType.class.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new).name()
+                : pluginName;
     }
 }
