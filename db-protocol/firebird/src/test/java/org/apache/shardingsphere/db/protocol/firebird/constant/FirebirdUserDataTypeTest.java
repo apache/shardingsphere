@@ -19,14 +19,15 @@ package org.apache.shardingsphere.db.protocol.firebird.constant;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdUserDataTypeTest {
     
     @Test
     void assertValueOf() {
-        assertEquals(FirebirdUserDataType.CNCT_USER, FirebirdUserDataType.valueOf(1));
+        assertThat(FirebirdUserDataType.valueOf(1), is(FirebirdUserDataType.CNCT_USER));
         assertThrows(NullPointerException.class, () -> FirebirdUserDataType.valueOf(999));
     }
 }

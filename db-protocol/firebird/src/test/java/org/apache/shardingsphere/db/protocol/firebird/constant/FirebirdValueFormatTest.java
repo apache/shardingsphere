@@ -20,15 +20,16 @@ package org.apache.shardingsphere.db.protocol.firebird.constant;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdValueFormatTest {
     
     @Test
     void assertValueOf() {
-        assertEquals(FirebirdValueFormat.TEXT, FirebirdValueFormat.valueOf(0));
-        assertEquals(FirebirdValueFormat.BINARY, FirebirdValueFormat.valueOf(1));
+        assertThat(FirebirdValueFormat.valueOf(0), is(FirebirdValueFormat.TEXT));
+        assertThat(FirebirdValueFormat.valueOf(1), is(FirebirdValueFormat.BINARY));
         assertThrows(UnsupportedSQLOperationException.class, () -> FirebirdValueFormat.valueOf(999));
     }
 }
