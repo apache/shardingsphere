@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public abstract class DMLStatement extends SQLStatement {
     
-    public DMLStatement(final DatabaseType databaseType) {
+    protected DMLStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }

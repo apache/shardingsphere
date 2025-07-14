@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public abstract class DALStatement extends SQLStatement {
     
-    public DALStatement(final DatabaseType databaseType) {
+    protected DALStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }
