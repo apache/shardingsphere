@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Firebird SQL info return value.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdSQLInfoReturnValue {
