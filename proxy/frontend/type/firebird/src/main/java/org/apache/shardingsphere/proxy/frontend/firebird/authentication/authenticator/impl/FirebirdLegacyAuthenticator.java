@@ -24,6 +24,7 @@ import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
 
 /**
  * Legacy authenticator for Firebird.
+ * 
  * @see <a href=https://github.com/FirebirdSQL/jaybird/blob/Branch_5_0/src/main/org/firebirdsql/gds/ng/wire/auth/legacy/LegacyAuthenticationPlugin.java>Jaybird implementation</a>
  */
 public final class FirebirdLegacyAuthenticator implements FirebirdAuthenticator {
