@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainContext;
@@ -32,11 +31,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Ex
  */
 public final class SQLServerDALStatementVisitor extends SQLServerStatementVisitor implements DALStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    public SQLServerDALStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        return new ExplainStatement(databaseType, (SQLStatement) visit(ctx.explainableStatement()));
+        return new ExplainStatement(getDatabaseType(), (SQLStatement) visit(ctx.explainableStatement()));
     }
     
     @Override

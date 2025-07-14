@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitContext;
@@ -34,20 +33,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Se
  */
 public final class SQL92TCLStatementVisitor extends SQL92StatementVisitor implements TCLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQL92");
+    public SQL92TCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(databaseType);
+        return new SetTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement(databaseType);
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement(databaseType);
+        return new RollbackStatement(getDatabaseType());
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AccountLockPasswordExpireOptionContext;
@@ -121,11 +120,13 @@ import java.util.stream.Collectors;
  */
 public final class DorisDCLStatementVisitor extends DorisStatementVisitor implements DCLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Doris");
+    public DorisDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeTo(final GrantRoleOrPrivilegeToContext ctx) {
-        MySQLGrantStatement result = new MySQLGrantStatement(databaseType);
+        MySQLGrantStatement result = new MySQLGrantStatement(getDatabaseType());
         fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         for (UsernameContext each : ctx.userList().username()) {
             result.getUsers().add((UserSegment) visit(each));
@@ -135,7 +136,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeOnTo(final GrantRoleOrPrivilegeOnToContext ctx) {
-        MySQLGrantStatement result = new MySQLGrantStatement(databaseType);
+        MySQLGrantStatement result = new MySQLGrantStatement(getDatabaseType());
         if (null == ctx.roleOrPrivileges()) {
             result.setAllPrivileges(true);
         } else {
@@ -153,7 +154,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitGrantProxy(final GrantProxyContext ctx) {
-        MySQLGrantStatement result = new MySQLGrantStatement(databaseType);
+        MySQLGrantStatement result = new MySQLGrantStatement(getDatabaseType());
         PrivilegeSegment privilege = new PrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), "GRANT");
         result.getRoleOrPrivileges().add(new RoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
         for (UsernameContext each : ctx.userList().username()) {
@@ -419,7 +420,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeFrom(final RevokeFromContext ctx) {
-        MySQLRevokeStatement result = new MySQLRevokeStatement(databaseType);
+        MySQLRevokeStatement result = new MySQLRevokeStatement(getDatabaseType());
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -433,7 +434,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeOnFrom(final RevokeOnFromContext ctx) {
-        MySQLRevokeStatement result = new MySQLRevokeStatement(databaseType);
+        MySQLRevokeStatement result = new MySQLRevokeStatement(getDatabaseType());
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -454,7 +455,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        MySQLCreateUserStatement result = new MySQLCreateUserStatement(databaseType);
+        MySQLCreateUserStatement result = new MySQLCreateUserStatement(getDatabaseType());
         for (CreateUserEntryContext each : ctx.createUserList().createUserEntry()) {
             result.getUsers().add((UserSegment) visit(each));
         }
@@ -709,41 +710,41 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement(databaseType, ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
+        return new DropUserStatement(getDatabaseType(), ctx.username().stream().map(UsernameContext::getText).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement(databaseType, null);
+        return new AlterUserStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitRenameUser(final RenameUserContext ctx) {
-        return new MySQLRenameUserStatement(databaseType);
+        return new MySQLRenameUserStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement(databaseType);
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement(databaseType);
+        return new DropRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSetDefaultRole(final SetDefaultRoleContext ctx) {
-        return new MySQLSetDefaultRoleStatement(databaseType);
+        return new MySQLSetDefaultRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new SetRoleStatement(databaseType);
+        return new SetRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSetPassword(final SetPasswordContext ctx) {
-        return new MySQLSetPasswordStatement(databaseType);
+        return new MySQLSetPasswordStatement(getDatabaseType());
     }
 }
