@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockContext;
@@ -34,15 +33,17 @@ import java.util.Collections;
  */
 public final class OracleLCLStatementVisitor extends OracleStatementVisitor implements LCLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    public OracleLCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new SetConstraintsStatement(databaseType);
+        return new SetConstraintsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(databaseType, Collections.emptyList());
+        return new LockStatement(getDatabaseType(), Collections.emptyList());
     }
 }

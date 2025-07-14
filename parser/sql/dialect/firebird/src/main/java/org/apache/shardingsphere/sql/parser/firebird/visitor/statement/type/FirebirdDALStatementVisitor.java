@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 
@@ -24,4 +25,8 @@ import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdS
  * DAL statement visitor for Firebird.
  */
 public final class FirebirdDALStatementVisitor extends FirebirdStatementVisitor implements DALStatementVisitor {
+    
+    public FirebirdDALStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
@@ -43,36 +42,38 @@ import java.util.Collections;
  */
 public final class OracleTCLStatementVisitor extends OracleStatementVisitor implements TCLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    public OracleTCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(databaseType);
+        return new SetTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement(databaseType);
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return null == ctx.savepointClause().savepointName() ? new RollbackStatement(databaseType)
-                : new RollbackStatement(databaseType, ((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
+        return null == ctx.savepointClause().savepointName() ? new RollbackStatement(getDatabaseType())
+                : new RollbackStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(databaseType, ((IdentifierValue) visit(ctx.savepointName())).getValue());
+        return new SavepointStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new SetConstraintsStatement(databaseType);
+        return new SetConstraintsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(databaseType, Collections.emptyList());
+        return new LockStatement(getDatabaseType(), Collections.emptyList());
     }
 }

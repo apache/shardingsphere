@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateRoleContext;
@@ -37,11 +36,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.us
  */
 public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor implements DCLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    public FirebirdDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement(databaseType);
+        GrantStatement result = new GrantStatement(getDatabaseType());
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -50,7 +51,7 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement(databaseType);
+        RevokeStatement result = new RevokeStatement(getDatabaseType());
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -59,11 +60,11 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement(databaseType);
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement(databaseType);
+        return new CreateUserStatement(getDatabaseType());
     }
 }

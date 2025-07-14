@@ -201,11 +201,13 @@ import java.util.stream.Collectors;
  */
 public final class OracleDMLStatementVisitor extends OracleStatementVisitor implements DMLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    public OracleDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement result = new UpdateStatement(getDatabaseType());
         result.setTable((TableSegment) visit(ctx.updateSpecification()));
         if (null != ctx.alias()) {
             result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
@@ -335,7 +337,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitInsertMultiTable(final InsertMultiTableContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         result.setMultiTableInsertType(null != ctx.conditionalInsertClause() && null != ctx.conditionalInsertClause().FIRST() ? MultiTableInsertType.FIRST : MultiTableInsertType.ALL);
         List<MultiTableElementContext> multiTableElementContexts = ctx.multiTableElement();
         if (null != multiTableElementContexts && !multiTableElementContexts.isEmpty()) {
@@ -373,7 +375,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
     }
@@ -381,7 +383,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause()));
         } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
@@ -401,7 +403,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
+        DeleteStatement result = new DeleteStatement(getDatabaseType());
         result.setTable((TableSegment) visit(ctx.deleteSpecification()));
         if (null != ctx.alias()) {
             result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
@@ -429,7 +431,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public SelectStatement visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
         // TODO Visit selectIntoClause, bulkCollectIntoClause
         result.setFrom((TableSegment) visit(ctx.fromClauseList()));
@@ -586,7 +588,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitSelectSubquery(final SelectSubqueryContext ctx) {
         SelectStatement result;
         if (null != ctx.combineType()) {
-            result = new SelectStatement(databaseType);
+            result = new SelectStatement(getDatabaseType());
             SelectStatement left = (SelectStatement) visit(ctx.selectSubquery(0));
             result.setProjections(left.getProjections());
             left.getFrom().ifPresent(result::setFrom);
@@ -627,7 +629,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
         if (null != ctx.withClause()) {
             result.setWith((WithSegment) visit(ctx.withClause()));
@@ -1299,7 +1301,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(databaseType);
+        MergeStatement result = new MergeStatement(getDatabaseType());
         result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.usingClause().expr().start.getStartIndex(), ctx.usingClause().expr().stop.getStopIndex(),
@@ -1325,7 +1327,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.mergeInsertColumn()) {
             result.setInsertColumns((InsertColumnsSegment) visit(ctx.mergeInsertColumn()));
         }
@@ -1414,7 +1416,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement result = new UpdateStatement(getDatabaseType());
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
