@@ -318,7 +318,11 @@ distinct
 specialFunction
     : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
     | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
-    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction
+    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction | ncharFunction
+    ;
+
+ncharFunction
+    : NCHAR LP_ expr RP_
     ;
 
 freetextTableFunction

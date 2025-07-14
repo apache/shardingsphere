@@ -243,6 +243,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NcharFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -729,7 +730,17 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.freetextTableFunction()) {
             return visit(ctx.freetextTableFunction());
         }
+        if (null != ctx.ncharFunction()) {
+            return visit(ctx.ncharFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public final ASTNode visitNcharFunction(final NcharFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.NCHAR().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        return result;
     }
     
     @Override
@@ -968,8 +979,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override

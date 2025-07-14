@@ -9181,7 +9181,11 @@
                                             </function>
                                         </parameter>
                                         <parameter>
-                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396" />
+                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396">
+                                                <parameter>
+                                                    <literal-expression value="10" start-index="394" stop-index="395" />
+                                                </parameter>
+                                            </function>
                                         </parameter>
                                         <parameter>
                                             <literal-expression value=" " start-index="399" stop-index="401" />
@@ -9189,7 +9193,11 @@
                                     </function>
                                 </parameter>
                                 <parameter>
-                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413" />
+                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413">
+                                        <parameter>
+                                            <literal-expression value="13" start-index="411" stop-index="412" />
+                                        </parameter>
+                                    </function>
                                 </parameter>
                                 <parameter>
                                     <literal-expression value=" " start-index="416" stop-index="418" />
@@ -10608,5 +10616,19 @@
         <order-by>
             <column-item name="RANK" start-index="274" stop-index="277" order-direction="DESC" />
         </order-by>
+    </select>
+
+    <select sql-case-id="select_nchar_function">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="NCHAR(143743)" start-index="7" stop-index="19">
+                <expr>
+                    <function function-name="NCHAR" start-index="7" stop-index="19" text="NCHAR(143743)">
+                        <parameter>
+                            <literal-expression value="143743" start-index="13" stop-index="18" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>
