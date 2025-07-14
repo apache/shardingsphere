@@ -32,8 +32,8 @@ import java.util.List;
 /**
  * Database info return data packet for Firebird.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     private static final int SQL_DIALECT = 3;

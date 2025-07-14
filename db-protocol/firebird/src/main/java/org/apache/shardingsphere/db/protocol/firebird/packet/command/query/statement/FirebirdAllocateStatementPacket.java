@@ -34,11 +34,6 @@ public final class FirebirdAllocateStatementPacket extends FirebirdCommandPacket
         databaseId = payload.readInt4();
     }
     
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
-        
-    }
-    
     /**
      * Get length of packet.
      *
@@ -47,5 +42,9 @@ public final class FirebirdAllocateStatementPacket extends FirebirdCommandPacket
      */
     public static int getLength(final FirebirdPacketPayload payload) {
         return 8;
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
 }
