@@ -10623,4 +10623,21 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_string_left">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="LEFT('abcdefg',2)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="LEFT" start-index="7" stop-index="23" text="LEFT('abcdefg',2)">
+                        <parameter>
+                            <literal-expression value="abcdefg" start-index="12" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="22" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
