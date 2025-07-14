@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -64,32 +63,26 @@ class AnalyzeTableStatementBinderTest {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
         final SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
-        final AnalyzeTableStatement original = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, databaseType, original);
+        final AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
         
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
         
-        Collection<SimpleTableSegment> actualTables = actual.getAttributes()
-                .findAttribute(TableSQLStatementAttribute.class)
-                .map(TableSQLStatementAttribute::getTables)
-                .orElse(Collections.emptyList());
+        Collection<SimpleTableSegment> actualTables = actual.getTables();
         assertThat(actualTables.size(), is(1));
         assertThat(actualTables.iterator().next().getTableName().getIdentifier().getValue(), is("DUAL"));
     }
     
     @Test
     void assertBindWithEmptyTables() {
-        AnalyzeTableStatement original = new AnalyzeTableStatement(Collections.emptyList());
+        AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, databaseType, original);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
         
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
         
-        Collection<SimpleTableSegment> actualTables = actual.getAttributes()
-                .findAttribute(TableSQLStatementAttribute.class)
-                .map(TableSQLStatementAttribute::getTables)
-                .orElse(Collections.emptyList());
+        Collection<SimpleTableSegment> actualTables = actual.getTables();
         assertThat(actualTables.size(), is(0));
     }
 }

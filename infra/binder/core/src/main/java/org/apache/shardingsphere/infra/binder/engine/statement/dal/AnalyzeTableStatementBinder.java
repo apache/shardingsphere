@@ -47,7 +47,7 @@ public final class AnalyzeTableStatementBinder implements SQLStatementBinder<Ana
     }
     
     private AnalyzeTableStatement copy(final AnalyzeTableStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
-        AnalyzeTableStatement result = new AnalyzeTableStatement(tables);
+        AnalyzeTableStatement result = new AnalyzeTableStatement(sqlStatement.getDatabaseType(), tables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

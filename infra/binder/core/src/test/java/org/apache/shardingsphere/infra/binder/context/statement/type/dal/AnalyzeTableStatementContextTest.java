@@ -38,27 +38,27 @@ class AnalyzeTableStatementContextTest {
     @Test
     void assertNewInstance() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")));
-        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
-        CommonSQLStatementContext actual = new CommonSQLStatementContext(databaseType, analyzeTableStatement);
+        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
+        CommonSQLStatementContext actual = new CommonSQLStatementContext(analyzeTableStatement);
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
-        assertThat(actual.getDatabaseType(), is(databaseType));
+        assertThat(((AnalyzeTableStatement) actual.getSqlStatement()).getDatabaseType(), is(databaseType));
         assertThat(actual.getTablesContext().getTableNames().size(), is(1));
         assertThat(actual.getTablesContext().getTableNames().iterator().next(), is("foo_table"));
     }
     
     @Test
     void assertNewInstanceWithEmptyTables() {
-        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(Collections.emptyList());
-        CommonSQLStatementContext actual = new CommonSQLStatementContext(databaseType, analyzeTableStatement);
+        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(databaseType, Collections.emptyList());
+        CommonSQLStatementContext actual = new CommonSQLStatementContext(analyzeTableStatement);
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
-        assertThat(actual.getDatabaseType(), is(databaseType));
+        assertThat(((AnalyzeTableStatement) actual.getSqlStatement()).getDatabaseType(), is(databaseType));
         assertThat(actual.getTablesContext().getTableNames().size(), is(0));
     }
     
     @Test
     void assertGetTablesDirectly() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")));
-        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
+        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
         assertThat(analyzeTableStatement.getTables().size(), is(1));
         assertThat(analyzeTableStatement.getTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo_table"));
     }
