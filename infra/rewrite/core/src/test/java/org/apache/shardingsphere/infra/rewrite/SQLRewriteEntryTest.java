@@ -78,7 +78,7 @@ class SQLRewriteEntryTest {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(result.getHintValueContext()).thenReturn(new HintValueContext());
         return result;

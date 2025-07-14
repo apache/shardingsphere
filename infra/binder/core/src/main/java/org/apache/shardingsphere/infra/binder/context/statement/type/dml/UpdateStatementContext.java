@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -40,8 +39,6 @@ import java.util.LinkedList;
 @Getter
 public final class UpdateStatementContext implements SQLStatementContext, WhereContextAvailable {
     
-    private final DatabaseType databaseType;
-    
     private final UpdateStatement sqlStatement;
     
     private final TablesContext tablesContext;
@@ -52,8 +49,7 @@ public final class UpdateStatementContext implements SQLStatementContext, WhereC
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
-    public UpdateStatementContext(final DatabaseType databaseType, final UpdateStatement sqlStatement) {
-        this.databaseType = databaseType;
+    public UpdateStatementContext(final UpdateStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         whereSegments = createWhereSegments(sqlStatement);

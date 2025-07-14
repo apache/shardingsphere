@@ -19,9 +19,6 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -31,7 +28,10 @@ import org.apache.shardingsphere.sharding.exception.syntax.DataSourceIntersectio
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingUnicastRouteEngine implements ShardingRouteEngine {
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatement sqlStatement;
     
     private final Collection<String> logicTables;
     
@@ -78,14 +78,13 @@ public final class ShardingUnicastRouteEngine implements ShardingRouteEngine {
     }
     
     private String getDataSourceName(final Collection<String> dataSourceNames) {
-        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent() || isViewStatementContext(sqlStatementContext)
+        return sqlStatement.getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent() || isViewStatementContext(sqlStatement)
                 ? dataSourceNames.iterator().next()
                 : getRandomDataSourceName(dataSourceNames);
     }
     
-    private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext
-                || sqlStatementContext.getSqlStatement() instanceof DropViewStatement;
+    private boolean isViewStatementContext(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof CreateViewStatement || sqlStatement instanceof AlterViewStatement || sqlStatement instanceof DropViewStatement;
     }
     
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) {

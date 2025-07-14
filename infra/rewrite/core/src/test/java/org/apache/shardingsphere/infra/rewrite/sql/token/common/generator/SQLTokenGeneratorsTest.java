@@ -31,6 +31,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,7 +49,7 @@ class SQLTokenGeneratorsTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("sharding_db");
         when(database.getSchema("test")).thenReturn(new ShardingSphereSchema("test"));
-        Collection<SQLToken> actualSqlTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
+        Collection<SQLToken> actualSqlTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));
     }
@@ -63,7 +64,7 @@ class SQLTokenGeneratorsTest {
         generators.addAll(Collections.singleton(generator));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("sharding_db");
-        Collection<SQLToken> actualSQLTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class), Collections.emptyList(), mock(ConnectionContext.class));
+        Collection<SQLToken> actualSQLTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSQLTokens.size(), is(2));
         assertThat(actualSQLTokens, is(expectedTokens));
     }

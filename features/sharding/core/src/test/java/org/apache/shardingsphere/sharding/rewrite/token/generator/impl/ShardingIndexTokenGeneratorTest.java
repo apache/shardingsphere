@@ -61,7 +61,7 @@ class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyIndex() {
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(postgreSQLDatabaseType, new AlterIndexStatement(postgreSQLDatabaseType));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(postgreSQLDatabaseType));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
@@ -69,13 +69,13 @@ class ShardingIndexTokenGeneratorTest {
     void assertIsGenerateSQLToken() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(postgreSQLDatabaseType);
         sqlStatement.setIndex(mock(IndexSegment.class));
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(postgreSQLDatabaseType, sqlStatement);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensWithNotIndexContextAvailable() {
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new AlterIndexStatement(databaseType));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(databaseType));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertTrue(actual.isEmpty());
     }
@@ -104,7 +104,7 @@ class ShardingIndexTokenGeneratorTest {
     private CommonSQLStatementContext mockAlterIndexStatementContext(final IndexSegment indexSegment) {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(indexSegment);
-        return new CommonSQLStatementContext(databaseType, sqlStatement);
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
     private void assertTokens(final Collection<SQLToken> actual, final ShardingSphereSchema schema) throws ReflectiveOperationException {

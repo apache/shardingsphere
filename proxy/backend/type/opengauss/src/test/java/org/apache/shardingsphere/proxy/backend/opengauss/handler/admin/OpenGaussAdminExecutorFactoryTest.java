@@ -68,7 +68,7 @@ class OpenGaussAdminExecutorFactoryTest {
     
     @Test
     void assertNewInstanceWithSQLStatementContext() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), new ShowStatement(databaseType, "all"));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new ShowStatement(databaseType, "all"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext);
         assertTrue(actual.isPresent());
     }

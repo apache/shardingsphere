@@ -86,7 +86,7 @@ class EnumerableScanImplementorTest {
     
     private SelectStatementContext mockSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("pg_catalog"));
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(result.getTablesContext().getSchemaName()).thenReturn(Optional.of("pg_catalog"));

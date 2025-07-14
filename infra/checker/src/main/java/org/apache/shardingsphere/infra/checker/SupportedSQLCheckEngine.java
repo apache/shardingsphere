@@ -53,7 +53,7 @@ public final class SupportedSQLCheckEngine {
     }
     
     private ShardingSphereSchema getCurrentSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        ShardingSphereSchema defaultSchema = database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+        ShardingSphereSchema defaultSchema = database.getSchema(new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElse(defaultSchema);
     }
 }

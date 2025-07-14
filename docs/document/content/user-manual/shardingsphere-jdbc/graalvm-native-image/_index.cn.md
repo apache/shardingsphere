@@ -294,5 +294,3 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
 对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。
 
-9. 由于 https://github.com/apache/doris/issues/9426 的影响，当通过 Shardinghere JDBC 连接至 Apache Doris FE，
-用户需自行提供 `apache/doris` 集成模块相关的 GraalVM Reachability Metadata。

@@ -63,7 +63,7 @@ class ShardingDropIndexSupportedCheckerTest {
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(mock(), sqlStatement)));
+        assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
@@ -74,6 +74,6 @@ class ShardingDropIndexSupportedCheckerTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
-        assertThrows(IndexNotFoundException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new CommonSQLStatementContext(mock(), sqlStatement)));
+        assertThrows(IndexNotFoundException.class, () -> new ShardingDropIndexSupportedChecker().check(rule, database, mock(), new CommonSQLStatementContext(sqlStatement)));
     }
 }

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLOptimizeTableStatement;
 
@@ -35,8 +33,6 @@ import java.util.stream.Collectors;
  */
 public final class MySQLOptimizeTableStatementBinder implements SQLStatementBinder<MySQLOptimizeTableStatement> {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
     @Override
     public MySQLOptimizeTableStatement bind(final MySQLOptimizeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Collection<SimpleTableSegment> boundTables = sqlStatement.getTables().stream()
@@ -45,7 +41,7 @@ public final class MySQLOptimizeTableStatementBinder implements SQLStatementBind
     }
     
     private MySQLOptimizeTableStatement copy(final MySQLOptimizeTableStatement sqlStatement, final Collection<SimpleTableSegment> boundTables) {
-        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement(databaseType, boundTables);
+        MySQLOptimizeTableStatement result = new MySQLOptimizeTableStatement(sqlStatement.getDatabaseType(), boundTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

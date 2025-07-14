@@ -54,13 +54,13 @@ class ExplainStatementContextTest {
     
     @BeforeEach
     void setUp() {
-        when(SQLStatementContextFactory.newInstance(metaData, databaseType, explainableSQLStatement, Collections.emptyList(), "foo_db")).thenReturn(explainableSQLStatementContext);
+        when(SQLStatementContextFactory.newInstance(metaData, explainableSQLStatement, Collections.emptyList(), "foo_db")).thenReturn(explainableSQLStatementContext);
     }
     
     @Test
     void assertNewInstance() {
         ExplainStatement explainStatement = new ExplainStatement(databaseType, explainableSQLStatement);
-        ExplainStatementContext actual = new ExplainStatementContext(metaData, databaseType, explainStatement, Collections.emptyList(), "foo_db");
+        ExplainStatementContext actual = new ExplainStatementContext(metaData, explainStatement, Collections.emptyList(), "foo_db");
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getExplainableSQLStatementContext(), is(explainableSQLStatementContext));
