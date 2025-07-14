@@ -83,7 +83,8 @@ public final class EncryptPredicateColumnSupportedChecker implements SupportedSQ
     private boolean isLikeColumnSegment(final Collection<ExpressionSegment> expressions, final ColumnSegment targetColumnSegment) {
         for (ExpressionSegment each : expressions) {
             if (each instanceof BinaryOperationExpression
-                    && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()) && isSameColumnSegment(((BinaryOperationExpression) each).getLeft(), targetColumnSegment)) {
+                    && ("LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()) || "NOT LIKE".equalsIgnoreCase(((BinaryOperationExpression) each).getOperator()))
+                    && isSameColumnSegment(((BinaryOperationExpression) each).getLeft(), targetColumnSegment)) {
                 return true;
             }
         }
