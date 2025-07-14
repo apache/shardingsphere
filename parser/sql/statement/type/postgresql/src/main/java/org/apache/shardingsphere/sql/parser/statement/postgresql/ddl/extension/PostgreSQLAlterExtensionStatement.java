@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.extension;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter extension statement for PostgreSQL.
  */
 public final class PostgreSQLAlterExtensionStatement extends DDLStatement {
+    
+    public PostgreSQLAlterExtensionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

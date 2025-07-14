@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterLoginContext;
@@ -76,9 +77,13 @@ import java.util.Optional;
  */
 public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisitor implements DCLStatementVisitor {
     
+    public SQLServerDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        SQLServerGrantStatement result = new SQLServerGrantStatement();
+        SQLServerGrantStatement result = new SQLServerGrantStatement(getDatabaseType());
         if (null != ctx.grantClassPrivilegesClause()) {
             findTableSegment(ctx.grantClassPrivilegesClause().onClassClause(), ctx.grantClassPrivilegesClause().classPrivileges()).ifPresent(optional -> result.getTables().add(optional));
             if (null != ctx.grantClassPrivilegesClause().classPrivileges().columnNames()) {
@@ -95,7 +100,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        SQLServerRevokeStatement result = new SQLServerRevokeStatement();
+        SQLServerRevokeStatement result = new SQLServerRevokeStatement(getDatabaseType());
         if (null != ctx.revokeClassPrivilegesClause()) {
             findTableSegment(ctx.revokeClassPrivilegesClause().onClassClause(), ctx.revokeClassPrivilegesClause().classPrivileges()).ifPresent(optional -> result.getTables().add(optional));
             if (null != ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
@@ -122,7 +127,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        CreateUserStatement result = new CreateUserStatement();
+        CreateUserStatement result = new CreateUserStatement(getDatabaseType());
         if (null != ctx.createUserLoginClause()) {
             result.getUsers().add((UserSegment) visit(ctx.createUserLoginClause().userName()));
         } else if (null != ctx.createUserWindowsPrincipalClause()) {
@@ -175,12 +180,12 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement((UserSegment) visit(ctx.userName()));
+        return new AlterUserStatement(getDatabaseType(), (UserSegment) visit(ctx.userName()));
     }
     
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
-        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
+        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement(getDatabaseType());
         if (null != ctx.denyClassPrivilegesClause()) {
             findTableSegment(ctx.denyClassPrivilegesClause().onClassClause(), ctx.denyClassPrivilegesClause().classPrivileges()).ifPresent(result::setTable);
             if (null != ctx.denyClassPrivilegesClause().classPrivileges().columnNames()) {
@@ -212,34 +217,36 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement(Collections.singleton(((UserSegment) visit(ctx.userName())).getUser()));
+        return new DropUserStatement(getDatabaseType(), Collections.singleton(((UserSegment) visit(ctx.userName())).getUser()));
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new AlterRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new DropRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateLogin(final CreateLoginContext ctx) {
-        return new SQLServerCreateLoginStatement(null == ctx.ignoredNameIdentifier() ? null
-                : new LoginSegment(
-                        ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
+        return new SQLServerCreateLoginStatement(getDatabaseType(),
+                null == ctx.ignoredNameIdentifier()
+                        ? null
+                        : new LoginSegment(
+                                ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
     }
     
     @Override
     public ASTNode visitAlterLogin(final AlterLoginContext ctx) {
-        return new SQLServerAlterLoginStatement(null == ctx.ignoredNameIdentifier()
+        return new SQLServerAlterLoginStatement(getDatabaseType(), null == ctx.ignoredNameIdentifier()
                 ? null
                 : new LoginSegment(
                         ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
@@ -247,13 +254,13 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropLogin(final DropLoginContext ctx) {
-        return new SQLServerDropLoginStatement(new LoginSegment(
+        return new SQLServerDropLoginStatement(getDatabaseType(), new LoginSegment(
                 ctx.ignoredNameIdentifier().getStart().getStartIndex(), ctx.ignoredNameIdentifier().getStop().getStopIndex(), (IdentifierValue) visit(ctx.ignoredNameIdentifier())));
     }
     
     @Override
     public ASTNode visitSetUser(final SetUserContext ctx) {
-        return new SQLServerSetUserStatement(null == ctx.stringLiterals() ? null : getUserSegment(ctx));
+        return new SQLServerSetUserStatement(getDatabaseType(), null == ctx.stringLiterals() ? null : getUserSegment(ctx));
     }
     
     private UserSegment getUserSegment(final SetUserContext ctx) {
@@ -266,6 +273,6 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitRevert(final RevertContext ctx) {
-        return new SQLServerRevertStatement();
+        return new SQLServerRevertStatement(getDatabaseType());
     }
 }

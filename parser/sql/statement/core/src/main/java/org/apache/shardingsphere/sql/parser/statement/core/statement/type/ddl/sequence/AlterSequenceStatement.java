@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter sequence statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class AlterSequenceStatement extends DDLStatement {
     
     private final String sequenceName;
+    
+    public AlterSequenceStatement(final DatabaseType databaseType, final String sequenceName) {
+        super(databaseType);
+        this.sequenceName = sequenceName;
+    }
 }

@@ -98,7 +98,7 @@ class ShardingInsertRouteContextCheckerTest {
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        return new InsertStatementContext(databaseType, insertStatement, params, metaData, "foo_db");
+        return new InsertStatementContext(insertStatement, params, metaData, "foo_db");
     }
     
     @Test
@@ -210,6 +210,7 @@ class ShardingInsertRouteContextCheckerTest {
     
     private InsertStatement createInsertStatement() {
         InsertStatement result = mock(InsertStatement.class);
+        when(result.getDatabaseType()).thenReturn(databaseType);
         when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user")))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ColumnAssignmentSegment assignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0));

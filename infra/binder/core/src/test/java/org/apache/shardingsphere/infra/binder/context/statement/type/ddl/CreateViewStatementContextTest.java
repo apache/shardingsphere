@@ -46,18 +46,20 @@ class CreateViewStatementContextTest {
     @Test
     void assertNewInstance() {
         CreateViewStatement createViewStatement = mock(CreateViewStatement.class);
+        when(createViewStatement.getDatabaseType()).thenReturn(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("view"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         SimpleTableSegment view = new SimpleTableSegment(tableNameSegment);
         when(createViewStatement.getView()).thenReturn(view);
         SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(databaseType);
         when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(0, 0));
         when(createViewStatement.getSelect()).thenReturn(selectStatement);
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(metaData.getDatabase("foo_db")).thenReturn(database);
-        CreateViewStatementContext actual = new CreateViewStatementContext(metaData, databaseType, Collections.emptyList(), createViewStatement, "foo_db");
+        CreateViewStatementContext actual = new CreateViewStatementContext(metaData, Collections.emptyList(), createViewStatement, "foo_db");
         assertThat(actual.getSqlStatement(), is(createViewStatement));
     }
 }

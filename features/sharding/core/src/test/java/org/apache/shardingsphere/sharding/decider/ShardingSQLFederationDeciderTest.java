@@ -193,7 +193,7 @@ class ShardingSQLFederationDeciderTest {
     private SelectStatementContext createSQLStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_tbl", "bar_tbl"));
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(result.getSubqueryContexts().values()).thenReturn(Collections.emptyList());
         return result;
     }

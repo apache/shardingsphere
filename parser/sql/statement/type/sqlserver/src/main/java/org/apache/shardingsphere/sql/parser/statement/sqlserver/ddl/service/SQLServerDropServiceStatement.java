@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop service statement for SQLServer.
  */
 public final class SQLServerDropServiceStatement extends DDLStatement {
+    
+    public SQLServerDropServiceStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

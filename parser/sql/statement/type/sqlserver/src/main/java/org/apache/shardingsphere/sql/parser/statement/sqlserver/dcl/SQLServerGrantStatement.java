@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
@@ -31,4 +32,8 @@ import java.util.List;
 public final class SQLServerGrantStatement extends GrantStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();
+    
+    public SQLServerGrantStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

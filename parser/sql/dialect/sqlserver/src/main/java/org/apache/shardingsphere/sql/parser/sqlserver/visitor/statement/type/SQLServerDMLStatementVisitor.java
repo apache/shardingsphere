@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 
@@ -24,4 +25,8 @@ import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServe
  * DML statement visitor for SQLServer.
  */
 public final class SQLServerDMLStatementVisitor extends SQLServerStatementVisitor implements DMLStatementVisitor {
+    
+    public SQLServerDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

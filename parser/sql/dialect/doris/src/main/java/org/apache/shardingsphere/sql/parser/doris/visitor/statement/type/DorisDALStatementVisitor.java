@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
@@ -237,90 +238,95 @@ import java.util.stream.Collectors;
  */
 public final class DorisDALStatementVisitor extends DorisStatementVisitor implements DALStatementVisitor {
     
+    public DorisDALStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
-        return new MySQLUninstallPluginStatement(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        return new MySQLUninstallPluginStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.pluginName())).getValue());
     }
     
     @Override
     public ASTNode visitShowCreateDatabase(final ShowCreateDatabaseContext ctx) {
-        return new MySQLShowCreateDatabaseStatement(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
+        return new MySQLShowCreateDatabaseStatement(getDatabaseType(), ((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitShowBinaryLogs(final ShowBinaryLogsContext ctx) {
-        return new MySQLShowBinaryLogsStatement();
+        return new MySQLShowBinaryLogsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowStatus(final ShowStatusContext ctx) {
-        MySQLShowStatusStatement result = new MySQLShowStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowStatusStatement result = new MySQLShowStatusStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCreateView(final ShowCreateViewContext ctx) {
-        return new MySQLShowCreateViewStatement(null);
+        return new MySQLShowCreateViewStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitShowEngines(final ShowEnginesContext ctx) {
-        return new MySQLShowOtherStatement();
+        return new MySQLShowOtherStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowEngine(final ShowEngineContext ctx) {
-        return new MySQLShowEngineStatement(ctx.engineRef().getText());
+        return new MySQLShowEngineStatement(getDatabaseType(), ctx.engineRef().getText());
     }
     
     @Override
     public ASTNode visitShowCharset(final ShowCharsetContext ctx) {
-        return new MySQLShowOtherStatement();
+        return new MySQLShowOtherStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowCreateEvent(final ShowCreateEventContext ctx) {
-        return new MySQLShowCreateEventStatement(((IdentifierValue) visit(ctx.eventName())).getValue());
+        return new MySQLShowCreateEventStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.eventName())).getValue());
     }
     
     @Override
     public ASTNode visitShowCreateFunction(final ShowCreateFunctionContext ctx) {
-        return new MySQLShowCreateFunctionStatement(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
+        return new MySQLShowCreateFunctionStatement(getDatabaseType(), ((FunctionSegment) visit(ctx.functionName())).getFunctionName());
     }
     
     @Override
     public ASTNode visitShowCreateProcedure(final ShowCreateProcedureContext ctx) {
-        return new MySQLShowCreateProcedureStatement(((IdentifierValue) visit(ctx.procedureName())).getValue());
+        return new MySQLShowCreateProcedureStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.procedureName())).getValue());
     }
     
     @Override
     public ASTNode visitShowBinlogEvents(final ShowBinlogEventsContext ctx) {
-        return new MySQLShowBinlogEventsStatement(null == ctx.logName() ? null : ctx.logName().getText(), null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
+        return new MySQLShowBinlogEventsStatement(getDatabaseType(), null == ctx.logName() ? null : ctx.logName().getText(),
+                null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitShowErrors(final ShowErrorsContext ctx) {
-        return new MySQLShowErrorsStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
+        return new MySQLShowErrorsStatement(getDatabaseType(), null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitShowWarnings(final ShowWarningsContext ctx) {
-        return new MySQLShowWarningsStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
+        return new MySQLShowWarningsStatement(getDatabaseType(), null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitResetStatement(final ResetStatementContext ctx) {
         ResetPersistContext persistContext = ctx.resetPersist();
         return null == persistContext
-                ? new MySQLResetStatement(
+                ? new MySQLResetStatement(getDatabaseType(),
                         ctx.resetOption().stream().filter(each -> null != each.MASTER() || null != each.SLAVE()).map(each -> (ResetOptionSegment) visit(each)).collect(Collectors.toList()))
                 : visit(persistContext);
     }
     
     @Override
     public ASTNode visitResetPersist(final ResetPersistContext ctx) {
-        return new MySQLResetPersistStatement(null != ctx.ifExists(), null == ctx.identifier() ? null : new IdentifierValue(ctx.identifier().getText()));
+        return new MySQLResetPersistStatement(getDatabaseType(), null != ctx.ifExists(), null == ctx.identifier() ? null : new IdentifierValue(ctx.identifier().getText()));
     }
     
     @Override
@@ -358,19 +364,19 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowReplicas(final ShowReplicasContext ctx) {
-        return new MySQLShowReplicasStatement();
+        return new MySQLShowReplicasStatement(getDatabaseType());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRepairTable(final RepairTableContext ctx) {
-        return new MySQLRepairTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return new MySQLRepairTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        return new AnalyzeTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return new AnalyzeTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
@@ -383,7 +389,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
                 ? null
                 : new PartitionDefinitionSegment(ctx.tableName().getStart().getStartIndex(), ctx.partitionList().getStop().getStopIndex(),
                         (SimpleTableSegment) visit(ctx.tableName()), ((CollectionValue<PartitionSegment>) visit(ctx.partitionList())).getValue());
-        return new MySQLCacheIndexStatement(name, tableIndexes, partitionDefinition);
+        return new MySQLCacheIndexStatement(getDatabaseType(), name, tableIndexes, partitionDefinition);
     }
     
     @Override
@@ -411,27 +417,27 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitChecksumTable(final ChecksumTableContext ctx) {
-        return new MySQLChecksumTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return new MySQLChecksumTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitFlush(final FlushContext ctx) {
-        return null == ctx.tablesOption() ? new MySQLFlushStatement(Collections.emptyList(), false) : visit(ctx.tablesOption());
+        return null == ctx.tablesOption() ? new MySQLFlushStatement(getDatabaseType(), Collections.emptyList(), false) : visit(ctx.tablesOption());
     }
     
     @Override
     public ASTNode visitTablesOption(final TablesOptionContext ctx) {
-        return new MySQLFlushStatement(ctx.tableName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), true);
+        return new MySQLFlushStatement(getDatabaseType(), ctx.tableName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), true);
     }
     
     @Override
     public ASTNode visitKill(final KillContext ctx) {
-        return new MySQLKillStatement(null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), null);
+        return new MySQLKillStatement(getDatabaseType(), null == ctx.AT_() ? ctx.IDENTIFIER_().getText() : ctx.AT_().getText() + ctx.IDENTIFIER_().getText(), null);
     }
     
     @Override
     public ASTNode visitLoadIndexInfo(final LoadIndexInfoContext ctx) {
-        return new MySQLLoadIndexInfoStatement(ctx.loadTableIndexList().stream().map(each -> (LoadTableIndexSegment) visit(each)).collect(Collectors.toList()));
+        return new MySQLLoadIndexInfoStatement(getDatabaseType(), ctx.loadTableIndexList().stream().map(each -> (LoadTableIndexSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -450,12 +456,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitInstallPlugin(final InstallPluginContext ctx) {
-        return new MySQLInstallPluginStatement(((IdentifierValue) visit(ctx.pluginName())).getValue());
+        return new MySQLInstallPluginStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.pluginName())).getValue());
     }
     
     @Override
     public ASTNode visitClone(final CloneContext ctx) {
-        return new MySQLCloneStatement((CloneActionSegment) visit(ctx.cloneAction()));
+        return new MySQLCloneStatement(getDatabaseType(), (CloneActionSegment) visit(ctx.cloneAction()));
     }
     
     @Override
@@ -482,19 +488,19 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitOptimizeTable(final OptimizeTableContext ctx) {
-        return new MySQLOptimizeTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return new MySQLOptimizeTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        return new MySQLUseStatement(((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
+        return new MySQLUseStatement(getDatabaseType(), ((DatabaseSegment) visit(ctx.databaseName())).getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
         return null == ctx.tableName()
-                ? new ExplainStatement(getExplainableSQLStatement(ctx).orElse(null))
-                : new MySQLDescribeStatement((SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
+                ? new ExplainStatement(getDatabaseType(), getExplainableSQLStatement(ctx).orElse(null))
+                : new MySQLDescribeStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
     }
     
     private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {
@@ -545,29 +551,29 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowProcedureCode(final ShowProcedureCodeContext ctx) {
-        return new MySQLShowProcedureCodeStatement((FunctionSegment) visit(ctx.functionName()));
+        return new MySQLShowProcedureCodeStatement(getDatabaseType(), (FunctionSegment) visit(ctx.functionName()));
     }
     
     @Override
     public ASTNode visitShowProfile(final ShowProfileContext ctx) {
-        return new MySQLShowProfileStatement(null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
+        return new MySQLShowProfileStatement(getDatabaseType(), null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()));
     }
     
     @Override
     public ASTNode visitShowProfiles(final ShowProfilesContext ctx) {
-        return new MySQLShowProfilesStatement();
+        return new MySQLShowProfilesStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowEvents(final ShowEventsContext ctx) {
-        MySQLShowEventsStatement result = new MySQLShowEventsStatement(
+        MySQLShowEventsStatement result = new MySQLShowEventsStatement(getDatabaseType(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -575,7 +581,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
-        MySQLShowTablesStatement result = new MySQLShowTablesStatement(null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()),
+        MySQLShowTablesStatement result = new MySQLShowTablesStatement(getDatabaseType(), null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()),
                 null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()), null != ctx.FULL());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -583,7 +589,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowTriggers(final ShowTriggersContext ctx) {
-        MySQLShowTriggersStatement result = new MySQLShowTriggersStatement(
+        MySQLShowTriggersStatement result = new MySQLShowTriggersStatement(getDatabaseType(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -596,7 +602,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowTableStatus(final ShowTableStatusContext ctx) {
-        MySQLShowTableStatusStatement result = new MySQLShowTableStatusStatement(
+        MySQLShowTableStatusStatement result = new MySQLShowTableStatusStatement(getDatabaseType(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -604,7 +610,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
-        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visit(ctx.fromTable())).getTable(),
+        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(getDatabaseType(), null == ctx.fromTable() ? null : ((FromTableSegment) visit(ctx.fromTable())).getTable(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -624,64 +630,64 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
-        return new MySQLShowIndexStatement(null == ctx.fromTable() ? null : ((FromTableSegment) visitFromTable(ctx.fromTable())).getTable(),
+        return new MySQLShowIndexStatement(getDatabaseType(), null == ctx.fromTable() ? null : ((FromTableSegment) visitFromTable(ctx.fromTable())).getTable(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()));
     }
     
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
-        return new MySQLShowCreateTableStatement((SimpleTableSegment) visit(ctx.tableName()));
+        return new MySQLShowCreateTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitShowCreateTrigger(final ShowCreateTriggerContext ctx) {
-        return new MySQLShowCreateTriggerStatement(((IdentifierValue) visit(ctx.triggerName())).getValue());
+        return new MySQLShowCreateTriggerStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.triggerName())).getValue());
     }
     
     @Override
     public ASTNode visitShowRelaylogEvent(final ShowRelaylogEventContext ctx) {
-        return new MySQLShowRelayLogEventsStatement(null == ctx.logName() ? null : ((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue(),
+        return new MySQLShowRelayLogEventsStatement(getDatabaseType(), null == ctx.logName() ? null : ((StringLiteralValue) visit(ctx.logName().stringLiterals().string_())).getValue(),
                 null == ctx.limitClause() ? null : (LimitSegment) visit(ctx.limitClause()), null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
     public ASTNode visitShowFunctionCode(final ShowFunctionCodeContext ctx) {
-        return new MySQLShowFunctionCodeStatement(((FunctionSegment) visit(ctx.functionName())).getFunctionName());
+        return new MySQLShowFunctionCodeStatement(getDatabaseType(), ((FunctionSegment) visit(ctx.functionName())).getFunctionName());
     }
     
     @Override
     public ASTNode visitShowGrants(final ShowGrantsContext ctx) {
-        return new MySQLShowGrantsStatement();
+        return new MySQLShowGrantsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowMasterStatus(final ShowMasterStatusContext ctx) {
-        return new MySQLShowMasterStatusStatement();
+        return new MySQLShowMasterStatusStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowSlaveHosts(final ShowSlaveHostsContext ctx) {
-        return new MySQLShowSlaveHostsStatement();
+        return new MySQLShowSlaveHostsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowReplicaStatus(final ShowReplicaStatusContext ctx) {
-        return new MySQLShowReplicaStatusStatement(null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
+        return new MySQLShowReplicaStatusStatement(getDatabaseType(), null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
     public ASTNode visitShowSlaveStatus(final ShowSlaveStatusContext ctx) {
-        return new MySQLShowSlaveStatusStatement(null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
+        return new MySQLShowSlaveStatusStatement(getDatabaseType(), null == ctx.channelName() ? null : ((IdentifierValue) visit(ctx.channelName())).getValue());
     }
     
     @Override
     public ASTNode visitCreateResourceGroup(final CreateResourceGroupContext ctx) {
-        return new MySQLCreateResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLCreateResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitBinlog(final BinlogContext ctx) {
-        return new MySQLBinlogStatement(((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
+        return new MySQLBinlogStatement(getDatabaseType(), ((StringLiteralValue) visit(ctx.stringLiterals())).getValue());
     }
     
     @Override
@@ -693,42 +699,42 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
-        MySQLShowVariablesStatement result = new MySQLShowVariablesStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowVariablesStatement result = new MySQLShowVariablesStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
-        MySQLShowCharacterSetStatement result = new MySQLShowCharacterSetStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowCharacterSetStatement result = new MySQLShowCharacterSetStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowCollation(final ShowCollationContext ctx) {
-        MySQLShowCollationStatement result = new MySQLShowCollationStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowCollationStatement result = new MySQLShowCollationStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowFunctionStatus(final ShowFunctionStatusContext ctx) {
-        MySQLShowFunctionStatusStatement result = new MySQLShowFunctionStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowFunctionStatusStatement result = new MySQLShowFunctionStatusStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowProcedureStatus(final ShowProcedureStatusContext ctx) {
-        MySQLShowProcedureStatusStatement result = new MySQLShowProcedureStatusStatement(null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        MySQLShowProcedureStatusStatement result = new MySQLShowProcedureStatusStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitShowOpenTables(final ShowOpenTablesContext ctx) {
-        MySQLShowOpenTablesStatement result = new MySQLShowOpenTablesStatement(
+        MySQLShowOpenTablesStatement result = new MySQLShowOpenTablesStatement(getDatabaseType(),
                 null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase()), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -736,32 +742,32 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowPlugins(final ShowPluginsContext ctx) {
-        return new MySQLShowPluginsStatement();
+        return new MySQLShowPluginsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowPrivileges(final ShowPrivilegesContext ctx) {
-        return new MySQLShowPrivilegesStatement();
+        return new MySQLShowPrivilegesStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShutdown(final ShutdownContext ctx) {
-        return new MySQLShutdownStatement();
+        return new MySQLShutdownStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitShowProcesslist(final ShowProcesslistContext ctx) {
-        return new MySQLShowProcessListStatement(null != ctx.FULL());
+        return new MySQLShowProcessListStatement(getDatabaseType(), null != ctx.FULL());
     }
     
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
-        return new MySQLShowCreateUserStatement(((IdentifierValue) visit(ctx.username())).getValue());
+        return new MySQLShowCreateUserStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.username())).getValue());
     }
     
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        return new SetStatement(getVariableAssigns(ctx.optionValueList()));
+        return new SetStatement(getDatabaseType(), getVariableAssigns(ctx.optionValueList()));
     }
     
     private List<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
@@ -836,7 +842,7 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
         VariableSegment variable = new VariableSegment(startIndex, stopIndex, (null == ctx.CHARSET()) ? "character_set_client" : ctx.CHARSET().getText());
         String assignValue = null == ctx.DEFAULT() ? ctx.charsetName().getText() : ctx.DEFAULT().getText();
-        return new SetStatement(Collections.singletonList(new VariableAssignSegment(startIndex, stopIndex, variable, assignValue)));
+        return new SetStatement(getDatabaseType(), Collections.singletonList(new VariableAssignSegment(startIndex, stopIndex, variable, assignValue)));
     }
     
     @Override
@@ -852,76 +858,76 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateLoadableFunction(final CreateLoadableFunctionContext ctx) {
-        return new MySQLCreateLoadableFunctionStatement();
+        return new MySQLCreateLoadableFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitInstallComponent(final InstallComponentContext ctx) {
-        return new MySQLInstallComponentStatement(ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
+        return new MySQLInstallComponentStatement(getDatabaseType(), ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitUninstallComponent(final UninstallComponentContext ctx) {
-        return new MySQLUninstallComponentStatement(ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
+        return new MySQLUninstallComponentStatement(getDatabaseType(), ctx.componentName().stream().map(each -> ((StringLiteralValue) visit(each.string_())).getValue()).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitRestart(final RestartContext ctx) {
-        return new MySQLRestartStatement();
+        return new MySQLRestartStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSetResourceGroup(final SetResourceGroupContext ctx) {
-        return new MySQLSetResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLSetResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitCheckTable(final CheckTableContext ctx) {
-        return new MySQLCheckTableStatement(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return new MySQLCheckTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
     }
     
     @Override
     public ASTNode visitDropResourceGroup(final DropResourceGroupContext ctx) {
-        return new MySQLDropResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLDropResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitAlterResourceGroup(final AlterResourceGroupContext ctx) {
-        return new MySQLAlterResourceGroupStatement(((IdentifierValue) visit(ctx.groupName())).getValue());
+        return new MySQLAlterResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
     }
     
     @Override
     public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
-        return new MySQLChangeMasterStatement();
+        return new MySQLChangeMasterStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitStartSlave(final StartSlaveContext ctx) {
-        return new MySQLStartSlaveStatement();
+        return new MySQLStartSlaveStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitStopSlave(final StopSlaveContext ctx) {
-        return new MySQLStopSlaveStatement();
+        return new MySQLStopSlaveStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitChangeReplicationSourceTo(final ChangeReplicationSourceToContext ctx) {
-        return new MySQLChangeReplicationSourceToStatement();
+        return new MySQLChangeReplicationSourceToStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitStartReplica(final DorisStatementParser.StartReplicaContext ctx) {
-        return new MySQLStartReplicaStatement();
+        return new MySQLStartReplicaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDelimiter(final DelimiterContext ctx) {
-        return new MySQLDelimiterStatement(ctx.delimiterName().getText());
+        return new MySQLDelimiterStatement(getDatabaseType(), ctx.delimiterName().getText());
     }
     
     @Override
     public ASTNode visitHelp(final HelpContext ctx) {
-        return new MySQLHelpStatement(ctx.textOrIdentifier().getText());
+        return new MySQLHelpStatement(getDatabaseType(), ctx.textOrIdentifier().getText());
     }
 }

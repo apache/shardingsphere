@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -27,11 +27,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 /**
  * Explain statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ExplainStatement extends DALStatement {
     
     private final SQLStatement explainableSQLStatement;
+    
+    public ExplainStatement(final DatabaseType databaseType, final SQLStatement explainableSQLStatement) {
+        super(databaseType);
+        this.explainableSQLStatement = explainableSQLStatement;
+    }
     
     @Override
     public SQLStatementAttributes getAttributes() {

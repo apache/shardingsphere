@@ -86,11 +86,10 @@ class OpenGaussComBatchBindExecutorTest {
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
-        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(),
-                Collections.emptyList());
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
+                sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, serverPreparedStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

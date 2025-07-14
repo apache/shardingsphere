@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Vacuum statement for PostgreSQL.
  */
 public final class PostgreSQLVacuumStatement extends DALStatement {
+    
+    public PostgreSQLVacuumStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

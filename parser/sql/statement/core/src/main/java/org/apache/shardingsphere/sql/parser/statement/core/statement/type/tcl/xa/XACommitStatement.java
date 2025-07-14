@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * XA commit statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class XACommitStatement extends XAStatement {
     
     private final String xid;
+    
+    public XACommitStatement(final DatabaseType databaseType, final String xid) {
+        super(databaseType);
+        this.xid = xid;
+    }
 }

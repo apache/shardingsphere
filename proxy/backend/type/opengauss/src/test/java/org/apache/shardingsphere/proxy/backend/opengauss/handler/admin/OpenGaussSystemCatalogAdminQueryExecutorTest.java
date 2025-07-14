@@ -94,7 +94,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases,
                 mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singletonList(sqlFederationRule)), props);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(databaseType, sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor(sqlStatementContext,
                 "select datname, datcompatibility from pg_database where datname = 'sharding_db'", "sharding_db", Collections.emptyList());
         executor.execute(connectionSession);
@@ -109,7 +109,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForPgDatabase() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("datname"))));
         result.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("datcompatibility"))));
@@ -156,7 +156,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singletonList(sqlFederationRule)), props);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(databaseType, sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProcessId()).thenReturn("1");
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
@@ -174,7 +174,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForVersion() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "VERSION()", new FunctionSegment(0, 0, "VERSION", "VERSION()")));
         return result;
@@ -193,7 +193,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         ShardingSphereMetaData metaData =
                 new ShardingSphereMetaData(databases, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singletonList(sqlFederationRule)), props);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(databaseType, sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         when(connectionSession.getProcessId()).thenReturn("1");
@@ -211,7 +211,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForGsPasswordDeadlineAndIntervalToNum() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         FunctionSegment intervalToNumFunction = new FunctionSegment(0, 0, "intervaltonum", "intervaltonum(gs_password_deadline())");
         intervalToNumFunction.getParameters().add(new FunctionSegment(0, 0, "gs_password_deadline", "gs_password_deadline()"));
@@ -232,7 +232,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 databases, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singletonList(sqlFederationRule)), props);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        SelectStatementContext sqlStatementContext = new SelectStatementContext(databaseType, sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
+        SelectStatementContext sqlStatementContext = new SelectStatementContext(sqlStatement, Collections.emptyList(), metaData, "sharding_db", Collections.emptyList());
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(databaseType);
         when(connectionSession.getProcessId()).thenReturn("1");
@@ -256,7 +256,7 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     private SelectStatement createSelectStatementForGsPasswordNotifyTime() {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections(new ProjectionsSegment(0, 0));
         result.getProjections().getProjections()
                 .add(new ExpressionProjectionSegment(0, 0, "gs_password_notifytime()", new FunctionSegment(0, 0, "gs_password_notifytime", "gs_password_notifytime()")));

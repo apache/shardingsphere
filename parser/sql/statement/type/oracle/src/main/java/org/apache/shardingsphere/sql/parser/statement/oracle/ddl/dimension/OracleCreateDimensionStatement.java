@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.dimension;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create dimension statement for Oracle.
  */
 public final class OracleCreateDimensionStatement extends DDLStatement {
+    
+    public OracleCreateDimensionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

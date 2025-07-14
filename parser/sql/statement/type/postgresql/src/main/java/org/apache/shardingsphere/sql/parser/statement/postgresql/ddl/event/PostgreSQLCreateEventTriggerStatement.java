@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.event;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create event trigger statement for PostgreSQL.
  */
 public final class PostgreSQLCreateEventTriggerStatement extends DDLStatement {
+    
+    public PostgreSQLCreateEventTriggerStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

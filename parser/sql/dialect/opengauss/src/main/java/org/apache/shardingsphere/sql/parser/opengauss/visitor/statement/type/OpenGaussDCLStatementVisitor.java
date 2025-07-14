@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterRoleContext;
@@ -48,9 +49,13 @@ import java.util.Collections;
  */
 public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisitor implements DCLStatementVisitor {
     
+    public OpenGaussDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        GrantStatement result = new GrantStatement(getDatabaseType());
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -59,7 +64,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        RevokeStatement result = new RevokeStatement(getDatabaseType());
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -77,31 +82,31 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+        return new CreateUserStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement(Collections.emptyList());
+        return new DropUserStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement(null);
+        return new AlterUserStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new AlterRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new DropRoleStatement(getDatabaseType());
     }
 }

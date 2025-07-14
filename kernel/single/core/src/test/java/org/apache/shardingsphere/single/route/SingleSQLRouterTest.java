@@ -215,7 +215,7 @@ class SingleSQLRouterTest {
     }
     
     private QueryContext createQueryContext() {
-        CreateTableStatement createTableStatement = new CreateTableStatement();
+        CreateTableStatement createTableStatement = new CreateTableStatement(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, new IdentifierValue("t_order"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         createTableStatement.setTable(new SimpleTableSegment(tableNameSegment));
@@ -224,6 +224,6 @@ class SingleSQLRouterTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        return new QueryContext(new CommonSQLStatementContext(databaseType, createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext, metaData);
+        return new QueryContext(new CommonSQLStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext, metaData);
     }
 }

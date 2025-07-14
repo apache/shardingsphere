@@ -173,8 +173,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         }
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
-                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
+        return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getSqlStatement().getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
+                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getSqlStatement().getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
     
     /**
@@ -198,7 +198,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
             CompilerContext compilerContext = sqlFederationRule.getCompilerContext();
             SQLFederationRelConverter converter = new SQLFederationRelConverter(compilerContext,
-                    getSchemaPath(sqlStatementContext), sqlStatementContext.getDatabaseType(), processor.getConvention());
+                    getSchemaPath(sqlStatementContext), sqlStatementContext.getSqlStatement().getDatabaseType(), processor.getConvention());
             schemaPlus = converter.getSchemaPlus();
             processor.prepare(prepareEngine, callback, currentDatabaseName, currentSchemaName, federationContext, compilerContext, schemaPlus);
             SQLFederationExecutionPlan executionPlan = compileQuery(converter, currentDatabaseName,
@@ -208,6 +208,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
             close();
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
         }
@@ -225,7 +226,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     private List<String> getSchemaPath(final SQLStatementContext sqlStatementContext) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         // TODO set default schema according to search path result
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
             return sqlStatementContext.getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
@@ -244,7 +245,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ExecutionPlanCacheKey buildCacheKey(final ShardingSphereMetaData metaData, final SQLStatementContext sqlStatementContext,
                                                 final String sql, final SQLStatementCompiler sqlStatementCompiler) {
-        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(sql, sqlStatementContext.getSqlStatement(), sqlStatementContext.getDatabaseType().getType(), sqlStatementCompiler);
+        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(sql, sqlStatementContext.getSqlStatement(), sqlStatementCompiler);
         Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : tableSegments) {
             String originalDatabase = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalDatabase().getValue()).orElse(currentDatabaseName);

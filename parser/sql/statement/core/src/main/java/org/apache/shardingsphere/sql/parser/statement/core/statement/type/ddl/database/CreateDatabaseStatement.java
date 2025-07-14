@@ -18,17 +18,22 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create database statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateDatabaseStatement extends DDLStatement {
     
     private final String databaseName;
     
     private final boolean ifNotExists;
+    
+    public CreateDatabaseStatement(final DatabaseType databaseType, final String databaseName, final boolean ifNotExists) {
+        super(databaseType);
+        this.databaseName = databaseName;
+        this.ifNotExists = ifNotExists;
+    }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.trigger;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -26,11 +26,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Show triggers status statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowTriggersStatement extends DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    public MySQLShowTriggersStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
+        super(databaseType);
+        this.fromDatabase = fromDatabase;
+        this.filter = filter;
+    }
 }

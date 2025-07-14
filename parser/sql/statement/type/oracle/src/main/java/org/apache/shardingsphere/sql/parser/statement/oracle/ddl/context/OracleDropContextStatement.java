@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.context;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop context statement for Oracle.
  */
 public final class OracleDropContextStatement extends DDLStatement {
+    
+    public OracleDropContextStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

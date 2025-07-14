@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.replication.binlog;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show binary logs statement for MySQL.
  */
 public final class MySQLShowBinaryLogsStatement extends DALStatement {
+    
+    public MySQLShowBinaryLogsStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

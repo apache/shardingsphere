@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
@@ -43,6 +44,10 @@ public final class PrepareStatement extends DDLStatement {
     private UpdateStatement update;
     
     private DeleteStatement delete;
+    
+    public PrepareStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get select statement.

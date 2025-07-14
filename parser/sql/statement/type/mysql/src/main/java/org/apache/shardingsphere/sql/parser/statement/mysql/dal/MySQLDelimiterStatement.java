@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Delimiter statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLDelimiterStatement extends DALStatement {
     
     private final String delimiterName;
+    
+    public MySQLDelimiterStatement(final DatabaseType databaseType, final String delimiterName) {
+        super(databaseType);
+        this.delimiterName = delimiterName;
+    }
 }

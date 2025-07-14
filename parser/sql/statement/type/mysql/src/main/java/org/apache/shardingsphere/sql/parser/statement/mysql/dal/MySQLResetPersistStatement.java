@@ -18,18 +18,23 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
  * Reset persist statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLResetPersistStatement extends DALStatement {
     
     private final boolean ifExists;
     
     private final IdentifierValue identifier;
+    
+    public MySQLResetPersistStatement(final DatabaseType databaseType, final boolean ifExists, final IdentifierValue identifier) {
+        super(databaseType);
+        this.ifExists = ifExists;
+        this.identifier = identifier;
+    }
 }

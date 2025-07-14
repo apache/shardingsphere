@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * Deallocate statement.
  */
 public final class DeallocateStatement extends DDLStatement {
+    
+    public DeallocateStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

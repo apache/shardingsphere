@@ -34,10 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SaneQueryResultEngineTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertGetSaneQueryResultForSelectStatement() {
-        SaneQueryResultEngine saneQueryResultEngine = new SaneQueryResultEngine(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        Optional<ExecuteResult> actual = saneQueryResultEngine.getSaneQueryResult(new SelectStatement(), null);
+        SaneQueryResultEngine saneQueryResultEngine = new SaneQueryResultEngine(databaseType);
+        Optional<ExecuteResult> actual = saneQueryResultEngine.getSaneQueryResult(new SelectStatement(databaseType), null);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
         RawMemoryQueryResult actualResult = (RawMemoryQueryResult) actual.get();

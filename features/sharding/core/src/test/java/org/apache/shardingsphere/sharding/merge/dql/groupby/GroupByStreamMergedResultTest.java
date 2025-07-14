@@ -72,6 +72,7 @@ class GroupByStreamMergedResultTest {
         assertFalse(actual.next());
     }
     
+    @SuppressWarnings("UseOfObsoleteDateTimeApi")
     @Test
     void assertNextForSomeResultSetsEmpty() throws SQLException {
         QueryResult queryResult1 = mockQueryResult();
@@ -164,7 +165,7 @@ class GroupByStreamMergedResultTest {
     
     private SelectStatementContext createSelectStatementContext() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
-        SelectStatement selectStatement = new SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(tableSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
@@ -175,7 +176,7 @@ class GroupByStreamMergedResultTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 3, OrderDirection.ASC, NullsOrderType.FIRST))));
         return new SelectStatementContext(
-                databaseType, selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereDatabase createDatabase() {

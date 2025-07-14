@@ -34,9 +34,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistReposito
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryPropertyKey;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -45,14 +43,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ShardingSphere pipeline data source creator.
  */
 public final class ShardingSpherePipelineDataSourceCreator implements PipelineDataSourceCreator {
-    
-    private static final AtomicInteger STANDALONE_DATABASE_ID = new AtomicInteger(1);
     
     @Override
     public DataSource create(final Object dataSourceConfig) throws SQLException {
@@ -83,7 +78,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void updateShardingRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
-        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(yamlRootConfig.getRules());
+        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = yamlRootConfig.getRules().stream()
+                .filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast);
         if (yamlShardingRuleConfig.isPresent()) {
             enableRangeQueryForInline(yamlShardingRuleConfig.get());
             removeAuditStrategy(yamlShardingRuleConfig.get());
@@ -113,9 +109,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType("Standalone");
         YamlPersistRepositoryConfiguration yamlRepositoryConfig = new YamlPersistRepositoryConfiguration();
-        yamlRepositoryConfig.setType("JDBC");
-        yamlRepositoryConfig.getProps().setProperty(JDBCRepositoryPropertyKey.JDBC_URL.getKey(),
-                String.format("jdbc:h2:mem:pipeline_db_%d;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL", STANDALONE_DATABASE_ID.getAndIncrement()));
+        yamlRepositoryConfig.setType("Memory");
         result.setRepository(yamlRepositoryConfig);
         return result;
     }

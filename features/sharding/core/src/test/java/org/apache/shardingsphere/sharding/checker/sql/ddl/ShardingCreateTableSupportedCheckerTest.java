@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -39,18 +41,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ShardingCreateTableSupportedCheckerTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private ShardingRule rule;
     
     @Test
     void assertCheck() {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
         assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
     private void assertCheck(final CreateTableStatement sqlStatement) {
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), sqlStatement);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("foo_tbl")).thenReturn(true);
@@ -59,14 +63,14 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheckIfNotExists() {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setIfNotExists(true);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
         assertCheckIfNotExists(sqlStatement);
     }
     
     private void assertCheckIfNotExists(final CreateTableStatement sqlStatement) {
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(mock(), sqlStatement);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         new ShardingCreateTableSupportedChecker().check(rule, database, mock(), sqlStatementContext);
     }

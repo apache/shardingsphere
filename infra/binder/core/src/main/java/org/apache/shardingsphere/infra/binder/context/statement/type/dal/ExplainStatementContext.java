@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
@@ -35,19 +34,15 @@ import java.util.List;
 @Getter
 public final class ExplainStatementContext implements SQLStatementContext {
     
-    private final DatabaseType databaseType;
-    
     private final ExplainStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
     private final SQLStatementContext explainableSQLStatementContext;
     
-    public ExplainStatementContext(final ShardingSphereMetaData metaData,
-                                   final DatabaseType databaseType, final ExplainStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        this.databaseType = databaseType;
+    public ExplainStatementContext(final ShardingSphereMetaData metaData, final ExplainStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList()));
-        explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, databaseType, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
+        explainableSQLStatementContext = SQLStatementContextFactory.newInstance(metaData, sqlStatement.getExplainableSQLStatement(), params, currentDatabaseName);
     }
 }

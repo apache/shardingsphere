@@ -29,7 +29,7 @@ class CreateProcedureStatementContextTest {
     @Test
     void assertNewInstance() {
         CreateProcedureStatement sqlStatement = mock(CreateProcedureStatement.class);
-        CreateProcedureStatementContext actual = new CreateProcedureStatementContext(mock(), sqlStatement);
+        CreateProcedureStatementContext actual = new CreateProcedureStatementContext(sqlStatement);
         assertThat(actual.getSqlStatement(), is(sqlStatement));
     }
 }

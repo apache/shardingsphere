@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create database link statement for Oracle.
  */
 public final class OracleCreateDatabaseLinkStatement extends DDLStatement {
+    
+    public OracleCreateDatabaseLinkStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

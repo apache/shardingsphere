@@ -41,7 +41,7 @@ public final class RenameTableStatementBinder implements SQLStatementBinder<Rena
     }
     
     private static RenameTableStatement copy(final RenameTableStatement sqlStatement, final Collection<RenameTableDefinitionSegment> boundRenameTables) {
-        RenameTableStatement result = new RenameTableStatement(boundRenameTables);
+        RenameTableStatement result = new RenameTableStatement(sqlStatement.getDatabaseType(), boundRenameTables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

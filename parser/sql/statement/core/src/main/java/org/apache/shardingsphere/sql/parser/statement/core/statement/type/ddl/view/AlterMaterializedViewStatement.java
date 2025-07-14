@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter materialized view statement.
  */
 public final class AlterMaterializedViewStatement extends DDLStatement {
+    
+    public AlterMaterializedViewStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

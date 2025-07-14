@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -39,9 +41,11 @@ import static org.mockito.Mockito.when;
 
 class DeleteStatementContextTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertNewInstance() {
-        DeleteStatement deleteStatement = new DeleteStatement();
+        DeleteStatement deleteStatement = new DeleteStatement(databaseType);
         WhereSegment whereSegment = mock(WhereSegment.class);
         when(whereSegment.getExpr()).thenReturn(mock(ExpressionSegment.class));
         deleteStatement.setWhere(whereSegment);
@@ -49,7 +53,7 @@ class DeleteStatementContextTest {
         tableSegment.setLeft(new SimpleTableSegment(createTableNameSegment("foo_tbl")));
         tableSegment.setRight(new SimpleTableSegment(createTableNameSegment("bar_tbl")));
         deleteStatement.setTable(tableSegment);
-        DeleteStatementContext actual = new DeleteStatementContext(mock(), deleteStatement);
+        DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
         assertThat(actual.getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()),

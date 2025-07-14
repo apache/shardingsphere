@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.event;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show create event statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowCreateEventStatement extends DALStatement {
     
     private final String eventName;
+    
+    public MySQLShowCreateEventStatement(final DatabaseType databaseType, final String eventName) {
+        super(databaseType);
+        this.eventName = eventName;
+    }
 }

@@ -22,7 +22,7 @@ ShardingSphere 对 Presto JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-presto</artifactId>
+        <artifactId>shardingsphere-jdbc-dialect-presto</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>

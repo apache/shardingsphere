@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Open statement for PostgreSQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLOpenStatement extends DDLStatement {
     
     private final CursorNameSegment cursorName;
+    
+    public PostgreSQLOpenStatement(final DatabaseType databaseType, final CursorNameSegment cursorName) {
+        super(databaseType);
+        this.cursorName = cursorName;
+    }
 }

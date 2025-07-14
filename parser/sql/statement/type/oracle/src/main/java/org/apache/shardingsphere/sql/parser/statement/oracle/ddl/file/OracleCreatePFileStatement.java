@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.file;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create parameter file statement for Oracle.
  */
 public final class OracleCreatePFileStatement extends DDLStatement {
+    
+    public OracleCreatePFileStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

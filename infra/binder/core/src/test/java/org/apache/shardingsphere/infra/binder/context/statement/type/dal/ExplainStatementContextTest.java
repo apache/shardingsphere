@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -54,13 +54,13 @@ class ExplainStatementContextTest {
     
     @BeforeEach
     void setUp() {
-        when(SQLStatementContextFactory.newInstance(metaData, databaseType, explainableSQLStatement, Collections.emptyList(), "foo_db")).thenReturn(explainableSQLStatementContext);
+        when(SQLStatementContextFactory.newInstance(metaData, explainableSQLStatement, Collections.emptyList(), "foo_db")).thenReturn(explainableSQLStatementContext);
     }
     
     @Test
     void assertNewInstance() {
-        ExplainStatement explainStatement = new ExplainStatement(explainableSQLStatement);
-        ExplainStatementContext actual = new ExplainStatementContext(metaData, databaseType, explainStatement, Collections.emptyList(), "foo_db");
+        ExplainStatement explainStatement = new ExplainStatement(databaseType, explainableSQLStatement);
+        ExplainStatementContext actual = new ExplainStatementContext(metaData, explainStatement, Collections.emptyList(), "foo_db");
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
         assertThat(actual.getExplainableSQLStatementContext(), is(explainableSQLStatementContext));

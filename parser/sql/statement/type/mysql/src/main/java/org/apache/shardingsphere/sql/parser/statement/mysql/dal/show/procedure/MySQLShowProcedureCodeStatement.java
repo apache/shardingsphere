@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show procedure code statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowProcedureCodeStatement extends DALStatement {
     
     private final FunctionSegment function;
+    
+    public MySQLShowProcedureCodeStatement(final DatabaseType databaseType, final FunctionSegment function) {
+        super(databaseType);
+        this.function = function;
+    }
 }

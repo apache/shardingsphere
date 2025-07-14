@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Data definition statement.
  */
 public abstract class DDLStatement extends SQLStatement {
+    
+    public DDLStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }
