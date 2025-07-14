@@ -83,8 +83,8 @@ import static org.mockito.Mockito.when;
 
 class ExportMetaDataExecutorTest {
     
-    private static final String EXPECTED_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: empty_metadata\\n\"},\"props\":\"\",\"rules\":\"rules:\\n" +
-            "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
+    private static final String EXPECTED_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: empty_metadata\\n\"},\"props\":\"\",\"rules\":\"rules:\\n"
+            + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
     
     private static final String EXPECTED_NOT_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"normal_db\":\"databaseName: normal_db\\ndataSources:\\n"
             + "  ds_0:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n"
