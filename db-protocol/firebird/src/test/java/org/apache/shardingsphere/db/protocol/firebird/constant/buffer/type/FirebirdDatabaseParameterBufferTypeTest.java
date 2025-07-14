@@ -20,17 +20,18 @@ package org.apache.shardingsphere.db.protocol.firebird.constant.buffer.type;
 import org.apache.shardingsphere.db.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdDatabaseParameterBufferTypeTest {
     
     @Test
     void assertValueOf() {
-        assertEquals(FirebirdDatabaseParameterBufferType.PAGE_SIZE, FirebirdDatabaseParameterBufferType.valueOf(4));
+        assertThat(FirebirdDatabaseParameterBufferType.valueOf(4), is(FirebirdDatabaseParameterBufferType.PAGE_SIZE));
         assertThrows(NullPointerException.class, () -> FirebirdDatabaseParameterBufferType.valueOf(999));
     }
     
