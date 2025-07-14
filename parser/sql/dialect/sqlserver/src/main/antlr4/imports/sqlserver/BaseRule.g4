@@ -505,6 +505,7 @@ convertExpr
 
 windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    | funcName = NTILE LP_ expr RP_ overClause
     | lagLeadFunction
     ;
 

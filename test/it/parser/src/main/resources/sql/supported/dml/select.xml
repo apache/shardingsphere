@@ -330,4 +330,5 @@
     <sql-case id="select_from_freetexttable_language_English" value="SELECT FT_TBL.Description ,KEY_TBL.RANK FROM Production.ProductDescription AS FT_TBL INNER JOIN FREETEXTTABLE(Production.ProductDescription, Description, 'high level of performance', LANGUAGE N'English', 2) AS KEY_TBL ON FT_TBL.ProductDescriptionID = KEY_TBL.[KEY] ORDER BY RANK DESC;" db-types="SQLServer"/>
     <sql-case id="select_nchar_function" value="SELECT NCHAR(143743);" db-types="SQLServer"/>
     <sql-case id="select_string_left" value="SELECT LEFT('abcdefg',2);" db-types="SQLServer"/>
+    <sql-case id="select_ntile_function" value="SELECT NTILE(4) OVER(ORDER BY SalesYTD DESC) AS Quartile FROM Sales.SalesPerson WHERE TerritoryID IS NOT NULL;" db-types="SQLServer"/>
 </sql-cases>
