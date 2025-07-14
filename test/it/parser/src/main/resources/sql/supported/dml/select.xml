@@ -329,4 +329,5 @@
     <sql-case id="select_lead_over" value="SELECT BusinessEntityID, YEAR(QuotaDate) AS SalesYear, SalesQuota AS CurrentQuota, LEAD(SalesQuota, 1,0) OVER (ORDER BY YEAR(QuotaDate)) AS NextQuota FROM Sales.SalesPersonQuotaHistory WHERE BusinessEntityID = 275 AND YEAR(QuotaDate) IN ('2005','2006'); " db-types="SQLServer"/>
     <sql-case id="select_from_freetexttable_language_English" value="SELECT FT_TBL.Description ,KEY_TBL.RANK FROM Production.ProductDescription AS FT_TBL INNER JOIN FREETEXTTABLE(Production.ProductDescription, Description, 'high level of performance', LANGUAGE N'English', 2) AS KEY_TBL ON FT_TBL.ProductDescriptionID = KEY_TBL.[KEY] ORDER BY RANK DESC;" db-types="SQLServer"/>
     <sql-case id="select_nchar_function" value="SELECT NCHAR(143743);" db-types="SQLServer"/>
+    <sql-case id="select_string_left" value="SELECT LEFT('abcdefg',2);" db-types="SQLServer"/>
 </sql-cases>
