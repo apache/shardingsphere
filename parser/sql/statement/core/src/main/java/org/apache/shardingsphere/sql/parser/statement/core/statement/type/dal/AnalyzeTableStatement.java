@@ -38,7 +38,7 @@ public final class AnalyzeTableStatement extends DALStatement {
         super(databaseType);
         this.tables = tables;
     }
-
+    
     @Override
     public SQLStatementAttributes getAttributes() {
         return new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
