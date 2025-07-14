@@ -10609,4 +10609,18 @@
             <column-item name="RANK" start-index="274" stop-index="277" order-direction="DESC" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_nchar_function">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="NCHAR(143743)" start-index="7" stop-index="19">
+                <expr>
+                    <function function-name="NCHAR" start-index="7" stop-index="19" text="NCHAR(143743)">
+                        <parameter>
+                            <literal-expression value="143743" start-index="13" stop-index="18" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
