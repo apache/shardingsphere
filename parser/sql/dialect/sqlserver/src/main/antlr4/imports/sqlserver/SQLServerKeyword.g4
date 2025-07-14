@@ -2038,3 +2038,7 @@ FREETEXTTABLE
 NTILE
     : N T I L E
     ;
+
+RANK
+    : R A N K
+    ;
