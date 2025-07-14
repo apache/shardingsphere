@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Drop view statement binder.
@@ -34,18 +35,15 @@ public final class DropViewStatementBinder implements SQLStatementBinder<DropVie
     
     @Override
     public DropViewStatement bind(final DropViewStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        DropViewStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        sqlStatement.getViews().forEach(each -> result.getViews().add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)));
-        return result;
+        Collection<SimpleTableSegment> boundViews = sqlStatement.getViews().stream()
+                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, LinkedHashMultimap.create())).collect(Collectors.toList());
+        return copy(sqlStatement, boundViews);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static DropViewStatement copy(final DropViewStatement sqlStatement) {
-        DropViewStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+    private DropViewStatement copy(final DropViewStatement sqlStatement, final Collection<SimpleTableSegment> boundViews) {
+        DropViewStatement result = new DropViewStatement(sqlStatement.getDatabaseType());
+        result.getViews().addAll(boundViews);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

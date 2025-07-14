@@ -32,7 +32,7 @@ import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -44,7 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -77,10 +77,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return Collections.emptyList();
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
         String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnAssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftColumnIsEncrypt = encryptTable.isEncryptColumn(each.getColumns().get(0).getIdentifier().getValue());

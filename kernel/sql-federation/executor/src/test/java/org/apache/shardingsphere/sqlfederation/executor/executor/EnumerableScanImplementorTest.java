@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqlfederation.executor.executor;
 
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -86,7 +86,7 @@ class EnumerableScanImplementorTest {
     
     private SelectStatementContext mockSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("pg_catalog"));
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(result.getTablesContext().getSchemaName()).thenReturn(Optional.of("pg_catalog"));

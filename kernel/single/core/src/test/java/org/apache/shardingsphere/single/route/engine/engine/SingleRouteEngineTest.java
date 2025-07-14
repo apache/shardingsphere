@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.single.route.engine.engine;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -27,13 +28,14 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -60,6 +62,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SingleRouteEngineTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertRouteInSameDataSource() throws SQLException {
@@ -94,7 +98,7 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithoutSingleRule() throws SQLException {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -110,7 +114,7 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithDefaultSingleRule() throws SQLException {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         SingleRouteEngine engine = new SingleRouteEngine(mockQualifiedTables(), sqlStatement, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();

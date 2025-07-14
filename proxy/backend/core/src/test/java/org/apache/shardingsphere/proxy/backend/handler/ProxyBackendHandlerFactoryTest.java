@@ -30,9 +30,9 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
@@ -46,7 +46,7 @@ import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -191,7 +191,7 @@ class ProxyBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, new EmptyStatement(), connectionSession, new HintValueContext());
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, new EmptyStatement(databaseType), connectionSession, new HintValueContext());
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
     

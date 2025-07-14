@@ -79,8 +79,9 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
      *
      * @return alias segment
      */
-    public AliasSegment getAliasSegment() {
-        return alias;
+    @Override
+    public Optional<AliasSegment> getAliasSegment() {
+        return Optional.ofNullable(alias);
     }
     
     @Override

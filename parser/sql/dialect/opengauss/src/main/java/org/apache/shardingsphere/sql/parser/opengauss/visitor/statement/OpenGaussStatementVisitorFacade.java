@@ -21,13 +21,14 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDDLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussTCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussLCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussTCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
@@ -51,6 +52,11 @@ public final class OpenGaussStatementVisitorFacade implements SQLStatementVisito
     }
     
     @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
+        return OpenGaussLCLStatementVisitor.class;
+    }
+    
+    @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
         return OpenGaussDCLStatementVisitor.class;
     }
@@ -58,11 +64,6 @@ public final class OpenGaussStatementVisitorFacade implements SQLStatementVisito
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return OpenGaussDALStatementVisitor.class;
-    }
-    
-    @Override
-    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return null;
     }
     
     @Override

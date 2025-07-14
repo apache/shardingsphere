@@ -28,9 +28,9 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnsupportedPreparedStatementException;
@@ -51,9 +51,9 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,7 +126,7 @@ class MySQLComStmtPrepareExecutorTest {
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(SelectStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     
@@ -159,7 +159,7 @@ class MySQLComStmtPrepareExecutorTest {
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLInsertStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(InsertStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
@@ -211,7 +211,7 @@ class MySQLComStmtPrepareExecutorTest {
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(UpdateStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     

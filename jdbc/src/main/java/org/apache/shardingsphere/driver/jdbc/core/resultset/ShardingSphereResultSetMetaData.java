@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;

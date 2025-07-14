@@ -17,48 +17,30 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
  * Explain statement binder.
  */
-@RequiredArgsConstructor
 public final class ExplainStatementBinder implements SQLStatementBinder<ExplainStatement> {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
     
     @Override
     public ExplainStatement bind(final ExplainStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        ExplainStatement result = copy(sqlStatement);
-        SQLStatement explainSQLStatement = sqlStatement.getSqlStatement();
-        SQLStatement boundSQLStatement = explainSQLStatement instanceof DMLStatement
-                ? new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, binderContext.getDatabaseType()).bind((DMLStatement) explainSQLStatement)
-                : explainSQLStatement;
-        result.setSqlStatement(boundSQLStatement);
-        return result;
+        SQLStatement boundSQLStatement = sqlStatement.getExplainableSQLStatement() instanceof DMLStatement
+                ? new DMLStatementBindEngine().bind((DMLStatement) sqlStatement.getExplainableSQLStatement(), binderContext)
+                : sqlStatement.getExplainableSQLStatement();
+        return copy(sqlStatement, boundSQLStatement);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static ExplainStatement copy(final ExplainStatement sqlStatement) {
-        ExplainStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
-        sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
-        sqlStatement.getColumnWild().ifPresent(result::setColumnWild);
+    private ExplainStatement copy(final ExplainStatement sqlStatement, final SQLStatement boundSQLStatement) {
+        ExplainStatement result = new ExplainStatement(sqlStatement.getDatabaseType(), boundSQLStatement);
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

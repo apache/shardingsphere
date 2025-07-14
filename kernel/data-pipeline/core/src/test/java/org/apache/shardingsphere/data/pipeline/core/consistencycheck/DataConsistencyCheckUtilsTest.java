@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataConsistencyCheckUtilsTest {
+    
+    private static final List<String> UNIQUE_KEYS_NAMES = Arrays.asList("order_id", "user_id");
     
     @Test
     void assertIsIntegerEquals() {
@@ -51,5 +57,14 @@ class DataConsistencyCheckUtilsTest {
         long time = System.currentTimeMillis();
         assertTrue(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(time), new Timestamp(time / 10L * 10L + 1L)));
         assertFalse(DataConsistencyCheckUtils.isMatched(equalsBuilder, new Timestamp(time), new Timestamp(time + 1000L)));
+    }
+    
+    @Test
+    void assertIsFirstUniqueKeysValueMatched() {
+        Map<String, Object> record1 = ImmutableMap.of("order_id", 101, "user_id", 1, "status", "ok");
+        Map<String, Object> record2 = ImmutableMap.of("order_id", 102, "user_id", 2, "status", "ok");
+        EqualsBuilder equalsBuilder = new EqualsBuilder();
+        assertTrue(DataConsistencyCheckUtils.isFirstUniqueKeyValueMatched(record1, record1, UNIQUE_KEYS_NAMES.get(0), equalsBuilder));
+        assertFalse(DataConsistencyCheckUtils.isFirstUniqueKeyValueMatched(record1, record2, UNIQUE_KEYS_NAMES.get(0), equalsBuilder));
     }
 }

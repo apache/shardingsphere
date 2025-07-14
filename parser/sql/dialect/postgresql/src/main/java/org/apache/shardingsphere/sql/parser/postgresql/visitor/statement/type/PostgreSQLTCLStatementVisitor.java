@@ -17,18 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.IsoLevelContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackPreparedContext;
@@ -41,36 +39,32 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Tr
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CheckpointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.LockStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.tcl.PostgreSQLPrepareTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARollbackStatement;
 
 /**
  * TCL statement visitor for PostgreSQL.
  */
 public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisitor implements TCLStatementVisitor {
     
+    public PostgreSQLTCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        SetTransactionStatement result = new SetTransactionStatement();
+        SetTransactionStatement result = new SetTransactionStatement(getDatabaseType());
         if (null != ctx.transactionModeList()) {
             for (TransactionModeItemContext each : ctx.transactionModeList().transactionModeItem()) {
-                result = new SetTransactionStatement(null, getTransactionIsolationLevel(each.isoLevel()), getTransactionAccessType(each));
+                result = new SetTransactionStatement(getDatabaseType(), null, getTransactionIsolationLevel(each.isoLevel()), getTransactionAccessType(each));
             }
         }
         return result;
@@ -110,80 +104,66 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new BeginTransactionStatement();
+        return new BeginTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAbort(final AbortContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(ctx.colId().getText());
+        return new SavepointStatement(getDatabaseType(), ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitRollbackToSavepoint(final RollbackToSavepointContext ctx) {
-        return new RollbackStatement(ctx.colId().getText());
+        return new RollbackStatement(getDatabaseType(), ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
-        return new ReleaseSavepointStatement(ctx.colId().getText());
+        return new ReleaseSavepointStatement(getDatabaseType(), ctx.colId().getText());
     }
     
     @Override
     public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
-        return new StartTransactionStatement();
+        return new BeginTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitEnd(final EndContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new SetConstraintsStatement();
-    }
-    
-    @Override
-    public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
-        return new CommitPreparedStatement();
-    }
-    
-    @Override
-    public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
-        return new RollbackPreparedStatement();
-    }
-    
-    @Override
-    public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(null == ctx.relationExprList() ? Collections.emptyList() : getLockTables(ctx.relationExprList().relationExpr()));
-    }
-    
-    private Collection<SimpleTableSegment> getLockTables(final Collection<RelationExprContext> relationExprContexts) {
-        return relationExprContexts.stream().map(each -> (SimpleTableSegment) visit(each.qualifiedName())).collect(Collectors.toList());
+        return new SetConstraintsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitPrepareTransaction(final PrepareTransactionContext ctx) {
-        return new PostgreSQLPrepareTransactionStatement();
+        return new XAPrepareStatement(getDatabaseType(), ctx.gid().getText());
     }
     
     @Override
-    public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new CheckpointStatement();
+    public ASTNode visitCommitPrepared(final CommitPreparedContext ctx) {
+        return new XACommitStatement(getDatabaseType(), ctx.gid().getText());
+    }
+    
+    @Override
+    public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
+        return new XARollbackStatement(getDatabaseType(), ctx.gid().getText());
     }
 }

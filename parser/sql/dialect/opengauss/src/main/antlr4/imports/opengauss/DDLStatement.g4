@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-grammar DDLStatement;
+parser grammar DDLStatement;
 
 import DMLStatement;
+
+options {tokenVocab = ModeLexer;}
 
 createTable
     : CREATE createTableSpecification TABLE ifNotExists? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))
-      inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
+      inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tablespace?
       (AS select withData?)?
       (EXECUTE name executeParamClause withData?)?
     ;
@@ -67,7 +69,7 @@ withData
     : WITH DATA | WITH NO DATA
     ;
 
-tableSpace
+tablespace
     : TABLESPACE name
     ;
 
@@ -89,7 +91,7 @@ accessMethod
 
 createIndex
     : CREATE createIndexSpecification INDEX concurrentlyClause (ifNotExists? indexName)? ON onlyClause tableName
-      accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tableSpace? whereClause?
+      accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tablespace? whereClause?
     ;
 
 include
@@ -1428,7 +1430,11 @@ transformTypeList
     ;
 
 funcAs
-    : identifier | STRING_ (COMMA_ identifier|STRING_)?
+    : funcDefinition (COMMA_ funcDefinition)?
+    ;
+
+funcDefinition
+    : identifier | aexprConst
     ;
 
 funcReturn

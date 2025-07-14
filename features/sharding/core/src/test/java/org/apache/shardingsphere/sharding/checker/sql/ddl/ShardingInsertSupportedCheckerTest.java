@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.checker.sql.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,10 +36,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -82,7 +81,7 @@ class ShardingInsertSupportedCheckerTest {
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        return new InsertStatementContext(databaseType, insertStatement, params, metaData, "foo_db");
+        return new InsertStatementContext(insertStatement, params, metaData, "foo_db");
     }
     
     @Test
@@ -126,6 +125,7 @@ class ShardingInsertSupportedCheckerTest {
     
     private InsertStatement createInsertStatement() {
         InsertStatement result = mock(InsertStatement.class);
+        when(result.getDatabaseType()).thenReturn(databaseType);
         when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user")))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
         List<ColumnSegment> columnSegments = Collections.singletonList(columnSegment);
@@ -137,7 +137,7 @@ class ShardingInsertSupportedCheckerTest {
     
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         when(result.getInsertSelect()).thenReturn(Optional.of(new SubquerySegment(0, 0, selectStatement, "")));
         return result;

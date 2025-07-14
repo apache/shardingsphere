@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.statement.rql.rule.database;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
 /**
  * Count rule statement.
@@ -28,8 +28,8 @@ public final class CountRuleStatement extends ShowDatabaseRulesStatement {
     
     private final String type;
     
-    public CountRuleStatement(final DatabaseSegment database, final String type) {
-        super(database);
+    public CountRuleStatement(final FromDatabaseSegment fromDatabase, final String type) {
+        super(fromDatabase);
         this.type = type;
     }
 }

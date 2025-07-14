@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
@@ -47,13 +48,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.HandlerStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.ImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -65,31 +66,30 @@ import java.util.stream.Collectors;
  */
 public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implements DMLStatementVisitor {
     
+    public MySQLDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        CallStatement result = new CallStatement();
         String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
-        result.setProcedureName(procedureName);
         List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(params);
-        return result;
+        return new CallStatement(getDatabaseType(), procedureName, params);
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        DoStatement result = new DoStatement();
-        result.getParameters().addAll(ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
-        return result;
+        return new DoStatement(getDatabaseType(), ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitHandlerStatement(final HandlerStatementContext ctx) {
-        return new HandlerStatement();
+        return new MySQLHandlerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitImportStatement(final ImportStatementContext ctx) {
-        return new ImportStatement();
+        return new MySQLImportStatement(getDatabaseType());
     }
     
     @Override
@@ -99,16 +99,12 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        LoadDataStatement result = new LoadDataStatement();
-        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        LoadXMLStatement result = new LoadXMLStatement();
-        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new MySQLLoadXMLStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-rewrite</artifactId>
+            <artifactId>shardingsphere-infra-rewrite-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

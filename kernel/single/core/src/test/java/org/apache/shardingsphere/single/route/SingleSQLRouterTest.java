@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.route;
 
 import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -45,7 +45,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -215,7 +215,7 @@ class SingleSQLRouterTest {
     }
     
     private QueryContext createQueryContext() {
-        CreateTableStatement createTableStatement = new CreateTableStatement();
+        CreateTableStatement createTableStatement = new CreateTableStatement(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, new IdentifierValue("t_order"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         createTableStatement.setTable(new SimpleTableSegment(tableNameSegment));
@@ -224,6 +224,6 @@ class SingleSQLRouterTest {
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        return new QueryContext(new CreateTableStatementContext(databaseType, createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext, metaData);
+        return new QueryContext(new CommonSQLStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>(), new HintValueContext(), connectionContext, metaData);
     }
 }

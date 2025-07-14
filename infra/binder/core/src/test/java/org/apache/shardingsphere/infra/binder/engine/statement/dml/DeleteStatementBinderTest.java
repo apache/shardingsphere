@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -52,12 +52,12 @@ class DeleteStatementBinderTest {
     
     @Test
     void assertBind() {
-        DeleteStatement deleteStatement = new DeleteStatement();
+        DeleteStatement deleteStatement = new DeleteStatement(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         deleteStatement.setTable(simpleTableSegment);
         deleteStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, deleteStatement));
+        DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), deleteStatement));
         assertThat(actual, not(deleteStatement));
         assertThat(actual.getTable(), not(deleteStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

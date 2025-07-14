@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.type.TypeSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.CreateTypeStatement;
 
 import java.util.Collection;
 
+/**
+ * Create object type statement for Oracle.
+ */
 @Getter
-@RequiredArgsConstructor
-public final class OracleCreateObjectTypeStatement extends CreateTypeStatement implements OracleStatement {
+public final class OracleCreateObjectTypeStatement extends CreateTypeStatement {
     
     private final boolean isReplace;
     
@@ -44,4 +45,16 @@ public final class OracleCreateObjectTypeStatement extends CreateTypeStatement i
     
     private final Collection<TypeDefinitionSegment> typeDefinitions;
     
+    public OracleCreateObjectTypeStatement(final DatabaseType databaseType,
+                                           final boolean isReplace, final boolean isEditionable, final boolean isFinal, final boolean isInstantiable,
+                                           final boolean isPersistable, final TypeSegment typeSegment, final Collection<TypeDefinitionSegment> typeDefinitions) {
+        super(databaseType);
+        this.isReplace = isReplace;
+        this.isEditionable = isEditionable;
+        this.isFinal = isFinal;
+        this.isInstantiable = isInstantiable;
+        this.isPersistable = isPersistable;
+        this.typeSegment = typeSegment;
+        this.typeDefinitions = typeDefinitions;
+    }
 }

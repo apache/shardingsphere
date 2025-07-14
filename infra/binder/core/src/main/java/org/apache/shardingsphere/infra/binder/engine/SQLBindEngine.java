@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.infra.binder.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine;
-import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * SQL bind engine.
@@ -51,33 +51,37 @@ public final class SQLBindEngine {
     /**
      * Bind SQL statement.
      *
-     * @param databaseType database type
      * @param sqlStatement SQL statement
      * @param params parameters
      * @return SQL statement context
      */
-    public SQLStatementContext bind(final DatabaseType databaseType, final SQLStatement sqlStatement, final List<Object> params) {
-        SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(databaseType, sqlStatement) : sqlStatement;
-        return SQLStatementContextFactory.newInstance(metaData, databaseType, boundSQLStatement, params, currentDatabaseName);
+    public SQLStatementContext bind(final SQLStatement sqlStatement, final List<Object> params) {
+        SQLStatement boundSQLStatement = isNeedBind() ? bind(sqlStatement) : sqlStatement;
+        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, params, currentDatabaseName);
+    }
+    
+    private SQLStatement bind(final SQLStatement sqlStatement) {
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, sqlStatement);
+        Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, sqlStatement.getDatabaseType());
+        if (dialectSQLBindEngine.isPresent()) {
+            Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(sqlStatement, binderContext);
+            if (boundSQLStatement.isPresent()) {
+                return boundSQLStatement.get();
+            }
+        }
+        if (sqlStatement instanceof DMLStatement) {
+            return new DMLStatementBindEngine().bind((DMLStatement) sqlStatement, binderContext);
+        }
+        if (sqlStatement instanceof DDLStatement) {
+            return new DDLStatementBindEngine().bind((DDLStatement) sqlStatement, binderContext);
+        }
+        if (sqlStatement instanceof DALStatement) {
+            return new DALStatementBindEngine().bind((DALStatement) sqlStatement, binderContext);
+        }
+        return sqlStatement;
     }
     
     private boolean isNeedBind() {
         return !hintValueContext.findHintDataSourceName().isPresent() && !HintManager.getDataSourceName().isPresent();
-    }
-    
-    private SQLStatement bindSQLStatement(final DatabaseType databaseType, final SQLStatement statement) {
-        if (statement instanceof DMLStatement) {
-            return new DMLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DMLStatement) statement);
-        }
-        if (statement instanceof DDLStatement) {
-            return new DDLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DDLStatement) statement);
-        }
-        if (statement instanceof DALStatement) {
-            return new DALStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DALStatement) statement);
-        }
-        if (statement instanceof DCLStatement) {
-            return new DCLStatementBindEngine(metaData, currentDatabaseName, hintValueContext, databaseType).bind((DCLStatement) statement);
-        }
-        return statement;
     }
 }

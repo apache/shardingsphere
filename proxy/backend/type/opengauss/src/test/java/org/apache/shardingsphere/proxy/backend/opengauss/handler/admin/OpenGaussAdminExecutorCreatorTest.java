@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
@@ -44,7 +43,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(DatabaseTypedSPILoader.class)
@@ -94,8 +92,8 @@ class OpenGaussAdminExecutorCreatorTest {
     void assertCreateOtherExecutor() {
         initDialectDatabaseStatisticsCollector(false);
         OpenGaussAdminExecutorCreator creator = new OpenGaussAdminExecutorCreator();
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         assertThat(creator.create(sqlStatementContext), is(Optional.empty()));
         assertThat(creator.create(sqlStatementContext, "", "", Collections.emptyList()), is(Optional.empty()));
     }

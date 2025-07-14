@@ -48,7 +48,7 @@ developers can test ShardingSphere Proxy Native in the form of `dynamically link
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -68,7 +68,7 @@ Just add the `-mostly` suffix to the Docker Image Tag corresponding to the speci
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-mostly
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-mostly
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -86,7 +86,7 @@ Just add the `-static` suffix to the Docker Image Tag corresponding to the speci
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-static
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-static
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -97,8 +97,7 @@ services:
 
 If you build from source code, developers have two options,
 
-1. Build a `Linux Docker Image` containing ShardingSphere Proxy Native products without installing a local toolchain
-
+1. Build a `Linux Container` containing ShardingSphere Proxy Native products without installing a local toolchain
 2. Build a ShardingSphere Proxy Native product with a local toolchain installed. For Windows, you can create a GraalVM Native Image in the form of `.exe` in this way
 
 ### Use JARs with custom SPI implementations or third-party dependent JARs
@@ -116,7 +115,7 @@ An example of adding a MySQL JDBC Driver dependency is as follows. The relevant 
 </dependencies>
 ```
 
-### Build Linux Docker Image
+### Build Linux Container
 
 #### Prerequisites
 
@@ -200,7 +199,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -222,7 +221,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -244,7 +243,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" "-DskipTests" clean package
 ```
 
 A possible Docker Compose example is,
@@ -267,9 +266,9 @@ Contributors must have installed on their devices,
 
 1. GraalVM CE 22.0.2, or a GraalVM downstream distribution compatible with GraalVM CE 22.0.2. Refer to [GraalVM Native Image](/en/user-manual/shardingsphere-jdbc/graalvm-native-image).
 2. The native toolchain required to compile GraalVM Native Image. Refer to https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites .
-3. Docker Engine that can run Linux Containers
 
 The possible required operations under Ubuntu and Windows are consistent with [Development and test](/en/user-manual/shardingsphere-jdbc/graalvm-native-image/development).
+However, it is not necessary to install Container Runtime.
 
 ##### Native toolchain for static compilation
 

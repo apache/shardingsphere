@@ -79,7 +79,7 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public final Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) {
         Object result = currentRow.getValue().get(columnIndex - 1);
         wasNull = null == result;
         return result;

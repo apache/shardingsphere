@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLComStmtSendLongDataPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
@@ -45,8 +44,7 @@ class MySQLComStmtSendLongDataExecutorTest {
         when(packet.getData()).thenReturn(data);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
-        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("insert into t (b) values (?)", mock(SQLStatementContext.class),
-                new HintValueContext(), Collections.emptyList());
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("insert into t (b) values (?)", mock(), new HintValueContext(), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtSendLongDataExecutor executor = new MySQLComStmtSendLongDataExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();

@@ -116,7 +116,7 @@ literalsType
     ;
 
 identifier
-    : UNICODE_ESCAPE? IDENTIFIER_ uescape? |  unreservedWord 
+    : UNICODE_ESCAPE? IDENTIFIER_ uescape? | unreservedWord
     ;
 
 uescape

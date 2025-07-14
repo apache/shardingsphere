@@ -39,7 +39,7 @@ class PostgreSQLDoubleBinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThat(new PostgreSQLDoubleBinaryProtocolValue().getColumnLength(""), is(8));
+        assertThat(new PostgreSQLDoubleBinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), ""), is(8));
     }
     
     @Test

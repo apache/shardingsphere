@@ -55,8 +55,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.MultiState
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -126,7 +126,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(
-                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
+                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
     }
     

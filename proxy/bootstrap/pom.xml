@@ -134,6 +134,18 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-proxy-dialect-firebird</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -152,13 +164,47 @@
                 </dependency>
                 
                 <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.opengauss</groupId>
+                    <artifactId>opengauss-jdbc</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
                     <groupId>com.mysql</groupId>
                     <artifactId>mysql-connector-j</artifactId>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
+                    <groupId>org.firebirdsql.jdbc</groupId>
+                    <artifactId>jaybird</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

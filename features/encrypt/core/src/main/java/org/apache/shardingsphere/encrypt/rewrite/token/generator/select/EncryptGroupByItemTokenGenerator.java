@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.Ord
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -77,7 +77,7 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
         for (OrderByItem each : getGroupByItems(sqlStatementContext)) {
             if (each.getSegment() instanceof ColumnOrderByItemSegment) {
                 ColumnSegment columnSegment = ((ColumnOrderByItemSegment) each.getSegment()).getColumn();
-                generateSQLToken(columnSegment, sqlStatementContext.getDatabaseType()).ifPresent(result::add);
+                generateSQLToken(columnSegment, sqlStatementContext.getSqlStatement().getDatabaseType()).ifPresent(result::add);
             }
         }
         return result;

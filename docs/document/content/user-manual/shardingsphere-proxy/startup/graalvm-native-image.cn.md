@@ -46,7 +46,7 @@ ShardingSphere Proxy Native 的默认端口为 `3307`，配置文件从 `/opt/sh
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -66,7 +66,7 @@ services:
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-mostly
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-mostly
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -84,7 +84,7 @@ services:
 ```yaml
 services:
   apache-shardingsphere-proxy-native:
-    image: ghcr.io/apache/shardingsphere-proxy-native:da826af47804dae79b1ba5717af86792726745fd-static
+    image: ghcr.io/apache/shardingsphere-proxy-native:a2661a750be0301cb221ba8f549504f04cc8a5af-static
     volumes:
       - ./custom/conf:/opt/shardingsphere-proxy/conf
     ports:
@@ -95,7 +95,7 @@ services:
 
 若从源码构建，开发者有2种选择，
 
-1. 在不安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物的 `Linux Docker Image`
+1. 在不安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物的 `Linux Container`
 2. 在安装本地工具链的情况下，构建包含 ShardingSphere Proxy Native 产物。对于 Windows，可通过此途径创建`.exe`形态的 GraalVM Native Image
 
 ### 使用存在自定义 SPI 实现的 JAR 或第三方依赖的 JAR
@@ -113,7 +113,7 @@ services:
 </dependencies>
 ```
 
-### 构建 Linux Docker Image
+### 构建 Linux Container
 
 #### 前提条件
 
@@ -195,7 +195,7 @@ wsl --install
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-DskipTests" clean package
 ```
 
 一个可能的 Docker Compose 示例为，
@@ -217,7 +217,7 @@ services:
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-mostly" "-DskipTests" clean package
 ```
 
 一个可能的 Docker Compose 示例为，
@@ -239,7 +239,7 @@ services:
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" clean validate
+./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.build.native.linux" "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-Dproxy.native.image.tag=5.5.3-SNAPSHOT-static" "-DskipTests" clean package
 ```
 
 一个可能的 Docker Compose 示例为，
@@ -262,9 +262,9 @@ services:
 
 1. GraalVM CE 22.0.2，或与 GraalVM CE 22.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
 2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
-3. 可运行 Linux Containers 的 Docker Engine
 
 在 Ubuntu 与 Windows 下可能的所需操作与[开发和测试](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image/development)一致。
+但不需要安装 Container Runtime。
 
 ##### 静态编译所需的本地工具链
 

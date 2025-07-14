@@ -107,7 +107,7 @@ public final class ProjectionsSegmentBinder {
                     ((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(
                     projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), ((ExpressionProjectionSegment) projectionSegment).getText(), boundExpressionSegment);
-            result.setAlias(((ExpressionProjectionSegment) projectionSegment).getAliasSegment());
+            ((ExpressionProjectionSegment) projectionSegment).getAliasSegment().ifPresent(result::setAlias);
             return result;
         }
         if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
@@ -149,7 +149,7 @@ public final class ProjectionsSegmentBinder {
                                                                                                                final Collection<ProjectionSegment> projections) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                projections, new IdentifierValue(""), binderContext.getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+                projections, new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         result.put(new CaseInsensitiveString(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE));
         return result;
     }

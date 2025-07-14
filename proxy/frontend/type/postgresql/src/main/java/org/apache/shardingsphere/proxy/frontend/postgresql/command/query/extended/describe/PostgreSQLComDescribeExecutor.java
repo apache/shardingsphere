@@ -57,7 +57,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.sql.Connection;
 import java.sql.ParameterMetaData;
@@ -126,8 +126,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement) {
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement();
         Collection<Integer> unspecifiedTypeParameterIndexes = getUnspecifiedTypeParameterIndexes(preparedStatement);
-        Optional<ReturningSegment> returningSegment = insertStatement.getReturningSegment();
-        if (insertStatement.getParameterMarkerSegments().isEmpty() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
+        Optional<ReturningSegment> returningSegment = insertStatement.getReturning();
+        if (insertStatement.getParameterMarkers().isEmpty() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
             return;
         }
         String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
@@ -238,7 +238,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), logicPreparedStatement.getHintValueContext())
-                .bind(logicPreparedStatement.getSqlStatementContext().getDatabaseType(), logicPreparedStatement.getSqlStatementContext().getSqlStatement(), Collections.emptyList());
+                .bind(logicPreparedStatement.getSqlStatementContext().getSqlStatement(), Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList(), logicPreparedStatement.getHintValueContext(),
                 connectionSession.getConnectionContext(), metaData);
         ExecutionContext executionContext =

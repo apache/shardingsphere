@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.auditor;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -48,6 +47,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingSQLAuditorTest {
     
-    @Mock(extraInterfaces = TableAvailable.class, answer = Answers.RETURNS_DEEP_STUBS)
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SQLStatementContext sqlStatementContext;
     
     @Mock
@@ -81,8 +81,8 @@ class ShardingSQLAuditorTest {
     @BeforeEach
     void setUp() {
         when(hintValueContext.getDisableAuditNames()).thenReturn(Collections.singleton("foo_auditor"));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
-        when(((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("foo_tbl"));
+        when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         ShardingTable shardingTable = mock(ShardingTable.class);
         when(rule.findShardingTable("foo_tbl")).thenReturn(Optional.of(shardingTable));
         when(rule.getAuditStrategyConfiguration(shardingTable)).thenReturn(auditStrategy);
@@ -92,7 +92,10 @@ class ShardingSQLAuditorTest {
     
     @Test
     void assertAuditSuccessWithNotTableAvailable() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         sqlAuditor.audit(queryContext, globalRuleMetaData, database, rule);
         verify(queryContext, times(0)).getHintValueContext();
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.checker.ddl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.RenameTableStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -31,7 +31,9 @@ import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,9 +90,12 @@ class ShardingRenameTableRouteContextCheckerTest {
     private SQLStatementContext createRenameTableStatementContext() {
         RenameTableStatement sqlStatement = mock(RenameTableStatement.class);
         RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 0);
-        renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        renameTableDefinitionSegment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
+        renameTableDefinitionSegment.setTable(table);
+        SimpleTableSegment renameTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
+        renameTableDefinitionSegment.setRenameTable(renameTable);
         when(sqlStatement.getRenameTables()).thenReturn(Collections.singleton(renameTableDefinitionSegment));
-        return new RenameTableStatementContext(mock(), sqlStatement);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes(new TableSQLStatementAttribute(Arrays.asList(table, renameTable))));
+        return new CommonSQLStatementContext(sqlStatement);
     }
 }

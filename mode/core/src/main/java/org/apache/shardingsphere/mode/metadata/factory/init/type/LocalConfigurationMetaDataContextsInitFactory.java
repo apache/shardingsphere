@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.metadata.factory.init.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParam
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.init.MetaDataContextsInitFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -37,17 +38,25 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * Local configuration meta data contexts init factory.
  */
-@RequiredArgsConstructor
 public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDataContextsInitFactory {
     
     private final MetaDataPersistFacade persistFacade;
     
     private final ComputeNodeInstanceContext instanceContext;
+    
+    private final boolean persistSchemasEnabled;
+    
+    public LocalConfigurationMetaDataContextsInitFactory(final PersistRepository repository, final ComputeNodeInstanceContext instanceContext, final Properties props) {
+        persistSchemasEnabled = new ConfigurationProperties(props).getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
+        persistFacade = new MetaDataPersistFacade(repository, persistSchemasEnabled);
+        this.instanceContext = instanceContext;
+    }
     
     @Override
     public MetaDataContexts create(final ContextManagerBuilderParameter param) throws SQLException {
@@ -75,7 +84,9 @@ public final class LocalConfigurationMetaDataContextsInitFactory extends MetaDat
             if (schema.isEmpty()) {
                 persistFacade.getDatabaseMetaDataFacade().getSchema().add(each.getName(), schema.getName());
             }
-            persistFacade.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
+            if (persistSchemasEnabled) {
+                persistFacade.getDatabaseMetaDataFacade().getTable().persist(each.getName(), schema.getName(), schema.getAllTables());
+            }
         }));
         for (Entry<String, DatabaseStatistics> databaseStatisticsEntry : metaDataContexts.getStatistics().getDatabaseStatisticsMap().entrySet()) {
             for (Entry<String, SchemaStatistics> schemaStatisticsEntry : databaseStatisticsEntry.getValue().getSchemaStatisticsMap().entrySet()) {

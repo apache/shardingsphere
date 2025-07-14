@@ -37,6 +37,7 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -90,11 +91,9 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
             containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
-            Properties algorithmProps = new Properties();
-            algorithmProps.setProperty("chunk-size", "300");
-            assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH", algorithmProps);
+            assertMigrationSuccessById(containerComposer, orderJobId, "DATA_MATCH", convertToProperties(ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL")));
             String orderItemJobId = getJobIdByTableName(containerComposer, "ds_0.t_order_item");
-            assertMigrationSuccessById(containerComposer, orderItemJobId, "DATA_MATCH", algorithmProps);
+            assertMigrationSuccessById(containerComposer, orderItemJobId, "DATA_MATCH", convertToProperties(ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE")));
             Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
             assertMigrationSuccessById(containerComposer, orderItemJobId, "CRC32_MATCH", new Properties());
             for (String each : listJobId(containerComposer)) {

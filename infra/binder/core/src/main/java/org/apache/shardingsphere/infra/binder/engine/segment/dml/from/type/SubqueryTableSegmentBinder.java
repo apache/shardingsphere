@@ -30,11 +30,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Subquery table segment binder.
@@ -55,9 +57,9 @@ public final class SubqueryTableSegmentBinder {
     public static SubqueryTableSegment bind(final SubqueryTableSegment segment, final SQLStatementBinderContext binderContext,
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final boolean fromWithSegment) {
-        fillPivotColumnNamesInBinderContext(segment, binderContext);
+        binderContext.getPivotColumnNames().addAll(segment.getPivot().map(PivotSegment::getPivotColumnNames).orElse(Collections.emptyList()));
         SQLStatementBinderContext subqueryBinderContext = new SQLStatementBinderContext(
-                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType(), segment.getSubquery().getSelect());
+                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSubquery().getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SelectStatement boundSubSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
@@ -67,14 +69,10 @@ public final class SubqueryTableSegmentBinder {
         SubqueryTableSegment result = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment);
         segment.getAliasSegment().ifPresent(result::setAlias);
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+                boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         SimpleTableSegmentBinderContext tableBinderContext = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         tableBinderContext.setFromWithSegment(fromWithSegment);
         tableBinderContexts.put(new CaseInsensitiveString(subqueryTableName.getValue()), tableBinderContext);
         return result;
-    }
-    
-    private static void fillPivotColumnNamesInBinderContext(final SubqueryTableSegment segment, final SQLStatementBinderContext binderContext) {
-        segment.getPivot().ifPresent(optional -> optional.getPivotColumns().forEach(each -> binderContext.getPivotColumnNames().add(each.getIdentifier().getValue())));
     }
 }

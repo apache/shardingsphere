@@ -673,7 +673,7 @@ regularFunction
     ;
 
 regularFunctionName
-    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE
+    : identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL | DECODE | TRANSLATE
     ;
 
 joinOperator

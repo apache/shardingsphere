@@ -28,7 +28,7 @@ public final class PostgreSQLFloat4ArrayBinaryProtocolValue implements PostgreSQ
     private static final PostgreSQLArrayParameterDecoder ARRAY_PARAMETER_DECODER = new PostgreSQLArrayParameterDecoder();
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         throw new UnsupportedSQLOperationException("PostgreSQLFloat4ArrayBinaryProtocolValue.getColumnLength()");
     }
     

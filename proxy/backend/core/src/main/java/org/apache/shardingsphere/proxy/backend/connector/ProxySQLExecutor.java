@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
@@ -59,13 +59,14 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CursorStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -116,25 +117,22 @@ public final class ProxySQLExecutor {
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(defaultSchemaName)
-                : defaultSchemaName;
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
+        return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     
     /**
      * Check execute prerequisites.
      *
-     * @param executionContext execution context
+     * @param sqlStatementContext execution context
      */
-    public void checkExecutePrerequisites(final ExecutionContext executionContext) {
+    public void checkExecutePrerequisites(final SQLStatementContext sqlStatementContext) {
         ShardingSpherePreconditions.checkState(
-                isValidExecutePrerequisites(executionContext.getSqlStatementContext()), () -> new TableModifyInTransactionException(getTableName(executionContext)));
+                isValidExecutePrerequisites(sqlStatementContext.getSqlStatement()), () -> new TableModifyInTransactionException(getTableName(sqlStatementContext.getTablesContext())));
     }
     
-    private boolean isValidExecutePrerequisites(final SQLStatementContext sqlStatementContext) {
-        return !(sqlStatementContext.getSqlStatement() instanceof DDLStatement)
-                || isSupportDDLInTransaction(sqlStatementContext.getDatabaseType(), (DDLStatement) sqlStatementContext.getSqlStatement());
+    private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement) {
+        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatement.getDatabaseType(), (DDLStatement) sqlStatement);
     }
     
     private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement) {
@@ -168,10 +166,8 @@ public final class ProxySQLExecutor {
         return sqlStatement instanceof CursorStatement || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
     }
     
-    private String getTableName(final ExecutionContext executionContext) {
-        return executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().isEmpty()
-                ? ((TableAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()
-                : "unknown_table";
+    private String getTableName(final TablesContext tablesContext) {
+        return tablesContext.getSimpleTables().isEmpty() ? "unknown_table" : tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     /**
@@ -186,7 +182,7 @@ public final class ProxySQLExecutor {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(executionContext.getSqlStatementContext().getDatabaseType()).getDialectDatabaseMetaData();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(executionContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
                 && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();
         return hasRawExecutionRule(rules)

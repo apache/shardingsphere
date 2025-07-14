@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AddColumnSpecificationContext;
@@ -63,21 +64,21 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateCollationStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.ExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.collation.CreateCollationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.AlterDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.CreateDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.AlterSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -88,10 +89,14 @@ import java.util.Collections;
  */
 public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor implements DDLStatementVisitor {
     
+    public FirebirdDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -180,7 +185,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -202,7 +207,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitAlterDomain(final AlterDomainContext ctx) {
-        return new AlterDomainStatement();
+        return new AlterDomainStatement(getDatabaseType());
     }
     
     @SuppressWarnings("unchecked")
@@ -248,68 +253,64 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement();
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement();
+        return new CreateFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        return new CreateProcedureStatement();
+        return new CreateProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement();
+        return new AlterProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        AlterSequenceStatement result = new AlterSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new AlterSequenceStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitCreateCollation(final CreateCollationContext ctx) {
-        return new CreateCollationStatement();
+        return new CreateCollationStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDomain(final CreateDomainContext ctx) {
-        return new CreateDomainStatement();
+        return new CreateDomainStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
-        return new AlterTriggerStatement();
+        return new AlterTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement();
+        return new CreateTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        CreateSequenceStatement result = new CreateSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new CreateSequenceStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement();
+        return new ExecuteStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement();
+        CommentStatement result = new CommentStatement(getDatabaseType());
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }

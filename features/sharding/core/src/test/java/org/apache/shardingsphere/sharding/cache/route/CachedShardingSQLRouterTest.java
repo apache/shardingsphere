@@ -37,8 +37,11 @@ import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheKe
 import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -57,17 +60,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CachedShardingSQLRouterTest {
     
     @Mock
     private ShardingCache shardingCache;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SQLStatementContext sqlStatementContext;
     
     @Test
     void assertCreateRouteContextWithSQLExceedMaxAllowedLength() {
         when(shardingCache.getConfiguration()).thenReturn(new ShardingCacheConfiguration(1, null));
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext =
                 new QueryContext(sqlStatementContext, "select 1", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         Optional<RouteContext> actual = new CachedShardingSQLRouter().loadRouteContext(null, queryContext, mock(RuleMetaData.class), null, shardingCache, Collections.emptyList(), null);

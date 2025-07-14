@@ -37,9 +37,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,9 +68,9 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
             sqlStatement = sqlParserEngine.parse(escapedSql, true);
             sql = escapedSql;
         }
-        List<Integer> actualParameterMarkerIndexes = new ArrayList<>();
+        List<Integer> actualParameterMarkerIndexes = new ArrayList<>(sqlStatement.getParameterMarkers().size());
         if (sqlStatement.getParameterCount() > 0) {
-            List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(((AbstractSQLStatement) sqlStatement).getParameterMarkerSegments());
+            List<ParameterMarkerSegment> parameterMarkerSegments = new ArrayList<>(sqlStatement.getParameterMarkers());
             for (ParameterMarkerSegment each : parameterMarkerSegments) {
                 actualParameterMarkerIndexes.add(each.getParameterIndex());
             }
@@ -81,7 +80,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
-                : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(databaseType, sqlStatement, Collections.emptyList());
+                : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement, Collections.emptyList());
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
                 sql, sqlStatementContext, packet.getHintValueContext(), paddedColumnTypes, actualParameterMarkerIndexes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);

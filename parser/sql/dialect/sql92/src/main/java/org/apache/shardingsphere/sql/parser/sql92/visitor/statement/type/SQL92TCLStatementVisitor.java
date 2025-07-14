@@ -17,33 +17,38 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 
 /**
  * TCL statement visitor for SQL92.
  */
 public final class SQL92TCLStatementVisitor extends SQL92StatementVisitor implements TCLStatementVisitor {
     
+    public SQL92TCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement();
+        return new SetTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(getDatabaseType());
     }
 }

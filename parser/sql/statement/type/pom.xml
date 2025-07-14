@@ -28,15 +28,9 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>doris</module>
-        <module>firebird</module>
-        <module>hive</module>
-        <module>mysql</module>
-        <module>opengauss</module>
-        <module>oracle</module>
         <module>postgresql</module>
-        <module>presto</module>
-        <module>sql92</module>
+        <module>mysql</module>
         <module>sqlserver</module>
+        <module>oracle</module>
     </modules>
 </project>

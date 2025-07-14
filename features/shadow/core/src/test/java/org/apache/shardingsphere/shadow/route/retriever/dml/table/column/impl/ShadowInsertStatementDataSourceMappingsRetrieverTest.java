@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
 import org.junit.jupiter.api.Test;

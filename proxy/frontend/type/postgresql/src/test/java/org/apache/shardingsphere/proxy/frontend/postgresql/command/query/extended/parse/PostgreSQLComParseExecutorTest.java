@@ -22,8 +22,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
-import org.apache.shardingsphere.infra.binder.context.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -41,8 +41,8 @@ import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,7 +126,7 @@ class PostgreSQLComParseExecutorTest {
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(InsertStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.UNSPECIFIED)));
     }

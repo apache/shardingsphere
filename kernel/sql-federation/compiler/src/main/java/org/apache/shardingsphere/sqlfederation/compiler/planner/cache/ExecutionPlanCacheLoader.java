@@ -20,16 +20,13 @@ package org.apache.shardingsphere.sqlfederation.compiler.planner.cache;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-
 /**
  * Execution plan cache loader.
  */
 public final class ExecutionPlanCacheLoader implements CacheLoader<ExecutionPlanCacheKey, SQLFederationExecutionPlan> {
     
-    @ParametersAreNonnullByDefault
     @Override
     public SQLFederationExecutionPlan load(final ExecutionPlanCacheKey cacheKey) {
-        return cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getDatabaseType());
+        return cacheKey.getSqlStatementCompiler().compile(cacheKey.getSqlStatement(), cacheKey.getSqlStatement().getDatabaseType().getType());
     }
 }

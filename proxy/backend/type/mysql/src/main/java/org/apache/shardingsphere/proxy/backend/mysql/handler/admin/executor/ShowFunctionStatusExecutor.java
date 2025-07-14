@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowFunctionStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.function.MySQLShowFunctionStatusStatement;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import java.util.List;
 @Getter
 public final class ShowFunctionStatusExecutor implements DatabaseAdminQueryExecutor {
     
-    private final ShowFunctionStatusStatement showFunctionStatusStatement;
+    private final MySQLShowFunctionStatusStatement showFunctionStatusStatement;
     
     private QueryResultMetaData queryResultMetaData;
     

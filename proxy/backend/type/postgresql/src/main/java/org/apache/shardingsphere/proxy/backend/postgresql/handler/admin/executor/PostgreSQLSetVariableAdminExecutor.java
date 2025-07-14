@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.c
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 
 /**
  * Set variable admin executor for PostgreSQL.

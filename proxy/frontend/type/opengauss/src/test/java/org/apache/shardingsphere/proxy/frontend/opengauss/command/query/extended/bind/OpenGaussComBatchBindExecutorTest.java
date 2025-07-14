@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -86,11 +86,10 @@ class OpenGaussComBatchBindExecutorTest {
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
-        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(),
-                Collections.emptyList());
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
+                sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, serverPreparedStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

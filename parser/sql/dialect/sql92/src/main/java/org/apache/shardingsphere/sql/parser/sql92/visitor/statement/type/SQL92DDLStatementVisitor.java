@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AddColumnSpecificationContext;
@@ -51,9 +52,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -64,10 +65,14 @@ import java.util.Collections;
  */
 public final class SQL92DDLStatementVisitor extends SQL92StatementVisitor implements DDLStatementVisitor {
     
+    public SQL92DDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -157,7 +162,7 @@ public final class SQL92DDLStatementVisitor extends SQL92StatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -217,7 +222,7 @@ public final class SQL92DDLStatementVisitor extends SQL92StatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement();
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }

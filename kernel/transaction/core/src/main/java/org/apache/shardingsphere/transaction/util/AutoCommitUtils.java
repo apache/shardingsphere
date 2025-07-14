@@ -20,9 +20,9 @@ package org.apache.shardingsphere.transaction.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Auto commit utility class.

@@ -17,59 +17,26 @@
 
 package org.apache.shardingsphere.infra.binder.engine.type;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.ExplainStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.dal.OptimizeTableStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowColumnsStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowCreateTableStatementBinder;
-import org.apache.shardingsphere.infra.binder.engine.statement.dal.ShowIndexStatementBinder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.OptimizeTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 
 /**
  * DAL statement bind engine.
  */
-@RequiredArgsConstructor
 public final class DALStatementBindEngine {
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final String currentDatabaseName;
-    
-    private final HintValueContext hintValueContext;
-    
-    private final DatabaseType databaseType;
     
     /**
      * Bind DAL statement.
      *
      * @param statement to be bound DAL statement
+     * @param binderContext binder context
      * @return bound DAL statement
      */
-    public DALStatement bind(final DALStatement statement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, databaseType, statement);
-        if (statement instanceof OptimizeTableStatement) {
-            return new OptimizeTableStatementBinder().bind((OptimizeTableStatement) statement, binderContext);
-        }
-        if (statement instanceof ShowCreateTableStatement) {
-            return new ShowCreateTableStatementBinder().bind((ShowCreateTableStatement) statement, binderContext);
-        }
-        if (statement instanceof ShowColumnsStatement) {
-            return new ShowColumnsStatementBinder().bind((ShowColumnsStatement) statement, binderContext);
-        }
-        if (statement instanceof ShowIndexStatement) {
-            return new ShowIndexStatementBinder().bind((ShowIndexStatement) statement, binderContext);
-        }
+    public DALStatement bind(final DALStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof ExplainStatement) {
-            return new ExplainStatementBinder(metaData, currentDatabaseName, hintValueContext).bind((ExplainStatement) statement, binderContext);
+            return new ExplainStatementBinder().bind((ExplainStatement) statement, binderContext);
         }
         return statement;
     }

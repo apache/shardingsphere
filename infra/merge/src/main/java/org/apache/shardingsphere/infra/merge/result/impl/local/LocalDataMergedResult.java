@@ -55,7 +55,7 @@ public final class LocalDataMergedResult implements MergedResult {
     }
     
     @Override
-    public Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
+    public Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) {
         return currentRow.getCell(columnIndex);
     }
     

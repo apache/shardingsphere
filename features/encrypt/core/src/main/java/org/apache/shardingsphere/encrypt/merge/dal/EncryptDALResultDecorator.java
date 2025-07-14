@@ -26,9 +26,8 @@ import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
 
 /**
  * DAL result decorator for encrypt.
@@ -41,10 +40,10 @@ public final class EncryptDALResultDecorator implements ResultDecorator<EncryptR
     @Override
     public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof ExplainStatement || sqlStatement instanceof ShowColumnsStatement) {
+        if (sqlStatement.getAttributes().findAttribute(ColumnInResultSetSQLStatementAttribute.class).isPresent()) {
             return new EncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
         }
-        if (sqlStatement instanceof ShowCreateTableStatement) {
+        if (sqlStatement.getAttributes().findAttribute(TableInResultSetSQLStatementAttribute.class).isPresent()) {
             return new EncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
         }
         return mergedResult;

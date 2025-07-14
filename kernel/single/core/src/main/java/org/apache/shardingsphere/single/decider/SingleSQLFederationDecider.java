@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.decider;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dal.ExplainStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
@@ -50,9 +50,10 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
             return decide0((SelectStatementContext) sqlStatementContext, database, rule, includedDataNodes);
         } else if (sqlStatementContext instanceof ExplainStatementContext) {
             ExplainStatementContext explainStatementContext = (ExplainStatementContext) sqlStatementContext;
-            ShardingSpherePreconditions.checkState(explainStatementContext.getSqlStatementContext() instanceof SelectStatementContext,
-                    () -> new UnsupportedSQLOperationException(String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getSqlStatement())));
-            return decide0((SelectStatementContext) explainStatementContext.getSqlStatementContext(), database, rule, includedDataNodes);
+            ShardingSpherePreconditions.checkState(explainStatementContext.getExplainableSQLStatementContext() instanceof SelectStatementContext,
+                    () -> new UnsupportedSQLOperationException(
+                            String.format("unsupported Explain %s statement in sql federation", explainStatementContext.getSqlStatement().getExplainableSQLStatement())));
+            return decide0((SelectStatementContext) explainStatementContext.getExplainableSQLStatementContext(), database, rule, includedDataNodes);
         }
         throw new UnsupportedSQLOperationException(String.format("unsupported SQL statement %s in sql federation", sqlStatementContext.getSqlStatement()));
     }

@@ -98,6 +98,7 @@ import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUs
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
@@ -134,7 +135,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
         Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new ShowTableMetaDataStatement(tableNames, null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowTableMetaDataStatement(tableNames, null == ctx.databaseName()
+                ? null
+                : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -216,9 +219,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowStorageUnits(final ShowStorageUnitsContext ctx) {
-        DatabaseSegment database = null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName());
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
         String likePattern = null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern());
-        return new ShowStorageUnitsStatement(database, likePattern);
+        return new ShowStorageUnitsStatement(fromDatabase, likePattern);
     }
     
     @Override
@@ -233,9 +236,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowLogicalTables(final ShowLogicalTablesContext ctx) {
-        return new ShowLogicalTablesStatement(null != ctx.FULL(),
-                null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()),
-                null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowLogicalTablesStatement(null != ctx.FULL(), fromDatabase, null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
     }
     
     @Override
@@ -271,7 +273,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitExportDatabaseConfiguration(final ExportDatabaseConfigurationContext ctx) {
-        return new ExportDatabaseConfigurationStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), getIdentifierValue(ctx.filePath()));
+        return new ExportDatabaseConfigurationStatement(getIdentifierValue(ctx.filePath()),
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -291,7 +294,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowRulesUsedStorageUnit(final ShowRulesUsedStorageUnitContext ctx) {
-        return new ShowRulesUsedStorageUnitStatement(getIdentifierValue(ctx.storageUnitName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowRulesUsedStorageUnitStatement(getIdentifierValue(ctx.storageUnitName()),
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override

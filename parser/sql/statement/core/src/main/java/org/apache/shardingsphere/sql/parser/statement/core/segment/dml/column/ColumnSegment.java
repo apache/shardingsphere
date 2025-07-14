@@ -91,16 +91,6 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
         return null == owner ? column : String.join(".", owner.getIdentifier().getValue(), column);
     }
     
-    @Override
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.ofNullable(owner);
-    }
-    
-    @Override
-    public String getText() {
-        return getExpression();
-    }
-    
     /**
      * Get left parentheses.
      *
@@ -117,5 +107,15 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      */
     public Optional<ParenthesesSegment> getRightParentheses() {
         return Optional.ofNullable(rightParentheses);
+    }
+    
+    @Override
+    public Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
+    }
+    
+    @Override
+    public String getText() {
+        return getExpression();
     }
 }

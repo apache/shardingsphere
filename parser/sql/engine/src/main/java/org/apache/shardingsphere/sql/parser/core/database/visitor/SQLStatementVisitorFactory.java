@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatementType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.SQLStatementType;
 
 /**
  * SQL statement visitor factory.
@@ -42,24 +42,24 @@ public final class SQLStatementVisitorFactory {
      */
     public static SQLStatementVisitor newInstance(final DatabaseType databaseType, final SQLVisitorRule visitorRule) {
         SQLStatementVisitorFacade facade = DatabaseTypedSPILoader.getService(SQLStatementVisitorFacade.class, databaseType);
-        return createParseTreeVisitor(facade, visitorRule.getType());
+        return createParseTreeVisitor(databaseType, facade, visitorRule.getType());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static SQLStatementVisitor createParseTreeVisitor(final SQLStatementVisitorFacade visitorFacade, final SQLStatementType type) {
+    private static SQLStatementVisitor createParseTreeVisitor(final DatabaseType databaseType, final SQLStatementVisitorFacade visitorFacade, final SQLStatementType type) {
         switch (type) {
             case DML:
-                return visitorFacade.getDMLVisitorClass().getConstructor().newInstance();
+                return visitorFacade.getDMLVisitorClass().getConstructor(DatabaseType.class).newInstance(databaseType);
             case DDL:
-                return visitorFacade.getDDLVisitorClass().getConstructor().newInstance();
+                return visitorFacade.getDDLVisitorClass().getConstructor(DatabaseType.class).newInstance(databaseType);
             case TCL:
-                return visitorFacade.getTCLVisitorClass().getConstructor().newInstance();
+                return visitorFacade.getTCLVisitorClass().getConstructor(DatabaseType.class).newInstance(databaseType);
+            case LCL:
+                return visitorFacade.getLCLVisitorClass().getConstructor(DatabaseType.class).newInstance(databaseType);
             case DCL:
-                return visitorFacade.getDCLVisitorClass().getConstructor().newInstance();
+                return visitorFacade.getDCLVisitorClass().getConstructor(DatabaseType.class).newInstance(databaseType);
             case DAL:
-                return visitorFacade.getDALVisitorClass().getConstructor().newInstance();
-            case RL:
-                return visitorFacade.getRLVisitorClass().getConstructor().newInstance();
+                return visitorFacade.getDALVisitorClass().getConstructor(DatabaseType.class).newInstance(databaseType);
             default:
                 throw new SQLParsingException(type.name());
         }

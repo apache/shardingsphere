@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Alias
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +70,7 @@ class JoinTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts, LinkedHashMultimap.create());
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
@@ -108,7 +108,7 @@ class JoinTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts, LinkedHashMultimap.create());
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
@@ -130,7 +130,7 @@ class JoinTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts, LinkedHashMultimap.create());
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getDerivedJoinTableProjectionSegments());
@@ -166,7 +166,7 @@ class JoinTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts, LinkedHashMultimap.create());
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(actual.getRight(), instanceOf(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithUsing(actual.getDerivedJoinTableProjectionSegments());
@@ -201,7 +201,7 @@ class JoinTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         JoinTableSegment actual = JoinTableSegmentBinder.bind(joinTableSegment,
-                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), databaseType, mock(SelectStatement.class)), tableBinderContexts, LinkedHashMultimap.create());
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getLeft(), instanceOf(JoinTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getLeft(), instanceOf(SimpleTableSegment.class));
         assertThat(((JoinTableSegment) actual.getLeft()).getRight(), instanceOf(SimpleTableSegment.class));

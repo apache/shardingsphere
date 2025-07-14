@@ -31,23 +31,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LimitPaginationContextEngineTest {
     
+    private final LimitPaginationContextEngine paginationContextEngine = new LimitPaginationContextEngine();
+    
     @Test
     void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsNumberLiteralPaginationValueSegment() {
         LimitSegment limitSegment = new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 1L), new NumberLiteralLimitValueSegment(10, 20, 2L));
-        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(limitSegment, Collections.emptyList());
         assertTrue(paginationContext.isHasPagination());
     }
     
     @Test
     void assertPaginationContextCreatedProperlyWhenOffsetAndRowCountAreBothNull() {
-        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(new LimitSegment(0, 10, null, null), Collections.emptyList());
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(new LimitSegment(0, 10, null, null), Collections.emptyList());
         assertFalse(paginationContext.isHasPagination());
     }
     
     @Test
     void assertPaginationContextCreatedProperlyWhenPaginationValueSegmentIsParameterMarkerPaginationValueSegment() {
         LimitSegment limitSegment = new LimitSegment(0, 10, new ParameterMarkerLimitValueSegment(0, 10, 0), new ParameterMarkerLimitValueSegment(10, 20, 1));
-        PaginationContext paginationContext = new LimitPaginationContextEngine().createPaginationContext(limitSegment, Arrays.asList(15L, 20L));
+        PaginationContext paginationContext = paginationContextEngine.createPaginationContext(limitSegment, Arrays.asList(15L, 20L));
         assertTrue(paginationContext.isHasPagination());
     }
 }

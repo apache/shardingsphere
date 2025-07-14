@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.common;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -30,8 +30,7 @@ import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -60,9 +59,9 @@ class IteratorStreamMergedResultTest {
     
     @BeforeEach
     void setUp() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatementContext = new SelectStatementContext(databaseType, selectStatement, Collections.emptyList(), createShardingSphereMetaData(), "foo_db", Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(selectStatement, Collections.emptyList(), createShardingSphereMetaData(), "foo_db", Collections.emptyList());
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {

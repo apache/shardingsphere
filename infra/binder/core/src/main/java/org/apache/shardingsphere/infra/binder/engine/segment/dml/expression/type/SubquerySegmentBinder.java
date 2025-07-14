@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Subquery segment binder.
@@ -44,7 +44,7 @@ public final class SubquerySegmentBinder {
     public static SubquerySegment bind(final SubquerySegment segment, final SQLStatementBinderContext binderContext,
                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         SQLStatementBinderContext selectBinderContext = new SQLStatementBinderContext(
-                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType(), segment.getSelect());
+                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSelect());
         selectBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         selectBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SelectStatement boundSelectStatement = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), selectBinderContext);

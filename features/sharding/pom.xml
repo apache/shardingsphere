@@ -31,5 +31,6 @@
         <module>api</module>
         <module>core</module>
         <module>distsql</module>
+        <module>dialect</module>
     </modules>
 </project>

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.RemoveToken;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
@@ -32,9 +34,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Gro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -50,6 +51,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingRemoveTokenGeneratorTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final ShardingRemoveTokenGenerator generator = new ShardingRemoveTokenGenerator();
     
@@ -78,14 +81,14 @@ class ShardingRemoveTokenGeneratorTest {
     }
     
     private SelectStatementContext createSelectStatementContext() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setProjections(createProjectionsSegment());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new SelectStatementContext(
-                mock(), selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     private ProjectionsSegment createProjectionsSegment() {

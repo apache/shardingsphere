@@ -20,15 +20,13 @@ package org.apache.shardingsphere.infra.binder.context.extractor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateViewStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -37,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +44,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * SQL statement context extractor.
+ */
 @HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementContextExtractor {
@@ -57,13 +59,12 @@ public final class SQLStatementContextExtractor {
      * @return table names
      */
     public static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (!tableNames.isEmpty()) {
             return tableNames;
         }
-        return sqlStatementContext instanceof IndexAvailable
-                ? getTableNames(database, sqlStatementContext.getDatabaseType(), ((IndexAvailable) sqlStatementContext).getIndexes())
-                : Collections.emptyList();
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(IndexSQLStatementAttribute.class)
+                .map(optional -> getTableNames(database, sqlStatementContext.getSqlStatement().getDatabaseType(), optional.getIndexes())).orElse(Collections.emptyList());
     }
     
     private static Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {
@@ -118,23 +119,23 @@ public final class SQLStatementContextExtractor {
      * @return all where segments
      */
     public static Collection<WhereSegment> getAllWhereSegments(final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
+        if (!(sqlStatementContext instanceof WhereContextAvailable)) {
             return Collections.emptySet();
         }
         Collection<SelectStatementContext> allSubqueryContexts = getAllSubqueryContexts(sqlStatementContext);
-        return SQLStatementContextExtractor.getWhereSegments((WhereAvailable) sqlStatementContext, allSubqueryContexts);
+        return getWhereSegments((WhereContextAvailable) sqlStatementContext, allSubqueryContexts);
     }
     
     /**
      * Get all where segments.
      *
-     * @param whereAvailable where available
+     * @param whereContextAvailable where available
      * @param allSubqueryContexts all subquery contexts
      * @return all where segments
      */
-    public static Collection<WhereSegment> getWhereSegments(final WhereAvailable whereAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
-        Map<Integer, WhereSegment> uniqueWhereSegments = new LinkedHashMap<>();
-        whereAvailable.getWhereSegments().forEach(each -> uniqueWhereSegments.put(each.getStartIndex() + each.getStopIndex(), each));
+    public static Collection<WhereSegment> getWhereSegments(final WhereContextAvailable whereContextAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
+        Map<Integer, WhereSegment> uniqueWhereSegments = new LinkedHashMap<>(whereContextAvailable.getWhereSegments().size() + allSubqueryContexts.size(), 1F);
+        whereContextAvailable.getWhereSegments().forEach(each -> uniqueWhereSegments.put(each.getStartIndex() + each.getStopIndex(), each));
         allSubqueryContexts.forEach(each -> each.getWhereSegments().forEach(where -> uniqueWhereSegments.put(where.getStartIndex() + where.getStopIndex(), where)));
         return new ArrayList<>(uniqueWhereSegments.values());
     }
@@ -142,12 +143,12 @@ public final class SQLStatementContextExtractor {
     /**
      * Get all column segments.
      *
-     * @param whereAvailable where available
+     * @param whereContextAvailable where available
      * @param allSubqueryContexts all subquery contexts
      * @return all column segments
      */
-    public static Collection<ColumnSegment> getColumnSegments(final WhereAvailable whereAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
-        Collection<ColumnSegment> result = new LinkedList<>(whereAvailable.getColumnSegments());
+    public static Collection<ColumnSegment> getColumnSegments(final WhereContextAvailable whereContextAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
+        Collection<ColumnSegment> result = new LinkedList<>(whereContextAvailable.getColumnSegments());
         allSubqueryContexts.forEach(each -> result.addAll(each.getColumnSegments()));
         return result;
     }
@@ -155,12 +156,12 @@ public final class SQLStatementContextExtractor {
     /**
      * Get all join conditions.
      *
-     * @param whereAvailable where available
+     * @param whereContextAvailable where available
      * @param allSubqueryContexts all subquery contexts
      * @return all join conditions
      */
-    public static Collection<BinaryOperationExpression> getJoinConditions(final WhereAvailable whereAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
-        Collection<BinaryOperationExpression> result = new LinkedList<>(whereAvailable.getJoinConditions());
+    public static Collection<BinaryOperationExpression> getJoinConditions(final WhereContextAvailable whereContextAvailable, final Collection<SelectStatementContext> allSubqueryContexts) {
+        Collection<BinaryOperationExpression> result = new LinkedList<>(whereContextAvailable.getJoinConditions());
         allSubqueryContexts.forEach(each -> result.addAll(each.getJoinConditions()));
         return result;
     }

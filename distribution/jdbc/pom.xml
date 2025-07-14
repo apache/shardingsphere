@@ -140,7 +140,12 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
@@ -156,6 +161,25 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-shadow-core</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -285,6 +309,17 @@
         </profile>
         
         <profile>
+            <id>mode-repo-memory</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>mode-repo-jdbc</id>
             <dependencies>
                 <dependency>
@@ -312,6 +347,40 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        
+        <profile>
+            <id>feature-broadcast</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-readwrite-splitting</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-core</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-shadow</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-shadow-core</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>

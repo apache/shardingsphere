@@ -22,7 +22,9 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -38,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentInputInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -84,11 +85,11 @@ public final class ColumnSegmentBinder {
         }
         ColumnSegment result = copy(segment);
         Collection<TableSegmentBinderContext> tableSegmentBinderContexts = getTableSegmentBinderContexts(segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
-        ColumnSegmentInputInfo columnSegmentInputInfo = getColumnSegmentInputInfo(segment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
-        Optional<ColumnSegment> inputColumnSegment = columnSegmentInputInfo.getInputColumnSegment();
+        ColumnSegmentInfo columnSegmentInfo = getColumnSegmentInfo(segment, parentSegmentType, tableSegmentBinderContexts, outerTableBinderContexts, binderContext);
+        Optional<ColumnSegment> inputColumnSegment = columnSegmentInfo.getInputColumnSegment();
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         segment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
-        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, inputColumnSegment.orElse(null), columnSegmentInputInfo.getTableSourceType()));
+        result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
         return result;
     }
     
@@ -145,29 +146,29 @@ public final class ColumnSegmentBinder {
                 || SegmentType.PREDICATE == parentSegmentType && binderContext.getUsingColumnNames().contains(segment.getIdentifier().getValue());
     }
     
-    private static ColumnSegmentInputInfo getColumnSegmentInputInfo(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
-                                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
-                                                                    final SQLStatementBinderContext binderContext) {
-        ColumnSegmentInputInfo result = getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
+    private static ColumnSegmentInfo getColumnSegmentInfo(final ColumnSegment segment, final SegmentType parentSegmentType, final Collection<TableSegmentBinderContext> tableBinderContexts,
+                                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
+                                                          final SQLStatementBinderContext binderContext) {
+        ColumnSegmentInfo result = getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
         if (!result.getInputColumnSegment().isPresent()) {
-            result = new ColumnSegmentInputInfo(findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null));
+            result = new ColumnSegmentInfo(findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         if (!result.getInputColumnSegment().isPresent()) {
-            result = new ColumnSegmentInputInfo(findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null));
+            result = new ColumnSegmentInfo(findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         if (!result.getInputColumnSegment().isPresent()) {
-            result = new ColumnSegmentInputInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null));
+            result = new ColumnSegmentInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         if (!result.getInputColumnSegment().isPresent()) {
-            result = new ColumnSegmentInputInfo(findInputColumnSegmentByPivotColumns(segment, binderContext.getPivotColumnNames()).orElse(null));
+            result = new ColumnSegmentInfo(findInputColumnSegmentByPivotColumns(segment, binderContext.getPivotColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         ShardingSpherePreconditions.checkState(result.getInputColumnSegment().isPresent() || isSkipColumnBind(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return result;
     }
     
-    private static ColumnSegmentInputInfo getInputInfoFromTableBinderContexts(final Collection<TableSegmentBinderContext> tableBinderContexts,
-                                                                              final ColumnSegment segment, final SegmentType parentSegmentType) {
+    private static ColumnSegmentInfo getInputInfoFromTableBinderContexts(final Collection<TableSegmentBinderContext> tableBinderContexts,
+                                                                         final ColumnSegment segment, final SegmentType parentSegmentType) {
         ColumnSegment inputColumnSegment = null;
         TableSourceType tableSourceType = TableSourceType.TEMPORARY_TABLE;
         for (TableSegmentBinderContext each : tableBinderContexts) {
@@ -185,7 +186,7 @@ public final class ColumnSegmentBinder {
                 break;
             }
         }
-        return new ColumnSegmentInputInfo(inputColumnSegment, tableSourceType);
+        return new ColumnSegmentInfo(inputColumnSegment, tableSourceType);
     }
     
     private static TableSourceType getTableSourceTypeFromInputColumn(final ColumnSegment inputColumnSegment) {
@@ -200,13 +201,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
-        if (pivotColumnNames.isEmpty()) {
-            return Optional.empty();
-        }
-        if (pivotColumnNames.contains(segment.getIdentifier().getValue())) {
-            return Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
-        }
-        return Optional.empty();
+        return pivotColumnNames.isEmpty() || !pivotColumnNames.contains(segment.getIdentifier().getValue()) ? Optional.empty() : Optional.of(new ColumnSegment(0, 0, segment.getIdentifier()));
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentFromOuterTable(final ColumnSegment segment,
@@ -287,25 +282,38 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bindUsingColumn(final ColumnSegment segment, final SegmentType parentSegmentType,
                                                 final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         ColumnSegment result = copy(segment);
-        List<ColumnSegmentInputInfo> usingColumnSegmentInputInfos = findUsingColumnSegmentInputInfos(tableBinderContexts.values(), segment.getIdentifier().getValue());
-        ShardingSpherePreconditions.checkState(usingColumnSegmentInputInfos.size() >= 2,
+        List<ColumnSegmentInfo> usingColumnSegmentInfos = findUsingColumnSegmentInfos(tableBinderContexts.values(), segment.getIdentifier().getValue());
+        ShardingSpherePreconditions.checkState(usingColumnSegmentInfos.size() >= 2,
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
-        ColumnSegmentInputInfo usingColumnInputInfo = usingColumnSegmentInputInfos.get(0);
-        ColumnSegmentInputInfo otherUsingColumnInputInfo = usingColumnSegmentInputInfos.get(1);
+        ColumnSegmentInfo usingColumnInputInfo = usingColumnSegmentInfos.get(0);
+        ColumnSegmentInfo otherUsingColumnInputInfo = usingColumnSegmentInfos.get(1);
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, usingColumnInputInfo.getInputColumnSegment().orElse(null), usingColumnInputInfo.getTableSourceType()));
         result.setOtherUsingColumnBoundInfo(createColumnSegmentBoundInfo(segment, otherUsingColumnInputInfo.getInputColumnSegment().orElse(null), otherUsingColumnInputInfo.getTableSourceType()));
         return result;
     }
     
-    private static List<ColumnSegmentInputInfo> findUsingColumnSegmentInputInfos(final Collection<TableSegmentBinderContext> tableBinderContexts, final String columnName) {
-        List<ColumnSegmentInputInfo> result = new ArrayList<>();
+    private static List<ColumnSegmentInfo> findUsingColumnSegmentInfos(final Collection<TableSegmentBinderContext> tableBinderContexts, final String columnName) {
+        List<ColumnSegmentInfo> result = new ArrayList<>(tableBinderContexts.size());
         for (TableSegmentBinderContext each : tableBinderContexts) {
             Optional<ProjectionSegment> projectionSegment = each.findProjectionSegmentByColumnLabel(columnName);
             if (projectionSegment.isPresent() && projectionSegment.get() instanceof ColumnProjectionSegment) {
                 ColumnSegment columnSegment = ((ColumnProjectionSegment) projectionSegment.get()).getColumn();
-                result.add(new ColumnSegmentInputInfo(columnSegment, each.getTableSourceType()));
+                result.add(new ColumnSegmentInfo(columnSegment, each.getTableSourceType()));
             }
         }
         return result;
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    static class ColumnSegmentInfo {
+        
+        private final ColumnSegment inputColumnSegment;
+        
+        private final TableSourceType tableSourceType;
+        
+        Optional<ColumnSegment> getInputColumnSegment() {
+            return Optional.ofNullable(inputColumnSegment);
+        }
     }
 }

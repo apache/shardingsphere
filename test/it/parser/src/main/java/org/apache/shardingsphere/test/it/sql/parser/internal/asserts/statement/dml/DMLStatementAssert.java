@@ -19,39 +19,12 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CopyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.CallStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.CopyStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.DeleteStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.DoStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.InsertStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.LoadDataStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.LoadXMLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.MergeStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.UpdateStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.mysql.MySQLDMLStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.postgresql.PostgreSQLDMLStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.StandardDMLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CallStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.CopyStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DeleteStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.DoStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadDataStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.LoadXMLStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.MergeStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.SelectStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.UpdateStatementTestCase;
 
 /**
  * DML statement assert.
@@ -67,26 +40,8 @@ public final class DMLStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof SelectStatement) {
-            SelectStatementAssert.assertIs(assertContext, (SelectStatement) actual, (SelectStatementTestCase) expected);
-        } else if (actual instanceof UpdateStatement) {
-            UpdateStatementAssert.assertIs(assertContext, (UpdateStatement) actual, (UpdateStatementTestCase) expected);
-        } else if (actual instanceof MergeStatement) {
-            MergeStatementAssert.assertIs(assertContext, (MergeStatement) actual, (MergeStatementTestCase) expected);
-        } else if (actual instanceof DeleteStatement) {
-            DeleteStatementAssert.assertIs(assertContext, (DeleteStatement) actual, (DeleteStatementTestCase) expected);
-        } else if (actual instanceof InsertStatement) {
-            InsertStatementAssert.assertIs(assertContext, (InsertStatement) actual, (InsertStatementTestCase) expected);
-        } else if (actual instanceof CallStatement) {
-            CallStatementAssert.assertIs(assertContext, (CallStatement) actual, (CallStatementTestCase) expected);
-        } else if (actual instanceof CopyStatement) {
-            CopyStatementAssert.assertIs(assertContext, (CopyStatement) actual, (CopyStatementTestCase) expected);
-        } else if (actual instanceof DoStatement) {
-            DoStatementAssert.assertIs(assertContext, (DoStatement) actual, (DoStatementTestCase) expected);
-        } else if (actual instanceof LoadDataStatement) {
-            LoadDataStatementAssert.assertIs(assertContext, (LoadDataStatement) actual, (LoadDataStatementTestCase) expected);
-        } else if (actual instanceof LoadXMLStatement) {
-            LoadXMLStatementAssert.assertIs(assertContext, (LoadXMLStatement) actual, (LoadXMLStatementTestCase) expected);
-        }
+        StandardDMLStatementAssert.assertIs(assertContext, actual, expected);
+        MySQLDMLStatementAssert.assertIs(assertContext, actual, expected);
+        PostgreSQLDMLStatementAssert.assertIs(assertContext, actual, expected);
     }
 }

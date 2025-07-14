@@ -269,7 +269,12 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
@@ -290,8 +295,37 @@
                 </dependency>
                 
                 <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.opengauss</groupId>
+                    <artifactId>opengauss-jdbc</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -304,6 +338,12 @@
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-dialect-postgresql</artifactId>
                     <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -350,6 +390,12 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                
+                <dependency>
+                    <groupId>org.opengauss</groupId>
+                    <artifactId>opengauss-jdbc</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -359,6 +405,12 @@
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-dialect-firebird</artifactId>
                     <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
+                    <groupId>org.firebirdsql.jdbc</groupId>
+                    <artifactId>jaybird</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -372,6 +424,12 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                
+                <dependency>
+                    <groupId>org.apache.hive</groupId>
+                    <artifactId>hive-jdbc</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -383,6 +441,12 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                
+                <dependency>
+                    <groupId>com.facebook.presto</groupId>
+                    <artifactId>presto-jdbc</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -392,6 +456,13 @@
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-proxy-dialect-clickhouse</artifactId>
                     <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
+                    <groupId>com.clickhouse</groupId>
+                    <artifactId>clickhouse-jdbc</artifactId>
+                    <classifier>http</classifier>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -419,6 +490,17 @@
             </dependencies>
         </profile>
         
+        <profile>
+            <id>mode-repo-memory</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>mode-repo-jdbc</id>
             <dependencies>
@@ -452,6 +534,40 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        
+        <profile>
+            <id>feature-broadcast</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-readwrite-splitting</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-readwrite-splitting-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-shadow</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>

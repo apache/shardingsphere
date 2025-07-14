@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALSta
 import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -49,19 +48,21 @@ import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ShowCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.RenameTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -70,6 +71,8 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyBackendHandlerFactory {
+    
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_STANDARD_SQL_STATEMENT_TYPES = Arrays.asList(DCLStatement.class, RenameTableStatement.class);
     
     /**
      * Create new instance of backend handler.
@@ -90,7 +93,7 @@ public final class ProxyBackendHandlerFactory {
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                        connectionSession.getCurrentDatabaseName(), hintValueContext).bind(databaseType, sqlStatement, Collections.emptyList());
+                        connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         connectionSession.setQueryContext(queryContext);
@@ -112,8 +115,8 @@ public final class ProxyBackendHandlerFactory {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         allowExecutingWhenTransactionalError(databaseType, connectionSession, sqlStatement);
-        checkSupportedSQLStatement(sqlStatement);
-        checkClusterState(sqlStatement);
+        checkSupportedSQLStatement(databaseType, sqlStatement);
+        checkClusterState(sqlStatement, databaseType);
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
         }
@@ -134,8 +137,8 @@ public final class ProxyBackendHandlerFactory {
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
-        String databaseName = sqlStatementContext instanceof TableAvailable && ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().isPresent()
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().get()
+        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
+                ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getUsedDatabaseName();
         if (null == databaseName) {
             return DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
@@ -160,20 +163,22 @@ public final class ProxyBackendHandlerFactory {
         }
     }
     
-    private static void checkSupportedSQLStatement(final SQLStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(isSupportedSQLStatement(sqlStatement),
+    private static void checkSupportedSQLStatement(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        ShardingSpherePreconditions.checkState(isSupportedSQLStatement(databaseType, sqlStatement),
                 () -> new UnsupportedSQLOperationException(String.format("unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName())));
     }
     
-    private static boolean isSupportedSQLStatement(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof DCLStatement) && !(sqlStatement instanceof FlushStatement)
-                && !(sqlStatement instanceof ShowCreateUserStatement) && !(sqlStatement instanceof RenameTableStatement);
+    private static boolean isSupportedSQLStatement(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        Collection<Class<? extends SQLStatement>> unsupportedDialectSQLStatementTypes = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)
+                .map(DialectProxyStateSupportedSQLProvider::getUnsupportedSQLStatementTypesOnReadyState).orElse(Collections.emptyList());
+        return new ProxySQLSupportedJudgeEngine(
+                Collections.emptyList(), Collections.emptyList(), UNSUPPORTED_STANDARD_SQL_STATEMENT_TYPES, unsupportedDialectSQLStatementTypes).isSupported(sqlStatement);
     }
     
-    private static void checkClusterState(final SQLStatement sqlStatement) {
+    private static void checkClusterState(final SQLStatement sqlStatement, final DatabaseType databaseType) {
         ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
         if (ShardingSphereState.OK != currentState) {
-            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement);
+            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement, databaseType);
         }
     }
     

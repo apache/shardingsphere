@@ -27,6 +27,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlSyntax;
 import org.apache.calcite.sql.SqlUnresolvedFunction;
+import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.generic.OwnerConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.window.WindowConverter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -67,6 +69,11 @@ public final class FunctionConverter {
         }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
+        if (!functions.isEmpty() && segment.getWindow().isPresent()) {
+            SqlBasicCall functionCall = new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
+            SqlWindow sqlWindow = WindowConverter.convertWindowItem(segment.getWindow().get());
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.OVER, new SqlNode[]{functionCall, sqlWindow}, SqlParserPos.ZERO));
+        }
         return Optional.of(functions.isEmpty()
                 ? new SqlBasicCall(new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getFunctionParameters(segment.getParameters()),
                         SqlParserPos.ZERO)

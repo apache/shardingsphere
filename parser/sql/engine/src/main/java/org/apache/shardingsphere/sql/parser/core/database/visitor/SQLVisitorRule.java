@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatementType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.SQLStatementType;
 
 /**
  * SQL visitor rule.
@@ -301,13 +301,13 @@ public enum SQLVisitorRule {
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
     
-    LOCK("Lock", SQLStatementType.TCL),
-    
-    UNLOCK("Unlock", SQLStatementType.TCL),
-    
     COMMIT_PREPARED("CommitPrepared", SQLStatementType.TCL),
     
     ROLLBACK_PREPARED("RollbackPrepared", SQLStatementType.TCL),
+    
+    LOCK("Lock", SQLStatementType.LCL),
+    
+    UNLOCK("Unlock", SQLStatementType.LCL),
     
     GRANT("Grant", SQLStatementType.DCL),
     
@@ -461,6 +461,8 @@ public enum SQLVisitorRule {
     
     CHECKSUM_TABLE("ChecksumTable", SQLStatementType.DAL),
     
+    CHECKPOINT("Checkpoint", SQLStatementType.DAL),
+    
     DROP_RESOURCE_GROUP("DropResourceGroup", SQLStatementType.DAL),
     
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
@@ -473,13 +475,13 @@ public enum SQLVisitorRule {
     
     LOAD_STATEMENT("LoadStatement", SQLStatementType.DML),
     
-    CHANGE_MASTER("ChangeMasterTo", SQLStatementType.RL),
+    CHANGE_MASTER("ChangeMasterTo", SQLStatementType.DAL),
     
-    CHANGE_REPLICATION_SOURCE_TO("ChangeReplicationSourceTo", SQLStatementType.RL),
+    CHANGE_REPLICATION_SOURCE_TO("ChangeReplicationSourceTo", SQLStatementType.DAL),
     
-    START_SLAVE("StartSlave", SQLStatementType.RL),
+    START_SLAVE("StartSlave", SQLStatementType.DAL),
     
-    STOP_SLAVE("StopSlave", SQLStatementType.RL),
+    STOP_SLAVE("StopSlave", SQLStatementType.DAL),
     
     XA_BEGIN("XaBegin", SQLStatementType.TCL),
     
@@ -649,8 +651,6 @@ public enum SQLVisitorRule {
     
     DO("DoStatement", SQLStatementType.DML),
     
-    CHECKPOINT("Checkpoint", SQLStatementType.TCL),
-    
     PREPARE_TRANSACTION("PrepareTransaction", SQLStatementType.TCL),
     
     REASSIGN_OWNED("ReassignOwned", SQLStatementType.DCL),
@@ -709,7 +709,7 @@ public enum SQLVisitorRule {
     
     SPOOL("Spool", SQLStatementType.DAL),
     
-    START_REPLICA("StartReplica", SQLStatementType.RL),
+    START_REPLICA("StartReplica", SQLStatementType.DAL),
     
     OPEN("Open", SQLStatementType.DDL);
     

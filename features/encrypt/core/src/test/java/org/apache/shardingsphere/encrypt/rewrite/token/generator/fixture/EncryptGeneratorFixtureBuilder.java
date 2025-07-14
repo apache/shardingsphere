@@ -26,8 +26,8 @@ import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfigurati
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -56,11 +56,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,11 +114,11 @@ public final class EncryptGeneratorFixtureBuilder {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(DATABASE_TYPE, createInsertStatement(), params, metaData, "foo_db");
+        return new InsertStatementContext(createInsertStatement(), params, metaData, "foo_db");
     }
     
     private static InsertStatement createInsertStatement() {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(DATABASE_TYPE);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")),
@@ -130,7 +129,7 @@ public final class EncryptGeneratorFixtureBuilder {
     }
     
     private static InsertStatement createInsertSelectStatement(final boolean containsInsertColumns) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(DATABASE_TYPE);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         ColumnSegment userIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         userIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"),
@@ -145,7 +144,7 @@ public final class EncryptGeneratorFixtureBuilder {
             result.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
             result.getDerivedInsertColumns().addAll(insertColumns);
         }
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(DATABASE_TYPE);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ColumnProjectionSegment(userIdColumn));
@@ -164,11 +163,11 @@ public final class EncryptGeneratorFixtureBuilder {
      * @return created update statement context
      */
     public static UpdateStatementContext createUpdateStatementContext() {
-        UpdateStatement updateStatement = new UpdateStatement();
+        UpdateStatement updateStatement = new UpdateStatement(DATABASE_TYPE);
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         updateStatement.setWhere(createWhereSegment());
         updateStatement.setSetAssignment(createSetAssignmentSegment());
-        return new UpdateStatementContext(DATABASE_TYPE, updateStatement);
+        return new UpdateStatementContext(updateStatement);
     }
     
     private static WhereSegment createWhereSegment() {
@@ -220,6 +219,6 @@ public final class EncryptGeneratorFixtureBuilder {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
-        return new InsertStatementContext(DATABASE_TYPE, createInsertSelectStatement(containsInsertColumns), params, metaData, "foo_db");
+        return new InsertStatementContext(createInsertSelectStatement(containsInsertColumns), params, metaData, "foo_db");
     }
 }

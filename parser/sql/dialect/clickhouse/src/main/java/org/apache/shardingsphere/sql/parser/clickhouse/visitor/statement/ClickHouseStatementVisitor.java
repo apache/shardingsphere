@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
@@ -55,7 +57,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -76,8 +78,11 @@ import java.util.stream.Collectors;
 /**
  * ClickHouse Statement visitor.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     

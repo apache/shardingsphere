@@ -86,6 +86,7 @@ unreservedWord
 
 variable
     : (AT_? AT_)? (GLOBAL | LOCAL)? DOT_? identifier
+    | DEFAULT
     ;
 
 schemaName
@@ -222,7 +223,7 @@ andOperator
     ;
 
 orOperator
-    : OR | CONCAT_
+    : OR
     ;
 
 notOperator
@@ -273,6 +274,7 @@ simpleExpr
     : functionCall
     | parameterMarker
     | literals
+    | simpleExpr CONCAT_ simpleExpr
     | columnName
     | simpleExpr COLLATE (STRING_ | identifier)
     | variable
@@ -283,7 +285,6 @@ simpleExpr
     | matchExpression
     | caseExpression
     | intervalExpression
-    | timeConstants
     ;
 
 functionCall
@@ -310,6 +311,7 @@ specialFunction
     | extractFunction
     | trimFunction
     | windowFunction
+    | genIdFunction
     ;
 
 castFunction
@@ -337,7 +339,16 @@ trimFunction
     | TRIM LP_ (expr FROM)? expr RP_
     ;
 
+genIdFunction
+    : GEN_ID LP_ (variable | parameterMarker) COMMA_ expr RP_
+    ;
+
 regularFunction
+    : completeRegularFunction
+    | contextVariables
+    ;
+
+completeRegularFunction
     : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
@@ -347,10 +358,6 @@ regularFunctionName
     | UPPER | LOWER
     | NULLIF
     | COALESCE
-    ;
-
-timeConstants
-    : CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP
     ;
 
 matchExpression
@@ -386,7 +393,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals) (ASC | DESC)?
+    : (numberLiterals | expr) (ASC | DESC)?
     ;
 
 limitClause
@@ -417,6 +424,10 @@ limitRowCount
 
 limitOffset
     : numberLiterals | parameterMarker | bindLiterals
+    ;
+
+optimizeClause
+    : OPTIMIZE FOR (FIRST | ALL) ROWS
     ;
 
 dataType
@@ -482,7 +493,8 @@ defaultValue
 contextVariables
     : CURRENT_CONNECTION | CURRENT_DATE | CURRENT_ROLE
     | CURRENT_TIME | CURRENT_TIMESTAMP
-    | CURRENT_TRANSACTION | CURRENT_USER
+    | LOCALTIME | LOCALTIMESTAMP
+    | CURRENT_TRANSACTION | CURRENT_USER | USER
     | INSERTING | UPDATING | DELETING
     | NEW | NOW | OLD | ROW_COUNT
     | SQLCODE | GDSCODE | SQLSTATE

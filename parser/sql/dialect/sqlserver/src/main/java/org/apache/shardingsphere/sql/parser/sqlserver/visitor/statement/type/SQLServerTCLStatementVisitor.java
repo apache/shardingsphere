@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BeginDistributedTransactionContext;
@@ -31,22 +32,26 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Set
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.tcl.SQLServerBeginDistributedTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XABeginStatement;
 
 /**
  * TCL statement visitor for SQLServer.
  */
 public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisitor implements TCLStatementVisitor {
     
+    public SQLServerTCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(null, getTransactionIsolationLevel(ctx.isolationLevel()), null);
+        return new SetTransactionStatement(getDatabaseType(), null, getTransactionIsolationLevel(ctx.isolationLevel()), null);
     }
     
     private TransactionIsolationLevel getTransactionIsolationLevel(final IsolationLevelContext ctx) {
@@ -67,41 +72,47 @@ public final class SQLServerTCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitSetImplicitTransactions(final SetImplicitTransactionsContext ctx) {
-        return new SetAutoCommitStatement("ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
+        return new SetAutoCommitStatement(getDatabaseType(), "ON".equalsIgnoreCase(ctx.implicitTransactionsValue().getText()));
     }
     
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
-        return new BeginTransactionStatement();
-    }
-    
-    @Override
-    public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
-        return new SQLServerBeginDistributedTransactionStatement();
+        return new BeginTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommitWork(final CommitWorkContext ctx) {
-        return new CommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollbackWork(final RollbackWorkContext ctx) {
-        return new RollbackStatement();
+        return new RollbackStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new SavepointStatement(null);
+        return new SavepointStatement(getDatabaseType(), null);
+    }
+    
+    @Override
+    public ASTNode visitBeginDistributedTransaction(final BeginDistributedTransactionContext ctx) {
+        String xid = null;
+        if (null != ctx.transactionName()) {
+            xid = ctx.transactionName().getText();
+        } else if (null != ctx.transactionVariableName()) {
+            xid = ctx.transactionVariableName().getText();
+        }
+        return new XABeginStatement(getDatabaseType(), xid);
     }
 }

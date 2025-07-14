@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.combine;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,17 +42,17 @@ public final class CombineSegmentBinder {
      * @return bound combine segment
      */
     public static CombineSegment bind(final CombineSegment segment, final SQLStatementBinderContext binderContext,
-                                      final Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         return new CombineSegment(segment.getStartIndex(), segment.getStopIndex(),
                 bindSubquerySegment(segment.getLeft(), binderContext, outerTableBinderContexts), segment.getCombineType(),
                 bindSubquerySegment(segment.getRight(), binderContext, outerTableBinderContexts));
     }
     
     private static SubquerySegment bindSubquerySegment(final SubquerySegment segment, final SQLStatementBinderContext binderContext,
-                                                       final Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         SubquerySegment result = new SubquerySegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText());
         SQLStatementBinderContext subqueryBinderContext = new SQLStatementBinderContext(
-                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), binderContext.getDatabaseType(), segment.getSelect());
+                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         result.setSelect(new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSelect(), subqueryBinderContext));

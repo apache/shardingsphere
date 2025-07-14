@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 
-import javax.annotation.concurrent.ThreadSafe;
+import com.google.errorprone.annotations.ThreadSafe;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 

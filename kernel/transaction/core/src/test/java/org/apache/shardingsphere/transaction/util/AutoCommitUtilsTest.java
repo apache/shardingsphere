@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.transaction.util;
 
 import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,9 +32,11 @@ import static org.mockito.Mockito.mock;
 
 class AutoCommitUtilsTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertNeedOpenTransactionForSelectStatement() {
-        SelectStatement selectStatement = new SQL92SelectStatement();
+        SelectStatement selectStatement = new SelectStatement(databaseType);
         assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
         selectStatement.setFrom(mock(SimpleTableSegment.class));
         assertTrue(AutoCommitUtils.needOpenTransaction(selectStatement));
@@ -41,10 +44,10 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertNeedOpenTransactionForDDLOrDMLStatement() {
-        CreateTableStatement sqlStatement = new CreateTableStatement();
+        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setIfNotExists(true);
         assertTrue(AutoCommitUtils.needOpenTransaction(sqlStatement));
-        assertTrue(AutoCommitUtils.needOpenTransaction(new InsertStatement()));
+        assertTrue(AutoCommitUtils.needOpenTransaction(new InsertStatement(databaseType)));
     }
     
     @Test

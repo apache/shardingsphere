@@ -328,26 +328,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.DeleteStatementBinder"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -378,58 +358,18 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussTruncateStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerTruncateStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussDropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerDropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdDeleteStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.dml.FirebirdDeleteStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCreateTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveSelectStatement",
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -465,16 +405,6 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoDeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {

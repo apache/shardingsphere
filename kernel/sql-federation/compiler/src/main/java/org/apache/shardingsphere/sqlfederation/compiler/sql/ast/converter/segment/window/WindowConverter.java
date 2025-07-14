@@ -28,6 +28,7 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.orderby.OrderByConverter;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -48,15 +49,26 @@ public final class WindowConverter {
     public static Optional<SqlNodeList> convert(final WindowSegment segment) {
         Collection<SqlWindow> sqlWindows = new LinkedList<>();
         for (WindowItemSegment each : segment.getItemSegments()) {
-            SqlIdentifier sqlIdentifier = null == each.getWindowName() ? new SqlIdentifier("", SqlParserPos.ZERO) : new SqlIdentifier(each.getWindowName().getValue(), SqlParserPos.ZERO);
-            Collection<SqlNode> partitionNodes = new LinkedList<>();
-            each.getPartitionListSegments().forEach(expressionSegment -> ExpressionConverter.convert(expressionSegment).ifPresent(partitionNodes::add));
-            SqlNodeList partitionList = new SqlNodeList(partitionNodes, SqlParserPos.ZERO);
-            SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
-            SqlWindow sqlWindow = new SqlWindow(SqlParserPos.ZERO, sqlIdentifier, null, partitionList, orderList, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null);
+            SqlWindow sqlWindow = convertWindowItem(each);
             sqlWindows.add(sqlWindow);
         }
         SqlNodeList result = new SqlNodeList(sqlWindows, SqlParserPos.ZERO);
         return Optional.of(result);
+    }
+    
+    /**
+     * Convert window item segment to sql window.
+     *
+     * @param windowItemSegment window item segment
+     * @return sql window
+     */
+    public static SqlWindow convertWindowItem(final WindowItemSegment windowItemSegment) {
+        SqlIdentifier sqlIdentifier = null == windowItemSegment.getWindowName() ? null : new SqlIdentifier(windowItemSegment.getWindowName().getValue(), SqlParserPos.ZERO);
+        Collection<SqlNode> partitionNodes = new LinkedList<>();
+        windowItemSegment.getPartitionListSegments().forEach(expressionSegment -> ExpressionConverter.convert(expressionSegment).ifPresent(partitionNodes::add));
+        SqlNodeList partitionList = new SqlNodeList(partitionNodes, SqlParserPos.ZERO);
+        SqlNodeList orderList = new SqlNodeList(SqlParserPos.ZERO);
+        OrderByConverter.convert(windowItemSegment.getOrderBySegment()).ifPresent(orderList::addAll);
+        return new SqlWindow(SqlParserPos.ZERO, sqlIdentifier, null, partitionList, orderList, SqlLiteral.createBoolean(false, SqlParserPos.ZERO), null, null, null);
     }
 }

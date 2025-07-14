@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Inte
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.KeyValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
@@ -63,7 +64,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.gen
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.insert.InsertValuesClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBetweenExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBinaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCaseWhenExpression;
@@ -81,6 +82,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMatchExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedMultisetExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedQuantifySubqueryExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedRowExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedUnaryOperationExpression;
@@ -479,6 +481,16 @@ public final class ExpressionAssert {
         }
     }
     
+    private static void assertQuantifySubqueryExpression(final SQLCaseAssertContext assertContext, final QuantifySubqueryExpression actual, final ExpectedQuantifySubqueryExpression expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual quantify subquery expression should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual quantify subquery expression should exist."));
+            assertThat(assertContext.getText("Quantify operator assertion error: "), actual.getQuantifyOperator(), is(expected.getOperator()));
+            assertSubquery(assertContext, actual.getSubquery(), expected.getSubquery());
+        }
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -709,6 +721,8 @@ public final class ExpressionAssert {
             assertJsonNullClauseSegment(assertContext, (JsonNullClauseSegment) actual, expected.getJsonNullClauseSegment());
         } else if (actual instanceof IntervalExpression) {
             assertIntervalExpression(assertContext, (IntervalExpression) actual, expected.getIntervalExpression());
+        } else if (actual instanceof QuantifySubqueryExpression) {
+            assertQuantifySubqueryExpression(assertContext, (QuantifySubqueryExpression) actual, expected.getQuantifySubqueryExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

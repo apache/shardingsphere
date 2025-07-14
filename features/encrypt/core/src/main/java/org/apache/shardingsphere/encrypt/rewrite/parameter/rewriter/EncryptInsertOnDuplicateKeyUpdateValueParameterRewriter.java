@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
@@ -56,7 +56,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         GroupedParameterBuilder groupedParamBuilder = (GroupedParameterBuilder) paramBuilder;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDefaultSchemaName(databaseName));
+                .orElseGet(() -> new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String logicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
             if (!rule.findEncryptTable(tableName).map(optional -> optional.isEncryptColumn(logicColumnName)).orElse(false)) {

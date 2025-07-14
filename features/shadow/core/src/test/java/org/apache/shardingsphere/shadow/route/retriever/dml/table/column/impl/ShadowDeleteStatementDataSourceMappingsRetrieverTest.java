@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;

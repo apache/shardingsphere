@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.ddl;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropIndexStatement;
+import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 
 /**
  * Drop index statement binder.
@@ -37,23 +35,17 @@ public final class DropIndexStatementBinder implements SQLStatementBinder<DropIn
         if (!sqlStatement.getSimpleTable().isPresent()) {
             return sqlStatement;
         }
-        DropIndexStatement result = copy(sqlStatement);
-        Multimap<CaseInsensitiveMap.CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        result.setSimpleTable(SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, tableBinderContexts));
-        sqlStatement.getIndexes().forEach(each -> result.getIndexes().add(each));
-        return result;
+        return copy(sqlStatement, SimpleTableSegmentBinder.bind(sqlStatement.getSimpleTable().get(), binderContext, LinkedHashMultimap.create()));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static DropIndexStatement copy(final DropIndexStatement sqlStatement) {
-        DropIndexStatement result = sqlStatement.getClass().getDeclaredConstructor().newInstance();
-        sqlStatement.getSimpleTable().ifPresent(result::setSimpleTable);
+    private DropIndexStatement copy(final DropIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
+        DropIndexStatement result = new DropIndexStatement(sqlStatement.getDatabaseType());
+        result.setSimpleTable(boundTable);
+        result.getIndexes().addAll(sqlStatement.getIndexes());
         sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
         sqlStatement.getLockTable().ifPresent(result::setLockTable);
         result.setIfExists(sqlStatement.isIfExists());
-        result.addParameterMarkerSegments(sqlStatement.getParameterMarkerSegments());
-        result.getCommentSegments().addAll(sqlStatement.getCommentSegments());
-        result.getVariableNames().addAll(sqlStatement.getVariableNames());
+        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
 }

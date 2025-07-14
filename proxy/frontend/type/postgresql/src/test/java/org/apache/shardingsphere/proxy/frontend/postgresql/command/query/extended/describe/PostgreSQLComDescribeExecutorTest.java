@@ -27,8 +27,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.column.ColumnNotFoundException;
@@ -335,7 +335,6 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "select id, k, c, pad from t_order where id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
-        when(sqlStatementContext.getDatabaseType()).thenReturn(DATABASE_TYPE);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.UNSPECIFIED));

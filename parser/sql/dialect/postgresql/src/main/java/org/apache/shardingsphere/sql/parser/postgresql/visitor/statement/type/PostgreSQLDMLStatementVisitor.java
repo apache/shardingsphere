@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallArgumentContext;
@@ -37,12 +38,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.CallStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
@@ -56,16 +57,17 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisitor implements DMLStatementVisitor {
     
+    public PostgreSQLDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        CallStatement result = new CallStatement();
         String procedureName = ((IdentifierValue) visit(ctx.identifier())).getValue();
-        result.setProcedureName(procedureName);
         List<ExpressionSegment> params = null == ctx.callArguments()
                 ? Collections.emptyList()
                 : ctx.callArguments().callArgument().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        result.getParameters().addAll(params);
-        return result;
+        return new CallStatement(getDatabaseType(), procedureName, params);
     }
     
     @Override
@@ -79,7 +81,7 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement();
+        return new DoStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
@@ -95,17 +97,9 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCopyWithTableOrQuery(final CopyWithTableOrQueryContext ctx) {
-        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
-        if (null != ctx.qualifiedName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
-            if (null != ctx.columnNames()) {
-                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
-            }
-        }
-        if (null != ctx.preparableStmt()) {
-            result.setPrepareStatementQuery(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
-        }
-        return result;
+        return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
+                null == ctx.columnNames() ? Collections.emptyList() : ((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue(),
+                null == ctx.preparableStmt() ? null : extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
     }
     
     private PrepareStatementQuerySegment extractPrepareStatementQuerySegmentFromPreparableStmt(final PreparableStmtContext ctx) {
@@ -124,26 +118,14 @@ public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCopyWithTableOrQueryBinaryCsv(final CopyWithTableOrQueryBinaryCsvContext ctx) {
-        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
-        if (null != ctx.qualifiedName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
-            if (null != ctx.columnNames()) {
-                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
-            }
-        }
-        if (null != ctx.preparableStmt()) {
-            result.setPrepareStatementQuery(extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
-        }
-        return result;
+        return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
+                null == ctx.columnNames() ? Collections.emptyList() : ((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue(),
+                null == ctx.preparableStmt() ? null : extractPrepareStatementQuerySegmentFromPreparableStmt(ctx.preparableStmt()));
     }
     
     @Override
     public ASTNode visitCopyWithTableBinary(final CopyWithTableBinaryContext ctx) {
-        PostgreSQLCopyStatement result = new PostgreSQLCopyStatement();
-        if (null != ctx.qualifiedName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
-        }
-        return result;
+        return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override

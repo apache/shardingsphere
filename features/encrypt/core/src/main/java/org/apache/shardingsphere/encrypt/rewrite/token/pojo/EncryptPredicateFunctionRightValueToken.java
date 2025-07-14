@@ -68,6 +68,7 @@ public final class EncryptPredicateFunctionRightValueToken extends SQLToken impl
         for (ExpressionSegment each : parameters) {
             if (each instanceof FunctionSegment) {
                 appendFunctionSegment(((FunctionSegment) each).getFunctionName(), ((FunctionSegment) each).getParameters(), builder, parameterIndex);
+                builder.append(COMMA_SEPARATOR);
             } else {
                 appendRewrittenParameters(builder, parameterIndex.getAndIncrement());
             }

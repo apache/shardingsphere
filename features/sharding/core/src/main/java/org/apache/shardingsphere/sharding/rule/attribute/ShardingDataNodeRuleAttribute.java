@@ -110,4 +110,9 @@ public final class ShardingDataNodeRuleAttribute implements DataNodeRuleAttribut
     private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
         return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
     }
+    
+    @Override
+    public boolean isReplicaBasedDistribution() {
+        return false;
+    }
 }

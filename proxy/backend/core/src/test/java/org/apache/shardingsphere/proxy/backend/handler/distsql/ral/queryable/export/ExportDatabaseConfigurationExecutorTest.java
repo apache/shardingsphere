@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -70,7 +71,7 @@ class ExportDatabaseConfigurationExecutorTest {
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
         executor.setDatabase(database);
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(mock(DatabaseSegment.class), null), mock(ContextManager.class));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportDatabaseConfigurationStatement(null, mock(FromDatabaseSegment.class)), mock(ContextManager.class));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is(loadExpectedRow()));
@@ -94,7 +95,7 @@ class ExportDatabaseConfigurationExecutorTest {
         when(database.getName()).thenReturn("empty_db");
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
-        ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("empty_db")), null);
+        ExportDatabaseConfigurationStatement sqlStatement = new ExportDatabaseConfigurationStatement(null, new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("empty_db"))));
         ExportDatabaseConfigurationExecutor executor = new ExportDatabaseConfigurationExecutor();
         executor.setDatabase(database);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, mock(ContextManager.class));

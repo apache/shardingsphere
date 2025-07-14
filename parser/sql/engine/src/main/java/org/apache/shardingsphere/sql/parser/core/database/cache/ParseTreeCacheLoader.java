@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
 import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
-
-import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Parse context cache loader.
@@ -35,9 +34,9 @@ public final class ParseTreeCacheLoader implements CacheLoader<String, ParseASTN
         sqlParserExecutor = new SQLParserExecutor(databaseType);
     }
     
-    @ParametersAreNonnullByDefault
     @Override
     public ParseASTNode load(final String sql) {
+        Preconditions.checkNotNull(sql);
         return sqlParserExecutor.parse(sql);
     }
 }

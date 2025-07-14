@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dal.OpenGaussShowStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -37,10 +39,12 @@ import static org.mockito.Mockito.mock;
 
 class OpenGaussShowVariableExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     @Test
     void assertExecuteShowAll() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        OpenGaussShowVariableExecutor executor = new OpenGaussShowVariableExecutor(new OpenGaussShowStatement("ALL"));
+        OpenGaussShowVariableExecutor executor = new OpenGaussShowVariableExecutor(new ShowStatement(databaseType, "ALL"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(3));
@@ -67,7 +71,7 @@ class OpenGaussShowVariableExecutorTest {
     @Test
     void assertExecuteShowOne() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        OpenGaussShowVariableExecutor executor = new OpenGaussShowVariableExecutor(new OpenGaussShowStatement("sql_compatibility"));
+        OpenGaussShowVariableExecutor executor = new OpenGaussShowVariableExecutor(new ShowStatement(databaseType, "sql_compatibility"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));

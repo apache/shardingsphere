@@ -26,9 +26,10 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -66,16 +67,6 @@ public final class SingleTableInventoryCalculateParameter {
     private final AtomicReference<List<Object>> shardingColumnsValues = new AtomicReference<>();
     
     private final QueryType queryType;
-    
-    public SingleTableInventoryCalculateParameter(final PipelineDataSource dataSource,
-                                                  final QualifiedTable table, final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys, final Object tableCheckPosition) {
-        this.dataSource = dataSource;
-        this.table = table;
-        this.columnNames = columnNames;
-        this.uniqueKeys = uniqueKeys;
-        queryType = QueryType.RANGE_QUERY;
-        setQueryRange(new QueryRange(tableCheckPosition, false, null));
-    }
     
     /**
      * Get database type.
@@ -155,7 +146,7 @@ public final class SingleTableInventoryCalculateParameter {
      * @param queryRange query range
      */
     public void setQueryRange(final QueryRange queryRange) {
-        this.uniqueKeysValuesRange.set(queryRange);
+        uniqueKeysValuesRange.set(queryRange);
     }
     
     /**
@@ -163,8 +154,8 @@ public final class SingleTableInventoryCalculateParameter {
      *
      * @return sharding columns names
      */
-    public @Nullable List<String> getShardingColumnsNames() {
-        return shardingColumnsNames.get();
+    public List<String> getShardingColumnsNames() {
+        return Optional.ofNullable(shardingColumnsNames.get()).orElse(Collections.emptyList());
     }
     
     /**
@@ -181,8 +172,8 @@ public final class SingleTableInventoryCalculateParameter {
      *
      * @return sharding columns values
      */
-    public @Nullable List<Object> getShardingColumnsValues() {
-        return shardingColumnsValues.get();
+    public List<Object> getShardingColumnsValues() {
+        return Optional.ofNullable(shardingColumnsValues.get()).orElse(Collections.emptyList());
     }
     
     /**

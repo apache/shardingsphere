@@ -25,14 +25,14 @@ import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.Broadcast
 import org.apache.shardingsphere.broadcast.route.engine.type.unicast.BroadcastUnicastRouteEngine;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
 
@@ -66,7 +66,7 @@ public final class BroadcastRouteEngineFactory {
     }
     
     private static BroadcastRouteEngine getDDLRouteEngine(final QueryContext queryContext, final Collection<String> broadcastTableNames, final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CursorAvailable
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
                 ? new BroadcastUnicastRouteEngine(sqlStatementContext, broadcastTableNames, queryContext.getConnectionContext())
                 : new BroadcastTableBroadcastRouteEngine(broadcastTableNames);
     }

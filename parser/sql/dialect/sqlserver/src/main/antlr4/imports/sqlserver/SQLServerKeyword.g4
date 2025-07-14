@@ -1986,3 +1986,51 @@ LAST_VALUE
 GRAPH
     : G R A P H
     ;
+
+NODES
+    : N O D E S
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+EXIST
+    : E X I S T
+    ;
+
+CHANGETABLE
+    : C H A N G E T A B L E
+    ;
+
+VERSION
+    : V E R S I O N
+    ;
+
+CHANGES
+    : C H A N G E S
+    ;
+
+MODEL
+    : M O D E L
+    ;
+
+AI_GENERATE_EMBEDDINGS
+    : A I UL_ G E N E R A T E UL_ E M B E D D I N G S
+    ;
+
+PARAMETERS
+    : P A R A M E T E R S
+    ;
+
+LAG
+    : L A G
+    ;
+
+LEAD
+    : L E A D
+    ;
+
+FREETEXTTABLE
+    : F R E E T E X T T A B L E
+    ;

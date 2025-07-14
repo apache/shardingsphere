@@ -36,10 +36,5 @@
             <artifactId>shardingsphere-infra-database-presto</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-statement-presto</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

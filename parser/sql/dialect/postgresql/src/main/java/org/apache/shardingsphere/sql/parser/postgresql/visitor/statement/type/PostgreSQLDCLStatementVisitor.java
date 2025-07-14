@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRoleContext;
@@ -32,17 +33,17 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.AlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLCreateGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dcl.PostgreSQLReassignOwnedStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -52,9 +53,13 @@ import java.util.Collections;
  */
 public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisitor implements DCLStatementVisitor {
     
+    public PostgreSQLDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement();
+        GrantStatement result = new GrantStatement(getDatabaseType());
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -63,7 +68,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement();
+        RevokeStatement result = new RevokeStatement(getDatabaseType());
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -81,41 +86,41 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new CreateUserStatement();
+        return new CreateUserStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new DropUserStatement(Collections.emptyList());
+        return new DropUserStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new AlterUserStatement();
+        return new AlterUserStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new CreateRoleStatement();
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new AlterRoleStatement();
+        return new AlterRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new DropRoleStatement();
+        return new DropRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitReassignOwned(final ReassignOwnedContext ctx) {
-        return new PostgreSQLReassignOwnedStatement();
+        return new PostgreSQLReassignOwnedStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateGroup(final CreateGroupContext ctx) {
-        return new CreateGroupStatement();
+        return new PostgreSQLCreateGroupStatement(getDatabaseType());
     }
 }

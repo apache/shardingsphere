@@ -30,6 +30,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatemen
 import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -54,12 +55,12 @@ public final class BroadcastDistSQLStatementVisitor extends BroadcastDistSQLStat
     
     @Override
     public ASTNode visitShowBroadcastTableRules(final ShowBroadcastTableRulesContext ctx) {
-        return new ShowBroadcastTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowBroadcastTableRulesStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitCountBroadcastRule(final CountBroadcastRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "BROADCAST");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "BROADCAST");
     }
     
     @Override

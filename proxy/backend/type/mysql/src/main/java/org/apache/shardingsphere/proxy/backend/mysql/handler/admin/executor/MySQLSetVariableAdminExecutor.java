@@ -38,7 +38,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysv
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -92,7 +92,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(databaseType, sqlStatement, Collections.emptyList());
+                connectionSession.getCurrentDatabaseName(), new HintValueContext()).bind(sqlStatement, Collections.emptyList());
         DatabaseBackendHandler databaseBackendHandler = DatabaseConnectorFactory.getInstance().newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), connectionSession.getConnectionContext(), metaDataContexts.getMetaData()),
                 connectionSession.getDatabaseConnectionManager(), false);

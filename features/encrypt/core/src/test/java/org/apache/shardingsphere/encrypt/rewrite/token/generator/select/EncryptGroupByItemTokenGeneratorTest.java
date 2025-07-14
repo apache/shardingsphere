@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -85,7 +85,7 @@ class EncryptGroupByItemTokenGeneratorTest {
                 .setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue("t_encrypt"), new IdentifierValue("certificate_number"), TableSourceType.TEMPORARY_TABLE));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("a")));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseType()).thenReturn(databaseType);
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
         when(result.getGroupByContext().getItems()).thenReturn(Collections.singleton(orderByItem));

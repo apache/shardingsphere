@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetSetExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.SessionVariableRecordExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetParameterStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 
 /**
  * Reset variable admin executor for PostgreSQL.
@@ -36,7 +36,7 @@ public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdmin
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
-    private final ResetParameterStatement resetParameterStatement;
+    private final PostgreSQLResetParameterStatement resetParameterStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession) {

@@ -27,16 +27,15 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetAutoCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.StartTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.xa.XAStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.BeginTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Collections;
@@ -57,7 +56,7 @@ public final class TCLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
-        if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
+        if (tclStatement instanceof BeginTransactionStatement) {
             return new TCLBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }
         if (tclStatement instanceof SetAutoCommitStatement) {
@@ -78,7 +77,7 @@ public final class TCLBackendHandlerFactory {
                     : new TCLBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
         }
         if (tclStatement instanceof SetTransactionStatement && !((SetTransactionStatement) tclStatement).isDesiredScope(OperationScope.GLOBAL)) {
-            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession, sqlStatementContext.getDatabaseType());
+            return new SetTransactionHandler((SetTransactionStatement) tclStatement, connectionSession, sqlStatementContext.getSqlStatement().getDatabaseType());
         }
         if (tclStatement instanceof XAStatement) {
             return new XATCLHandler(sqlStatementContext, sql, connectionSession);

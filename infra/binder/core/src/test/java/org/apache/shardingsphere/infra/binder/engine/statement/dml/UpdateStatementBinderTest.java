@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -52,12 +52,12 @@ class UpdateStatementBinderTest {
     
     @Test
     void assertBind() {
-        UpdateStatement updateStatement = new UpdateStatement();
+        UpdateStatement updateStatement = new UpdateStatement(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         updateStatement.setTable(simpleTableSegment);
         updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                 new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
-        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), databaseType, updateStatement));
+        UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), instanceOf(SimpleTableSegment.class));

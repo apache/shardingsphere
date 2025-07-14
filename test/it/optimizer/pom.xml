@@ -87,6 +87,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-binder-sqlserver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
