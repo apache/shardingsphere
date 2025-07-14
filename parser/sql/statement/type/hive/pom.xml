@@ -20,15 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql</artifactId>
+        <artifactId>shardingsphere-parser-sql-statement-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-parser-sql-statement</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-parser-sql-statement-hive</artifactId>
     <name>${project.artifactId}</name>
-    <modules>
-        <module>core</module>
-        <module>type</module>
-        <module>type/hive</module>
-    </modules>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-statement-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
