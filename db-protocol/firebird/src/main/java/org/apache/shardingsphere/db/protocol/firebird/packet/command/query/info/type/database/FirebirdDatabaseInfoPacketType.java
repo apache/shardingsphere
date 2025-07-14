@@ -26,6 +26,9 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Firebird database info packet type.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdDatabaseInfoPacketType implements FirebirdInfoPacketType {

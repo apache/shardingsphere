@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -30,7 +29,6 @@ import java.sql.SQLException;
  * Generic response data packet for Firebird.
  */
 @Getter
-@NoArgsConstructor
 public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     
     private int handle;
@@ -40,6 +38,15 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     private FirebirdPacket data;
     
     private FirebirdStatusVector statusVector;
+    
+    /**
+     * Get generic response packet.
+     *
+     * @return generic response packet
+     */
+    public static FirebirdGenericResponsePacket getPacket() {
+        return new FirebirdGenericResponsePacket();
+    }
     
     /**
      * Set handle value.
@@ -85,6 +92,24 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         return this;
     }
     
+    /**
+     * Extract error code from status vector.
+     *
+     * @return error code
+     */
+    public int getErrorCode() {
+        return statusVector == null ? -1 : statusVector.getGdsCode();
+    }
+    
+    /**
+     * Extract error message from status vector.
+     *
+     * @return error message
+     */
+    public String getErrorMessage() {
+        return statusVector == null ? "" : statusVector.getErrorMessage();
+    }
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
@@ -105,27 +130,5 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         } else {
             payload.getByteBuf().writeZero(4);
         }
-    }
-    
-    public static FirebirdGenericResponsePacket getPacket() {
-        return new FirebirdGenericResponsePacket();
-    }
-    
-    /**
-     * Extract error code from status vector.
-     *
-     * @return error code
-     */
-    public int getErrorCode() {
-        return statusVector == null ? -1 : statusVector.getGdsCode();
-    }
-    
-    /**
-     * Extract error message from status vector.
-     *
-     * @return error message
-     */
-    public String getErrorMessage() {
-        return statusVector == null ? "" : statusVector.getErrorMessage();
     }
 }

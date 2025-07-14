@@ -23,6 +23,9 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+/**
+ * Firebird date and time utility class.
+ */
 @Getter
 @Setter
 public final class FirebirdDateTimeUtil {
