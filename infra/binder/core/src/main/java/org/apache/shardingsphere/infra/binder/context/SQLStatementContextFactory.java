@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
@@ -138,7 +137,7 @@ public final class SQLStatementContextFactory {
     private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DatabaseType databaseType,
                                                               final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new AnalyzeTableStatementContext(databaseType, (AnalyzeTableStatement) sqlStatement);
+            return new CommonSQLStatementContext(databaseType, sqlStatement);
         }
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext(metaData, databaseType, (ExplainStatement) sqlStatement, params, currentDatabaseName);

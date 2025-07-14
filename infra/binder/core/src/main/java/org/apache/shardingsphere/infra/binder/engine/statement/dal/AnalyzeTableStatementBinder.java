@@ -26,11 +26,9 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -41,10 +39,7 @@ public final class AnalyzeTableStatementBinder implements SQLStatementBinder<Ana
     @Override
     public AnalyzeTableStatement bind(final AnalyzeTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        Collection<SimpleTableSegment> boundTables = sqlStatement.getAttributes()
-                .findAttribute(TableSQLStatementAttribute.class)
-                .map(TableSQLStatementAttribute::getTables)
-                .orElse(Collections.emptyList())
+        Collection<SimpleTableSegment> boundTables = sqlStatement.getTables()
                 .stream()
                 .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts))
                 .collect(Collectors.toList());

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dal;
 
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -38,7 +39,7 @@ class AnalyzeTableStatementContextTest {
     void assertNewInstance() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")));
         AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
-        AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(databaseType, analyzeTableStatement);
+        CommonSQLStatementContext actual = new CommonSQLStatementContext(databaseType, analyzeTableStatement);
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
         assertThat(actual.getDatabaseType(), is(databaseType));
         assertThat(actual.getTablesContext().getTableNames().size(), is(1));
@@ -48,9 +49,17 @@ class AnalyzeTableStatementContextTest {
     @Test
     void assertNewInstanceWithEmptyTables() {
         AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(Collections.emptyList());
-        AnalyzeTableStatementContext actual = new AnalyzeTableStatementContext(databaseType, analyzeTableStatement);
+        CommonSQLStatementContext actual = new CommonSQLStatementContext(databaseType, analyzeTableStatement);
         assertThat(actual.getSqlStatement(), is(analyzeTableStatement));
         assertThat(actual.getDatabaseType(), is(databaseType));
         assertThat(actual.getTablesContext().getTableNames().size(), is(0));
+    }
+    
+    @Test
+    void assertGetTablesDirectly() {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_table")));
+        AnalyzeTableStatement analyzeTableStatement = new AnalyzeTableStatement(Collections.singletonList(tableSegment));
+        assertThat(analyzeTableStatement.getTables().size(), is(1));
+        assertThat(analyzeTableStatement.getTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo_table"));
     }
 }

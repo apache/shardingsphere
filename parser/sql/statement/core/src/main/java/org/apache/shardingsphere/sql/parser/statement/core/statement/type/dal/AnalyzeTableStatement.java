@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -29,6 +30,7 @@ import java.util.Collection;
  * Analyze table statement.
  */
 @RequiredArgsConstructor
+@Getter
 public final class AnalyzeTableStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
