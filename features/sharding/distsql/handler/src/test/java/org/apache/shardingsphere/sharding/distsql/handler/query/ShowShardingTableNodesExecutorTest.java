@@ -70,7 +70,7 @@ class ShowShardingTableNodesExecutorTest {
         assertNotNull(url);
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = yamlRootConfig.getRules().stream()
-                .filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst();
+                .filter(YamlShardingRuleConfiguration.class::isInstance).map(YamlShardingRuleConfiguration.class::cast).findFirst();
         assertTrue(yamlShardingRuleConfig.isPresent());
         return new ShardingRule(new YamlShardingRuleConfigurationSwapper().swapToObject(yamlShardingRuleConfig.get()),
                 Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
