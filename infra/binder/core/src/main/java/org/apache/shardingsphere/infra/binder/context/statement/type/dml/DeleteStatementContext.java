@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -42,8 +41,6 @@ import java.util.Map;
 @Getter
 public final class DeleteStatementContext implements SQLStatementContext, WhereContextAvailable {
     
-    private final DatabaseType databaseType;
-    
     private final DeleteStatement sqlStatement;
     
     private final TablesContext tablesContext;
@@ -54,8 +51,7 @@ public final class DeleteStatementContext implements SQLStatementContext, WhereC
     
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
-    public DeleteStatementContext(final DatabaseType databaseType, final DeleteStatement sqlStatement) {
-        this.databaseType = databaseType;
+    public DeleteStatementContext(final DeleteStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         whereSegments = createWhereSegments(sqlStatement);

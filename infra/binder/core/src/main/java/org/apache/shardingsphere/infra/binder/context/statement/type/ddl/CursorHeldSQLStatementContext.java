@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -36,16 +35,13 @@ import java.util.Collections;
 @Getter
 public final class CursorHeldSQLStatementContext implements SQLStatementContext, WhereContextAvailable {
     
-    private final DatabaseType databaseType;
-    
     private final SQLStatement sqlStatement;
     
     private TablesContext tablesContext;
     
     private CursorStatementContext cursorStatementContext;
     
-    public CursorHeldSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
-        this.databaseType = databaseType;
+    public CursorHeldSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(Collections.emptyList());
     }

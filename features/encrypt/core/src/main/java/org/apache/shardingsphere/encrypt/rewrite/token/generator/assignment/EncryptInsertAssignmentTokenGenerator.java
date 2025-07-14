@@ -60,7 +60,7 @@ public final class EncryptInsertAssignmentTokenGenerator implements CollectionSQ
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
-        return new EncryptAssignmentTokenGenerator(rule, database.getName(), sqlStatementContext.getDatabaseType()).generateSQLTokens(
+        return new EncryptAssignmentTokenGenerator(rule, database.getName(), sqlStatementContext.getSqlStatement().getDatabaseType()).generateSQLTokens(
                 sqlStatementContext.getTablesContext(), sqlStatementContext.getSqlStatement().getSetAssignment().get());
     }
 }

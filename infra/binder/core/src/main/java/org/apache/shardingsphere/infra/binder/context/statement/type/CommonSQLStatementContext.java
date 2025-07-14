@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
@@ -34,14 +33,11 @@ import java.util.Collections;
 @Getter
 public final class CommonSQLStatementContext implements SQLStatementContext {
     
-    private final DatabaseType databaseType;
-    
     private final SQLStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
-    public CommonSQLStatementContext(final DatabaseType databaseType, final SQLStatement sqlStatement) {
-        this.databaseType = databaseType;
+    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         tablesContext = new TablesContext(sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList()));
     }

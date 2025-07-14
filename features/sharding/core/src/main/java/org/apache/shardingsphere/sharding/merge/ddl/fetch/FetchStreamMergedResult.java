@@ -118,7 +118,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         Collection<OrderByItem> items = selectStatementContext.getOrderByContext().getItems();
         int index = 0;
         for (QueryResult each : queryResults) {
-            QueryResult queryResult = decorate(each, selectStatementContext.getDatabaseType());
+            QueryResult queryResult = decorate(each, selectStatementContext.getSqlStatement().getDatabaseType());
             OrderByValue orderByValue = new OrderByValue(queryResult, items, selectStatementContext, schema);
             if (orderByValue.next()) {
                 result.get(index).getOrderByValues().add(orderByValue);

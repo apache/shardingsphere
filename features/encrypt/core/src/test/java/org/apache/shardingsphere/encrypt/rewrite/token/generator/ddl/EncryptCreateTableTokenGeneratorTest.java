@@ -86,7 +86,7 @@ class EncryptCreateTableTokenGeneratorTest {
     
     @Test
     void assertGenerateSQLTokens() {
-        Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(mock(), createCreateTableStatement()));
+        Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(createCreateTableStatement()));
         assertThat(actual.size(), is(1));
         SQLToken token = actual.iterator().next();
         assertThat(token, instanceOf(SubstituteColumnDefinitionToken.class));

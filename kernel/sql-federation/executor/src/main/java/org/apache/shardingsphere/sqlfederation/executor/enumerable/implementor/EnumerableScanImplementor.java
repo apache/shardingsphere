@@ -89,7 +89,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
         if (containsSystemSchema(sqlStatementContext)) {
             return createMemoryEnumerable(sqlStatementContext, table);
         }
-        QueryContext scanQueryContext = createQueryContext(queryContext.getMetaData(), scanContext, sqlStatementContext.getDatabaseType(), queryContext.isUseCache());
+        QueryContext scanQueryContext = createQueryContext(queryContext.getMetaData(), scanContext, sqlStatementContext.getSqlStatement().getDatabaseType(), queryContext.isUseCache());
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(scanQueryContext, queryContext.getMetaData().getGlobalRuleMetaData(), queryContext.getMetaData().getProps());
         if (executorContext.isPreview()) {
             executorContext.getPreviewExecutionUnits().addAll(executionContext.getExecutionUnits());
@@ -100,7 +100,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     
     private boolean containsSystemSchema(final SQLStatementContext sqlStatementContext) {
         Collection<String> usedSchemaNames = sqlStatementContext.getTablesContext().getSchemaNames();
-        Collection<String> systemSchemas = new SystemDatabase(sqlStatementContext.getDatabaseType()).getSystemSchemas();
+        Collection<String> systemSchemas = new SystemDatabase(sqlStatementContext.getSqlStatement().getDatabaseType()).getSystemSchemas();
         for (String each : usedSchemaNames) {
             if (systemSchemas.contains(each)) {
                 return true;
@@ -148,7 +148,7 @@ public final class EnumerableScanImplementor implements ScanImplementor {
     }
     
     private Enumerable<Object> createMemoryEnumerable(final SQLStatementContext sqlStatementContext, final ShardingSphereTable table) {
-        DatabaseType databaseType = sqlStatementContext.getDatabaseType();
+        DatabaseType databaseType = sqlStatementContext.getSqlStatement().getDatabaseType();
         Optional<DialectDriverQuerySystemCatalogOption> driverQuerySystemCatalogOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDriverQuerySystemCatalogOption();
         if (driverQuerySystemCatalogOption.isPresent() && driverQuerySystemCatalogOption.get().isSystemTable(table.getName())) {
             return createMemoryEnumerator(MemoryTableStatisticsBuilder.buildTableStatistics(table, queryContext.getMetaData(), driverQuerySystemCatalogOption.get()), table, databaseType);

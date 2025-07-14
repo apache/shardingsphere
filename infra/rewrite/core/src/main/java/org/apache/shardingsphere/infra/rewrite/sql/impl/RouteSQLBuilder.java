@@ -37,9 +37,6 @@ public final class RouteSQLBuilder extends AbstractSQLBuilder {
     
     @Override
     protected String getSQLTokenText(final SQLToken sqlToken) {
-        if (sqlToken instanceof RouteUnitAware) {
-            return ((RouteUnitAware) sqlToken).toString(routeUnit);
-        }
-        return sqlToken.toString();
+        return sqlToken instanceof RouteUnitAware ? ((RouteUnitAware) sqlToken).toString(routeUnit) : sqlToken.toString();
     }
 }
