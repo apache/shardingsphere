@@ -62,8 +62,8 @@ class AnalyzeTableStatementBinderTest {
         when(database.getSchema("foo_db")).thenReturn(schema);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        final SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
-        final AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
+        AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
         Collection<SimpleTableSegment> actualTables = actual.getTables();
