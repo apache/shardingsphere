@@ -103,9 +103,9 @@ public final class FirebirdCommandPacketFactory {
                 case FETCH:
                     return FirebirdFetchStatementPacket.getLength(payload) <= capacity;
                 case COMMIT:
-                    return FirebirdCommitTransactionPacket.getLength(payload) <= capacity;
+                    return FirebirdCommitTransactionPacket.getLength() <= capacity;
                 case ROLLBACK:
-                    return FirebirdRollbackTransactionPacket.getLength(payload) <= capacity;
+                    return FirebirdRollbackTransactionPacket.getLength() <= capacity;
                 case FREE_STATEMENT:
                     return FirebirdFreeStatementPacket.getLength() <= capacity;
                 default:
