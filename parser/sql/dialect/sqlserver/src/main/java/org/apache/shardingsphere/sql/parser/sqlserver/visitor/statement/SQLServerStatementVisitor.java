@@ -247,6 +247,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Piv
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -734,7 +735,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.freetextTableFunction()) {
             return visit(ctx.freetextTableFunction());
         }
+        if (null != ctx.currentUserFunction()) {
+            return visit(ctx.currentUserFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitCurrentUserFunction(final CurrentUserFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURRENT_USER().getText(), getOriginalText(ctx));
     }
     
     @Override
