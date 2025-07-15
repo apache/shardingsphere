@@ -10877,4 +10877,24 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_try_parse_function">
+        <projections start-index="7" stop-index="68">
+            <expression-projection text="TRY_PARSE('Jabberwokkie' AS datetime2 USING 'en-US')" alias="Result" start-index="7" stop-index="68">
+                <expr>
+                    <function start-index="7" stop-index="58" text="TRY_PARSE('Jabberwokkie' AS datetime2 USING 'en-US')" function-name="TRY_PARSE">
+                        <parameter>
+                            <literal-expression value="Jabberwokkie" start-index="17" stop-index="30" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="datetime2" start-index="35" stop-index="43" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="en-US" start-index="51" stop-index="57" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
