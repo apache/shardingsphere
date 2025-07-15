@@ -309,6 +309,12 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-encrypt-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-mask-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -569,6 +575,17 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-encrypt</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-encrypt-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
