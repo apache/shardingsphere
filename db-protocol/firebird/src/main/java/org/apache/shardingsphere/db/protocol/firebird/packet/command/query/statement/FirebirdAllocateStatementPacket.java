@@ -37,10 +37,9 @@ public final class FirebirdAllocateStatementPacket extends FirebirdCommandPacket
     /**
      * Get length of packet.
      *
-     * @param payload Firebird packet payload
      * @return Length of packet
      */
-    public static int getLength(final FirebirdPacketPayload payload) {
+    public static int getLength() {
         return 8;
     }
     

@@ -94,7 +94,7 @@ public final class FirebirdCommandPacketFactory {
                 case TRANSACTION:
                     return FirebirdStartTransactionPacket.getLength(payload) <= capacity;
                 case ALLOCATE_STATEMENT:
-                    return FirebirdAllocateStatementPacket.getLength(payload) <= capacity;
+                    return FirebirdAllocateStatementPacket.getLength() <= capacity;
                 case PREPARE_STATEMENT:
                     return FirebirdPrepareStatementPacket.getLength(payload) <= capacity;
                 case EXECUTE:
@@ -107,7 +107,7 @@ public final class FirebirdCommandPacketFactory {
                 case ROLLBACK:
                     return FirebirdRollbackTransactionPacket.getLength(payload) <= capacity;
                 case FREE_STATEMENT:
-                    return FirebirdFreeStatementPacket.getLength(payload) <= capacity;
+                    return FirebirdFreeStatementPacket.getLength() <= capacity;
                 default:
                     return true;
             }
