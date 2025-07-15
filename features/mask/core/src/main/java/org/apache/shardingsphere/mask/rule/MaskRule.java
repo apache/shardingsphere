@@ -101,10 +101,7 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
     private void handleAddedMaskAlgorithm(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
         toBeUpdatedRuleConfig.getMaskAlgorithms().entrySet().stream()
                 .filter(entry -> !maskAlgorithms.containsKey(entry.getKey()))
-                .forEach(entry -> maskAlgorithms.computeIfAbsent(
-                        entry.getKey(),
-                        key -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())
-                ));
+                .forEach(entry -> maskAlgorithms.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
     }
     
     private void handleRemovedMaskAlgorithm(final MaskRuleConfiguration toBeUpdatedRuleConfig) {

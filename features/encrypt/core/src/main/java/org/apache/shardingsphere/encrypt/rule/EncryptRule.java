@@ -180,10 +180,8 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     private boolean handleAddedEncryptors(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
         return toBeUpdatedRuleConfig.getEncryptors().entrySet().stream()
                 .filter(entry -> !encryptors.containsKey(entry.getKey()))
-                .peek(entry -> encryptors.computeIfAbsent(
-                        entry.getKey(),
-                        key -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())
-                )).findAny().isPresent();
+                .peek(entry -> encryptors.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(EncryptAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())))
+                .findAny().isPresent();
     }
     
     private boolean handleRemovedEncryptors(final EncryptRuleConfiguration toBeUpdatedRuleConfig) {
