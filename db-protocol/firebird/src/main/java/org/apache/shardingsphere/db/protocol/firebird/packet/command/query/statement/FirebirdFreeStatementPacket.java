@@ -43,11 +43,6 @@ public final class FirebirdFreeStatementPacket extends FirebirdCommandPacket {
         option = payload.readInt4();
     }
     
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
-        
-    }
-    
     /**
      * Get length of packet.
      *
@@ -56,5 +51,9 @@ public final class FirebirdFreeStatementPacket extends FirebirdCommandPacket {
      */
     public static int getLength(final FirebirdPacketPayload payload) {
         return 12;
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
 }

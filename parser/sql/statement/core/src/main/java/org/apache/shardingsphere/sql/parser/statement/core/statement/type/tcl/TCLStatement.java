@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public abstract class TCLStatement extends SQLStatement {
     
-    public TCLStatement(final DatabaseType databaseType) {
+    protected TCLStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }

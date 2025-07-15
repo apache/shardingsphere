@@ -28,8 +28,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Accept data packet for Firebird.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdAcceptDataPacket extends FirebirdPacket {
     
     private final byte[] salt;

@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Firebird architecture type.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdArchType {
@@ -105,9 +108,9 @@ public enum FirebirdArchType {
                 default:
                     ARCHITECTURE = ARCH_DARWIN_X64;
             }
-        } else if (SystemUtils.IS_OS_WINDOWS && SystemUtils.OS_ARCH.equalsIgnoreCase("amd64")) {
+        } else if (SystemUtils.IS_OS_WINDOWS && "amd64".equalsIgnoreCase(SystemUtils.OS_ARCH)) {
             ARCHITECTURE = ARCH_WINNT_64;
-        } else if (SystemUtils.OS_ARCH.equalsIgnoreCase("i386")) {
+        } else if ("i386".equalsIgnoreCase(SystemUtils.OS_ARCH)) {
             ARCHITECTURE = ARCH_INTEL_32;
         } else if (Stream.of("arm", "aarch64", "aarch32").anyMatch(SystemUtils.OS_ARCH::equalsIgnoreCase)) {
             ARCHITECTURE = ARCH_ARM;
@@ -135,6 +138,6 @@ public enum FirebirdArchType {
      * @return is the architecture valid
      */
     public static boolean isValid(final FirebirdArchType arch) {
-        return arch == FirebirdArchType.ARCH_GENERIC || arch == FirebirdArchType.ARCHITECTURE;
+        return arch == ARCH_GENERIC || arch == ARCHITECTURE;
     }
 }

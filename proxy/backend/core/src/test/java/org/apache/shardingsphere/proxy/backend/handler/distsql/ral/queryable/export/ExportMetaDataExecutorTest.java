@@ -83,15 +83,17 @@ import static org.mockito.Mockito.when;
 
 class ExportMetaDataExecutorTest {
     
-    private static final String EXPECTED_EMPTY_METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBlbXB0eV9tZXRhZGF0YVxuI"
-            + "n0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcbi0gIUdMT0JBTF9DTE9DS1xuICBlbmFibGVkOiBmYWxzZVxuICBwcm92aWRlcjogbG9jYWxcbiAgdHlwZTogVFNPXG4ifX0=";
+    private static final String EXPECTED_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: empty_metadata\\n\"},\"props\":\"\",\"rules\":\"rules:\\n"
+            + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
     
-    private static final String EXPECTED_NOT_EMPTY_METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7Im5vcm1hbF9kYiI6ImRhdGFiYXNlTmFtZTogbm9ybWFsX2RiXG5kYXRhU291cmNlczpcbiAgZHNfMDpcbiA"
-            + "gICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzA7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9"
-            + "vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiAgZHNfMTpcbiAgICBwYXNzd29yZDogXG4gICAgdXJsOiBqZGJjOmgyOm1lbTpkZW1vX2RzXzE7REJfQ0xPU0VfREVMQVk9LTE7REFUQUJBU0VfVE9fVVBQRVI9ZmFsc2"
-            + "U7TU9ERT1NeVNRTFxuICAgIHVzZXJuYW1lOiByb290XG4gICAgbWluUG9vbFNpemU6IDFcbiAgICBtYXhQb29sU2l6ZTogNTBcbiJ9LCJwcm9wcyI6InByb3BzOlxuICBzcWwtc2hvdzogdHJ1ZVxuIiwicnVsZXMiOiJydWxlczpcbi0g"
-            + "IUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFRFxuICB1c2VyczpcbiAgLSBhZG1pbjogdHJ1ZVxuICAgIGF1dGhlbnRpY2F0aW9uTWV0aG9kTmFtZTogJydcbiAgIC"
-            + "BwYXNzd29yZDogcm9vdFxuICAgIHVzZXI6IHJvb3RAJVxuLSAhR0xPQkFMX0NMT0NLXG4gIGVuYWJsZWQ6IGZhbHNlXG4gIHByb3ZpZGVyOiBsb2NhbFxuICB0eXBlOiBUU09cbiJ9fQ==";
+    private static final String EXPECTED_NOT_EMPTY_METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"normal_db\":\"databaseName: normal_db\\ndataSources:\\n"
+            + "  ds_0:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n"
+            + "  ds_1:\\n    password: \\n    url: jdbc:h2:mem:demo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL\\n    username: root\\n    minPoolSize: 1\\n    maxPoolSize: 50\\n\"},"
+            + "\"props\":\"props:\\n  sql-show: true\\n\",\"rules\":\"rules:\\n"
+            + "- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - admin: true\\n    authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n"
+            + "- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertExecuteWithEmptyMetaData() {
@@ -100,7 +102,7 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(sqlStatement, contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertMetaData(row.getCell(3), EXPECTED_EMPTY_METADATA_VALUE);
+        assertMetaData(row.getCell(3), Base64.encodeBase64String(EXPECTED_EMPTY_METADATA_VALUE.getBytes()));
     }
     
     private ContextManager mockEmptyContextManager() {
@@ -116,7 +118,7 @@ class ExportMetaDataExecutorTest {
     
     private ShardingSphereDatabase mockEmptyShardingSphereDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getProtocolType()).thenReturn(databaseType);
         when(result.getName()).thenReturn("empty_metadata");
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singleton("empty_metadata"));
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
@@ -130,11 +132,11 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(new ExportMetaDataStatement(null), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertMetaData(row.getCell(3), EXPECTED_NOT_EMPTY_METADATA_VALUE);
+        assertMetaData(row.getCell(3), Base64.encodeBase64String(EXPECTED_NOT_EMPTY_METADATA_VALUE.getBytes()));
     }
     
     private ContextManager mockContextManager() {
-        ShardingSphereDatabase database = mockShardingSphereDatabase();
+        ShardingSphereDatabase database = mockDatabase();
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()),
@@ -150,10 +152,10 @@ class ExportMetaDataExecutorTest {
         return result;
     }
     
-    private ShardingSphereDatabase mockShardingSphereDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         Map<String, StorageUnit> storageUnits = createStorageUnits();
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        when(result.getProtocolType()).thenReturn(databaseType);
         when(result.getName()).thenReturn("normal_db");
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(storageUnits.keySet());
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);

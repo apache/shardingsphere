@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
-import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -102,7 +103,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-        return new SaneQueryResultEngine(getProtocolTypeType()).getSaneQueryResult(sqlStatement, ex);
+        return DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, getProtocolTypeType()).flatMap(optional -> optional.getSaneQueryResult(sqlStatement, ex));
     }
     
     private DatabaseType getProtocolTypeType() {

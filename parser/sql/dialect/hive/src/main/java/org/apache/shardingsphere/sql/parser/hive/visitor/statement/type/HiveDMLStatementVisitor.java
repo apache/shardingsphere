@@ -21,7 +21,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AggregationFunctionContext;
@@ -204,14 +203,16 @@ import java.util.stream.Collectors;
  * DML statement visitor for Hive.
  */
 public final class HiveDMLStatementVisitor extends HiveStatementVisitor implements DMLStatementVisitor {
-    
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
-    
+
+    public HiveDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.queryExpressionParens());
     }
-    
+
     @Override
     public ASTNode visitQueryExpressionParens(final QueryExpressionParensContext ctx) {
         if (null != ctx.queryExpressionParens()) {
@@ -224,7 +225,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-    
+
     @Override
     public ASTNode visitLockClauseList(final LockClauseListContext ctx) {
         LockSegment result = new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -235,7 +236,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitQueryExpression(final QueryExpressionContext ctx) {
         SelectStatement result;
@@ -252,7 +253,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitSelectWithInto(final SelectWithIntoContext ctx) {
         if (null != ctx.selectWithInto()) {
@@ -264,14 +265,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitQueryExpressionBody(final QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof QueryPrimaryContext) {
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody()) {
-            SelectStatement result = new SelectStatement(databaseType);
+            SelectStatement result = new SelectStatement(getDatabaseType());
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
             result.setProjections(left.getSelect().getProjections());
@@ -280,7 +281,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             return result;
         }
         if (null != ctx.queryExpressionParens()) {
-            SelectStatement result = new SelectStatement(databaseType);
+            SelectStatement result = new SelectStatement(getDatabaseType());
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
             result.setProjections(left.getSelect().getProjections());
@@ -290,7 +291,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return visit(ctx.queryExpressionParens());
     }
-    
+
     private CombineSegment createCombineSegment(final CombineClauseContext ctx, final SubquerySegment left) {
         CombineType combineType;
         if (null != ctx.EXCEPT()) {
@@ -302,10 +303,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         SubquerySegment right = new SubquerySegment(ruleContext.start.getStartIndex(), ruleContext.stop.getStopIndex(), (SelectStatement) visit(ruleContext), getOriginalText(ruleContext));
         return new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), left, combineType, right);
     }
-    
+
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
@@ -335,10 +336,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement result = new SelectStatement(getDatabaseType());
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
@@ -347,7 +348,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
         return result;
     }
-    
+
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (AssignmentValuesContext each : ctx.assignmentValues()) {
@@ -355,10 +356,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement result = new SelectStatement(getDatabaseType());
         if (null != ctx.TABLE()) {
             result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
                     new IdentifierValue(ctx.tableName().getText()))));
@@ -367,7 +368,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitWindowClause(final WindowClauseContext ctx) {
         WindowSegment result = new WindowSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -376,7 +377,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitWindowItem(final WindowItemContext ctx) {
         WindowItemSegment result = new WindowItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -393,7 +394,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     private Collection<ExpressionSegment> getExpressionsFromExprList(final List<ExprContext> exprList) {
         if (null == exprList) {
             return Collections.emptyList();
@@ -404,13 +405,13 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitHavingClause(final HavingClauseContext ctx) {
         ExpressionSegment expr = (ExpressionSegment) visit(ctx.expr());
         return new HavingSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), expr);
     }
-    
+
     @Override
     public ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.INTERVAL().getSymbol().getStartIndex(), ctx.INTERVAL().getSymbol().getStopIndex(), ctx.INTERVAL().getText(), ctx.INTERVAL().getText());
@@ -419,7 +420,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 ctx.intervalValue().intervalUnit().getText()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitFunctionCall(final FunctionCallContext ctx) {
         if (null != ctx.aggregationFunction()) {
@@ -439,7 +440,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction, jsonFunction or udfFunction.");
     }
-    
+
     @Override
     public ASTNode visitUdfFunction(final UdfFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
@@ -450,7 +451,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
@@ -458,7 +459,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 ? createAggregationSegment(ctx, aggregationType)
                 : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
     }
-    
+
     @Override
     public ASTNode visitJsonFunction(final JsonFunctionContext ctx) {
         JsonFunctionNameContext functionNameContext = ctx.jsonFunctionName();
@@ -475,7 +476,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
     }
-    
+
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
         AggregationType type = AggregationType.valueOf(aggregationType.toUpperCase());
         String innerExpression = ctx.start.getInputStream().getText(new Interval(ctx.LP_().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
@@ -489,7 +490,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getParameters().addAll(getExpressions(ctx));
         return result;
     }
-    
+
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
         if (null == ctx.expr()) {
             return Collections.emptyList();
@@ -500,7 +501,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     private String getDistinctExpression(final AggregationFunctionContext ctx) {
         StringBuilder result = new StringBuilder();
         for (int i = 3; i < ctx.getChildCount() - 1; i++) {
@@ -508,7 +509,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result.toString();
     }
-    
+
     @Override
     public ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.groupConcatFunction()) {
@@ -549,7 +550,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getOriginalText(ctx));
     }
-    
+
     @Override
     public ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
@@ -559,13 +560,13 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         super.visitWindowFunction(ctx);
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
     }
-    
+
     @Override
     public ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
@@ -593,7 +594,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitCastType(final CastTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
@@ -610,13 +611,13 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CONVERT().getText(), getOriginalText(ctx));
     }
-    
+
     @Override
     public ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
@@ -625,7 +626,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
         return result;
     }
-    
+
     @Override
     public ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(
@@ -636,7 +637,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
@@ -645,7 +646,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitCharFunction(final CharFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
@@ -656,7 +657,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
@@ -677,7 +678,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
@@ -685,7 +686,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitValuesFunction(final ValuesFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), getOriginalText(ctx));
@@ -695,17 +696,17 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitCurrentUserFunction(final CurrentUserFunctionContext ctx) {
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURRENT_USER().getText(), getOriginalText(ctx));
     }
-    
+
     @Override
     public ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         return null == ctx.completeRegularFunction() ? visit(ctx.shorthandRegularFunction()) : visit(ctx.completeRegularFunction());
     }
-    
+
     @Override
     public ASTNode visitCompleteRegularFunction(final CompleteRegularFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx));
@@ -713,7 +714,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getParameters().addAll(expressionSegments);
         return result;
     }
-    
+
     @Override
     public ASTNode visitShorthandRegularFunction(final ShorthandRegularFunctionContext ctx) {
         String text = getOriginalText(ctx);
@@ -729,7 +730,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitCaseExpression(final CaseExpressionContext ctx) {
         Collection<ExpressionSegment> whenExprs = new LinkedList<>();
@@ -742,17 +743,17 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         ExpressionSegment elseExpr = null == ctx.caseElse() ? null : (ExpressionSegment) visit(ctx.caseElse().expr());
         return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
     }
-    
+
     @Override
     public ASTNode visitVariable(final VariableContext ctx) {
         return null == ctx.systemVariable() ? visit(ctx.userVariable()) : visit(ctx.systemVariable());
     }
-    
+
     @Override
     public ASTNode visitUserVariable(final UserVariableContext ctx) {
         return new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.textOrIdentifier().getText());
     }
-    
+
     @Override
     public ASTNode visitSystemVariable(final SystemVariableContext ctx) {
         VariableSegment result = new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.rvalueSystemVariable().getText());
@@ -761,21 +762,21 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitMatchExpression(final MatchExpressionContext ctx) {
         visit(ctx.expr());
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
-    
+
     // TODO :FIXME, sql case id: insert_with_str_to_date
     private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
         for (ExprContext each : exprContexts) {
             visit(each);
         }
     }
-    
+
     @Override
     public ASTNode visitDataType(final DataTypeContext ctx) {
         DataTypeSegment result = new DataTypeSegment();
@@ -792,7 +793,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitFieldLength(final FieldLengthContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -801,7 +802,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setPrecision(new BigDecimal(ctx.length.getText()).intValue());
         return result;
     }
-    
+
     @Override
     public ASTNode visitPrecision(final PrecisionContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -812,7 +813,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setScale(Integer.parseInt(numbers.get(1).getText()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitTypeDatetimePrecision(final TypeDatetimePrecisionContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -821,7 +822,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setPrecision(Integer.parseInt(ctx.NUMBER_().getText()));
         return result;
     }
-    
+
     @Override
     public ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
@@ -830,7 +831,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new OrderBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
-    
+
     @Override
     public ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection;
@@ -852,7 +853,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             }
         }
     }
-    
+
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -862,7 +863,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         } else if (null != ctx.insertSelectClause()) {
             result = (InsertStatement) visit(ctx.insertSelectClause());
         } else {
-            result = new InsertStatement(databaseType);
+            result = new InsertStatement(getDatabaseType());
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         if (null != ctx.onDuplicateKeyClause()) {
@@ -872,10 +873,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-    
+
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
                 result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
@@ -888,15 +889,15 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setInsertSelect(createInsertSelectSegment(ctx));
         return result;
     }
-    
+
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
         SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
-    
+
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
                 result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
@@ -909,7 +910,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         return result;
     }
-    
+
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (AssignmentValuesContext each : assignmentValuesContexts) {
@@ -917,7 +918,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
         Collection<ColumnAssignmentSegment> columns = new LinkedList<>();
@@ -926,7 +927,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new OnDuplicateKeyColumnsSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columns);
     }
-    
+
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {
         List<ColumnSegment> result = new LinkedList<>();
         for (InsertIdentifierContext each : fields.insertIdentifier()) {
@@ -934,10 +935,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement result = new UpdateStatement(getDatabaseType());
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
         result.setTable(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -953,7 +954,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-    
+
     @Override
     public ASTNode visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
@@ -962,7 +963,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
     }
-    
+
     @Override
     public ASTNode visitAssignmentValues(final AssignmentValuesContext ctx) {
         List<ExpressionSegment> segments = new LinkedList<>();
@@ -971,7 +972,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new InsertValuesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), segments);
     }
-    
+
     @Override
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnRef());
@@ -980,7 +981,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         columnSegments.add(column);
         return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
-    
+
     @Override
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
@@ -994,15 +995,15 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
-    
+
     @Override
     public ASTNode visitBlobValue(final BlobValueContext ctx) {
         return new StringLiteralValue(ctx.string_().getText());
     }
-    
+
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
+        DeleteStatement result = new DeleteStatement(getDatabaseType());
         result.setTable(null == ctx.multipleTablesClause() ? (TableSegment) visit(ctx.singleTableClause()) : (TableSegment) visit(ctx.multipleTablesClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -1016,7 +1017,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-    
+
     @Override
     public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
         SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
@@ -1025,7 +1026,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitMultipleTablesClause(final MultipleTablesClauseContext ctx) {
         DeleteMultiTableSegment result = new DeleteMultiTableSegment();
@@ -1034,7 +1035,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setActualDeleteTables(generateTablesFromTableAliasRefList(ctx.tableAliasRefList()));
         return result;
     }
-    
+
     private List<SimpleTableSegment> generateTablesFromTableAliasRefList(final TableAliasRefListContext ctx) {
         List<SimpleTableSegment> result = new LinkedList<>();
         for (TableIdentOptWildContext each : ctx.tableIdentOptWild()) {
@@ -1042,7 +1043,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
@@ -1060,7 +1061,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-    
+
     private boolean isDistinct(final QuerySpecificationContext ctx) {
         for (SelectSpecificationContext each : ctx.selectSpecification()) {
             if (((BooleanLiteralValue) visit(each)).getValue()) {
@@ -1069,7 +1070,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return false;
     }
-    
+
     @Override
     public ASTNode visitSelectSpecification(final SelectSpecificationContext ctx) {
         if (null != ctx.duplicateSpecification()) {
@@ -1077,7 +1078,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new BooleanLiteralValue(false);
     }
-    
+
     @Override
     public ASTNode visitDuplicateSpecification(final DuplicateSpecificationContext ctx) {
         String text = ctx.getText();
@@ -1086,7 +1087,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new BooleanLiteralValue(false);
     }
-    
+
     @Override
     public ASTNode visitProjections(final ProjectionsContext ctx) {
         Collection<ProjectionSegment> projections = new LinkedList<>();
@@ -1100,7 +1101,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.getProjections().addAll(projections);
         return result;
     }
-    
+
     @Override
     public ASTNode visitProjection(final ProjectionContext ctx) {
         // FIXME :The stop index of project is the stop index of projection, instead of alias.
@@ -1130,7 +1131,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return createProjection(ctx, alias, exprProjection);
     }
-    
+
     private ShorthandProjectionSegment createShorthandProjection(final QualifiedShorthandContext shorthand) {
         ShorthandProjectionSegment result = new ShorthandProjectionSegment(shorthand.getStart().getStartIndex(), shorthand.getStop().getStopIndex());
         IdentifierContext identifier = shorthand.identifier().get(shorthand.identifier().size() - 1);
@@ -1142,12 +1143,12 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitAlias(final AliasContext ctx) {
         return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.textOrIdentifier().getText()));
     }
-    
+
     private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias, final ASTNode projection) {
         if (projection instanceof AggregationProjectionSegment) {
             ((AggregationProjectionSegment) projection).setAlias(alias);
@@ -1221,12 +1222,12 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setAlias(alias);
         return result;
     }
-    
+
     @Override
     public ASTNode visitFromClause(final FromClauseContext ctx) {
         return visit(ctx.tableReferences());
     }
-    
+
     @Override
     public ASTNode visitTableReferences(final TableReferencesContext ctx) {
         TableSegment result = (TableSegment) visit(ctx.tableReference(0));
@@ -1237,7 +1238,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     private JoinTableSegment generateJoinTableSourceFromEscapedTableReference(final TableReferenceContext ctx, final TableSegment tableSegment) {
         JoinTableSegment result = new JoinTableSegment();
         result.setStartIndex(tableSegment.getStartIndex());
@@ -1247,7 +1248,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setRight((TableSegment) visit(ctx));
         return result;
     }
-    
+
     @Override
     public ASTNode visitEscapedTableReference(final EscapedTableReferenceContext ctx) {
         TableSegment result;
@@ -1259,7 +1260,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result = left;
         return result;
     }
-    
+
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         TableSegment result;
@@ -1271,7 +1272,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result = left;
         return result;
     }
-    
+
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
@@ -1292,7 +1293,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return visit(ctx.tableReferences());
     }
-    
+
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
         JoinTableSegment result = new JoinTableSegment();
         result.setLeft(tableSegment);
@@ -1304,7 +1305,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         result.setRight(right);
         return null == ctx.joinSpecification() ? result : visitJoinSpecification(ctx.joinSpecification(), result);
     }
-    
+
     private String getJoinType(final JoinedTableContext ctx) {
         if (null != ctx.innerJoinType()) {
             return JoinType.INNER.name();
@@ -1317,7 +1318,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return JoinType.COMMA.name();
     }
-    
+
     private String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
@@ -1327,7 +1328,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             return JoinType.INNER.name();
         }
     }
-    
+
     private JoinTableSegment visitJoinSpecification(final JoinSpecificationContext ctx, final JoinTableSegment result) {
         if (null != ctx.expr()) {
             ExpressionSegment condition = (ExpressionSegment) visit(ctx.expr());
@@ -1338,13 +1339,13 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return result;
     }
-    
+
     @Override
     public ASTNode visitWhereClause(final WhereClauseContext ctx) {
         ASTNode segment = visit(ctx.expr());
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
     }
-    
+
     @Override
     public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
@@ -1353,7 +1354,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
     }
-    
+
     @Override
     public ASTNode visitLimitClause(final LimitClauseContext ctx) {
         if (null == ctx.limitOffset()) {
@@ -1370,7 +1371,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
     }
-    
+
     @Override
     public ASTNode visitLimitRowCount(final LimitRowCountContext ctx) {
         if (null != ctx.numberLiterals()) {
@@ -1381,12 +1382,12 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         getParameterMarkerSegments().add(result);
         return result;
     }
-    
+
     @Override
     public ASTNode visitConstraintName(final ConstraintNameContext ctx) {
         return new ConstraintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
-    
+
     @Override
     public ASTNode visitLimitOffset(final LimitOffsetContext ctx) {
         if (null != ctx.numberLiterals()) {
@@ -1397,7 +1398,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         getParameterMarkerSegments().add(result);
         return result;
     }
-    
+
     @Override
     public ASTNode visitCollateClause(final CollateClauseContext ctx) {
         if (null != ctx.collationName()) {
@@ -1408,14 +1409,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         getParameterMarkerSegments().add(result);
         return result;
     }
-    
-    @Override
+
+        @Override
     public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
         return visit(ctx.loadDataStatement());
     }
-    
+
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new HiveLoadDataStatement(databaseType, (SimpleTableSegment) visit(ctx.tableName()));
+        return new HiveLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
 }

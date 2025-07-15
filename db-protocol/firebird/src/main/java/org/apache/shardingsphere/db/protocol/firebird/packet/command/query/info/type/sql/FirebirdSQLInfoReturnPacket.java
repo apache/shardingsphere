@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * SQL info return data packet for Firebird.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
     private final List<FirebirdInfoPacketType> infoItems;

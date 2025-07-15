@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AggregationFunctionContext;
@@ -107,8 +109,11 @@ import java.util.stream.Collectors;
 /**
  * Statement visitor for SQL92.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQL92StatementVisitor extends SQL92StatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     

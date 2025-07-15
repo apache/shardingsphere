@@ -19,7 +19,8 @@ package org.apache.shardingsphere.db.protocol.firebird.constant;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class FirebirdProtocolDefaultVersionProviderTest {
     
@@ -27,6 +28,6 @@ class FirebirdProtocolDefaultVersionProviderTest {
     
     @Test
     void assertGetDatabaseTypeReturnsFirebird() {
-        assertEquals("Firebird", provider.getDatabaseType());
+        assertThat(provider.getDatabaseType(), is("Firebird"));
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
@@ -67,28 +66,30 @@ import java.util.stream.Collectors;
  */
 public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implements DMLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    public MySQLDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {
         String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
         List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
-        return new CallStatement(databaseType, procedureName, params);
+        return new CallStatement(getDatabaseType(), procedureName, params);
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new DoStatement(databaseType, ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
+        return new DoStatement(getDatabaseType(), ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitHandlerStatement(final HandlerStatementContext ctx) {
-        return new MySQLHandlerStatement(databaseType);
+        return new MySQLHandlerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitImportStatement(final ImportStatementContext ctx) {
-        return new MySQLImportStatement(databaseType);
+        return new MySQLImportStatement(getDatabaseType());
     }
     
     @Override
@@ -98,12 +99,12 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new MySQLLoadDataStatement(databaseType, (SimpleTableSegment) visit(ctx.tableName()));
+        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        return new MySQLLoadXMLStatement(databaseType, (SimpleTableSegment) visit(ctx.tableName()));
+        return new MySQLLoadXMLStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

@@ -19,6 +19,9 @@ package org.apache.shardingsphere.db.protocol.firebird.constant.buffer;
 
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdValueFormat;
 
+/**
+ * Firebird parameter buffer type.
+ */
 public interface FirebirdParameterBufferType {
     
     /**

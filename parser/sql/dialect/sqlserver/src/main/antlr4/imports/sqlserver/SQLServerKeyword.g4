@@ -2034,3 +2034,11 @@ LEAD
 FREETEXTTABLE
     : F R E E T E X T T A B L E
     ;
+
+NTILE
+    : N T I L E
+    ;
+
+RANK
+    : R A N K
+    ;

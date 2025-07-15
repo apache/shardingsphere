@@ -27,6 +27,9 @@ import org.apache.shardingsphere.db.protocol.firebird.constant.buffer.FirebirdPa
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Firebird database parameter buffer type.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdDatabaseParameterBufferType implements FirebirdParameterBufferType {

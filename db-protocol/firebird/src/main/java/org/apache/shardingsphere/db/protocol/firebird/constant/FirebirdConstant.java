@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.db.protocol.firebird.constant;
 
 import io.netty.util.AttributeKey;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 
-public class FirebirdConstant {
+/**
+ * Firebird constant.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class FirebirdConstant {
     
     public static final AttributeKey<FirebirdProtocolVersion> CONNECTION_PROTOCOL_VERSION = AttributeKey.valueOf("FIREBIRD_CONNECTION_PROTOCOL_VERSION");
 }

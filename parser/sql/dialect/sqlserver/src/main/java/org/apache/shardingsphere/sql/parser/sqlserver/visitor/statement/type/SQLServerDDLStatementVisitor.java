@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AddColumnSpecificationContext;
@@ -131,7 +130,9 @@ import java.util.LinkedList;
  */
 public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisitor implements DDLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
+    public SQLServerDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
@@ -141,7 +142,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
         for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -233,7 +234,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(databaseType);
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         for (AlterDefinitionClauseContext alterDefinitionClauseContext : ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(alterDefinitionClauseContext)).getValue()) {
@@ -314,7 +315,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(databaseType);
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.setContainsCascade(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
@@ -322,13 +323,13 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(databaseType, Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(databaseType);
+        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         result.getColumns().addAll(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
@@ -342,7 +343,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(databaseType);
+        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         }
@@ -352,7 +353,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(databaseType);
+        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
@@ -375,22 +376,22 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(databaseType, ctx.databaseName().getText(), false);
+        return new CreateDatabaseStatement(getDatabaseType(), ctx.databaseName().getText(), false);
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement(databaseType);
+        return new CreateFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        return new CreateProcedureStatement(databaseType);
+        return new CreateProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        CreateViewStatement result = new CreateViewStatement(databaseType);
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setReplaceView(null != ctx.ALTER());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
@@ -400,67 +401,67 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement(databaseType);
+        return new CreateTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        return new CreateSequenceStatement(databaseType, ctx.sequenceName().name().getText());
+        return new CreateSequenceStatement(getDatabaseType(), ctx.sequenceName().name().getText());
     }
     
     @Override
     public ASTNode visitCreateSchema(final CreateSchemaContext ctx) {
-        return new CreateSchemaStatement(databaseType);
+        return new CreateSchemaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateService(final CreateServiceContext ctx) {
-        return new SQLServerCreateServiceStatement(databaseType);
+        return new SQLServerCreateServiceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSchema(final AlterSchemaContext ctx) {
-        return new AlterSchemaStatement(databaseType);
+        return new AlterSchemaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterService(final AlterServiceContext ctx) {
-        return new SQLServerAlterServiceStatement(databaseType);
+        return new SQLServerAlterServiceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropSchema(final DropSchemaContext ctx) {
-        return new DropSchemaStatement(databaseType);
+        return new DropSchemaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropService(final DropServiceContext ctx) {
-        return new SQLServerDropServiceStatement(databaseType);
+        return new SQLServerDropServiceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
-        return new AlterTriggerStatement(databaseType);
+        return new AlterTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        return new AlterSequenceStatement(databaseType, null);
+        return new AlterSequenceStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement(databaseType);
+        return new AlterProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new AlterFunctionStatement(databaseType);
+        return new AlterFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        AlterViewStatement result = new AlterViewStatement(databaseType);
+        AlterViewStatement result = new AlterViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
         result.setSelect((SelectStatement) visit(ctx.createOrAlterViewClause().select()));
@@ -469,27 +470,27 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new AlterDatabaseStatement(databaseType);
+        return new AlterDatabaseStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(databaseType, null, false);
+        return new DropDatabaseStatement(getDatabaseType(), null, false);
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DropFunctionStatement(databaseType);
+        return new DropFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new DropProcedureStatement(databaseType);
+        return new DropProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(databaseType);
+        DropViewStatement result = new DropViewStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
         for (ViewNameContext each : ctx.viewName()) {
             result.getViews().add((SimpleTableSegment) visit(each));
@@ -499,11 +500,11 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new DropTriggerStatement(databaseType);
+        return new DropTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        return new DropSequenceStatement(databaseType, Collections.emptyList());
+        return new DropSequenceStatement(getDatabaseType(), Collections.emptyList());
     }
 }
