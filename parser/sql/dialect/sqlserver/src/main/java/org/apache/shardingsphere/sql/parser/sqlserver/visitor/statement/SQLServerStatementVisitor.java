@@ -1756,7 +1756,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitPivotClause(final PivotClauseContext ctx) {
-        String pivotType = null != ctx.PIVOT() ? "PIVOT" : "UNPIVOT";
+        String pivotType = null == ctx.PIVOT() ? "UNPIVOT" : "PIVOT";
         String functionText = getOriginalText(ctx);
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), pivotType, functionText);
         if (null != ctx.tableName()) {
@@ -1765,23 +1765,23 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         } else if (null != ctx.subquery()) {
             SubquerySegment subquerySegment =
                     new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
-            if (null != ctx.alias()) {
+            if (null == ctx.alias()) {
+                result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
+            } else {
                 AliasSegment aliasSegment = (AliasSegment) visit(ctx.alias());
                 SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment.getStartIndex(), subquerySegment.getStopIndex(), subquerySegment);
                 subqueryTableSegment.setAlias(aliasSegment);
                 result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
-            } else {
-                result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
             }
         }
-        if (null != ctx.PIVOT()) {
-            result.getParameters().add((ExpressionSegment) visit(ctx.aggregationFunction()));
+        if (null == ctx.PIVOT()) {
             result.getParameters().add((ColumnSegment) visit(ctx.columnName(0)));
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(1)));
             CollectionValue<ExpressionSegment> pivotValues = (CollectionValue<ExpressionSegment>) visit(ctx.pivotValueList());
             result.getParameters().addAll(pivotValues.getValue());
         } else {
+            result.getParameters().add((ExpressionSegment) visit(ctx.aggregationFunction()));
             result.getParameters().add((ColumnSegment) visit(ctx.columnName(0)));
-            result.getParameters().add((ColumnSegment) visit(ctx.columnName(1)));
             CollectionValue<ExpressionSegment> pivotValues = (CollectionValue<ExpressionSegment>) visit(ctx.pivotValueList());
             result.getParameters().addAll(pivotValues.getValue());
         }
