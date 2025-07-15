@@ -128,14 +128,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     returnPacket.setType(statementType);
                     break;
                 case SELECT:
-                    if (FirebirdSQLInfoReturnValue.isSelectDescribable(statementType.getCode())) {
+                    if (statementType.isSelectDescribable()) {
                         processDescribe(sqlStatementContext, metaDataContexts, returnPacket.getDescribeSelect(), true);
                     } else {
                         skipDescribe();
                     }
                     break;
                 case BIND:
-                    if (FirebirdSQLInfoReturnValue.isBindDescribable(statementType.getCode())) {
+                    if (statementType.isBindDescribable()) {
                         processDescribe(sqlStatementContext, metaDataContexts, returnPacket.getDescribeBind(), false);
                     } else {
                         skipDescribe();
