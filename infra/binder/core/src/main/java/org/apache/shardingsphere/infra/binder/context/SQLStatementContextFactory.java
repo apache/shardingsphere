@@ -130,9 +130,6 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
-        if (sqlStatement instanceof AnalyzeTableStatement) {
-            return new CommonSQLStatementContext(sqlStatement);
-        }
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, params, currentDatabaseName);
         }
