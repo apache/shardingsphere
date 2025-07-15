@@ -10847,4 +10847,14 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_sqlserver_current_user">
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="CURRENT_USER" start-index="7" stop-index="18">
+                <expr>
+                    <function function-name="CURRENT_USER" start-index="7" stop-index="18" text="CURRENT_USER" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

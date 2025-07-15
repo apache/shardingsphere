@@ -319,7 +319,11 @@ distinct
 specialFunction
     : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
     | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
-    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction
+    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction | currentUserFunction
+    ;
+
+currentUserFunction
+    : CURRENT_USER (LP_ RP_)?
     ;
 
 freetextTableFunction
