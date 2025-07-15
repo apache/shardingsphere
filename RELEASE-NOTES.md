@@ -58,6 +58,7 @@
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. SQL Parser: Support Hive Loading files into tables statement parse - [#36001](https://github.com/apache/shardingsphere/pull/36001)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
+1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
 
 ### Bug Fixes
 

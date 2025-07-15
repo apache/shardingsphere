@@ -22,9 +22,11 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -44,5 +46,10 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         return new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.identifier().getText()).getValue(), null != ctx.ifExists());
+    }
+    
+    @Override
+    public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
+        return new AlterDatabaseStatement(getDatabaseType());
     }
 }

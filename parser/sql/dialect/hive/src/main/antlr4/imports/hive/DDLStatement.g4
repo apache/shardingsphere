@@ -27,6 +27,17 @@ dropDatabase
     : DROP (DATABASE | SCHEMA) ifExists? identifier (RESTRICT | CASCADE)?
     ;
 
+alterDatabase
+    : ALTER (DATABASE | SCHEMA) identifier alterDatabaseSpecification_*
+    ;
+
+alterDatabaseSpecification_
+    : SET DBPROPERTIES LP_ dbProperties RP_
+    | SET OWNER (USER | ROLE) identifier
+    | SET LOCATION string_
+    | SET MANAGEDLOCATION string_
+    ;
+
 ifNotExists
     : IF NOT EXISTS
     ;
