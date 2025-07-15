@@ -334,4 +334,6 @@
     <sql-case id="select_rank_function" value="SELECT RANK() OVER (PARTITION BY LocationID ORDER BY Quantity DESC) AS Rank FROM Production.ProductInventory WHERE LocationID BETWEEN 3 AND 4;" db-types="SQLServer"/>
     <sql-case id="select_with_rollup" value="SELECT SalesQuota, SUM(SalesYTD) 'TotalSalesYTD', GROUPING(SalesQuota) AS 'Grouping' FROM Sales.SalesPerson GROUP BY SalesQuota WITH ROLLUP;" db-types="SQLServer"/>
     <sql-case id="select_replace_collate" value="SELECT REPLACE('This is a Test'  COLLATE Latin1_General_BIN, 'Test', 'desk' );  " db-types="SQLServer"/>
+    <sql-case id="select_pivot_operator" value="SELECT 'AverageCost' AS CostSortedByProductionDays, [0], [1], [2], [3], [4] FROM (SELECT DaysToManufacture, StandardCost FROM Production.Product) AS SourceTable PIVOT (AVG(StandardCost) FOR DaysToManufacture IN ([0], [1], [2], [3], [4])) AS PivotTable;" db-types="SQLServer"/>
+    <sql-case id="select_unpivot_operator" value="SELECT VendorID, Employee, Orders FROM pvt UNPIVOT (Orders FOR Employee IN (Emp1, Emp2, Emp3, Emp4, Emp5)) AS unpvt;" db-types="SQLServer"/>
 </sql-cases>

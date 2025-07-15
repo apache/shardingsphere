@@ -181,7 +181,26 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_
+    : tableName (FOR PATH)? (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    ;
+
+pivotTable
+    : pivotClause (AS? alias)?
+    ;
+
+pivotClause
+    : (tableName | subquery) PIVOT LP_ aggregationFunction FOR columnName IN LP_ pivotValueList RP_ RP_
+    | (tableName | subquery) UNPIVOT LP_ columnName FOR columnName IN LP_ pivotValueList RP_ RP_
+    | subquery AS? alias PIVOT LP_ aggregationFunction FOR columnName IN LP_ pivotValueList RP_ RP_
+    | subquery AS? alias UNPIVOT LP_ columnName FOR columnName IN LP_ pivotValueList RP_ RP_
+    ;
+
+pivotValueList
+    : pivotValue (COMMA_ pivotValue)*
+    ;
+
+pivotValue
+    : LBT_ expr RBT_ | expr
     ;
 
 joinedTable

@@ -10746,4 +10746,105 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_pivot_operator">
+        <projections start-index="7" stop-index="74">
+            <expression-projection text="AverageCost" start-index="7" stop-index="49" alias="CostSortedByProductionDays">
+                <expr>
+                    <literal-expression value="AverageCost" start-index="7" stop-index="19" />
+                </expr>
+            </expression-projection>
+            <column-projection name="0" start-index="52" stop-index="54" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="1" start-index="57" stop-index="59" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="2" start-index="62" stop-index="64" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="3" start-index="67" stop-index="69" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="4" start-index="72" stop-index="74" start-delimiter="[" end-delimiter="]" />
+        </projections>
+        <from start-index="76" stop-index="250">
+            <function-table table-alias="PivotTable" start-index="81" stop-index="250">
+                <table-function function-name="PIVOT" text="(SELECT DaysToManufacture, StandardCost FROM Production.Product) AS SourceTable PIVOT (AVG(StandardCost) FOR DaysToManufacture IN ([0], [1], [2], [3], [4]))" start-index="81" stop-index="243">
+                    <parameter>
+                        <subquery-table alias="SourceTable" start-index="81" stop-index="143">
+                            <subquery start-index="81" stop-index="139">
+                                <select>
+                                    <projections start-index="89" stop-index="125">
+                                        <column-projection name="DaysToManufacture" start-index="89" stop-index="105" />
+                                        <column-projection name="StandardCost" start-index="108" stop-index="119" />
+                                    </projections>
+                                    <from start-index="126" stop-index="139">
+                                        <simple-table name="Production.Product" start-index="131" stop-index="147">
+                                            <owner name="Production" start-index="131" stop-index="140" />
+                                        </simple-table>
+                                    </from>
+                                </select>
+                            </subquery>
+                        </subquery-table>
+                    </parameter>
+                    <parameter>
+                        <function function-name="AVG" text="AVG(StandardCost)" start-index="156" stop-index="172">
+                            <parameter>
+                                <column name="StandardCost" start-index="160" stop-index="171" />
+                            </parameter>
+                        </function>
+                    </parameter>
+                    <parameter>
+                        <column name="DaysToManufacture" start-index="178" stop-index="194" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="0" start-index="200" stop-index="202" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="1" start-index="205" stop-index="207" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="2" start-index="210" stop-index="212" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="3" start-index="215" stop-index="217" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="4" start-index="220" stop-index="222" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_unpivot_operator">
+        <projections start-index="7" stop-index="32">
+            <column-projection name="VendorID" start-index="7" stop-index="14" />
+            <column-projection name="Employee" start-index="17" stop-index="24" />
+            <column-projection name="Orders" start-index="27" stop-index="32" />
+        </projections>
+        <from start-index="33" stop-index="108">
+            <function-table table-alias="unpvt" start-index="37" stop-index="108">
+                <table-function function-name="UNPIVOT" text="pvt UNPIVOT (Orders FOR Employee IN (Emp1, Emp2, Emp3, Emp4, Emp5))" start-index="37" stop-index="102">
+                    <parameter>
+                        <simple-table name="pvt" start-index="37" stop-index="40" />
+                    </parameter>
+                    <parameter>
+                        <column name="Orders" start-index="48" stop-index="53" />
+                    </parameter>
+                    <parameter>
+                        <column name="Employee" start-index="58" stop-index="65" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp1" start-index="69" stop-index="72" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp2" start-index="74" stop-index="77" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp3" start-index="79" stop-index="82" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp4" start-index="84" stop-index="87" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp5" start-index="89" stop-index="92" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
