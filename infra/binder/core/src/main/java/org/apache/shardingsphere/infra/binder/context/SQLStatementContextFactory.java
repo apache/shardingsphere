@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
