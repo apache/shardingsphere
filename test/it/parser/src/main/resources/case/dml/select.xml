@@ -10726,4 +10726,24 @@
             <column-item name="SalesQuota" order-direction="ASC" start-index="117" stop-index="126" />
         </group-by>
     </select>
+
+    <select sql-case-id="select_replace_collate">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="REPLACE('This is a Test'  COLLATE Latin1_General_BIN, 'Test', 'desk' )" start-index="7" stop-index="76">
+                <expr>
+                    <function start-index="7" stop-index="76" text="REPLACE('This is a Test'  COLLATE Latin1_General_BIN, 'Test', 'desk' )" function-name="REPLACE">
+                        <parameter>
+                            <common-expression start-index="15" stop-index="58" text="'This is a Test'  COLLATE Latin1_General_BIN" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Test" start-index="61" stop-index="66" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="desk" start-index="69" stop-index="74" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
