@@ -29,6 +29,5 @@
     <modules>
         <module>core</module>
         <module>type</module>
-        <module>type/hive</module>
     </modules>
 </project>
