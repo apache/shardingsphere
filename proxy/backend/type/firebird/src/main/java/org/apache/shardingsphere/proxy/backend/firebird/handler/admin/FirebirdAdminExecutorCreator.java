@@ -22,18 +22,11 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.F
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.FirebirdShowVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,26 +55,6 @@ public final class FirebirdAdminExecutorCreator implements DatabaseAdminExecutor
             return Optional.of(new FirebirdSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
         return Optional.empty();
-    }
-    
-    private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
-        TableExtractor extractor = new TableExtractor();
-        extractor.extractTablesFromSelect(sqlStatement);
-        List<TableSegment> extracted = new LinkedList<>(extractor.getTableContext());
-        for (TableSegment each : extractor.getTableContext()) {
-            if (each instanceof SubqueryTableSegment) {
-                TableExtractor subExtractor = new TableExtractor();
-                subExtractor.extractTablesFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect());
-                extracted.addAll(subExtractor.getTableContext());
-            }
-        }
-        List<String> result = new ArrayList<>(extracted.size());
-        for (TableSegment each : extracted) {
-            if (each instanceof SimpleTableSegment) {
-                result.add(((SimpleTableSegment) each).getTableName().getIdentifier().getValue());
-            }
-        }
-        return result;
     }
     
     @Override
