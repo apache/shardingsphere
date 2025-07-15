@@ -10672,4 +10672,34 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_rank_function">
+        <projections start-index="7" stop-index="74">
+            <expression-projection text="RANK() OVER (PARTITION BY LocationID ORDER BY Quantity DESC)" alias="Rank" start-index="7" stop-index="74">
+                <expr>
+                    <function function-name="RANK" text="RANK() OVER (PARTITION BY LocationID ORDER BY Quantity DESC)" start-index="7" stop-index="66" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="ProductInventory" start-index="81" stop-index="107">
+                <owner name="Production" start-index="81" stop-index="90" />
+            </simple-table>
+        </from>
+        <where start-index="109" stop-index="140">
+            <expr>
+                <between-expression start-index="115" stop-index="140">
+                    <left>
+                        <column name="LocationID" start-index="115" stop-index="124" />
+                    </left>
+                    <between-expr>
+                        <literal-expression value="3" start-index="134" stop-index="134" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression value="4" start-index="140" stop-index="140" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
