@@ -121,7 +121,7 @@ unreservedWord
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
     | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
-    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT
+    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT | RANK | ROLLUP | PIVOT | UNPIVOT | PARSE
     ;
 
 databaseName
@@ -288,6 +288,7 @@ simpleExpr
     | variableName
     | xmlMethodCall
     | simpleExpr OR_ simpleExpr
+    | simpleExpr COLLATE identifier
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | CURRENT OF GLOBAL? expr
     | ROW? LP_ expr (COMMA_ expr)* RP_
@@ -318,7 +319,11 @@ distinct
 specialFunction
     : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
     | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
-    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction
+    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction | currentUserFunction
+    ;
+
+currentUserFunction
+    : CURRENT_USER (LP_ RP_)?
     ;
 
 freetextTableFunction
@@ -388,6 +393,11 @@ approxFunction
 conversionFunction
     : castFunction
     | convertFunction
+    | parseFunction
+    ;
+
+parseFunction
+    : PARSE LP_ expr AS dataType (USING expr)? RP_
     ;
 
 castFunction
@@ -505,6 +515,8 @@ convertExpr
 
 windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    | funcName = NTILE LP_ expr RP_ overClause
+    | funcName = RANK LP_ RP_ overClause
     | lagLeadFunction
     ;
 

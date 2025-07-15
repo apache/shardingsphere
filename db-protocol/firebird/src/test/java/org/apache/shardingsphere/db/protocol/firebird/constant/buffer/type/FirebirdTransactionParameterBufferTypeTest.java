@@ -19,16 +19,17 @@ package org.apache.shardingsphere.db.protocol.firebird.constant.buffer.type;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class FirebirdTransactionParameterBufferTypeTest {
     
     @Test
     void assertValueOf() {
-        assertEquals(FirebirdTransactionParameterBufferType.CONSISTENCY, FirebirdTransactionParameterBufferType.valueOf(1));
+        assertThat(FirebirdTransactionParameterBufferType.valueOf(1), is(FirebirdTransactionParameterBufferType.CONSISTENCY));
         assertThrows(NullPointerException.class, () -> FirebirdTransactionParameterBufferType.valueOf(999));
     }
     

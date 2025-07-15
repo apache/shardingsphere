@@ -24,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Firebird protocol version.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdProtocolVersion {

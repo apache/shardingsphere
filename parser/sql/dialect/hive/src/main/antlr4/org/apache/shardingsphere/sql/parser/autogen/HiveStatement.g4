@@ -25,8 +25,10 @@ execute
     | insert
     | update
     | delete
+    | loadStatement
     | createDatabase
     | dropDatabase
+    | alterDatabase
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

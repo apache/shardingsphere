@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -51,7 +51,7 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
     
     private final int protocolsCount;
     
-    private final Map<FirebirdUserDataType, String> userInfoMap = new HashMap<>();
+    private final Map<FirebirdUserDataType, String> userInfoMap = new EnumMap<>(FirebirdUserDataType.class);
     
     private final List<FirebirdProtocol> userProtocols = new ArrayList<>();
     

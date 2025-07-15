@@ -33,16 +33,16 @@ import java.util.List;
 /**
  * Firebird prepare statement return data packet.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
+@Setter
 public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     
-    @Setter
     private FirebirdSQLInfoReturnValue type;
     
-    private List<FirebirdReturnColumnPacket> describeSelect = new ArrayList<>();
+    private final List<FirebirdReturnColumnPacket> describeSelect = new ArrayList<>();
     
-    private List<FirebirdReturnColumnPacket> describeBind = new ArrayList<>();
+    private final List<FirebirdReturnColumnPacket> describeBind = new ArrayList<>();
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {

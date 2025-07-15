@@ -32,5 +32,6 @@
         <module>mysql</module>
         <module>sqlserver</module>
         <module>oracle</module>
+        <module>hive</module>
     </modules>
 </project>

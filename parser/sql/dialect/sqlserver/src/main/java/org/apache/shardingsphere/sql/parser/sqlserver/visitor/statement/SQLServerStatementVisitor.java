@@ -243,6 +243,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueListContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -730,7 +736,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.freetextTableFunction()) {
             return visit(ctx.freetextTableFunction());
         }
+        if (null != ctx.currentUserFunction()) {
+            return visit(ctx.currentUserFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitCurrentUserFunction(final CurrentUserFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURRENT_USER().getText(), getOriginalText(ctx));
     }
     
     @Override
@@ -849,7 +863,21 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.convertFunction()) {
             return visit(ctx.convertFunction());
         }
+        if (null != ctx.parseFunction()) {
+            return visit(ctx.parseFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitParseFunction(final ParseFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.PARSE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.USING() && ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
     }
     
     @Override
@@ -858,7 +886,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return visit(ctx.lagLeadFunction());
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
+        if (null != ctx.NTILE() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
+        }
         return result;
     }
     
@@ -1732,7 +1762,71 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
             return result;
         }
+        if (null != ctx.pivotTable()) {
+            return visit(ctx.pivotTable());
+        }
         return visit(ctx.tableReferences());
+    }
+    
+    @Override
+    public ASTNode visitPivotTable(final PivotTableContext ctx) {
+        FunctionSegment pivotFunction = (FunctionSegment) visit(ctx.pivotClause());
+        FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), pivotFunction);
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPivotClause(final PivotClauseContext ctx) {
+        String pivotType = null == ctx.PIVOT() ? "UNPIVOT" : "PIVOT";
+        String functionText = getOriginalText(ctx);
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), pivotType, functionText);
+        if (null != ctx.tableName()) {
+            SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.tableName());
+            result.getParameters().add(new LiteralExpressionSegment(tableSegment.getStartIndex(), tableSegment.getStopIndex(), tableSegment.getTableName().getIdentifier().getValue()));
+        } else if (null != ctx.subquery()) {
+            SubquerySegment subquerySegment =
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            if (null == ctx.alias()) {
+                result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
+            } else {
+                AliasSegment aliasSegment = (AliasSegment) visit(ctx.alias());
+                SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment.getStartIndex(), subquerySegment.getStopIndex(), subquerySegment);
+                subqueryTableSegment.setAlias(aliasSegment);
+                result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
+            }
+        }
+        if (null == ctx.PIVOT()) {
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(0)));
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(1)));
+            CollectionValue<ExpressionSegment> pivotValues = (CollectionValue<ExpressionSegment>) visit(ctx.pivotValueList());
+            result.getParameters().addAll(pivotValues.getValue());
+        } else {
+            result.getParameters().add((ExpressionSegment) visit(ctx.aggregationFunction()));
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(0)));
+            CollectionValue<ExpressionSegment> pivotValues = (CollectionValue<ExpressionSegment>) visit(ctx.pivotValueList());
+            result.getParameters().addAll(pivotValues.getValue());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPivotValueList(final PivotValueListContext ctx) {
+        CollectionValue<ExpressionSegment> result = new CollectionValue<>();
+        for (PivotValueContext pivotValueContext : ctx.pivotValue()) {
+            result.getValue().add((ExpressionSegment) visit(pivotValueContext));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPivotValue(final PivotValueContext ctx) {
+        if (null != ctx.expr()) {
+            return visit(ctx.expr());
+        }
+        return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {

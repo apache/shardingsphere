@@ -60,9 +60,7 @@ public final class FirebirdShowVariableExecutor implements DatabaseAdminQueryExe
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String name = Optional.ofNullable(showStatement.getName())
-                .orElse("")
-                .toLowerCase(Locale.ROOT);
+        String name = Optional.ofNullable(showStatement.getName()).orElse("").toLowerCase(Locale.ROOT);
         queryResultMetaData = new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", "", name, Types.VARCHAR, "VARCHAR", -1, 0)));
         VariableRowDataGenerator variableRowDataGenerator = VARIABLE_ROW_DATA_GENERATORS.getOrDefault(name, unused -> new String[]{"", "", ""});
         mergedResult = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(variableRowDataGenerator.getVariable(connectionSession)[1])));
@@ -70,6 +68,12 @@ public final class FirebirdShowVariableExecutor implements DatabaseAdminQueryExe
     
     private interface VariableRowDataGenerator {
         
+        /**
+         * Get variable.
+         *
+         * @param connectionSession connection session
+         * @return variable
+         */
         Object[] getVariable(ConnectionSession connectionSession);
     }
 }

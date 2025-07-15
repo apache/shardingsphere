@@ -3158,3 +3158,18 @@ DBPROPERTIES
     : D B P R O P E R T I E S
     ;
 
+INPATH
+    : I N P A T H
+    ;
+
+INPUTFORMAT
+    : I N P U T F O R M A T
+    ;
+
+OVERWRITE
+    : O V E R W R I T E
+    ;
+
+SERDE
+    : S E R D E
+    ;

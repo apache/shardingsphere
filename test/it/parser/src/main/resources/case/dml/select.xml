@@ -10640,4 +10640,241 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_ntile_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection text="NTILE(4) OVER(ORDER BY SalesYTD DESC)" alias="Quartile" start-index="7" stop-index="55">
+                <expr>
+                    <function function-name="NTILE" text="NTILE(4) OVER(ORDER BY SalesYTD DESC)" start-index="7" stop-index="43">
+                        <parameter>
+                            <literal-expression value="4" start-index="13" stop-index="13" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPerson" start-index="62" stop-index="78">
+                <owner name="Sales" start-index="62" stop-index="66" />
+            </simple-table>
+        </from>
+        <where start-index="80" stop-index="108">
+            <expr>
+                <binary-operation-expression start-index="86" stop-index="108">
+                    <left>
+                        <column name="TerritoryID" start-index="86" stop-index="96" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT NULL" start-index="101" stop-index="108" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_rank_function">
+        <projections start-index="7" stop-index="74">
+            <expression-projection text="RANK() OVER (PARTITION BY LocationID ORDER BY Quantity DESC)" alias="Rank" start-index="7" stop-index="74">
+                <expr>
+                    <function function-name="RANK" text="RANK() OVER (PARTITION BY LocationID ORDER BY Quantity DESC)" start-index="7" stop-index="66" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="ProductInventory" start-index="81" stop-index="107">
+                <owner name="Production" start-index="81" stop-index="90" />
+            </simple-table>
+        </from>
+        <where start-index="109" stop-index="140">
+            <expr>
+                <between-expression start-index="115" stop-index="140">
+                    <left>
+                        <column name="LocationID" start-index="115" stop-index="124" />
+                    </left>
+                    <between-expr>
+                        <literal-expression value="3" start-index="134" stop-index="134" />
+                    </between-expr>
+                    <and-expr>
+                        <literal-expression value="4" start-index="140" stop-index="140" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_rollup">
+        <projections start-index="7" stop-index="83">
+            <column-projection name="SalesQuota" start-index="7" stop-index="16" />
+            <aggregation-projection type="SUM" expression="SUM(SalesYTD)" alias="TotalSalesYTD" start-index="19" stop-index="31" />
+            <expression-projection text="GROUPING(SalesQuota)" alias="Grouping" start-index="50" stop-index="83">
+                <expr>
+                    <function start-index="50" stop-index="69" text="GROUPING(SalesQuota)" function-name="GROUPING">
+                        <parameter>
+                            <column name="SalesQuota" start-index="59" stop-index="68" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPerson" start-index="90" stop-index="106">
+                <owner name="Sales" start-index="90" stop-index="94" />
+            </simple-table>
+        </from>
+        <group-by>
+            <column-item name="SalesQuota" order-direction="ASC" start-index="117" stop-index="126" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_replace_collate">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="REPLACE('This is a Test'  COLLATE Latin1_General_BIN, 'Test', 'desk' )" start-index="7" stop-index="76">
+                <expr>
+                    <function start-index="7" stop-index="76" text="REPLACE('This is a Test'  COLLATE Latin1_General_BIN, 'Test', 'desk' )" function-name="REPLACE">
+                        <parameter>
+                            <common-expression start-index="15" stop-index="58" text="'This is a Test'  COLLATE Latin1_General_BIN" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Test" start-index="61" stop-index="66" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="desk" start-index="69" stop-index="74" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_pivot_operator">
+        <projections start-index="7" stop-index="74">
+            <expression-projection text="AverageCost" start-index="7" stop-index="49" alias="CostSortedByProductionDays">
+                <expr>
+                    <literal-expression value="AverageCost" start-index="7" stop-index="19" />
+                </expr>
+            </expression-projection>
+            <column-projection name="0" start-index="52" stop-index="54" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="1" start-index="57" stop-index="59" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="2" start-index="62" stop-index="64" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="3" start-index="67" stop-index="69" start-delimiter="[" end-delimiter="]" />
+            <column-projection name="4" start-index="72" stop-index="74" start-delimiter="[" end-delimiter="]" />
+        </projections>
+        <from start-index="76" stop-index="250">
+            <function-table table-alias="PivotTable" start-index="81" stop-index="250">
+                <table-function function-name="PIVOT" text="(SELECT DaysToManufacture, StandardCost FROM Production.Product) AS SourceTable PIVOT (AVG(StandardCost) FOR DaysToManufacture IN ([0], [1], [2], [3], [4]))" start-index="81" stop-index="243">
+                    <parameter>
+                        <subquery-table alias="SourceTable" start-index="81" stop-index="143">
+                            <subquery start-index="81" stop-index="139">
+                                <select>
+                                    <projections start-index="89" stop-index="125">
+                                        <column-projection name="DaysToManufacture" start-index="89" stop-index="105" />
+                                        <column-projection name="StandardCost" start-index="108" stop-index="119" />
+                                    </projections>
+                                    <from start-index="126" stop-index="139">
+                                        <simple-table name="Production.Product" start-index="131" stop-index="147">
+                                            <owner name="Production" start-index="131" stop-index="140" />
+                                        </simple-table>
+                                    </from>
+                                </select>
+                            </subquery>
+                        </subquery-table>
+                    </parameter>
+                    <parameter>
+                        <function function-name="AVG" text="AVG(StandardCost)" start-index="156" stop-index="172">
+                            <parameter>
+                                <column name="StandardCost" start-index="160" stop-index="171" />
+                            </parameter>
+                        </function>
+                    </parameter>
+                    <parameter>
+                        <column name="DaysToManufacture" start-index="178" stop-index="194" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="0" start-index="200" stop-index="202" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="1" start-index="205" stop-index="207" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="2" start-index="210" stop-index="212" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="3" start-index="215" stop-index="217" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="4" start-index="220" stop-index="222" start-delimiter="[" end-delimiter="]" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_unpivot_operator">
+        <projections start-index="7" stop-index="32">
+            <column-projection name="VendorID" start-index="7" stop-index="14" />
+            <column-projection name="Employee" start-index="17" stop-index="24" />
+            <column-projection name="Orders" start-index="27" stop-index="32" />
+        </projections>
+        <from start-index="33" stop-index="108">
+            <function-table table-alias="unpvt" start-index="37" stop-index="108">
+                <table-function function-name="UNPIVOT" text="pvt UNPIVOT (Orders FOR Employee IN (Emp1, Emp2, Emp3, Emp4, Emp5))" start-index="37" stop-index="102">
+                    <parameter>
+                        <simple-table name="pvt" start-index="37" stop-index="40" />
+                    </parameter>
+                    <parameter>
+                        <column name="Orders" start-index="48" stop-index="53" />
+                    </parameter>
+                    <parameter>
+                        <column name="Employee" start-index="58" stop-index="65" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp1" start-index="69" stop-index="72" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp2" start-index="74" stop-index="77" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp3" start-index="79" stop-index="82" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp4" start-index="84" stop-index="87" />
+                    </parameter>
+                    <parameter>
+                        <column name="Emp5" start-index="89" stop-index="92" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_sqlserver_current_user">
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="CURRENT_USER" start-index="7" stop-index="18">
+                <expr>
+                    <function function-name="CURRENT_USER" start-index="7" stop-index="18" text="CURRENT_USER" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_parse_function">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="PARSE('Monday, 13 December 2010' AS datetime2 USING 'en-US')" alias="Result" start-index="7" stop-index="76">
+                <expr>
+                    <function start-index="7" stop-index="66" text="PARSE('Monday, 13 December 2010' AS datetime2 USING 'en-US')" function-name="PARSE">
+                        <parameter>
+                            <literal-expression value="Monday, 13 December 2010" start-index="13" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="datetime2" start-index="43" stop-index="51" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="en-US" start-index="59" stop-index="65" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

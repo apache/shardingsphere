@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info;
 
+/**
+ * Firebird info packet type.
+ */
 public interface FirebirdInfoPacketType {
     
     /**
