@@ -25,6 +25,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
+/**
+ * Load data statement for Hive.
+ */
 @Getter
 public final class HiveLoadDataStatement extends DMLStatement {
     
