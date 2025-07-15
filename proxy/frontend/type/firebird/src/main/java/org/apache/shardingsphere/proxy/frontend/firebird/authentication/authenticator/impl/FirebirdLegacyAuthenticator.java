@@ -29,13 +29,13 @@ import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
  */
 public final class FirebirdLegacyAuthenticator implements FirebirdAuthenticator {
     
-    private static final String LEGACY_PASSWORD_SALT = "9z";
+    private static final String SALT = "9z";
     
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         // TODO update when version 6 of jaybird comes out
         String password = (String) authInfo[0];
-        String expectedPassword = UnixCrypt.crypt(user.getPassword(), LEGACY_PASSWORD_SALT).substring(2, 13);
+        String expectedPassword = UnixCrypt.crypt(user.getPassword(), SALT).substring(2, 13);
         return expectedPassword.equals(password);
     }
     
