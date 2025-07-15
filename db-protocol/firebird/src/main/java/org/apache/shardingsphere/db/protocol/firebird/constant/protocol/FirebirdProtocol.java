@@ -21,6 +21,9 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdArchType;
 
+/**
+ * Firebird protocol.
+ */
 @Getter
 public final class FirebirdProtocol {
     

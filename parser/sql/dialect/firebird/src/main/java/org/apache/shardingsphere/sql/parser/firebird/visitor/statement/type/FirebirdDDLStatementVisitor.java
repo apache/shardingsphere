@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AddColumnSpecificationContext;
@@ -90,12 +89,14 @@ import java.util.Collections;
  */
 public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor implements DDLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    public FirebirdDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -184,7 +185,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(databaseType);
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -206,7 +207,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitAlterDomain(final AlterDomainContext ctx) {
-        return new AlterDomainStatement(databaseType);
+        return new AlterDomainStatement(getDatabaseType());
     }
     
     @SuppressWarnings("unchecked")
@@ -252,64 +253,64 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(databaseType);
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement(databaseType);
+        return new CreateFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        return new CreateProcedureStatement(databaseType);
+        return new CreateProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement(databaseType);
+        return new AlterProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        return new AlterSequenceStatement(databaseType, ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
+        return new AlterSequenceStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitCreateCollation(final CreateCollationContext ctx) {
-        return new CreateCollationStatement(databaseType);
+        return new CreateCollationStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDomain(final CreateDomainContext ctx) {
-        return new CreateDomainStatement(databaseType);
+        return new CreateDomainStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
-        return new AlterTriggerStatement(databaseType);
+        return new AlterTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement(databaseType);
+        return new CreateTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        return new CreateSequenceStatement(databaseType, ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
+        return new CreateSequenceStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement(databaseType);
+        return new ExecuteStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(databaseType);
+        CommentStatement result = new CommentStatement(getDatabaseType());
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }

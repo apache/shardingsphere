@@ -19,18 +19,18 @@ package org.apache.shardingsphere.db.protocol.firebird.constant;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class FirebirdArchTypeTest {
     
     @Test
     void assertValueOf() {
-        assertEquals(FirebirdArchType.ARCH_INTEL_32, FirebirdArchType.valueOf(29));
+        assertThat(FirebirdArchType.valueOf(29), is(FirebirdArchType.ARCH_INTEL_32));
         assertThrows(NullPointerException.class, () -> FirebirdArchType.valueOf(999));
-        
     }
     
     @Test

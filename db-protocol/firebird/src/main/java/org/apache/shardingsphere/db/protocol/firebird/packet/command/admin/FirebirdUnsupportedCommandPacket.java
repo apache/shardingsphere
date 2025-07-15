@@ -26,8 +26,8 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 /**
  * Unsupported command packet for Firebird.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdUnsupportedCommandPacket extends FirebirdCommandPacket {
     
     private final FirebirdCommandPacketType code;

@@ -24,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Firebird user data type.
+ */
 @RequiredArgsConstructor
 @Getter
 public enum FirebirdUserDataType {

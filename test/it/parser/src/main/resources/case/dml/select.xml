@@ -10609,4 +10609,67 @@
             <column-item name="RANK" start-index="274" stop-index="277" order-direction="DESC" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_nchar_function">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="NCHAR(143743)" start-index="7" stop-index="19">
+                <expr>
+                    <function function-name="NCHAR" start-index="7" stop-index="19" text="NCHAR(143743)">
+                        <parameter>
+                            <literal-expression value="143743" start-index="13" stop-index="18" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_string_left">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="LEFT('abcdefg',2)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="LEFT" start-index="7" stop-index="23" text="LEFT('abcdefg',2)">
+                        <parameter>
+                            <literal-expression value="abcdefg" start-index="12" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="22" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ntile_function">
+        <projections start-index="7" stop-index="55">
+            <expression-projection text="NTILE(4) OVER(ORDER BY SalesYTD DESC)" alias="Quartile" start-index="7" stop-index="55">
+                <expr>
+                    <function function-name="NTILE" text="NTILE(4) OVER(ORDER BY SalesYTD DESC)" start-index="7" stop-index="43">
+                        <parameter>
+                            <literal-expression value="4" start-index="13" stop-index="13" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPerson" start-index="62" stop-index="78">
+                <owner name="Sales" start-index="62" stop-index="66" />
+            </simple-table>
+        </from>
+        <where start-index="80" stop-index="108">
+            <expr>
+                <binary-operation-expression start-index="86" stop-index="108">
+                    <left>
+                        <column name="TerritoryID" start-index="86" stop-index="96" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT NULL" start-index="101" stop-index="108" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

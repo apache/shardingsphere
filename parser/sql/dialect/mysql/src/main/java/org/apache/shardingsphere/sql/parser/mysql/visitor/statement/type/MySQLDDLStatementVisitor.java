@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
@@ -207,11 +206,13 @@ import java.util.Optional;
  */
 public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implements DDLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    public MySQLDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        CreateViewStatement result = new CreateViewStatement(databaseType);
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setReplaceView(null != ctx.REPLACE());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
@@ -221,7 +222,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        AlterViewStatement result = new AlterViewStatement(databaseType);
+        AlterViewStatement result = new AlterViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
@@ -231,7 +232,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(databaseType);
+        DropViewStatement result = new DropViewStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
         result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
         return result;
@@ -239,23 +240,23 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(databaseType, new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        return new CreateDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
     }
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new AlterDatabaseStatement(databaseType);
+        return new AlterDatabaseStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(databaseType, new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        return new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfNotExists(null != ctx.ifNotExists());
         if (null != ctx.createDefinitionClause()) {
@@ -318,7 +319,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(databaseType);
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
             return result;
@@ -529,7 +530,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             TableNameContext renameTableName = ctx.tableName(i + 1);
             renameTables.add(createRenameTableDefinitionSegment(tableName, renameTableName));
         }
-        return new RenameTableStatement(databaseType, renameTables);
+        return new RenameTableStatement(getDatabaseType(), renameTables);
     }
     
     private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final TableNameContext tableName, final TableNameContext renameTableName) {
@@ -677,7 +678,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(databaseType);
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
@@ -685,13 +686,13 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(databaseType, Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(databaseType);
+        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -712,7 +713,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(databaseType);
+        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -748,7 +749,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        CreateProcedureStatement result = new CreateProcedureStatement(databaseType);
+        CreateProcedureStatement result = new CreateProcedureStatement(getDatabaseType());
         result.setProcedureName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
@@ -765,17 +766,17 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new AlterProcedureStatement(databaseType);
+        return new AlterProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new DropProcedureStatement(databaseType);
+        return new DropProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        CreateFunctionStatement result = new CreateFunctionStatement(databaseType);
+        CreateFunctionStatement result = new CreateFunctionStatement(getDatabaseType());
         result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
         result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         return result;
@@ -929,77 +930,77 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new AlterFunctionStatement(databaseType);
+        return new AlterFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DropFunctionStatement(databaseType);
+        return new DropFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateEvent(final CreateEventContext ctx) {
-        return new MySQLCreateEventStatement(databaseType);
+        return new MySQLCreateEventStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterEvent(final AlterEventContext ctx) {
-        return new MySQLAlterEventStatement(databaseType);
+        return new MySQLAlterEventStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropEvent(final DropEventContext ctx) {
-        return new MySQLDropEventStatement(databaseType);
+        return new MySQLDropEventStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
-        return new MySQLAlterInstanceStatement(databaseType);
+        return new MySQLAlterInstanceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
-        return new MySQLCreateLogfileGroupStatement(databaseType);
+        return new MySQLCreateLogfileGroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
-        return new MySQLAlterLogfileGroupStatement(databaseType);
+        return new MySQLAlterLogfileGroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
-        return new MySQLDropLogfileGroupStatement(databaseType);
+        return new MySQLDropLogfileGroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateServer(final CreateServerContext ctx) {
-        return new CreateServerStatement(databaseType);
+        return new CreateServerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterServer(final AlterServerContext ctx) {
-        return new AlterServerStatement(databaseType);
+        return new AlterServerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
-        return new DropServerStatement(databaseType);
+        return new DropServerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new CreateTriggerStatement(databaseType);
+        return new CreateTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new DropTriggerStatement(databaseType);
+        return new DropTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new CreateTablespaceStatement(databaseType);
+        return new CreateTablespaceStatement(getDatabaseType());
     }
     
     @Override
@@ -1013,13 +1014,13 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
-        return new AlterTablespaceStatement(databaseType,
+        return new AlterTablespaceStatement(getDatabaseType(),
                 null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTablespace ? null : createTablespaceSegment(ctx.renameTablespace));
     }
     
     @Override
     public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
-        return new AlterTablespaceStatement(databaseType,
+        return new AlterTablespaceStatement(getDatabaseType(),
                 null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTableSpace ? null : createTablespaceSegment(ctx.renameTableSpace));
     }
     
@@ -1029,21 +1030,21 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
-        return new DropTablespaceStatement(databaseType);
+        return new DropTablespaceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new PrepareStatement(databaseType);
+        return new PrepareStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement(databaseType);
+        return new ExecuteStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDeallocate(final DeallocateContext ctx) {
-        return new DeallocateStatement(databaseType);
+        return new DeallocateStatement(getDatabaseType());
     }
 }

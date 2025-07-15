@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public abstract class DCLStatement extends SQLStatement {
     
-    public DCLStatement(final DatabaseType databaseType) {
+    protected DCLStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }

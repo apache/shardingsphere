@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
@@ -81,7 +80,9 @@ import java.util.stream.Collectors;
  */
 public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisitor implements DMLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "ClickHouse");
+    public ClickHouseDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
@@ -94,7 +95,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
@@ -116,7 +117,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitUpdate(final ClickHouseStatementParser.UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement result = new UpdateStatement(getDatabaseType());
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -166,7 +167,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
+        DeleteStatement result = new DeleteStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -200,7 +201,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));

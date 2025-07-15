@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
@@ -36,11 +35,13 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLLCLStatementVisitor extends PostgreSQLStatementVisitor implements LCLStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    public PostgreSQLLCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(databaseType, null == ctx.relationExprList() ? Collections.emptyList() : getLockTables(ctx.relationExprList().relationExpr()));
+        return new LockStatement(getDatabaseType(), null == ctx.relationExprList() ? Collections.emptyList() : getLockTables(ctx.relationExprList().relationExpr()));
     }
     
     private Collection<SimpleTableSegment> getLockTables(final Collection<RelationExprContext> relationExprContexts) {

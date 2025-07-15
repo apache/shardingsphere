@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnalyzeTableContext;
@@ -62,23 +61,25 @@ import java.util.List;
  */
 public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisitor implements DALStatementVisitor {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    public OpenGaussDALStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         if (null != ctx.varName()) {
-            return new ShowStatement(databaseType, ctx.varName().getText());
+            return new ShowStatement(getDatabaseType(), ctx.varName().getText());
         }
         if (null != ctx.ZONE()) {
-            return new ShowStatement(databaseType, "timezone");
+            return new ShowStatement(getDatabaseType(), "timezone");
         }
         if (null != ctx.ISOLATION()) {
-            return new ShowStatement(databaseType, "transaction_isolation");
+            return new ShowStatement(getDatabaseType(), "transaction_isolation");
         }
         if (null != ctx.AUTHORIZATION()) {
-            return new ShowStatement(databaseType, "session_authorization");
+            return new ShowStatement(getDatabaseType(), "session_authorization");
         }
-        return new ShowStatement(databaseType, "ALL");
+        return new ShowStatement(getDatabaseType(), "ALL");
     }
     
     @Override
@@ -91,7 +92,7 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
             }
             variableAssigns.add(variableAssignSegment);
         }
-        return new SetStatement(databaseType, variableAssigns);
+        return new SetStatement(getDatabaseType(), variableAssigns);
     }
     
     @Override
@@ -112,13 +113,14 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new PostgreSQLResetParameterStatement(databaseType, null == ctx.ALL() ? ctx.identifier().getText() : "ALL");
+        return new PostgreSQLResetParameterStatement(getDatabaseType(), null == ctx.ALL() ? ctx.identifier().getText() : "ALL");
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAnalyzeTable(final AnalyzeTableContext ctx) {
-        return new AnalyzeTableStatement(databaseType, null == ctx.vacuumRelationList() ? Collections.emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
+        return new AnalyzeTableStatement(getDatabaseType(),
+                null == ctx.vacuumRelationList() ? Collections.emptyList() : ((CollectionValue<SimpleTableSegment>) visit(ctx.vacuumRelationList())).getValue());
     }
     
     @Override
@@ -134,17 +136,17 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitLoad(final LoadContext ctx) {
-        return new PostgreSQLLoadStatement(databaseType);
+        return new PostgreSQLLoadStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitVacuum(final VacuumContext ctx) {
-        return new PostgreSQLVacuumStatement(databaseType);
+        return new PostgreSQLVacuumStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        return new ExplainStatement(databaseType, (SQLStatement) visit(ctx.explainableStmt()));
+        return new ExplainStatement(getDatabaseType(), (SQLStatement) visit(ctx.explainableStmt()));
     }
     
     @Override
@@ -178,11 +180,11 @@ public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCheckpoint(final CheckpointContext ctx) {
-        return new PostgreSQLCheckpointStatement(databaseType);
+        return new PostgreSQLCheckpointStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitEmptyStatement(final EmptyStatementContext ctx) {
-        return new EmptyStatement(databaseType);
+        return new EmptyStatement(getDatabaseType());
     }
 }

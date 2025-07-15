@@ -208,6 +208,7 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
             close();
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
         }

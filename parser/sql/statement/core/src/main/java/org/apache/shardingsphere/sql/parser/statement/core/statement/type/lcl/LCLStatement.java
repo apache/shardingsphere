@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public abstract class LCLStatement extends SQLStatement {
     
-    public LCLStatement(final DatabaseType databaseType) {
+    protected LCLStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }

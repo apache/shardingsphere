@@ -125,7 +125,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private boolean isIncludeLike(final ExpressionSegment expression) {
-        return expression instanceof BinaryOperationExpression && "LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator());
+        return expression instanceof BinaryOperationExpression && ("LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator())
+                || "NOT LIKE".equalsIgnoreCase(((BinaryOperationExpression) expression).getOperator()));
     }
     
     private Collection<Projection> createColumnProjections(final String actualColumnName, final ColumnSegment columnSegment, final EncryptDerivedColumnSuffix derivedColumnSuffix,

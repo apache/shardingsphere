@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
@@ -215,10 +215,11 @@ import java.util.Optional;
 /**
  * Statement visitor for openGauss.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParserBaseVisitor<ASTNode> {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     

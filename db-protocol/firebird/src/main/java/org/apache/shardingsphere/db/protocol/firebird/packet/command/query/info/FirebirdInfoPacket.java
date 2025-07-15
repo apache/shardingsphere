@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 
 /**
  * Information command packet for Firebird.
@@ -45,7 +45,7 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
     
     private final FirebirdPacketPayload payload;
     
-    public FirebirdInfoPacket(final FirebirdPacketPayload payload, final Function<Integer, FirebirdInfoPacketType> valueOf) {
+    public FirebirdInfoPacket(final FirebirdPacketPayload payload, final IntFunction<FirebirdInfoPacketType> valueOf) {
         payload.skipReserved(4);
         handle = payload.readInt4();
         incarnation = payload.readInt4();
@@ -54,11 +54,11 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
         this.payload = payload;
     }
     
-    private void parseInfo(final ByteBuf buffer, final Function<Integer, FirebirdInfoPacketType> valueOf) {
+    private void parseInfo(final ByteBuf buffer, final IntFunction<FirebirdInfoPacketType> valueOf) {
         while (buffer.isReadable()) {
             int code = buffer.readByte();
             FirebirdInfoPacketType type = valueOf.apply(code);
-            if (type != null) {
+            if (null != type) {
                 infoItems.add(type);
             } else {
                 infoItems.add(FirebirdCommonInfoPacketType.valueOf(code));
@@ -68,7 +68,6 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        
     }
     
     /**
