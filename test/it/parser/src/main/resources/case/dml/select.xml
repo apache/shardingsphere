@@ -10702,4 +10702,28 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_rollup">
+        <projections start-index="7" stop-index="83">
+            <column-projection name="SalesQuota" start-index="7" stop-index="16" />
+            <aggregation-projection type="SUM" expression="SUM(SalesYTD)" alias="TotalSalesYTD" start-index="19" stop-index="31" />
+            <expression-projection text="GROUPING(SalesQuota)" alias="Grouping" start-index="50" stop-index="83">
+                <expr>
+                    <function start-index="50" stop-index="69" text="GROUPING(SalesQuota)" function-name="GROUPING">
+                        <parameter>
+                            <column name="SalesQuota" start-index="59" stop-index="68" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="SalesPerson" start-index="90" stop-index="106">
+                <owner name="Sales" start-index="90" stop-index="94" />
+            </simple-table>
+        </from>
+        <group-by>
+            <column-item name="SalesQuota" order-direction="ASC" start-index="117" stop-index="126" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>
