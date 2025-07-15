@@ -332,4 +332,5 @@
     <sql-case id="select_string_left" value="SELECT LEFT('abcdefg',2);" db-types="SQLServer"/>
     <sql-case id="select_ntile_function" value="SELECT NTILE(4) OVER(ORDER BY SalesYTD DESC) AS Quartile FROM Sales.SalesPerson WHERE TerritoryID IS NOT NULL;" db-types="SQLServer"/>
     <sql-case id="select_rank_function" value="SELECT RANK() OVER (PARTITION BY LocationID ORDER BY Quantity DESC) AS Rank FROM Production.ProductInventory WHERE LocationID BETWEEN 3 AND 4;" db-types="SQLServer"/>
+    <sql-case id="select_with_rollup" value="SELECT SalesQuota, SUM(SalesYTD) 'TotalSalesYTD', GROUPING(SalesQuota) AS 'Grouping' FROM Sales.SalesPerson GROUP BY SalesQuota WITH ROLLUP;" db-types="SQLServer"/>
 </sql-cases>

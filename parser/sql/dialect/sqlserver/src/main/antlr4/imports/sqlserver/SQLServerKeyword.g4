@@ -2042,3 +2042,7 @@ NTILE
 RANK
     : R A N K
     ;
+
+ROLLUP
+    : R O L L U P
+    ;

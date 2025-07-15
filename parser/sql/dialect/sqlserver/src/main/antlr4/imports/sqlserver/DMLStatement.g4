@@ -199,7 +199,7 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)*
+    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
     ;
 
 havingClause
