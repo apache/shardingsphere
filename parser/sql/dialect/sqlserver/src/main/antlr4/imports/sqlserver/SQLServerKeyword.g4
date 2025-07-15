@@ -2046,3 +2046,11 @@ RANK
 ROLLUP
     : R O L L U P
     ;
+
+PIVOT
+    : P I V O T
+    ;
+
+UNPIVOT
+    : U N P I V O T
+    ;
