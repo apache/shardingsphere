@@ -61,8 +61,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     
     private long maxBlobSize;
     
-    private final FirebirdPacketPayload payload;
-    
     public FirebirdExecuteStatementPacket(final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
         statementId = payload.readInt4();
@@ -106,9 +104,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }
-        
-        this.payload = payload;
-        
     }
     
     private List<FirebirdBinaryColumnType> parseBLR(final ByteBuf blrBuffer) {
