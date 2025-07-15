@@ -288,6 +288,7 @@ simpleExpr
     | variableName
     | xmlMethodCall
     | simpleExpr OR_ simpleExpr
+    | simpleExpr COLLATE identifier
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | CURRENT OF GLOBAL? expr
     | ROW? LP_ expr (COMMA_ expr)* RP_
