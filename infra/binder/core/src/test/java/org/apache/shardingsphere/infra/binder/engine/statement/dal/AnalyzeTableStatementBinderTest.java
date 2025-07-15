@@ -65,9 +65,7 @@ class AnalyzeTableStatementBinderTest {
         final SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("DUAL")));
         final AnalyzeTableStatement original = new AnalyzeTableStatement(databaseType, Collections.singletonList(tableSegment));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
-        
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
-        
         Collection<SimpleTableSegment> actualTables = actual.getTables();
         assertThat(actualTables.size(), is(1));
         assertThat(actualTables.iterator().next().getTableName().getIdentifier().getValue(), is("DUAL"));
@@ -79,9 +77,7 @@ class AnalyzeTableStatementBinderTest {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
-        
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
-        
         Collection<SimpleTableSegment> actualTables = actual.getTables();
         assertThat(actualTables.size(), is(0));
     }
