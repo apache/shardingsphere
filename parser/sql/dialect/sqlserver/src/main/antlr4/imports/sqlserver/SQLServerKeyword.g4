@@ -2054,3 +2054,7 @@ PIVOT
 UNPIVOT
     : U N P I V O T
     ;
+
+PARSE
+    : P A R S E
+    ;

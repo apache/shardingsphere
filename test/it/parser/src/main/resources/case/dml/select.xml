@@ -10857,4 +10857,24 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_parse_function">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="PARSE('Monday, 13 December 2010' AS datetime2 USING 'en-US')" alias="Result" start-index="7" stop-index="76">
+                <expr>
+                    <function start-index="7" stop-index="66" text="PARSE('Monday, 13 December 2010' AS datetime2 USING 'en-US')" function-name="PARSE">
+                        <parameter>
+                            <literal-expression value="Monday, 13 December 2010" start-index="13" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="datetime2" start-index="43" stop-index="51" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="en-US" start-index="59" stop-index="65" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

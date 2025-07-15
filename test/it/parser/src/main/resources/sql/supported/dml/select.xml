@@ -337,4 +337,5 @@
     <sql-case id="select_pivot_operator" value="SELECT 'AverageCost' AS CostSortedByProductionDays, [0], [1], [2], [3], [4] FROM (SELECT DaysToManufacture, StandardCost FROM Production.Product) AS SourceTable PIVOT (AVG(StandardCost) FOR DaysToManufacture IN ([0], [1], [2], [3], [4])) AS PivotTable;" db-types="SQLServer"/>
     <sql-case id="select_unpivot_operator" value="SELECT VendorID, Employee, Orders FROM pvt UNPIVOT (Orders FOR Employee IN (Emp1, Emp2, Emp3, Emp4, Emp5)) AS unpvt;" db-types="SQLServer"/>
     <sql-case id="select_sqlserver_current_user" value="SELECT CURRENT_USER;" db-types="SQLServer"/>
+    <sql-case id="select_parse_function" value="SELECT PARSE('Monday, 13 December 2010' AS datetime2 USING 'en-US') AS Result;" db-types="SQLServer"/>
 </sql-cases>
