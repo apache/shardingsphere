@@ -187,6 +187,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveLoadDataStatement;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -1405,5 +1408,15 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
         getParameterMarkerSegments().add(result);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
+        return visit(ctx.loadDataStatement());
+    }
+    
+    @Override
+    public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
+        return new HiveLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
 }
