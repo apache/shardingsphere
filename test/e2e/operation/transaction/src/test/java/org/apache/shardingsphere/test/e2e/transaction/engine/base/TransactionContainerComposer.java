@@ -50,7 +50,7 @@ public final class TransactionContainerComposer implements AutoCloseable {
     }
     
     private BaseContainerComposer initContainerComposer(final TransactionTestParameter testParam) {
-        BaseContainerComposer result = ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER ? new DockerContainerComposer(testParam) : new NativeContainerComposer();
+        BaseContainerComposer result = TransactionE2EEnvTypeEnum.NONE != ENV.getItEnvType() ? new DockerContainerComposer(testParam) : new NativeContainerComposer();
         result.start();
         return result;
     }

@@ -275,7 +275,7 @@ public abstract class TransactionBaseE2EIT {
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
         if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
+            DockerStorageContainer storageContainer = (DockerStorageContainer) ((DockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(),
                     containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
@@ -339,7 +339,7 @@ public abstract class TransactionBaseE2EIT {
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
             TransactionTestCaseRegistry currentTestCaseInfo = ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
             Collection<TransactionTestParameter> result = new LinkedList<>();
-            if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
+            if (TransactionE2EEnvTypeEnum.NONE != ENV.getItEnvType()) {
                 result.addAll(getTestParameters(currentTestCaseInfo));
             }
             if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
