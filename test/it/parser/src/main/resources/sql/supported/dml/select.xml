@@ -339,4 +339,5 @@
     <sql-case id="select_sqlserver_current_user" value="SELECT CURRENT_USER;" db-types="SQLServer"/>
     <sql-case id="select_parse_function" value="SELECT PARSE('Monday, 13 December 2010' AS datetime2 USING 'en-US') AS Result;" db-types="SQLServer"/>
     <sql-case id="select_try_parse_function" value="SELECT TRY_PARSE('Jabberwokkie' AS datetime2 USING 'en-US') AS Result;" db-types="SQLServer"/>
+    <sql-case id="select_from_msdb_managed_backup" value="SELECT * FROM msdb.managed_backup.fn_available_backups ('MyDB');" db-types="SQLServer"/>
 </sql-cases>

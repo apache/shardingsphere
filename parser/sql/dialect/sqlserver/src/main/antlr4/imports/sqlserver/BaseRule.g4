@@ -133,7 +133,7 @@ schemaName
     ;
 
 functionName
-    : (owner DOT_)? name
+    : ((databaseName DOT_)? (owner DOT_))? name
     ;
 
 procedureName
@@ -467,7 +467,7 @@ regularFunction
     ;
 
 regularFunctionName
-    : (owner DOT_)? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : ((databaseName DOT_)? (owner DOT_))? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
     ;
 
 caseExpression

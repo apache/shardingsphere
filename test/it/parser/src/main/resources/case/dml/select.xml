@@ -10897,4 +10897,19 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_from_msdb_managed_backup">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="63">
+            <function-table start-index="14" stop-index="63">
+                <table-function function-name="msdb.managed_backup.fn_available_backups" text="msdb.managed_backup.fn_available_backups ('MyDB')">
+                    <parameter>
+                        <literal-expression value="MyDB" start-index="57" stop-index="62"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
