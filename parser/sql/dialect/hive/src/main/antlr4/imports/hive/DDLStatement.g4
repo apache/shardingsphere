@@ -31,6 +31,10 @@ alterDatabase
     : ALTER (DATABASE | SCHEMA) identifier alterDatabaseSpecification_*
     ;
 
+use
+    : USE (identifier | DEFAULT)
+    ;
+
 dropTable
     : DROP TABLE ifExists? tableList (PURGE)?
     ;
