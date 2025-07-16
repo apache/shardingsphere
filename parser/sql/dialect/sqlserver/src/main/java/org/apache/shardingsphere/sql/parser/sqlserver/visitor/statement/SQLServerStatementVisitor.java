@@ -249,6 +249,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Piv
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -866,12 +867,26 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.parseFunction()) {
             return visit(ctx.parseFunction());
         }
+        if (null != ctx.tryParseFunction()) {
+            return visit(ctx.tryParseFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
     @Override
     public ASTNode visitParseFunction(final ParseFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.PARSE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.USING() && ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTryParseFunction(final TryParseFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRY_PARSE().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         if (null != ctx.USING() && ctx.expr().size() > 1) {

@@ -2058,3 +2058,7 @@ UNPIVOT
 PARSE
     : P A R S E
     ;
+
+TRY_PARSE
+    : T R Y UL_ P A R S E
+    ;
