@@ -79,4 +79,20 @@
     <drop-table sql-case-id="drop_bit_xor_table">
         <table name="BIT_XOR" start-index="11" stop-index="17" />
     </drop-table>
+
+    <drop-table sql-case-id="drop_table_hive">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
+
+    <drop-table sql-case-id="drop_table_if_exists_hive">
+        <table name="t_log" start-index="21" stop-index="25" />
+    </drop-table>
+
+    <drop-table sql-case-id="drop_table_purge_hive">
+        <table name="t_log" start-index="11" stop-index="15" />
+    </drop-table>
+
+    <drop-table sql-case-id="drop_table_if_exists_purge_hive">
+        <table name="t_log" start-index="21" stop-index="25" />
+    </drop-table>
 </sql-parser-test-cases>

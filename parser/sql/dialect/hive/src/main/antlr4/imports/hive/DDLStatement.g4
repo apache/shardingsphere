@@ -31,6 +31,10 @@ alterDatabase
     : ALTER (DATABASE | SCHEMA) identifier alterDatabaseSpecification_*
     ;
 
+dropTable
+    : DROP TABLE ifExists? tableList (PURGE)?
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier

@@ -27,8 +27,9 @@ execute
     | delete
     | loadStatement
     | createDatabase
-    | dropDatabase
     | alterDatabase
+    | dropDatabase
+    | dropTable
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

@@ -22,11 +22,15 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -51,5 +55,14 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
         return new AlterDatabaseStatement(getDatabaseType());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitDropTable(final DropTableContext ctx) {
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
+        result.setIfExists(null != ctx.ifExists());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        return result;
     }
 }
