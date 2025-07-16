@@ -69,7 +69,7 @@ public final class TableCoordinatorChangedHandler implements GlobalDataChangedEv
         if (Strings.isNullOrEmpty(qualifiedTableName) || Strings.isNullOrEmpty(coordinatorType)) {
             return;
         }
-        List<String> qualifiedTableNames = Splitter.on(".").splitToList("\\.");
+        List<String> qualifiedTableNames = Splitter.on(".").splitToList(qualifiedTableName);
         if (qualifiedTableNames.size() != 3) {
             return;
         }
