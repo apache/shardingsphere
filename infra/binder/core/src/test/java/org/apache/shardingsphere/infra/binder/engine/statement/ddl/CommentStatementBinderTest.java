@@ -64,7 +64,6 @@ class CommentStatementBinderTest {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setTable(tableSegment);
         sqlStatement.setComment(new IdentifierValue("test comment"));
-        
         when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
         when(metaData.getDatabase("foo_db_1")).thenReturn(database);
         when(database.containsSchema("foo_db_1")).thenReturn(true);
@@ -72,12 +71,9 @@ class CommentStatementBinderTest {
         when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.getTable("t_order")).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
-        
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, sqlStatement);
-        
         CommentStatement actual = new CommentStatementBinder().bind(sqlStatement, binderContext);
         assertThat(actual.getTable().getTableName().getIdentifier().getValue(), is("t_order"));
         assertThat(actual.getComment().getValue(), is("test comment"));
@@ -87,11 +83,9 @@ class CommentStatementBinderTest {
     void assertBindWithoutTable() {
         CommentStatement sqlStatement = new CommentStatement(databaseType);
         sqlStatement.setComment(new IdentifierValue("test comment"));
-        
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, sqlStatement);
-        
         CommentStatement actual = new CommentStatementBinder().bind(sqlStatement, binderContext);
         assertNull(actual.getTable());
         assertThat(actual.getComment().getValue(), is("test comment"));
@@ -103,7 +97,6 @@ class CommentStatementBinderTest {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.setTable(tableSegment);
         sqlStatement.setComment(new IdentifierValue("column comment"));
-        
         when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
         when(metaData.getDatabase("foo_db_1")).thenReturn(database);
         when(database.containsSchema("foo_db_1")).thenReturn(true);
@@ -111,12 +104,9 @@ class CommentStatementBinderTest {
         when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.getTable("t_order")).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
-        
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, sqlStatement);
-        
         CommentStatement actual = new CommentStatementBinder().bind(sqlStatement, binderContext);
         assertThat(actual.getTable().getTableName().getIdentifier().getValue(), is("t_order"));
         assertThat(actual.getComment().getValue(), is("column comment"));

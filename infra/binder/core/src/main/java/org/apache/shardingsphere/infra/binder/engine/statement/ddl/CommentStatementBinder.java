@@ -41,9 +41,7 @@ public final class CommentStatementBinder implements SQLStatementBinder<CommentS
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         Optional<SimpleTableSegment> boundTable = Optional.ofNullable(sqlStatement.getTable())
                 .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts));
-        
         ColumnSegment boundColumn = sqlStatement.getColumn();
-        
         return copy(sqlStatement, boundTable.orElse(null), boundColumn);
     }
     
