@@ -85,8 +85,8 @@ class XATransactionDataSourceTest {
             verify(transaction).registerSynchronization(any(Synchronization.class));
         }
         try (Connection ignored = transactionDataSource.getConnection()) {
-            verify(transaction).enlistResource(any(SingleXAResource.class));
-            verify(transaction).registerSynchronization(any(Synchronization.class));
+            verify(transaction, times(2)).enlistResource(any(SingleXAResource.class));
+            verify(transaction, times(2)).registerSynchronization(any(Synchronization.class));
         }
     }
     
