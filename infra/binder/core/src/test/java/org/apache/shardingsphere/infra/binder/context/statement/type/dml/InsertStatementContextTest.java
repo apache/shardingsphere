@@ -153,7 +153,7 @@ class InsertStatementContextTest {
     }
     
     @Test
-    public void assertAddParameterMarkersWithDuplicates() {
+    void assertAddParameterMarkersWithDuplicates() {
         Collection<ParameterMarkerSegment> segments = new ArrayList<>();
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 0, 1);
         segments.add(parameterMarkerExpressionSegment);
