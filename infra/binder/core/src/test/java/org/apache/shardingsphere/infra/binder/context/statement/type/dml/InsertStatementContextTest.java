@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -44,6 +45,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -148,6 +150,18 @@ class InsertStatementContextTest {
         assertThat(actual.getInsertSelectContext().getSelectStatementContext().getSqlStatement().getParameterCount(), is(1));
         assertThat(actual.getGroupedParameters().size(), is(1));
         assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.singletonList("param")));
+    }
+    
+    @Test
+    void assertAddParameterMarkersWithDuplicates() {
+        Collection<ParameterMarkerSegment> segments = new ArrayList<>();
+        ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 0, 1);
+        segments.add(parameterMarkerExpressionSegment);
+        segments.add(parameterMarkerExpressionSegment);
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.addParameterMarkers(segments);
+        assertThat(selectStatement.getParameterCount(), is(1));
+        assertThat(selectStatement.getParameterMarkers().size(), is(1));
     }
     
     private void setUpInsertValues(final InsertStatement insertStatement) {
