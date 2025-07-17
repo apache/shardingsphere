@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.sql.parser.statement.hive.dal;
 
-import Comments, DMLStatement, DDLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | loadStatement
-    | createDatabase
-    | dropDatabase
-    | alterDatabase
-    | use
-    | dropTable
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Use database statement for Hive.
+ */
+@Getter
+public final class HiveUseStatement extends DALStatement {
+    
+    private final String database;
+    
+    public HiveUseStatement(final DatabaseType databaseType, final String database) {
+        super(databaseType);
+        this.database = database;
+    }
+}
