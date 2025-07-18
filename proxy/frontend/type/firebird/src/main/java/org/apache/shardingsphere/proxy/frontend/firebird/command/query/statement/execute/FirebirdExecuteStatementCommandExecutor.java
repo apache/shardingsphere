@@ -69,7 +69,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements QueryComma
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
+        List<Object> params = packet.getParameterValues();
         preparedStatement.getLongData().forEach(params::set);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {

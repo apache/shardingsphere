@@ -51,8 +51,6 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     private final int maxLength;
     
-    private final FirebirdPacketPayload payload;
-    
     public FirebirdPrepareStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         transactionId = payload.readInt4();
@@ -63,7 +61,6 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
         sql = SQLHintUtils.removeHint(originSQL);
         parseInfo(payload.readBuffer());
         maxLength = payload.readInt4();
-        this.payload = payload;
     }
     
     private void parseInfo(final ByteBuf buffer) {
