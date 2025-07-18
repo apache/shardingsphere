@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dal.FlushStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateProcedureStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.FlushStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
@@ -131,6 +133,9 @@ public final class SQLStatementContextFactory {
     private static SQLStatementContext getDALStatementContext(final ShardingSphereMetaData metaData, final DALStatement sqlStatement, final List<Object> params, final String currentDatabaseName) {
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext(metaData, (ExplainStatement) sqlStatement, params, currentDatabaseName);
+        }
+        if (sqlStatement instanceof FlushStatement) {
+            return new FlushStatementContext((FlushStatement) sqlStatement);
         }
         return new CommonSQLStatementContext(sqlStatement);
     }
