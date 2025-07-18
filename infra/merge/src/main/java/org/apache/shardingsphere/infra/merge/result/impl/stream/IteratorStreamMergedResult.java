@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.merge.common;
+package org.apache.shardingsphere.infra.merge.result.impl.stream;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.merge.result.impl.stream.StreamMergedResult;
 
 import java.sql.SQLException;
 import java.util.Iterator;
