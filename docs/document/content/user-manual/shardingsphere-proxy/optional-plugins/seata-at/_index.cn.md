@@ -38,8 +38,8 @@ ShardingSphere Proxy 或 GraalVM Native Image 形态的 ShardingSphere Proxy Nat
 ```shell
 sdk install java 23-open
 sdk use java 23-open
-sdk install maven 3.9.9
-sdk use maven 3.9.9
+sdk install maven 3.9.11
+sdk use maven 3.9.11
 mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.3.0
 mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
 ```

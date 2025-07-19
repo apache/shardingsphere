@@ -160,7 +160,7 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
-        <native-maven-plugin.version>0.10.6</native-maven-plugin.version>
+        <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
@@ -1173,10 +1173,12 @@
                             <configuration>
                                 <buildArgs>
                                     <buildArg>-H:+AddAllCharsets</buildArg>
-                                    <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
-                                    <buildArg>-H:ThrowMissingRegistrationErrors=</buildArg>
-                                    <buildArg>-H:MissingRegistrationReportingMode=Warn</buildArg>
+                                    <buildArg>-H:+IncludeAllLocales</buildArg>
+                                    <buildArg>--exact-reachability-metadata</buildArg>
                                 </buildArgs>
+                                <runtimeArgs>
+                                    <runtimeArg>-XX:MissingRegistrationReportingMode=Warn</runtimeArg>
+                                </runtimeArgs>
                                 <quickBuild>true</quickBuild>
                             </configuration>
                             <executions>

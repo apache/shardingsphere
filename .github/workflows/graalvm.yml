@@ -43,7 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'windows-2025' ]
-        java-version: [ '22.0.2' ]
+        java-version: [ '24.0.2' ]
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rancher Desktop without GUI on Windows Server

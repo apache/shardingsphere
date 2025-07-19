@@ -25,7 +25,7 @@ ShardingSphere 定义了，
 
 贡献者必须在设备安装，
 
-1. GraalVM CE 22.0.2，或与 GraalVM CE 22.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
+1. GraalVM CE 24.0.2，或与 GraalVM CE 24.0.2 兼容的 GraalVM 下游发行版。以 [GraalVM Native Image](/cn/user-manual/shardingsphere-jdbc/graalvm-native-image) 为准。
 2. 编译 GraalVM Native Image 所需要的本地工具链。以 https://www.graalvm.org/latest/reference-manual/native-image/#prerequisites 为准。
 3. 可运行 Linux Containers 的 Docker Engine，或与 testcontainers-java 兼容的 Container Runtime。以 https://java.testcontainers.org/supported_docker_environment/ 为准。
 
@@ -41,8 +41,8 @@ ShardingSphere 定义了，
 sudo apt install unzip zip -y
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 22.0.2-graalce
-sdk use java 22.0.2-graalce
+sdk install java 24.0.2-graalce
+sdk use java 24.0.2-graalce
 ```
 
 可在 bash 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。
@@ -85,11 +85,11 @@ winget install version-fox.vfox
 if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }; Add-Content -Path $PROFILE -Value 'Invoke-Expression "$(vfox activate pwsh)"'
 # 此时需要打开新的 Powershell 7 终端
 vfox add java
-vfox install java@22.0.2-graalce
-vfox use --global java@22.0.2-graalce
+vfox install java@24.0.2-graalce
+vfox use --global java@24.0.2-graalce
 ```
 
-当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-22.0.2-graalce\java-22.0.2-graalce\bin\java.exe` 路径的应用通过 Windows 防火墙时，应当批准。
+当 Windows 弹出窗口，要求允许类似 `C:\users\shard\.version-fox\cache\java\v-24.0.2-graalce\java-24.0.2-graalce\bin\java.exe` 路径的应用通过 Windows 防火墙时，应当批准。
 背景参考 https://support.microsoft.com/en-us/windows/risks-of-allowing-apps-through-windows-firewall-654559af-3f54-3dcf-349f-71ccd90bcc5c 。
 
 可在 Powershell 7 通过如下命令安装编译 GraalVM Native Image 所需要的本地工具链。**特定情况下，开发者可能需要为 Visual Studio 的使用购买许可证。**
@@ -166,31 +166,42 @@ cd ./shardingsphere/
 
 ## 已知限制
 
-### `resource-config.json` 限制
+### `reachability-metadata.json` 限制
 
 受 https://github.com/apache/shardingsphere/issues/33206 影响，
 开发者执行 `./mvnw -PgenerateMetadata -T 1C -e clean test native:metadata-copy` 后，
-`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/resource-config.json` 会生成不必要的包含绝对路径的 JSON 条目，
+`infra/reachability-metadata/src/main/resources/META-INF/native-image/org.apache.shardingsphere/generated-reachability-metadata/reachability-metadata.json` 会生成不必要的包含绝对路径的 JSON 条目，
 
 对于 Ubuntu，类似如下，
 
 ```json
 {
-   "resources":{
-      "includes":[{
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding//global.yaml\\E"
-      }, {
-         "condition":{"typeReachable":"org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"},
-         "pattern":"\\Qhome/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/features/sharding/\\E"
-      }]},
-   "bundles":[]
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+      },
+      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql/"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+      },
+      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/mysql//global.yaml"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+      },
+      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql/"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader"
+      },
+      "glob": "home/runner/work/shardingsphere/shardingsphere/test/native/src/test/resources/test-native/yaml/proxy/databases/postgresql//global.yaml"
+    }
+  ]
 }
 ```
 
