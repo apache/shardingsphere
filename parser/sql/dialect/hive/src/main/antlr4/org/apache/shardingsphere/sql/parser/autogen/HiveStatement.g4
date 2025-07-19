@@ -30,6 +30,7 @@ execute
     | dropDatabase
     | alterDatabase
     | use
+    | createTable
     | dropTable
     ) (SEMI_ EOF? | EOF)
     | EOF
