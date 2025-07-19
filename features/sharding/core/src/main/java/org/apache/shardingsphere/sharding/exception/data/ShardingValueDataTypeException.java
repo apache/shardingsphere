@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.exception.data;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
@@ -28,7 +28,7 @@ public final class ShardingValueDataTypeException extends ShardingSQLException {
     
     private static final long serialVersionUID = -4833106947304679015L;
     
-    public ShardingValueDataTypeException(final QualifiedColumn column) {
+    public ShardingValueDataTypeException(final HashColumn column) {
         super(XOpenSQLState.INVALID_DATA_TYPE, 21, "Found different types for sharding value '%s'.", column);
     }
 }
