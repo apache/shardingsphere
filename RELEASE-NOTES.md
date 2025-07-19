@@ -62,6 +62,7 @@
 1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
 1. SQL Parser: Support Hive DROP TABLE statement parse - [#36018](https://github.com/apache/shardingsphere/pull/36018)
 1. SQL Parser: Support Hive USE DATABASE statement parse - [#36024](https://github.com/apache/shardingsphere/pull/36024)
+1. SQL Parser: Support Hive CREATE TABLE statement parse - [#36040](https://github.com/apache/shardingsphere/pull/36040)
 
 ### Bug Fixes
 
