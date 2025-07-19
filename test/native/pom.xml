@@ -26,6 +26,16 @@
     <artifactId>shardingsphere-test-native</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <!--
+        As a workaround for https://github.com/apache/shardingsphere/issues/26041 ,
+        versions of Jakarta EE Spec dependencies are maintained separately in this module and its submodules.
+        -->
+        <jakarta.jakartaee-bom.version>9.0.0</jakarta.jakartaee-bom.version>
+        <glassfish-jaxb.version>3.0.2</glassfish-jaxb.version>
+        <jboss-logging.version>3.4.3.Final</jboss-logging.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -38,6 +48,12 @@
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-transaction-xa-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -84,13 +100,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-core</artifactId>
+            <artifactId>shardingsphere-transaction-xa-jakarta-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            <artifactId>shardingsphere-transaction-xa-jakarta-narayana</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -115,20 +131,14 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jta</groupId>
-            <artifactId>jta</artifactId>
+            <artifactId>narayana-jta-jakarta</artifactId>
             <version>${narayana.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jts</groupId>
-            <artifactId>narayana-jts-integration</artifactId>
+            <artifactId>narayana-jts-integration-jakarta</artifactId>
             <version>${narayana.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-transaction-spi</artifactId>
-            <version>${jboss-transaction-spi.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
