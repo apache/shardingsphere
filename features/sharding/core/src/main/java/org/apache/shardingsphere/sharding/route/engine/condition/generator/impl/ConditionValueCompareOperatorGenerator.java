@@ -58,7 +58,8 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
     private static final Collection<String> OPERATORS = new HashSet<>(Arrays.asList(EQUAL, GREATER_THAN, LESS_THAN, AT_LEAST, AT_MOST, IS));
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final QualifiedColumn column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+    public Optional<ShardingConditionValue> generate(final BinaryOperationExpression predicate, final QualifiedColumn column, final List<Object> params,
+                                                     final TimestampServiceRule timestampServiceRule) {
         String operator = predicate.getOperator().toUpperCase();
         if (!isSupportedOperator(operator)) {
             return Optional.empty();

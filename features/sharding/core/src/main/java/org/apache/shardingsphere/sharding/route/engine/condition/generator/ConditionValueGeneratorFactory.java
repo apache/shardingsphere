@@ -54,7 +54,8 @@ public final class ConditionValueGeneratorFactory {
      * @param timestampServiceRule time service rule
      * @return route value
      */
-    public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final QualifiedColumn column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+    public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final QualifiedColumn column, final List<Object> params,
+                                                            final TimestampServiceRule timestampServiceRule) {
         if (predicate instanceof BinaryOperationExpression) {
             return COMPARE_OPERATOR_GENERATOR.generate((BinaryOperationExpression) predicate, column, params, timestampServiceRule);
         }
