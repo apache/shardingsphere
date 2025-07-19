@@ -2,9 +2,6 @@
   "resources":{
   "includes":[{
     "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherFactory"},
-    "pattern":"\\QMETA-INF/services/org.junit.platform.engine.TestEngine\\E"
-  }, {
-    "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherFactory"},
     "pattern":"\\QMETA-INF/services/org.junit.platform.launcher.LauncherDiscoveryListener\\E"
   }, {
     "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherFactory"},
@@ -12,9 +9,6 @@
   }, {
     "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherFactory"},
     "pattern":"\\QMETA-INF/services/org.junit.platform.launcher.PostDiscoveryFilter\\E"
-  }, {
-    "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherFactory"},
-    "pattern":"\\QMETA-INF/services/org.junit.platform.launcher.TestExecutionListener\\E"
   }, {
     "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherConfigurationParameters"},
     "pattern":"\\Qjunit-platform.properties\\E"
