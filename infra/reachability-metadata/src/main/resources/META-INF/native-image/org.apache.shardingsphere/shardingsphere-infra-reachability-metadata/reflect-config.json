@@ -5,32 +5,27 @@
   "allPublicConstructors": true
 },
 {
+  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean"},
+  "name":"com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean",
+  "allPublicConstructors": true
+},
+{
   "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean"},
   "name":"com.oracle.svm.core.genscavenge.HeapImplMemoryMXBean",
   "allPublicConstructors": true
 },
 {
-  "condition":{"typeReachable":"com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean"},
-  "name":"com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean",
-  "allPublicConstructors": true
-},
-{
-  "condition":{"typeReachable":"com.oracle.svm.core.jdk.management.SubstrateThreadMXBean"},
-  "name":"com.oracle.svm.core.jdk.management.SubstrateThreadMXBean",
-  "allPublicConstructors": true
-},
-{
-  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$SurvivorMemoryPoolMXBean"},
-  "name":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$SurvivorMemoryPoolMXBean",
-  "allPublicConstructors": true
-},
-{
-  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$EdenMemoryPoolMXBean"},
+  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"},
   "name":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$EdenMemoryPoolMXBean",
   "allPublicConstructors": true
 },
 {
-  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$OldGenerationMemoryPoolMXBean"},
+  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"},
+  "name":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$SurvivorMemoryPoolMXBean",
+  "allPublicConstructors": true
+},
+{
+  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans"},
   "name":"com.oracle.svm.core.genscavenge.GenScavengeMemoryPoolMXBeans$OldGenerationMemoryPoolMXBean",
   "allPublicConstructors": true
 },
@@ -40,18 +35,13 @@
   "allPublicConstructors": true
 },
 {
-  "condition":{"typeReachable":"com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean"},
-  "name":"com.oracle.svm.core.genscavenge.CompleteGarbageCollectorMXBean",
+  "condition":{"typeReachable":"com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean"},
+  "name":"com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean",
   "allPublicConstructors": true
 },
 {
-  "condition":{"typeReachable":"com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool"},
-  "name":"com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool",
-  "allPublicConstructors": true
-},
-{
-  "condition":{"typeReachable":"com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool"},
-  "name":"com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool",
+  "condition":{"typeReachable":"com.oracle.svm.core.jdk.management.SubstrateThreadMXBean"},
+  "name":"com.oracle.svm.core.jdk.management.SubstrateThreadMXBean",
   "allPublicConstructors": true
 },
 {
@@ -60,14 +50,9 @@
   "allPublicConstructors": true
 },
 {
-  "condition":{"typeReachable":"com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean"},
-  "name":"com.oracle.svm.core.jdk.management.SubstrateCompilationMXBean",
+  "condition":{"typeReachable":"com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean"},
+  "name":"com.oracle.svm.core.jdk.management.SubstrateClassLoadingMXBean",
   "allPublicConstructors": true
-},
-{
-  "condition":{"typeReachable":"com.sun.management.GcInfo"},
-  "name":"com.sun.management.GcInfo",
-  "allPublicMethods": true
 },
 {
   "condition":{"typeReachable":"com.sun.management.GarbageCollectorMXBean"},
@@ -77,11 +62,6 @@
 {
   "condition":{"typeReachable":"com.sun.management.ThreadMXBean"},
   "name":"com.sun.management.ThreadMXBean",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"com.sun.management.UnixOperatingSystemMXBean"},
-  "name":"com.sun.management.UnixOperatingSystemMXBean",
   "allPublicMethods": true
 },
 {
@@ -96,106 +76,13 @@
   "allPublicConstructors": true
 },
 {
-  "condition":{"typeReachable":"java.io.IOException"},
-  "name":"java.io.IOException",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
-},
-{
-  "condition":{"typeReachable":"java.lang.Boolean"},
-  "name":"java.lang.Boolean",
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true,
-  "allDeclaredConstructors": true
-},
-{
-  "condition":{"typeReachable":"java.lang.Deprecated"},
-  "name":"java.lang.Deprecated",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.Number"},
-  "name":"java.lang.Number",
-  "allDeclaredFields": true,
-  "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.Integer"},
-  "name":"java.lang.Integer",
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true,
-  "allDeclaredConstructors": true
-},
-{
-  "condition":{"typeReachable":"java.lang.Long"},
-  "name":"java.lang.Long",
-  "allDeclaredMethods": true,
-  "allDeclaredFields": true,
-  "allDeclaredConstructors": true
-},
-{
-  "condition":{"typeReachable":"java.lang.StackTraceElement"},
-  "name":"java.lang.StackTraceElement",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.constant.ConstantDesc"},
-  "name":"java.lang.constant.ConstantDesc",
-  "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"java.util.HashSet"},
-  "name":"java.util.HashSet",
-  "allDeclaredMethods": true,
-  "allDeclaredConstructors": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.MemoryManagerMXBean"},
-  "name":"java.lang.management.MemoryManagerMXBean",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.MemoryPoolMXBean"},
-  "name":"java.lang.management.MemoryPoolMXBean",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.MonitorInfo"},
-  "name":"java.lang.management.MonitorInfo",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.LockInfo"},
-  "name":"java.lang.management.LockInfo",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.ClassLoadingMXBean"},
-  "name":"java.lang.management.ClassLoadingMXBean",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.ThreadInfo"},
-  "name":"java.lang.management.ThreadInfo",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.RuntimeMXBean"},
-  "name":"java.lang.management.RuntimeMXBean",
-  "allPublicMethods": true
-},
-{
   "condition":{"typeReachable":"java.lang.management.CompilationMXBean"},
   "name":"java.lang.management.CompilationMXBean",
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"java.lang.management.MemoryMXBean"},
-  "name":"java.lang.management.MemoryMXBean",
-  "allPublicMethods": true
-},
-{
-  "condition":{"typeReachable":"java.lang.management.MemoryUsage"},
-  "name":"java.lang.management.MemoryUsage",
+  "condition":{"typeReachable":"java.lang.management.MemoryManagerMXBean"},
+  "name":"java.lang.management.MemoryManagerMXBean",
   "allPublicMethods": true
 },
 {
@@ -254,16 +141,6 @@
   "allPublicMethods":true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.mode.manager.cluster.event.dispatch.listener.type.DatabaseMetaDataChangedListener"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.event.dispatch.subscriber.type.MetaDataChangedSubscriber",
-  "allPublicMethods":true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.util.eventbus.EventBusContext"},
-  "name":"org.apache.shardingsphere.mode.manager.cluster.event.subscriber.dispatch.StateChangedSubscriber",
-  "allPublicMethods":true
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"},
   "name":"org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
   "allDeclaredFields":true,
@@ -280,12 +157,6 @@
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration"},
-  "name":"org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration",
-  "allDeclaredFields": true,
-  "allPublicMethods": true
-},
-{
   "condition":{"typeReachable":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration"},
   "name":"org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration",
   "allPublicMethods": true,
@@ -296,11 +167,6 @@
   "name":"org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration",
   "allPublicMethods": true,
   "allDeclaredFields": true
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData"},
-  "name":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData",
-  "allPublicMethods": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"},
@@ -325,17 +191,17 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"},
@@ -350,26 +216,11 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement"},
-  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
@@ -405,7 +256,7 @@
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"},
   "name":"org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "allPublicConstructors": true
 },
 {
   "condition":{"typeReachable":"org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder"},
@@ -418,6 +269,21 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropTableStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "condition":{"typeReachable":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement"},
+  "name":"org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DeleteStatement",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "condition":{"typeReachable":"javax.security.auth.login.Configuration"},
   "name":"sun.security.provider.ConfigFile",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -425,6 +291,6 @@
 {
   "condition":{"typeReachable":"sun.security.provider.SecureRandom"},
   "name":"sun.security.provider.SecureRandom",
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
+  "methods":[{"name":"<init>","parameterTypes":["java.security.SecureRandomParameters"] }]
 }
 ]
