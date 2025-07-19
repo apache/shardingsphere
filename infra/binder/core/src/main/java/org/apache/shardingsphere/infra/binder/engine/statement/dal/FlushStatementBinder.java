@@ -53,6 +53,7 @@ public final class FlushStatementBinder implements SQLStatementBinder<FlushState
     
     private FlushStatement copyFlushStatement(final FlushStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
         FlushStatement result = new FlushStatement(sqlStatement.getDatabaseType()) {
+            
             @Override
             public Collection<SimpleTableSegment> getTables() {
                 return tables;
