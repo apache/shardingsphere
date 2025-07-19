@@ -23,25 +23,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class QualifiedColumnTest {
+class HashColumnTest {
     
     @Test
     void assertEqualsForDifferentObjectType() {
-        assertThat(new QualifiedColumn("col", "tbl"), not(new Object()));
+        assertThat(new HashColumn("col", "tbl"), not(new Object()));
     }
     
     @Test
     void assertEquals() {
-        assertThat(new QualifiedColumn("col", "tbl"), is(new QualifiedColumn("COL", "TBL")));
+        assertThat(new HashColumn("col", "tbl"), is(new HashColumn("COL", "TBL")));
     }
     
     @Test
     void assertNotEqualsWhenColumnNameIsDifferent() {
-        assertThat(new QualifiedColumn("col", "tbl"), not(new QualifiedColumn("col1", "tbl")));
+        assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col1", "tbl")));
     }
     
     @Test
     void assertNotEqualsWhenTableNameIsDifferent() {
-        assertThat(new QualifiedColumn("col", "tbl"), not(new QualifiedColumn("col", "tbl1")));
+        assertThat(new HashColumn("col", "tbl"), not(new HashColumn("col", "tbl1")));
     }
 }

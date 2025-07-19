@@ -23,11 +23,11 @@ import lombok.ToString;
 import java.util.Objects;
 
 /**
- * Qualified column.
+ * Hash column.
  */
 @Getter
 @ToString
-public final class QualifiedColumn {
+public final class HashColumn {
     
     private final String name;
     
@@ -35,7 +35,7 @@ public final class QualifiedColumn {
     
     private final int hashCode;
     
-    public QualifiedColumn(final String name, final String tableName) {
+    public HashColumn(final String name, final String tableName) {
         this.name = name;
         this.tableName = tableName;
         hashCode = Objects.hash(name.toUpperCase(), tableName.toUpperCase());
@@ -43,8 +43,8 @@ public final class QualifiedColumn {
     
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof QualifiedColumn) {
-            QualifiedColumn column = (QualifiedColumn) obj;
+        if (obj instanceof HashColumn) {
+            HashColumn column = (HashColumn) obj;
             return null != name && name.equalsIgnoreCase(column.name) && null != tableName && tableName.equalsIgnoreCase(column.tableName);
         }
         return false;

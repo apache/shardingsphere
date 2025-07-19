@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -48,7 +48,7 @@ class ConditionValueInOperatorGeneratorTest {
     
     private final ConditionValueInOperatorGenerator generator = new ConditionValueInOperatorGenerator();
     
-    private final QualifiedColumn column = new QualifiedColumn("id", "tbl");
+    private final HashColumn column = new HashColumn("id", "tbl");
     
     private final TimestampServiceRule timestampServiceRule = new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties()));
     
