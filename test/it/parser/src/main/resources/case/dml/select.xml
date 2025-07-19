@@ -10898,7 +10898,7 @@
         </projections>
     </select>
 
-    <select sql-case-id="select_from_msdb_managed_backup">
+    <select sql-case-id="select_three_level_naming">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
@@ -10911,5 +10911,34 @@
                 </table-function>
             </function-table>
         </from>
+    </select>
+
+    <select sql-case-id="select_datatypename_colon_colon_methodname">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="OrgNode.ToString()" alias="Text_OrgNode" start-index="7" stop-index="40">
+                <expr>
+                    <function start-index="7" stop-index="24" text="OrgNode.ToString()" function-name="OrgNode.ToString" />
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="43" stop-index="43" />
+        </projections>
+        <from>
+            <simple-table name="EmployeeDemo" start-index="50" stop-index="76">
+                <owner name="HumanResources" start-index="50" stop-index="63" />
+            </simple-table>
+        </from>
+        <where start-index="78" stop-index="115">
+            <expr>
+                <binary-operation-expression text="OrgNode = hierarchyid::GetRoot()" start-index="84" stop-index="115">
+                    <left>
+                        <column name="OrgNode" start-index="84" stop-index="90" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function start-index="94" stop-index="115" text="hierarchyid::GetRoot()" function-name="hierarchyid::GetRoot" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>
