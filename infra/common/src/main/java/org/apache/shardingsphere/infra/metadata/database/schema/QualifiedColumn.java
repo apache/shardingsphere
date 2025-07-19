@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition;
+package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -23,11 +23,11 @@ import lombok.ToString;
 import java.util.Objects;
 
 /**
- * Column.
+ * Qualified column.
  */
 @Getter
 @ToString
-public final class Column {
+public final class QualifiedColumn {
     
     private final String name;
     
@@ -35,7 +35,7 @@ public final class Column {
     
     private final int hashCode;
     
-    public Column(final String name, final String tableName) {
+    public QualifiedColumn(final String name, final String tableName) {
         this.name = name;
         this.tableName = tableName;
         hashCode = Objects.hash(name.toUpperCase(), tableName.toUpperCase());
@@ -43,8 +43,8 @@ public final class Column {
     
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof Column) {
-            Column column = (Column) obj;
+        if (obj instanceof QualifiedColumn) {
+            QualifiedColumn column = (QualifiedColumn) obj;
             return null != name && name.equalsIgnoreCase(column.name) && null != tableName && tableName.equalsIgnoreCase(column.tableName);
         }
         return false;

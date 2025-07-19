@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
@@ -46,7 +46,7 @@ class ConditionValueCompareOperatorGeneratorTest {
     
     private final ConditionValueCompareOperatorGenerator generator = new ConditionValueCompareOperatorGenerator();
     
-    private final Column column = new Column("id", "tbl");
+    private final QualifiedColumn column = new QualifiedColumn("id", "tbl");
     
     @SuppressWarnings("unchecked")
     @Test

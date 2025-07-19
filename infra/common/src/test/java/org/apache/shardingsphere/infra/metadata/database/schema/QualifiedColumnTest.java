@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.condition;
+package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,25 +23,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ColumnTest {
+class QualifiedColumnTest {
     
     @Test
     void assertEqualsForDifferentObjectType() {
-        assertThat(new Column("col", "tbl"), not(new Object()));
+        assertThat(new QualifiedColumn("col", "tbl"), not(new Object()));
     }
     
     @Test
     void assertEquals() {
-        assertThat(new Column("col", "tbl"), is(new Column("COL", "TBL")));
+        assertThat(new QualifiedColumn("col", "tbl"), is(new QualifiedColumn("COL", "TBL")));
     }
     
     @Test
     void assertNotEqualsWhenColumnNameIsDifferent() {
-        assertThat(new Column("col", "tbl"), not(new Column("col1", "tbl")));
+        assertThat(new QualifiedColumn("col", "tbl"), not(new QualifiedColumn("col1", "tbl")));
     }
     
     @Test
     void assertNotEqualsWhenTableNameIsDifferent() {
-        assertThat(new Column("col", "tbl"), not(new Column("col", "tbl1")));
+        assertThat(new QualifiedColumn("col", "tbl"), not(new QualifiedColumn("col", "tbl1")));
     }
 }
