@@ -41,6 +41,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -80,10 +81,14 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void reviseYamlRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
-        for (Entry<YamlRuleConfiguration, PipelineYamlRuleConfigurationReviser> entry : OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules())
-                .entrySet()) {
-            entry.getValue().revise(entry.getKey());
+        Map<Class<?>, YamlRuleConfiguration> revisedYamlRuleConfigs = new HashMap<>(yamlRootConfig.getRules().size(), 1F);
+        for (Entry<YamlRuleConfiguration, PipelineYamlRuleConfigurationReviser> entry
+                : OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules()).entrySet()) {
+            YamlRuleConfiguration revisedYamlRuleConfig = entry.getValue().revise(entry.getKey());
+            revisedYamlRuleConfigs.put(revisedYamlRuleConfig.getClass(), revisedYamlRuleConfig);
         }
+        yamlRootConfig.getRules().removeIf(each -> revisedYamlRuleConfigs.containsKey(each.getClass()));
+        yamlRootConfig.getRules().addAll(revisedYamlRuleConfigs.values());
     }
     
     private YamlModeConfiguration createStandaloneModeConfiguration() {
