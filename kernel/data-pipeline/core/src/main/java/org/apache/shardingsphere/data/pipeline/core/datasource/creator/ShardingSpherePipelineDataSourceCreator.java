@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -41,9 +40,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -79,16 +76,9 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.setProps(newProps);
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     private void reviseYamlRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
-        Map<Class<?>, YamlRuleConfiguration> revisedYamlRuleConfigs = new HashMap<>(yamlRootConfig.getRules().size(), 1F);
-        for (Entry<YamlRuleConfiguration, PipelineYamlRuleConfigurationReviser> entry : OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules())
-                .entrySet()) {
-            YamlRuleConfiguration revisedYamlRuleConfig = entry.getValue().revise(entry.getKey());
-            revisedYamlRuleConfigs.put(revisedYamlRuleConfig.getClass(), revisedYamlRuleConfig);
-        }
-        yamlRootConfig.getRules().removeIf(each -> revisedYamlRuleConfigs.containsKey(each.getClass()));
-        yamlRootConfig.getRules().addAll(revisedYamlRuleConfigs.values());
+        OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules()).forEach((key, value) -> value.revise(key));
     }
     
     private YamlModeConfiguration createStandaloneModeConfiguration() {
