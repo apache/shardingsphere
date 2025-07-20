@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.checker.sql.dml;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOp
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.UnsupportedDistributeSQLStatementAttribute;
 
 /**
  * Table supported checker for sharding.
@@ -37,8 +37,7 @@ public final class ShardingTableSupportedChecker implements SupportedSQLChecker<
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return DatabaseTypedSPILoader.findService(DialectUnsupportedShardingSQLStatementProvider.class, sqlStatementContext.getSqlStatement().getDatabaseType())
-                .map(optional -> optional.getUnsupportedSQLStatementTypes().contains(sqlStatementContext.getSqlStatement().getClass())).orElse(false);
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(UnsupportedDistributeSQLStatementAttribute.class).isPresent();
     }
     
     @Override

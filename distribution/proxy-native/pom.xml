@@ -259,7 +259,7 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-postgresql</artifactId>
+                    <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -269,12 +269,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
+                
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
@@ -544,19 +539,30 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-postgresql</artifactId>
+                    <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-sharding-mysql</id>
+            <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-mysql</artifactId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sharding-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>

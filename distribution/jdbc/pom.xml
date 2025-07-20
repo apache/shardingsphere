@@ -173,16 +173,11 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-postgresql</artifactId>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sharding-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+                
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-broadcast-core</artifactId>
@@ -392,9 +387,14 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-sharding-mysql</id>
+            <dependencies>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-sharding-postgresql</artifactId>
+                    <artifactId>shardingsphere-sharding-core</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -406,6 +406,7 @@
                 </dependency>
             </dependencies>
         </profile>
+        
         <profile>
             <id>feature-broadcast</id>
             <dependencies>
