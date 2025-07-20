@@ -33,6 +33,7 @@ public interface PipelineYamlRuleConfigurationReviser<T extends YamlRuleConfigur
      * Revise YAML rule configuration.
      *
      * @param yamlRuleConfig to be revised YAML rule configuration
+     * @return revised YAML rule configuration
      */
     T revise(T yamlRuleConfig);
 }
