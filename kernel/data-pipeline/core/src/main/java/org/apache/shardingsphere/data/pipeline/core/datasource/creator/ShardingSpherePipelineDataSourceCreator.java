@@ -82,8 +82,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void reviseYamlRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
         Map<Class<?>, YamlRuleConfiguration> revisedYamlRuleConfigs = new HashMap<>(yamlRootConfig.getRules().size(), 1F);
-        for (Entry<YamlRuleConfiguration, PipelineYamlRuleConfigurationReviser> entry
-                : OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules()).entrySet()) {
+        for (Entry<YamlRuleConfiguration, PipelineYamlRuleConfigurationReviser> entry : OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules())
+                .entrySet()) {
             YamlRuleConfiguration revisedYamlRuleConfig = entry.getValue().revise(entry.getKey());
             revisedYamlRuleConfigs.put(revisedYamlRuleConfig.getClass(), revisedYamlRuleConfig);
         }
