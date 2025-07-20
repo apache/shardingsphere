@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.check.postgresql.PostgreSQLUnsupportedShardingSQLStatementProvider
+org.apache.shardingsphere.data.pipeline.sharding.ShardingPipelineYamlRuleConfigurationReviser
