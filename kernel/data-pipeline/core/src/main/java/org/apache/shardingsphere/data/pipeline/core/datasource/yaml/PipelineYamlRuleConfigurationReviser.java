@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 
 /**
  * Pipeline YAML rule configuration reviser.
+ * 
+ * @param <T> type of YAML rule configuration
  */
 @SingletonSPI
 public interface PipelineYamlRuleConfigurationReviser<T extends YamlRuleConfiguration> extends OrderedSPI<T> {
