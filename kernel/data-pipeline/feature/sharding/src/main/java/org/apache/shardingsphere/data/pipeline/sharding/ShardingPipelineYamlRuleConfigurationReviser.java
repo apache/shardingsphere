@@ -28,10 +28,9 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 public final class ShardingPipelineYamlRuleConfigurationReviser implements PipelineYamlRuleConfigurationReviser<YamlShardingRuleConfiguration> {
     
     @Override
-    public YamlShardingRuleConfiguration revise(final YamlShardingRuleConfiguration yamlRuleConfig) {
+    public void revise(final YamlShardingRuleConfiguration yamlRuleConfig) {
         enableRangeQueryForInline(yamlRuleConfig);
         removeAuditStrategy(yamlRuleConfig);
-        return yamlRuleConfig;
     }
     
     private void enableRangeQueryForInline(final YamlShardingRuleConfiguration yamlRuleConfig) {
