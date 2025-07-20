@@ -1908,7 +1908,7 @@
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="VARCHAR2" start-index="22" stop-index="62">
             <column name="SYS_ID" />
-            <dataType value="VARCHAR2" start-index="29" stop-index="41" >
+            <dataType value="VARCHAR2" start-index="29" stop-index="45" >
                 <dataLength precision="32" scale="0" type="CHAR" start-index="37" stop-index="45" />
             </dataType>
         </column-definition>
