@@ -20,6 +20,3 @@ org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigr
 org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationJobStatusExecutor
 org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationCheckStatusExecutor
 org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationSourceStorageUnitsExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingListExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingJobStatusExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingRuleExecutor

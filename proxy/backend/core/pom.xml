@@ -119,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-cdc-core</artifactId>
+            <artifactId>shardingsphere-data-pipeline-cdc-distsql-handler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

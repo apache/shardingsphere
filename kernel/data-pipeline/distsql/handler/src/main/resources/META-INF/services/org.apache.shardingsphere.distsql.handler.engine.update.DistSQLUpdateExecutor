@@ -27,4 +27,3 @@ org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.CheckMi
 org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StartMigrationCheckExecutor
 org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.StopMigrationCheckExecutor
 org.apache.shardingsphere.data.pipeline.distsql.handler.migration.update.DropMigrationCheckExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor

@@ -20,17 +20,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-data-pipeline-scenario</artifactId>
+        <artifactId>shardingsphere-data-pipeline-cdc</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-data-pipeline-cdc</artifactId>
+    <artifactId>shardingsphere-data-pipeline-cdc-distsql</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>protocol</module>
-        <module>core</module>
-        <module>client</module>
-        <module>distsql</module>
+        <module>statement</module>
+        <module>parser</module>
+        <module>handler</module>
     </modules>
 </project>
