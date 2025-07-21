@@ -3173,3 +3173,106 @@ OVERWRITE
 SERDE
     : S E R D E
     ;
+
+EXTERNAL
+    : E X T E R N A L
+    ;
+
+PARTITIONED
+    : P A R T I T I O N E D
+    ;
+
+CLUSTERED
+    : C L U S T E R E D
+    ;
+
+SORTED
+    : S O R T E D
+    ;
+
+SKEWED
+    : S K E W E D
+    ;
+
+DIRECTORIES
+    : D I R E C T O R I E S
+    ;
+
+SERDEPROPERTIES
+    : S E R D E P R O P E R T I E S
+    ;
+
+TBLPROPERTIES
+    : T B L P R O P E R T I E S
+    ;
+
+DELIMITED
+    : D E L I M I T E D
+    ;
+
+COLLECTION
+    : C O L L E C T I O N
+    ;
+
+ITEMS
+    : I T E M S
+    ;
+
+DEFINED
+    : D E F I N E D
+    ;
+
+SEQUENCEFILE
+    : S E Q U E N C E F I L E
+    ;
+
+TEXTFILE
+    : T E X T F I L E
+    ;
+
+RCFILE
+    : R C F I L E
+    ;
+
+PARQUET
+    : P A R Q U E T
+    ;
+
+AVRO
+    : A V R O
+    ;
+
+JSONFILE
+    : J S O N F I L E
+    ;
+
+OUTPUTFORMAT
+    : O U T P U T F O R M A T
+    ;
+
+UNIONTYPE
+    : U N I O N T Y P E
+    ;
+
+STRUCT
+    : S T R U C T
+    ;
+
+RELY
+    : R E L Y
+    ;
+
+NORELY
+    : N O R E L Y
+    ;
+
+NOVALIDATE
+    : N O V A L I D A T E
+    ;
+
+MAP
+    : M A P
+    ;
+ORC
+    : O R C
+    ;
