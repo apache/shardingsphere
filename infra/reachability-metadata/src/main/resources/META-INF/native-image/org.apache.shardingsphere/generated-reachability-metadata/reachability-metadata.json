@@ -9187,18 +9187,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sharding.checker.sql.dml.ShardingTableSupportedChecker"
-      },
-      "type": "org.apache.shardingsphere.sharding.check.mysql.MySQLUnsupportedShardingSQLStatementProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sharding.checker.sql.dml.ShardingTableSupportedChecker"
-      },
-      "type": "org.apache.shardingsphere.sharding.check.postgresql.PostgreSQLUnsupportedShardingSQLStatementProvider"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"
       },
       "type": "org.apache.shardingsphere.sharding.checker.config.ShardingRuleConfigurationChecker"
@@ -13142,12 +13130,6 @@
         "typeReached": "org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sharding.checker.sql.dml.ShardingTableSupportedChecker"
-      },
-      "glob": "META-INF/services/org.apache.shardingsphere.sharding.checker.sql.dml.DialectUnsupportedShardingSQLStatementProvider"
     },
     {
       "condition": {

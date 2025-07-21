@@ -18,7 +18,7 @@ https://sdkman.io/jdks#nik and https://sdkman.io/jdks#mandrel .
 
 - GraalVM CE For JDK 24.0.2, corresponding to `24.0.2-graalce` of SDKMAN!
 
-Users can still use old versions of GraalVM CE such as `21.0.8-graal` on SDKMAN! to build ShardingSphere's GraalVM Native Image product.
+Users can still use old versions of Oracle GraalVM such as `21.0.8-graal` on SDKMAN! to build ShardingSphere's GraalVM Native Image product.
 But this will cause the failure of building GraalVM Native Image when integrating some third-party dependencies.
 Classification discussion,
 1. Developers are using `org.apache.hive:hive-jdbc:4.0.1` related to HiveServer2 JDBC Driver. Since HiveServer2 JDBC Driver uses AWT-related classes,
