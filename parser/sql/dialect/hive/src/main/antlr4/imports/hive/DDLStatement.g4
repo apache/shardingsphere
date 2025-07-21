@@ -36,8 +36,8 @@ use
     ;
 
 createTable
-    : CREATE createTableSpecification? TABLE ifNotExists? tableNameWithDb createDefinitionClause? tableComment? partitionedBy? clusteredBy? skewedBy? rowFormat? storedAs? storageLocation? tblProperties? (AS select)?
-    | CREATE createTableSpecification? TABLE ifNotExists? tableNameWithDb LIKE existingTableName storageLocation?
+    : createTableCommonClause createDefinitionClause? tableComment? partitionedBy? clusteredBy? skewedBy? rowFormat? storedAs? storageLocation? tblProperties? (AS select)?
+    | createTableCommonClause LIKE existingTableName storageLocation?
     ;
 
 dropTable
@@ -65,6 +65,10 @@ dbProperty
 
 ifExists
     : IF EXISTS
+    ;
+
+createTableCommonClause
+    : CREATE createTableSpecification? TABLE ifNotExists? tableNameWithDb
     ;
 
 createTableSpecification

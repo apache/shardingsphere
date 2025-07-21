@@ -145,7 +145,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitTableNameWithDb(final TableNameWithDbContext ctx) {
-        if (ctx.identifier().size() == 1) {
+        if (1 == ctx.identifier().size()) {
             return new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
                     new IdentifierValue(ctx.identifier(0).getText())));
         } else {
