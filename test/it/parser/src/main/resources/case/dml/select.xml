@@ -10982,4 +10982,21 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_patindex_function">
+        <projections start-index="7" stop-index="54">
+            <expression-projection text="PATINDEX('%ter%', 'interesting data')" alias="position" start-index="7" stop-index="54">
+                <expr>
+                    <function function-name="PATINDEX" start-index="18" stop-index="54" text="PATINDEX('%ter%', 'interesting data')">
+                        <parameter>
+                            <literal-expression value="%ter%" start-index="27" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="interesting data" start-index="36" stop-index="53" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
