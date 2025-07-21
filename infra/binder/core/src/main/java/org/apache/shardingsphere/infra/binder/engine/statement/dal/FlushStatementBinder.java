@@ -55,6 +55,7 @@ public final class FlushStatementBinder implements SQLStatementBinder<FlushState
             public Collection<SimpleTableSegment> getTables() {
                 return tables;
             }
+            
             @Override
             public boolean isFlushTable() {
                 return sqlStatement.isFlushTable();
