@@ -309,7 +309,7 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | STRING_AGG
     ;
 
 distinct

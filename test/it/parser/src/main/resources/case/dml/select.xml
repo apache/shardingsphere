@@ -9181,7 +9181,11 @@
                                             </function>
                                         </parameter>
                                         <parameter>
-                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396" />
+                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396">
+                                                <parameter>
+                                                    <literal-expression value="10" start-index="394" stop-index="395" />
+                                                </parameter>
+                                            </function>
                                         </parameter>
                                         <parameter>
                                             <literal-expression value=" " start-index="399" stop-index="401" />
@@ -9189,7 +9193,11 @@
                                     </function>
                                 </parameter>
                                 <parameter>
-                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413" />
+                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413">
+                                        <parameter>
+                                            <literal-expression value="13" start-index="411" stop-index="412" />
+                                        </parameter>
+                                    </function>
                                 </parameter>
                                 <parameter>
                                     <literal-expression value=" " start-index="416" stop-index="418" />
@@ -10940,5 +10948,38 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_string_agg_function">
+        <projections start-index="7" stop-index="70">
+            <expression-projection text="STRING_AGG(CONVERT (NVARCHAR (MAX), FirstName), CHAR(13))" start-index="7" stop-index="70" alias="csv">
+                <expr>
+                    <function function-name="STRING_AGG" text="STRING_AGG(CONVERT (NVARCHAR (MAX), FirstName), CHAR(13))" start-index="7" stop-index="63">
+                        <parameter>
+                            <function function-name="CONVERT" text="CONVERT (NVARCHAR (MAX), FirstName)" start-index="18" stop-index="52">
+                                <parameter>
+                                    <data-type value="NVARCHAR" start-index="27" stop-index="40" />
+                                </parameter>
+                                <parameter>
+                                    <column name="FirstName" start-index="43" stop-index="51" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function function-name="CHAR" text="CHAR(13)" start-index="55" stop-index="62">
+                                <parameter>
+                                    <literal-expression value="13" start-index="60" stop-index="61" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="73" stop-index="89">
+            <simple-table name="Person" start-index="77" stop-index="89">
+                <owner name="Person" start-index="77" stop-index="82" />
+            </simple-table>
+        </from>
     </select>
 </sql-parser-test-cases>
