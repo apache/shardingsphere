@@ -342,4 +342,5 @@
     <sql-case id="select_three_level_naming" value="SELECT * FROM msdb.managed_backup.fn_available_backups ('MyDB');" db-types="SQLServer"/>
     <sql-case id="select_datatypename_colon_colon_methodname" value="SELECT OrgNode.ToString() AS Text_OrgNode, * FROM HumanResources.EmployeeDemo WHERE OrgNode = hierarchyid::GetRoot();" db-types="SQLServer"/>
     <sql-case id="select_string_agg_function" value="SELECT STRING_AGG(CONVERT (NVARCHAR (MAX), FirstName), CHAR(13)) AS csv FROM Person.Person;" db-types="SQLServer"/>
+    <sql-case id="select_patindex_function" value="SELECT position = PATINDEX('%ter%', 'interesting data');" db-types="SQLServer"/>
 </sql-cases>

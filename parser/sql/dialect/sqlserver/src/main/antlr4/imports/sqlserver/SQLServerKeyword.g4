@@ -2062,3 +2062,7 @@ PARSE
 TRY_PARSE
     : T R Y UL_ P A R S E
     ;
+
+PATINDEX
+    : P A T I N D E X
+    ;
