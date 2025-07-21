@@ -908,7 +908,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return visit(ctx.lagLeadFunction());
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        if (null != ctx.NTILE() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+        if (null != ctx.NTILE() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.PERCENTILE_CONT() || null != ctx.PERCENTILE_DISC()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
         }
         return result;
