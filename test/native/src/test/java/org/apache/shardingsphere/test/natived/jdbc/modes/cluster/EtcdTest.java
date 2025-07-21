@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.sql.DataSource;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
@@ -44,6 +45,7 @@ import static org.hamcrest.Matchers.nullValue;
 /**
  * TODO This unit test cannot be run under GraalVM Native Image compiled with Windows 11, pending investigation.
  */
+@SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
 @DisabledOnOs(OS.WINDOWS)
 class EtcdTest {
@@ -92,7 +94,14 @@ class EtcdTest {
         testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
-        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
+        Awaitility.await().atMost(Duration.ofMinutes(2L)).ignoreExceptions().until(() -> {
+            try (Connection connection = logicDataSource.getConnection()) {
+                connection.createStatement().execute("select * from t_order");
+                connection.createStatement().execute("select * from t_order_item");
+                connection.createStatement().execute("select * from t_address");
+            }
+            return true;
+        });
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();

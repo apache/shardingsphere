@@ -15,17 +15,22 @@ CE 的 `native-image` 命令行工具的长篇大论的 shell 命令。
 ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 GraalVM Native Image。使用者可通过 SDKMAN! 快速切换 JDK。这同理
 适用于 https://sdkman.io/jdks#graal ， https://sdkman.io/jdks#nik 和 https://sdkman.io/jdks#mandrel 等 `GraalVM CE` 的下游发行版。
 
-- GraalVM CE For JDK 22.0.2，对应于 SDKMAN! 的 `22.0.2-graalce`
+- GraalVM CE For JDK 24.0.2，对应于 SDKMAN! 的 `24.0.2-graalce`
 
-用户依然可以使用 SDKMAN! 上的 `21.0.2-graalce` 等旧版本的 GraalVM CE 来构建 ShardingSphere 的 GraalVM Native Image 产物。
+用户依然可以使用 SDKMAN! 上的 `21.0.8-graal` 等旧版本的 GraalVM CE 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
-典型的例子来自 HiveServer2 JDBC Driver 相关的 `org.apache.hive:hive-jdbc:4.0.0`，HiveServer2 JDBC Driver 使用了 AWT 相关的类，
-而 GraalVM CE 对 `java.beans.**` package 的支持仅位于 GraalVM CE For JDK22 及更高版本。
+分类讨论，
+
+1. 开发者正在使用 HiveServer2 JDBC Driver 相关的 `org.apache.hive:hive-jdbc:4.0.1`。由于 HiveServer2 JDBC Driver 使用了 AWT 相关的类，
+   且 `GraalVM CE` 对 AWT 相关类的支持仅位于 GraalVM CE For JDK22 及更高版本，这将破环 GraalVM Native Image 的构建。
 
 ```shell
 com.sun.beans.introspect.ClassInfo was unintentionally initialized at build time. To see why com.sun.beans.introspect.ClassInfo got initialized use --trace-class-initialization=com.sun.beans.introspect.ClassInfo
 java.beans.Introspector was unintentionally initialized at build time. To see why java.beans.Introspector got initialized use --trace-class-initialization=java.beans.Introspector
 ```
+
+2. 开发者使用的旧版本的 `GraalVM CE` 或 `GraalVM CE` 的下游发行版未包含 https://github.com/graalvm/graalvm-community-jdk21u/pull/23 的向后移植补丁。
+   此情况下开发者需要自行编写更多的可被旧版本 `GraalVM CE` 识别的，GraalVM Reachability Metadata 相关的 JSON。
 
 ### Maven 生态
 
@@ -47,11 +52,12 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>0.10.6</version>
+                <version>0.11.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
                         <buildArg>-H:+AddAllCharsets</buildArg>
+                        <buildArg>-H:+IncludeAllLocales</buildArg>
                     </buildArgs>
                 </configuration>
                 <executions>
@@ -85,21 +91,23 @@ java.beans.Introspector was unintentionally initialized at build time. To see wh
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '0.10.6'
+   id 'org.graalvm.buildtools.native' version '0.11.0'
 }
 
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.10.6', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '0.11.0', classifier: 'repository', ext: 'zip')
 }
 
 graalvmNative {
    binaries {
       main {
          buildArgs.add('-H:+AddAllCharsets')
+         buildArgs.add('-H:+IncludeAllLocales')
       }
       test {
          buildArgs.add('-H:+AddAllCharsets')
+         buildArgs.add('-H:+IncludeAllLocales')
       }
    }
    metadataRepository {
@@ -184,16 +192,18 @@ rules:
           algorithmClassName: org.example.test.TestShardingAlgorithmFixture
 ```
 
-在 `src/main/resources/META-INF/native-image/exmaple-test-metadata/reflect-config.json` 加入如下内容即可在正常在 GraalVM Native 
+在 `src/main/resources/META-INF/native-image/exmaple-test-metadata/reachability-metadata.json` 加入如下内容即可在正常在 GraalVM Native 
 Image 下使用。
 
 ```json
-[
 {
-  "name":"org.example.test.TestShardingAlgorithmFixture",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+   "reflection": [
+      {
+         "type":"org.example.test.TestShardingAlgorithmFixture",
+         "methods":[{"name":"<init>","parameterTypes":[] }]
+      }
+   ]
 }
-]
 ```
 
 2. 对于 `读写分离` 的功能，你需要使用 `行表达式` SPI 的其他实现，以在配置 `logic database name`，`writeDataSourceName` 和 `readDataSourceNames` 
@@ -245,18 +255,27 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
 
 以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
-用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reflect-config.json`文件内定义如下 JSON，
+用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON，
 以在 GraalVM Native Image 内部定义 `com.mysql.cj.jdbc.MysqlXADataSource` 的构造函数。
 
 ```json
-[
 {
-   "condition":{"typeReachable":"com.mysql.cj.jdbc.MysqlXADataSource"},
-   "name":"com.mysql.cj.jdbc.MysqlXADataSource",
-   "allPublicMethods": true,
-   "methods": [{"name":"<init>","parameterTypes":[] }]
+   "reflection": [
+      {
+         "condition": {
+            "typeReached": "com.mysql.cj.jdbc.MysqlXADataSource"
+         },
+         "type": "com.mysql.cj.jdbc.MysqlXADataSource",
+         "allPublicMethods": true,
+         "methods": [
+            {
+               "name": "<init>",
+               "parameterTypes": []
+            }
+         ]
+      }
+   ]
 }
-]
 ```
 
 6. 当需要通过 ShardingSphere JDBC 使用 ClickHouse 方言时，
@@ -294,3 +313,27 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 8. 由于 https://github.com/oracle/graal/issues/7979 的影响，
 对应 `com.oracle.database.jdbc:ojdbc8` Maven 模块的 Oracle JDBC Driver 无法在 GraalVM Native Image 下使用。
 
+9. 包括但不限于来自第三方依赖的 `com.mysql.cj.LocalizedErrorMessages`,
+   `com.microsoft.sqlserver.jdbc.SQLServerResource`,
+   `org.postgresql.translation.messages`,
+   `org.opengauss.translation.messages` 等 `Resource Bundles` 在默认情况下会根据系统的默认语言环境加载 L10N 资源，
+   并显示针对特定语言环境的本地化信息。
+   通过 GraalVM Reachability Metadata 的 JSON 定义来穷举 `Resource Bundles` 是一件繁琐的事情。
+   这有时会导致 GraalVM Native Image 在运行时中抛出类似如下的警告日志。 
+   通常的操作是设置 `-H:+IncludeAllLocales` 的 `buildArg`。
+
+```shell
+com.oracle.svm.core.jdk.resources.MissingResourceRegistrationError: The program tried to access the resource at path
+
+   com/mysql/cj/LocalizedErrorMessages_zh_Hans_CN.properties
+
+without it being registered as reachable. Add it to the resource metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#resources-and-resource-bundles for help
+  java.base@24.0.2/java.util.ResourceBundle.getBundle(ResourceBundle.java:1261)
+  com.mysql.cj.Messages.<clinit>(Messages.java:56)
+  com.mysql.cj.Constants.<clinit>(Constants.java:50)
+  com.mysql.cj.util.Util.<clinit>(Util.java:69)
+  com.mysql.cj.conf.ConnectionUrl$Type.getImplementingInstance(ConnectionUrl.java:251)
+  com.mysql.cj.conf.ConnectionUrl$Type.getConnectionUrlInstance(ConnectionUrl.java:221)
+  com.mysql.cj.conf.ConnectionUrl.getConnectionUrlInstance(ConnectionUrl.java:291)
+  com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:186)
+```

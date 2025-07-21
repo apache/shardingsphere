@@ -76,6 +76,7 @@
                             <imageName>${proxy.native.image.filename}</imageName>
                             <buildArgs>
                                 <buildArg>-H:+AddAllCharsets</buildArg>
+                                <buildArg>-H:+IncludeAllLocales</buildArg>
                             </buildArgs>
                         </configuration>
                         <executions>
