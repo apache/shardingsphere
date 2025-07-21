@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-distsql-handler</artifactId>
+            <artifactId>shardingsphere-data-pipeline-distsql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
