@@ -85,8 +85,8 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
         CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
-        result.setIfNotExists(null != ctx.ifNotExists());
+        result.setTable((SimpleTableSegment) visit(ctx.createTableCommonClause().tableNameWithDb()));
+        result.setIfNotExists(null != ctx.createTableCommonClause().ifNotExists());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
