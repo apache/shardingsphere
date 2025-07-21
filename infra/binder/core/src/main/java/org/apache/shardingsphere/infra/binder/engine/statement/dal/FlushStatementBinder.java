@@ -42,23 +42,19 @@ public final class FlushStatementBinder implements SQLStatementBinder<FlushState
         if (tables.isEmpty()) {
             return sqlStatement;
         }
-        
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         Collection<SimpleTableSegment> boundTables = tables.stream()
                 .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts))
                 .collect(Collectors.toList());
-        
         return copyFlushStatement(sqlStatement, boundTables);
     }
     
     private FlushStatement copyFlushStatement(final FlushStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
         FlushStatement result = new FlushStatement(sqlStatement.getDatabaseType()) {
-            
             @Override
             public Collection<SimpleTableSegment> getTables() {
                 return tables;
             }
-            
             @Override
             public boolean isFlushTable() {
                 return sqlStatement.isFlushTable();
