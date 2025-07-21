@@ -44,6 +44,10 @@ dropTable
     : DROP TABLE ifExists? tableList (PURGE)?
     ;
 
+truncateTable
+    : TRUNCATE (TABLE)? tableNameWithDb partitionSpec?
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier

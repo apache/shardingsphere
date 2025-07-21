@@ -32,6 +32,7 @@ execute
     | use
     | createTable
     | dropTable
+    | truncateTable
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;
