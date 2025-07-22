@@ -228,6 +228,7 @@ expr
     | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
+    | expr AT TIME ZONE expr
     ;
 
 andOperator

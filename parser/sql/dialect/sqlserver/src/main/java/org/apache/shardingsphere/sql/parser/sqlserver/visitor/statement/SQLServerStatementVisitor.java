@@ -456,6 +456,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.distinctFrom()) {
             return createBinaryOperationExpression(ctx, ctx.distinctFrom().getText());
         }
+        if (null != ctx.AT() && null != ctx.TIME() && null != ctx.ZONE()) {
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, "AT TIME ZONE", text);
+        }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
     
