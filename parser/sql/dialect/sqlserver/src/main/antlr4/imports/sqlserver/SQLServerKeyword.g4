@@ -2074,3 +2074,7 @@ PERCENTILE_CONT
 PERCENTILE_DISC
     : P E R C E N T I L E UL_ D I S C
     ;
+
+DENSE_RANK
+    : D E N S E UL_ R A N K
+    ;
