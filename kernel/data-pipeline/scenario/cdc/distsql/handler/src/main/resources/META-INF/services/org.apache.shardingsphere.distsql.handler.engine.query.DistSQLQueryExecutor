@@ -15,4 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.migration.distsql.parser.facade.MigrationDistSQLParserFacade
+org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingListExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingJobStatusExecutor
+org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingRuleExecutor

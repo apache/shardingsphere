@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.migration.distsql.parser.facade.MigrationDistSQLParserFacade
+org.apache.shardingsphere.data.pipeline.cdc.distsql.parser.facade.CDCDistSQLParserFacade
