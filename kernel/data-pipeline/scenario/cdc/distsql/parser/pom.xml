@@ -76,7 +76,6 @@
                                     <goal>antlr4</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceDirectory>src/main/antlr4/cdc/</sourceDirectory>
                                     <libDirectory>src/main/antlr4/imports/cdc/</libDirectory>
                                     <listener>false</listener>
                                     <visitor>true</visitor>
