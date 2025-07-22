@@ -38,12 +38,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-distsql-parser</artifactId>
+            <artifactId>shardingsphere-data-pipeline-cdc-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-cdc-distsql-parser</artifactId>
+            <artifactId>shardingsphere-data-pipeline-scenario-migration-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

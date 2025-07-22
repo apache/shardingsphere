@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.distsql.statement.updatable;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Alter transmission rule statement.
+ * SQL parser for migration.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterTransmissionRuleStatement extends UpdatablePipelineRALStatement {
+public final class MigrationDistSQLParser extends MigrationDistSQLStatementParser implements SQLParser {
     
-    private final String jobTypeName;
+    public MigrationDistSQLParser(final TokenStream input) {
+        super(input);
+    }
     
-    private final TransmissionRuleSegment processConfigSegment;
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
+    }
 }

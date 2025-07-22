@@ -15,20 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.distsql.statement.updatable;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.preparer.datasource.param.CreateTableConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.task.config.PipelineTaskConfiguration;
+
+import java.util.Collection;
 
 /**
- * Alter transmission rule statement.
+ * Migration task configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterTransmissionRuleStatement extends UpdatablePipelineRALStatement {
+@ToString
+public final class MigrationTaskConfiguration implements PipelineTaskConfiguration {
     
-    private final String jobTypeName;
+    private final String dataSourceName;
     
-    private final TransmissionRuleSegment processConfigSegment;
+    private final Collection<CreateTableConfiguration> createTableConfigurations;
+    
+    private final IncrementalDumperContext dumperContext;
+    
+    private final ImporterConfiguration importerConfig;
 }
