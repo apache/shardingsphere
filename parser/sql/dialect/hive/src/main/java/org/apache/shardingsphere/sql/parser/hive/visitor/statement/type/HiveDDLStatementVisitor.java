@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DataType
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -47,6 +48,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import java.util.Collections;
 
 /**
  * DDL statement visitor for Hive.
@@ -79,6 +82,12 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         result.setIfExists(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableNameWithDb())));
     }
     
     @SuppressWarnings("unchecked")
