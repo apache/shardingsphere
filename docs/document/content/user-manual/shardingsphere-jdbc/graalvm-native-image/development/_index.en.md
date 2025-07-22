@@ -119,6 +119,11 @@ This article does not discuss changing the default logging driver in `/etc/docke
 ### Windows Server
 
 For a regular Windows Server 2025 instance, the operation is equivalent to Windows 11 Home 24H2.
+However, affected by https://github.com/rancher-sandbox/rancher-desktop/issues/3999 ,
+if the Windows Server 2025 instance that the developer is using contains Docker Engine that can run Windows Containers,
+it is necessary to completely uninstall Docker Engine according to the content of https://github.com/microsoft/Windows-Containers/pull/602 ,
+and then install Rancher Desktop.
+This type of operation is common in the GitHub Actions Runner of `windows-2025`.
 
 ## Handling unit tests
 
@@ -130,7 +135,7 @@ that is, avoid compiling GraalVM Native Image, developer can execute the followi
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -e -T 1C clean test
+./mvnw -PgenerateMetadata -e -T 1C clean verify
 ```
 
 ### Execute unit tests under GraalVM Native Image
@@ -140,7 +145,7 @@ Developer can use the following commands to compile the GraalVM Native Image req
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PnativeTestInShardingSphere -e -T 1C clean test
+./mvnw -PnativeTestInShardingSphere -e -T 1C clean verify
 ```
 
 When Windows pops up a window asking developer to allow an app with a path like `C:\users\shard\shardingsphere\test\native\target\native-tests.exe.exe` to pass through Windows Firewall, 
@@ -162,7 +167,7 @@ This process can be easily handled by the following command.
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -e -T 1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -e -T 1C clean verify native:metadata-copy
 ```
 
 Developer may still need to manually adjust specific JSON entries and adjust the filter chain of Maven Profile and GraalVM Tracing Agent as appropriate.

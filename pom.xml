@@ -1082,13 +1082,10 @@
                 <pluginManagement>
                     <plugins>
                         <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
                             <version>${maven-surefire-plugin.version}</version>
                             <configuration>
-                                <includes>
-                                    <include>org.apache.shardingsphere.test.natived.**</include>
-                                </includes>
+                                <skipTests>true</skipTests>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -1119,23 +1116,42 @@
                             </configuration>
                             <executions>
                                 <execution>
-                                    <id>build-native</id>
+                                    <id>merge-agent-files-in-integration-test</id>
                                     <goals>
-                                        <goal>compile-no-fork</goal>
+                                        <goal>merge-agent-files</goal>
                                     </goals>
-                                    <phase>package</phase>
+                                    <phase>integration-test</phase>
                                 </execution>
+                                <!--TODO See https://github.com/graalvm/native-build-tools/pull/748 -->
                                 <execution>
-                                    <id>test-native</id>
+                                    <id>metadata-copy-manually</id>
                                     <goals>
-                                        <goal>test</goal>
+                                        <goal>metadata-copy</goal>
                                     </goals>
-                                    <phase>test</phase>
+                                    <phase>deploy</phase>
                                 </execution>
                             </executions>
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>org.apache.shardingsphere.test.natived.**</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>
@@ -1145,25 +1161,10 @@
                     <plugins>
                         <plugin>
                             <artifactId>maven-surefire-plugin</artifactId>
+                            <version>${maven-surefire-plugin.version}</version>
                             <configuration>
-                                <includes>
-                                    <include>org.apache.shardingsphere.test.natived.**</include>
-                                </includes>
+                                <skipTests>true</skipTests>
                             </configuration>
-                        </plugin>
-                        <!--TODO See https://github.com/graalvm/native-build-tools/issues/727 .-->
-                        <plugin>
-                            <artifactId>maven-jar-plugin</artifactId>
-                            <version>${maven-jar-plugin.version}</version>
-                            <executions>
-                                <execution>
-                                    <id>jar-in-test-phase</id>
-                                    <goals>
-                                        <goal>jar</goal>
-                                    </goals>
-                                    <phase>test</phase>
-                                </execution>
-                            </executions>
                         </plugin>
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
@@ -1187,12 +1188,30 @@
                                     <goals>
                                         <goal>test</goal>
                                     </goals>
-                                    <phase>test</phase>
+                                    <phase>verify</phase>
                                 </execution>
                             </executions>
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>org.apache.shardingsphere.test.natived.**</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>

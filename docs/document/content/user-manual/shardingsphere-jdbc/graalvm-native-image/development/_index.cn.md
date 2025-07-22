@@ -112,6 +112,11 @@ wsl --install
 ### Windows Server
 
 对于通常的 Windows Server 2025 实例，操作等同于 Windows 11 Home 24H2。
+但受 https://github.com/rancher-sandbox/rancher-desktop/issues/3999 影响，
+如果开发者正在使用的 Windows Server 2025 实例包含可运行 Windows Containers 的 Docker Engine，
+则需要根据 https://github.com/microsoft/Windows-Containers/pull/602 的内容来完全卸载 Docker Engine，
+再安装 Rancher Desktop。
+这类操作常见于 `windows-2025` 的 GitHub Actions Runner 中。
 
 ## 处理单元测试
 
@@ -122,7 +127,7 @@ wsl --install
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -e -T 1C clean test
+./mvnw -PgenerateMetadata -e -T 1C clean verify
 ```
 
 ### 在 GraalVM Native Image 下执行单元测试
@@ -132,7 +137,7 @@ cd ./shardingsphere/
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PnativeTestInShardingSphere -e -T 1C clean test
+./mvnw -PnativeTestInShardingSphere -e -T 1C clean verify
 ```
 
 当 Windows 弹出窗口，要求允许类似 `C:\users\shard\shardingsphere\test\native\target\native-tests.exe.exe` 路径的应用通过 Windows 防火墙时，应当批准。
@@ -153,7 +158,7 @@ cd ./shardingsphere/
 ```bash
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -PgenerateMetadata -e -T 1C clean test native:metadata-copy
+./mvnw -PgenerateMetadata -e -T 1C clean verify native:metadata-copy
 ```
 
 贡献者仍可能需要手动调整具体的 JSON 条目，并适时调整 Maven Profile 和 GraalVM Tracing Agent 的 Filter 链。

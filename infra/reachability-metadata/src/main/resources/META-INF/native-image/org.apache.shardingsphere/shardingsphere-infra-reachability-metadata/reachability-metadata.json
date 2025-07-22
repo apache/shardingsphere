@@ -100,6 +100,13 @@
     },
     {
       "condition": {
+        "typeReached": "com.sun.management.UnixOperatingSystemMXBean"
+      },
+      "type": "com.sun.management.UnixOperatingSystemMXBean",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
         "typeReached": "com.sun.management.internal.OperatingSystemImpl"
       },
       "type": "com.sun.management.internal.OperatingSystemImpl",

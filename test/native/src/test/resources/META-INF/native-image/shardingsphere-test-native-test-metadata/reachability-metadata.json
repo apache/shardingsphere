@@ -302,6 +302,12 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
+      },
+      "glob": "*.conf"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.SQLServerTest"
       },
       "glob": "container-license-acceptance.txt"
@@ -311,24 +317,6 @@
         "typeReached": "ch.qos.logback.core.util.Loader"
       },
       "glob": "logback-test.xml"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
-      },
-      "glob": "seata-script-client-conf-file.conf"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
-      },
-      "glob": "registry.conf"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
-      },
-      "glob": "seata.conf"
     }
   ]
 }

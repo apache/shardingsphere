@@ -17,7 +17,7 @@ ShardingSphere JDBC 要求在如下或更高版本的 `GraalVM CE` 完成构建 
 
 - GraalVM CE For JDK 24.0.2，对应于 SDKMAN! 的 `24.0.2-graalce`
 
-用户依然可以使用 SDKMAN! 上的 `21.0.8-graal` 等旧版本的 GraalVM CE 来构建 ShardingSphere 的 GraalVM Native Image 产物。
+用户依然可以使用 SDKMAN! 上的 `21.0.8-graal` 等旧版本的 Oracle GraalVM 来构建 ShardingSphere 的 GraalVM Native Image 产物。
 但这将导致集成部分第三方依赖时，构建 GraalVM Native Image 失败。
 分类讨论，
 
