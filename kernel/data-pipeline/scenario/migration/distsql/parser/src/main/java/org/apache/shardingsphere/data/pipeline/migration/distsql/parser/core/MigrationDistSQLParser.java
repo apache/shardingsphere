@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package java.org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core;
 
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;

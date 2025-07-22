@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package java.org.apache.shardingsphere.data.pipeline.migration.distsql.parser.facade;
+package org.apache.shardingsphere.data.pipeline.migration.distsql.parser.facade;
 
 import org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLLexer;
 import org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core.MigrationDistSQLParser;
