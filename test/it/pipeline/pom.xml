@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-scenario-migration</artifactId>
+            <artifactId>shardingsphere-data-pipeline-scenario-migration-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
