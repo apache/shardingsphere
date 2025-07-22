@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.distsql.statement.updatable;
+package java.org.apache.shardingsphere.data.pipeline.migration.distsql.parser.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * Alter transmission rule statement.
+ * SQL lexer for migration DistSQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterTransmissionRuleStatement extends UpdatablePipelineRALStatement {
+public final class MigrationDistSQLLexer extends MigrationDistSQLStatementLexer implements SQLLexer {
     
-    private final String jobTypeName;
-    
-    private final TransmissionRuleSegment processConfigSegment;
+    public MigrationDistSQLLexer(final CharStream input) {
+        super(input);
+    }
 }
