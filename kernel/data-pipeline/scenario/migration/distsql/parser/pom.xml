@@ -43,7 +43,7 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-
+    
     <profiles>
         <profile>
             <id>jdk8</id>
