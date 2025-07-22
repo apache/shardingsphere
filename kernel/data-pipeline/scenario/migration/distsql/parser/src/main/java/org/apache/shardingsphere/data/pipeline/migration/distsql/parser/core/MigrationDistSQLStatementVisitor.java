@@ -295,4 +295,3 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
         return new DropMigrationCheckStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
 }
- 
