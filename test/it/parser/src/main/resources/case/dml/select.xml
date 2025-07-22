@@ -10999,4 +10999,28 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_sqlserver_percentile_functions">
+        <projections distinct-row="true" start-index="16" stop-index="223">
+            <column-projection name="Name" alias="DepartmentName" start-index="16" stop-index="37" />
+            <expression-projection text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)" start-index="40" stop-index="130" alias="MedianCont">
+                <expr>
+                    <function function-name="PERCENTILE_CONT" start-index="40" stop-index="116" text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="56" stop-index="58" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)" start-index="133" stop-index="223" alias="MedianDisc">
+                <expr>
+                    <function function-name="PERCENTILE_DISC" start-index="133" stop-index="209" text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="149" stop-index="151" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
