@@ -11023,4 +11023,33 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_at_time_zone_operator">
+        <projections start-index="7" stop-index="101">
+            <expression-projection
+                    text="CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126) AT TIME ZONE 'Central European Standard Time'" start-index="7" stop-index="101">
+                <expr>
+                    <binary-operation-expression text="CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126) AT TIME ZONE 'Central European Standard Time'" start-index="7" stop-index="101">
+                        <left>
+                            <function function-name="CONVERT" text="CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126)" start-index="7" stop-index="55">
+                                <parameter>
+                                    <data-type value="DATETIME2" start-index="15" stop-index="26" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="2022-03-27T01:01:00" start-index="29" stop-index="49" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="126" start-index="52" stop-index="54" />
+                                </parameter>
+                            </function>
+                        </left>
+                        <right>
+                            <literal-expression value="Central European Standard Time" start-index="70" stop-index="101"/>
+                        </right>
+                        <operator>AT TIME ZONE</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
