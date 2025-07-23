@@ -41,7 +41,7 @@ createTable
     ;
 
 dropTable
-    : DROP TABLE ifExists? tableList (PURGE)?
+    : DROP TABLE ifExists? tableNameWithDb (PURGE)?
     ;
 
 truncateTable
