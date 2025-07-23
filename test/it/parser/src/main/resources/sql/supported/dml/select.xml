@@ -347,4 +347,5 @@
     <sql-case id="select_at_time_zone_operator" value="SELECT CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126) AT TIME ZONE 'Central European Standard Time';" db-types="SQLServer"/>
     <sql-case id="select_dense_rank_function" value="SELECT DENSE_RANK() OVER (ORDER BY Rate DESC) AS Rank FROM HumanResources.EmployeePayHistory;" db-types="SQLServer"/>
     <sql-case id="select_percent_rank_function" value="SELECT PERCENT_RANK() OVER (ORDER BY Rate DESC) AS PctRank FROM HumanResources.EmployeePayHistory;" db-types="SQLServer"/>
+    <sql-case id="select_cume_dist_function" value="SELECT CUME_DIST () OVER (PARTITION BY Department ORDER BY Rate) AS CumeDist FROM HumanResources.vEmployeeDepartmentHistory;" db-types="SQLServer"/>
 </sql-cases>

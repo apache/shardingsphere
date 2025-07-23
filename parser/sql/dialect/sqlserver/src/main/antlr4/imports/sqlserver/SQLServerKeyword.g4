@@ -2082,3 +2082,7 @@ DENSE_RANK
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
+
+CUME_DIST
+    : C U M E UL_ D I S T
+    ;
