@@ -524,7 +524,7 @@ windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
     | funcName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
     | funcName = NTILE LP_ expr RP_ overClause
-    | funcName = (RANK | DENSE_RANK) LP_ RP_ overClause
+    | funcName = (RANK | DENSE_RANK | PERCENT_RANK) LP_ RP_ overClause
     | lagLeadFunction
     ;
 
