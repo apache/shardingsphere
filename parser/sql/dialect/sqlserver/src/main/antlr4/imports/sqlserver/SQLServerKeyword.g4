@@ -2078,3 +2078,7 @@ PERCENTILE_DISC
 DENSE_RANK
     : D E N S E UL_ R A N K
     ;
+
+PERCENT_RANK
+    : P E R C E N T UL_ R A N K
+    ;

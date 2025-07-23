@@ -11067,4 +11067,19 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_percent_rank_function">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="PERCENT_RANK() OVER (ORDER BY Rate DESC)" alias="PctRank" start-index="7" stop-index="57">
+                <expr>
+                    <function function-name="PERCENT_RANK" text="PERCENT_RANK() OVER (ORDER BY Rate DESC)" start-index="7" stop-index="46" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="EmployeePayHistory" start-index="64" stop-index="96">
+                <owner name="HumanResources" start-index="64" stop-index="77" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
