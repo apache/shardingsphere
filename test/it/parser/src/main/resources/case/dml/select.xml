@@ -11082,4 +11082,19 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_cume_dist_function">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="CUME_DIST () OVER (PARTITION BY Department ORDER BY Rate)" alias="CumeDist" start-index="7" stop-index="75">
+                <expr>
+                    <function function-name="CUME_DIST" text="CUME_DIST () OVER (PARTITION BY Department ORDER BY Rate)" start-index="7" stop-index="63" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="vEmployeeDepartmentHistory" start-index="82" stop-index="122">
+                <owner name="HumanResources" start-index="82" stop-index="95" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
