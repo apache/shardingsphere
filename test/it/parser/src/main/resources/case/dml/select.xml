@@ -9181,7 +9181,11 @@
                                             </function>
                                         </parameter>
                                         <parameter>
-                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396" />
+                                            <function function-name="CHAR" text="CHAR(10)" start-index="389" stop-index="396">
+                                                <parameter>
+                                                    <literal-expression value="10" start-index="394" stop-index="395" />
+                                                </parameter>
+                                            </function>
                                         </parameter>
                                         <parameter>
                                             <literal-expression value=" " start-index="399" stop-index="401" />
@@ -9189,7 +9193,11 @@
                                     </function>
                                 </parameter>
                                 <parameter>
-                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413" />
+                                    <function function-name="CHAR" text="CHAR(13)" start-index="406" stop-index="413">
+                                        <parameter>
+                                            <literal-expression value="13" start-index="411" stop-index="412" />
+                                        </parameter>
+                                    </function>
                                 </parameter>
                                 <parameter>
                                     <literal-expression value=" " start-index="416" stop-index="418" />
@@ -10876,5 +10884,217 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_try_parse_function">
+        <projections start-index="7" stop-index="68">
+            <expression-projection text="TRY_PARSE('Jabberwokkie' AS datetime2 USING 'en-US')" alias="Result" start-index="7" stop-index="68">
+                <expr>
+                    <function start-index="7" stop-index="58" text="TRY_PARSE('Jabberwokkie' AS datetime2 USING 'en-US')" function-name="TRY_PARSE">
+                        <parameter>
+                            <literal-expression value="Jabberwokkie" start-index="17" stop-index="30" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="datetime2" start-index="35" stop-index="43" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="en-US" start-index="51" stop-index="57" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_three_level_naming">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="63">
+            <function-table start-index="14" stop-index="63">
+                <table-function function-name="msdb.managed_backup.fn_available_backups" text="msdb.managed_backup.fn_available_backups ('MyDB')">
+                    <parameter>
+                        <literal-expression value="MyDB" start-index="57" stop-index="62"/>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_datatypename_colon_colon_methodname">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="OrgNode.ToString()" alias="Text_OrgNode" start-index="7" stop-index="40">
+                <expr>
+                    <function start-index="7" stop-index="24" text="OrgNode.ToString()" function-name="OrgNode.ToString" />
+                </expr>
+            </expression-projection>
+            <shorthand-projection start-index="43" stop-index="43" />
+        </projections>
+        <from>
+            <simple-table name="EmployeeDemo" start-index="50" stop-index="76">
+                <owner name="HumanResources" start-index="50" stop-index="63" />
+            </simple-table>
+        </from>
+        <where start-index="78" stop-index="115">
+            <expr>
+                <binary-operation-expression text="OrgNode = hierarchyid::GetRoot()" start-index="84" stop-index="115">
+                    <left>
+                        <column name="OrgNode" start-index="84" stop-index="90" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function start-index="94" stop-index="115" text="hierarchyid::GetRoot()" function-name="hierarchyid::GetRoot" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_string_agg_function">
+        <projections start-index="7" stop-index="70">
+            <expression-projection text="STRING_AGG(CONVERT (NVARCHAR (MAX), FirstName), CHAR(13))" start-index="7" stop-index="70" alias="csv">
+                <expr>
+                    <function function-name="STRING_AGG" text="STRING_AGG(CONVERT (NVARCHAR (MAX), FirstName), CHAR(13))" start-index="7" stop-index="63">
+                        <parameter>
+                            <function function-name="CONVERT" text="CONVERT (NVARCHAR (MAX), FirstName)" start-index="18" stop-index="52">
+                                <parameter>
+                                    <data-type value="NVARCHAR" start-index="27" stop-index="40" />
+                                </parameter>
+                                <parameter>
+                                    <column name="FirstName" start-index="43" stop-index="51" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <function function-name="CHAR" text="CHAR(13)" start-index="55" stop-index="62">
+                                <parameter>
+                                    <literal-expression value="13" start-index="60" stop-index="61" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="73" stop-index="89">
+            <simple-table name="Person" start-index="77" stop-index="89">
+                <owner name="Person" start-index="77" stop-index="82" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_patindex_function">
+        <projections start-index="7" stop-index="54">
+            <expression-projection text="PATINDEX('%ter%', 'interesting data')" alias="position" start-index="7" stop-index="54">
+                <expr>
+                    <function function-name="PATINDEX" start-index="18" stop-index="54" text="PATINDEX('%ter%', 'interesting data')">
+                        <parameter>
+                            <literal-expression value="%ter%" start-index="27" stop-index="33" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="interesting data" start-index="36" stop-index="53" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_sqlserver_percentile_functions">
+        <projections distinct-row="true" start-index="16" stop-index="223">
+            <column-projection name="Name" alias="DepartmentName" start-index="16" stop-index="37" />
+            <expression-projection text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)" start-index="40" stop-index="130" alias="MedianCont">
+                <expr>
+                    <function function-name="PERCENTILE_CONT" start-index="40" stop-index="116" text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="56" stop-index="58" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)" start-index="133" stop-index="223" alias="MedianDisc">
+                <expr>
+                    <function function-name="PERCENTILE_DISC" start-index="133" stop-index="209" text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="149" stop-index="151" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_at_time_zone_operator">
+        <projections start-index="7" stop-index="101">
+            <expression-projection
+                    text="CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126) AT TIME ZONE 'Central European Standard Time'" start-index="7" stop-index="101">
+                <expr>
+                    <binary-operation-expression text="CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126) AT TIME ZONE 'Central European Standard Time'" start-index="7" stop-index="101">
+                        <left>
+                            <function function-name="CONVERT" text="CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126)" start-index="7" stop-index="55">
+                                <parameter>
+                                    <data-type value="DATETIME2" start-index="15" stop-index="26" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="2022-03-27T01:01:00" start-index="29" stop-index="49" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="126" start-index="52" stop-index="54" />
+                                </parameter>
+                            </function>
+                        </left>
+                        <right>
+                            <literal-expression value="Central European Standard Time" start-index="70" stop-index="101"/>
+                        </right>
+                        <operator>AT TIME ZONE</operator>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_dense_rank_function">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="DENSE_RANK() OVER (ORDER BY Rate DESC)" alias="Rank" start-index="7" stop-index="52">
+                <expr>
+                    <function function-name="DENSE_RANK" text="DENSE_RANK() OVER (ORDER BY Rate DESC)" start-index="7" stop-index="44" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="EmployeePayHistory" start-index="59" stop-index="91">
+                <owner name="HumanResources" start-index="59" stop-index="72" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_percent_rank_function">
+        <projections start-index="7" stop-index="57">
+            <expression-projection text="PERCENT_RANK() OVER (ORDER BY Rate DESC)" alias="PctRank" start-index="7" stop-index="57">
+                <expr>
+                    <function function-name="PERCENT_RANK" text="PERCENT_RANK() OVER (ORDER BY Rate DESC)" start-index="7" stop-index="46" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="EmployeePayHistory" start-index="64" stop-index="96">
+                <owner name="HumanResources" start-index="64" stop-index="77" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_cume_dist_function">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="CUME_DIST () OVER (PARTITION BY Department ORDER BY Rate)" alias="CumeDist" start-index="7" stop-index="75">
+                <expr>
+                    <function function-name="CUME_DIST" text="CUME_DIST () OVER (PARTITION BY Department ORDER BY Rate)" start-index="7" stop-index="63" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="vEmployeeDepartmentHistory" start-index="82" stop-index="122">
+                <owner name="HumanResources" start-index="82" stop-index="95" />
+            </simple-table>
+        </from>
     </select>
 </sql-parser-test-cases>

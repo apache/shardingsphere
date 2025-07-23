@@ -249,6 +249,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Piv
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -454,6 +455,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.distinctFrom()) {
             return createBinaryOperationExpression(ctx, ctx.distinctFrom().getText());
+        }
+        if (null != ctx.AT() && null != ctx.TIME() && null != ctx.ZONE()) {
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, "AT TIME ZONE", text);
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
@@ -661,9 +668,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
-        return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType)
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        if (AggregationType.isAggregationType(aggregationType)) {
+            return createAggregationSegment(ctx, aggregationType);
+        }
+        FunctionSegment functionSegment = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), aggregationType, getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                functionSegment.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return functionSegment;
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -866,6 +880,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.parseFunction()) {
             return visit(ctx.parseFunction());
         }
+        if (null != ctx.tryParseFunction()) {
+            return visit(ctx.tryParseFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
@@ -881,12 +898,23 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
+    public ASTNode visitTryParseFunction(final TryParseFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRY_PARSE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.USING() && ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
         if (null != ctx.lagLeadFunction()) {
             return visit(ctx.lagLeadFunction());
         }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        if (null != ctx.NTILE() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+        if (null != ctx.NTILE() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.PERCENTILE_CONT() || null != ctx.PERCENTILE_DISC()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
         }
         return result;
@@ -999,8 +1027,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     @Override

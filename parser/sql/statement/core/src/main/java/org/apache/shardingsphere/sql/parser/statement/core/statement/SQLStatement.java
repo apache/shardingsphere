@@ -39,7 +39,7 @@ public class SQLStatement implements ASTNode {
     
     private final Collection<Integer> uniqueParameterIndexes = new LinkedHashSet<>();
     
-    private final Collection<ParameterMarkerSegment> parameterMarkers = new LinkedList<>();
+    private final Collection<ParameterMarkerSegment> parameterMarkers = new LinkedHashSet<>();
     
     private final Collection<String> variableNames = new CaseInsensitiveSet<>();
     

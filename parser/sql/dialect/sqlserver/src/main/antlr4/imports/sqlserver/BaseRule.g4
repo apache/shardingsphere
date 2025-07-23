@@ -121,7 +121,7 @@ unreservedWord
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
     | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
-    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT | RANK | ROLLUP | PIVOT | UNPIVOT | PARSE
+    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT | RANK | ROLLUP | PIVOT | UNPIVOT | PARSE | TRY_PARSE | HIERARCHYID | PATINDEX | POSITION
     ;
 
 databaseName
@@ -133,7 +133,7 @@ schemaName
     ;
 
 functionName
-    : (owner DOT_)? name
+    : ((databaseName DOT_)? (owner DOT_))? name
     ;
 
 procedureName
@@ -228,6 +228,7 @@ expr
     | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
+    | expr AT TIME ZONE expr
     ;
 
 andOperator
@@ -309,7 +310,7 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | STRING_AGG
     ;
 
 distinct
@@ -394,10 +395,15 @@ conversionFunction
     : castFunction
     | convertFunction
     | parseFunction
+    | tryParseFunction
     ;
 
 parseFunction
     : PARSE LP_ expr AS dataType (USING expr)? RP_
+    ;
+
+tryParseFunction
+    : TRY_PARSE LP_ expr AS dataType (USING expr)? RP_
     ;
 
 castFunction
@@ -462,7 +468,8 @@ regularFunction
     ;
 
 regularFunctionName
-    : (owner DOT_)? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : ((databaseName DOT_)? (owner DOT_))? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    | dataTypeName COLON_ COLON_ identifier
     ;
 
 caseExpression
@@ -515,8 +522,9 @@ convertExpr
 
 windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    | funcName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
     | funcName = NTILE LP_ expr RP_ overClause
-    | funcName = RANK LP_ RP_ overClause
+    | funcName = (RANK | DENSE_RANK | PERCENT_RANK | CUME_DIST) LP_ RP_ overClause
     | lagLeadFunction
     ;
 

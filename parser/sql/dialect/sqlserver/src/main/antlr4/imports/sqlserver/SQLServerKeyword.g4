@@ -2058,3 +2058,31 @@ UNPIVOT
 PARSE
     : P A R S E
     ;
+
+TRY_PARSE
+    : T R Y UL_ P A R S E
+    ;
+
+PATINDEX
+    : P A T I N D E X
+    ;
+
+PERCENTILE_CONT
+    : P E R C E N T I L E UL_ C O N T
+    ;
+
+PERCENTILE_DISC
+    : P E R C E N T I L E UL_ D I S C
+    ;
+
+DENSE_RANK
+    : D E N S E UL_ R A N K
+    ;
+
+PERCENT_RANK
+    : P E R C E N T UL_ R A N K
+    ;
+
+CUME_DIST
+    : C U M E UL_ D I S T
+    ;

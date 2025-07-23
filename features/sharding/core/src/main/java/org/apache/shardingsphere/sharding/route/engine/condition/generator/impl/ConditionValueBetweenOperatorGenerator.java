@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class ConditionValueBetweenOperatorGenerator implements ConditionValueGenerator<BetweenExpression> {
     
     @Override
-    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+    public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final HashColumn column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
         ConditionValue betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), params);
         ConditionValue andConditionValue = new ConditionValue(predicate.getAndExpr(), params);
         Optional<Comparable<?>> betweenValue = betweenConditionValue.getValue();

@@ -124,7 +124,7 @@ jobs:
           "PATH=$env:PATH" >> $env:GITHUB_ENV
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '22.0.2'
+          java-version: '24.0.2'
           distribution: 'graalvm-community'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'

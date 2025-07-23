@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterViewStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CommentStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateViewStatementBinder;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStat
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropViewStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -92,6 +94,9 @@ public final class DDLStatementBindEngine {
         }
         if (statement instanceof TruncateStatement) {
             return new TruncateStatementBinder().bind((TruncateStatement) statement, binderContext);
+        }
+        if (statement instanceof CommentStatement) {
+            return new CommentStatementBinder().bind((CommentStatement) statement, binderContext);
         }
         return statement;
     }

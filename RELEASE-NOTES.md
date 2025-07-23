@@ -48,6 +48,7 @@
 1. SQL Binder: Support outer join expression bind - [#35019](https://github.com/apache/shardingsphere/pull/35019)
 1. SQL Binder: Support explain statement sql bind - [#35439](https://github.com/apache/shardingsphere/pull/35439)
 1. SQL Binder: Support AnalyzeTable statement SQL bind - [#35954](https://github.com/apache/shardingsphere/pull/35954)
+1. SQL Binder: Support Comment statement SQL bind - [#36012](https://github.com/apache/shardingsphere/pull/36012)
 1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
@@ -59,6 +60,10 @@
 1. SQL Parser: Support Hive Loading files into tables statement parse - [#36001](https://github.com/apache/shardingsphere/pull/36001)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
 1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
+1. SQL Parser: Support Hive DROP TABLE statement parse - [#36018](https://github.com/apache/shardingsphere/pull/36018)
+1. SQL Parser: Support Hive USE DATABASE statement parse - [#36024](https://github.com/apache/shardingsphere/pull/36024)
+1. SQL Parser: Support Hive CREATE TABLE statement parse - [#36040](https://github.com/apache/shardingsphere/pull/36040)
+1. SQL Parser: Support Hive TRUNCATE TABLE statement parse - [#36049](https://github.com/apache/shardingsphere/pull/36049)
 
 ### Bug Fixes
 
