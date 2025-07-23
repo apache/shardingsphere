@@ -345,4 +345,5 @@
     <sql-case id="select_patindex_function" value="SELECT position = PATINDEX('%ter%', 'interesting data');" db-types="SQLServer"/>
     <sql-case id="select_with_sqlserver_percentile_functions" value="SELECT DISTINCT Name AS DepartmentName, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name) AS MedianCont, PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY ph.Rate) OVER (PARTITION BY Name) AS MedianDisc;" db-types="SQLServer"/>
     <sql-case id="select_at_time_zone_operator" value="SELECT CONVERT(DATETIME2(0), '2022-03-27T01:01:00', 126) AT TIME ZONE 'Central European Standard Time';" db-types="SQLServer"/>
+    <sql-case id="select_dense_rank_function" value="SELECT DENSE_RANK() OVER (ORDER BY Rate DESC) AS Rank FROM HumanResources.EmployeePayHistory;" db-types="SQLServer"/>
 </sql-cases>

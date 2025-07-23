@@ -11052,4 +11052,19 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_dense_rank_function">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="DENSE_RANK() OVER (ORDER BY Rate DESC)" alias="Rank" start-index="7" stop-index="52">
+                <expr>
+                    <function function-name="DENSE_RANK" text="DENSE_RANK() OVER (ORDER BY Rate DESC)" start-index="7" stop-index="44" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="EmployeePayHistory" start-index="59" stop-index="91">
+                <owner name="HumanResources" start-index="59" stop-index="72" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
