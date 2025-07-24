@@ -170,8 +170,8 @@ class AlterShardingTableRuleExecutorTest {
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule(final String logicTableName) {
-        AutoTableRuleSegment result = new AutoTableRuleSegment(logicTableName, Arrays.asList("ds_0", "ds_1"));
-        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        AutoTableRuleSegment result =
+                new AutoTableRuleSegment(logicTableName, Arrays.asList("ds_0", "ds_1"), new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())), null);
         result.setShardingColumn("order_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
         return result;
