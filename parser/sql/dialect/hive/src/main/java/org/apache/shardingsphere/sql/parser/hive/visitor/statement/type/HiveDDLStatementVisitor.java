@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropData
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
@@ -75,12 +77,35 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         return new AlterDatabaseStatement(getDatabaseType());
     }
     
+    @Override
+    public ASTNode visitAlterTable(final AlterTableContext ctx) {
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.alterTableCommonClause().tableName()));
+        if (null != ctx.COMPACT()) {
+            String compactionType = ctx.string_().getText().replace("'", "");
+            if (!isValidCompactionType(compactionType)) {
+                throw new IllegalArgumentException("Invalid compaction type. Must be 'MAJOR', 'MINOR' or 'REBALANCE'");
+            }
+            if ((null != ctx.clusteredIntoClause() || null != ctx.orderByClause())
+                    && !"REBALANCE".equalsIgnoreCase(compactionType)) {
+                throw new IllegalArgumentException("[CLUSTERED INTO n BUCKETS] and [ORDER BY col_list] clauses can only be used with REBALANCE compaction");
+            }
+        }
+        return result;
+    }
+    
+    private boolean isValidCompactionType(final String compactionType) {
+        return "MAJOR".equalsIgnoreCase(compactionType)
+                || "MINOR".equalsIgnoreCase(compactionType)
+                || "REBALANCE".equalsIgnoreCase(compactionType);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        result.getTables().add((SimpleTableSegment) visit(ctx.tableNameWithDb()));
         return result;
     }
     
