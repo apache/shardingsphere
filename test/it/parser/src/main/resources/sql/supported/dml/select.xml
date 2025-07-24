@@ -349,4 +349,6 @@
     <sql-case id="select_percent_rank_function" value="SELECT PERCENT_RANK() OVER (ORDER BY Rate DESC) AS PctRank FROM HumanResources.EmployeePayHistory;" db-types="SQLServer"/>
     <sql-case id="select_cume_dist_function" value="SELECT CUME_DIST () OVER (PARTITION BY Department ORDER BY Rate) AS CumeDist FROM HumanResources.vEmployeeDepartmentHistory;" db-types="SQLServer"/>
     <sql-case id="select_forceseek_table_hint" value="SELECT * FROM Sales.SalesOrderHeader AS h INNER JOIN Sales.SalesOrderDetail AS d WITH (FORCESEEK) ON h.SalesOrderID = d.SalesOrderID WHERE h.TotalDue > 100;" db-types="SQLServer"/>
+    <sql-case id="select_hash_join_hint" value="SELECT p.Name, pr.ProductReviewID FROM Production.Product AS p LEFT OUTER HASH JOIN Production.ProductReview AS pr ON p.ProductID = pr.ProductID" db-types="SQLServer"/>
+    <sql-case id="select_merge_join_hint" value="SELECT poh.PurchaseOrderID FROM Purchasing.PurchaseOrderHeader AS poh INNER MERGE JOIN Purchasing.PurchaseOrderDetail AS pod ON poh.PurchaseOrderID = pod.PurchaseOrderID;" db-types="SQLServer"/>
 </sql-cases>
