@@ -11097,4 +11097,57 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_forceseek_table_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="171">
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="SalesOrderHeader" alias="h" start-index="14" stop-index="40">
+                        <owner name="Sales" start-index="14" stop-index="18"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="SalesOrderDetail" alias="d" start-index="53" stop-index="79">
+                        <owner name="Sales" start-index="53" stop-index="57"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="101" stop-index="131">
+                        <left>
+                            <column name="SalesOrderID" start-index="101" stop-index="114">
+                                <owner name="h" start-index="101" stop-index="101"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="SalesOrderID" start-index="118" stop-index="131">
+                                <owner name="d" start-index="118" stop-index="118"/>
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <with-table-hint start-index="100" stop-index="115">
+            <table-hint value="FORCESEEK" start-index="106" stop-index="114"/>
+        </with-table-hint>
+        <where start-index="133" stop-index="154">
+            <expr>
+                <binary-operation-expression start-index="139" stop-index="154">
+                    <left>
+                        <column name="TotalDue" start-index="139" stop-index="148">
+                            <owner name="h" start-index="139" stop-index="139"/>
+                        </column>
+                    </left>
+                    <right>
+                        <literal-expression value="100" start-index="152" stop-index="154"/>
+                    </right>
+                    <operator>&gt;</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

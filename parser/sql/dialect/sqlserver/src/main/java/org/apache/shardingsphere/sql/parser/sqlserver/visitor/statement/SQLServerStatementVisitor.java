@@ -250,6 +250,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Piv
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintExtendedContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1342,13 +1343,20 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitWithTableHint(final WithTableHintContext ctx) {
         WithTableHintSegment result = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
         if (null != ctx.tableHintLimited()) {
-            Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
             for (TableHintLimitedContext each : ctx.tableHintLimited()) {
                 tableHintLimitedSegments.add((TableHintLimitedSegment) visit(each));
             }
-            result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         }
+        if (null != ctx.tableHintExtended()) {
+            for (TableHintExtendedContext each : ctx.tableHintExtended()) {
+                TableHintLimitedSegment segment = new TableHintLimitedSegment(each.start.getStartIndex(), each.stop.getStopIndex());
+                segment.setValue(each.getText());
+                tableHintLimitedSegments.add(segment);
+            }
+        }
+        result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         return result;
     }
     
