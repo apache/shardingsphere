@@ -1798,4 +1798,198 @@
     <alter-table sql-case-id="alter_table_drop_edge_constraints">
         <table name="bought" start-index="12" stop-index="17"/>"
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_to">
+        <table name="stu" start-index="12" stop-index="14" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_tblproperties_comment">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_basic">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_with_partition_basic">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_with_basic_properties">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_with_all_options">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serdeproperties_field_delim">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serdeproperties_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_unset_serdeproperties">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_unset_serdeproperties_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_clustered_by_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_clustered_with_sorted_by">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_skewed_by_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_skewed_by_with_directories">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_not_skewed_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_not_stored_as_directories_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_skewed_location_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_primary_key_hive">
+        <table name="employees" start-index="12" stop-index="20" />
+        <add-constraint start-index="28" stop-index="86">
+            <primary-key-column name="emp_id" start-index="64" stop-index="69" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_foreign_key_hive">
+        <table name="orders" start-index="12" stop-index="17" />
+        <add-constraint start-index="25" stop-index="135">
+            <foreign-key-column name="emp_id" start-index="61" stop-index="66" />
+            <referenced-table name="employees" start-index="80" stop-index="90" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_unique_hive">
+        <table name="users" start-index="12" stop-index="16" />
+        <add-constraint start-index="24" stop-index="89">
+            <unique-column name="email" start-index="73" stop-index="78" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_not_null">
+        <table name="products" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_default">
+        <table name="products" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_check">
+        <table name="orders" start-index="12" stop-index="17" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_constraint_hive">
+        <table name="employees" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_fileformat_basic_textfile">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_fileformat_with_partition_orc">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_location_basic">
+        <table name="logs" start-index="12" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_location_with_partition">
+        <table name="logs" start-index="12" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_touch_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_touch_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_basic">
+        <table name="transaction_logs" start-index="12" stop-index="27" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_partition">
+        <table name="transaction_logs" start-index="12" stop-index="27" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_and_wait">
+        <table name="user_actions" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_pool">
+        <table name="order_details" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance">
+        <table name="product_data" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_pool_partition">
+        <table name="order_records" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_tblproperties">
+        <table name="product_data" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_clustered">
+        <table name="customer_logs" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_orderby">
+        <table name="customer_logs" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_clustered_order">
+        <table name="customer_logs" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_combined">
+        <table name="sales_data" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_multi_options">
+        <table name="log_data" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_concatenate_basic">
+        <table name="sales_rcfile" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_partition_concatenate">
+        <table name="sales_orc" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_update_columns_basic">
+        <table name="avro_user_data" start-index="12" stop-index="25" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_partition_update_columns">
+        <table name="parquet_event_log" start-index="12" stop-index="28" />
+    </alter-table>
 </sql-parser-test-cases>
