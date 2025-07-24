@@ -283,22 +283,13 @@
     <sql-case id="alter_table_compact_and_wait" value="ALTER TABLE user_actions COMPACT 'REBALANCE' AND WAIT" db-types="Hive" />
     <sql-case id="alter_table_compact_with_pool" value="ALTER TABLE order_details COMPACT 'MAJOR' POOL 'high_priority_pool'" db-types="Hive" />
     <sql-case id="alter_table_compact_rebalance" value="ALTER TABLE product_data COMPACT 'REBALANCE' CLUSTERED INTO 16 BUCKETS" db-types="Hive" />
-    <!-- 带POOL：指定压缩池的分区级MINOR压缩（Hive 4.0.0+） -->
     <sql-case id="alter_table_compact_with_pool_partition" value="ALTER TABLE order_records PARTITION (region='asia') COMPACT 'MINOR' POOL 'high_priority_pool'" db-types="Hive" />
-    <!-- 带TBLPROPERTIES：修改压缩作业属性的表级MAJOR压缩（Hive 1.3.0+） -->
     <sql-case id="alter_table_compact_with_tblproperties" value="ALTER TABLE product_data COMPACT 'MAJOR' WITH OVERWRITE TBLPROPERTIES ('mapreduce.job.queuename'='compaction_queue')" db-types="Hive" />
-
-    <!-- REBALANCE专用：带分桶和排序的表级REBALANCE压缩（Hive 4.0.0+） -->
     <sql-case id="alter_table_compact_rebalance_clustered" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' CLUSTERED INTO 10 BUCKETS" db-types="Hive" />
     <sql-case id="alter_table_compact_rebalance_orderby" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' ORDER BY user_id" db-types="Hive" />
     <sql-case id="alter_table_compact_rebalance_clustered_order" value="ALTER TABLE customer_logs COMPACT 'REBALANCE' CLUSTERED INTO 10 BUCKETS ORDER BY user_id" db-types="Hive" />
-
-    <!-- 组合选项：分区级REBALANCE压缩+分桶+等待（Hive 4.0.0+） -->
     <sql-case id="alter_table_compact_rebalance_combined" value="ALTER TABLE sales_data PARTITION (month='2025-07') COMPACT 'REBALANCE' AND WAIT CLUSTERED INTO 5 BUCKETS ORDER BY amount" db-types="Hive" />
-
-    <!-- 带POOL和TBLPROPERTIES：多选项组合的分区级MAJOR压缩+等待（Hive 4.0.0+） -->
     <sql-case id="alter_table_compact_multi_options" value="ALTER TABLE log_data PARTITION (service='payment') COMPACT 'MAJOR' AND WAIT POOL 'medium_pool' WITH OVERWRITE TBLPROPERTIES ('hive.compaction.major.threshold'='10')" db-types="Hive" />
-
     <sql-case id="alter_table_concatenate_basic" value="ALTER TABLE sales_rcfile CONCATENATE" db-types="Hive" />
     <sql-case id="alter_table_partition_concatenate" value="ALTER TABLE sales_orc PARTITION (region='asia', dt='2025-07-23') CONCATENATE" db-types="Hive" />
     <sql-case id="alter_table_update_columns_basic" value="ALTER TABLE avro_user_data UPDATE COLUMNS" db-types="Hive" />

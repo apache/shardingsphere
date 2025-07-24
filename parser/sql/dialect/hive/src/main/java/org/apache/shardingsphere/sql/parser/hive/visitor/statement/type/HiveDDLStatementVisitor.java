@@ -81,19 +81,16 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.alterTableCommonClause().tableName()));
-        
         if (null != ctx.COMPACT()) {
             String compactionType = ctx.string_().getText().replace("'", "");
             if (!isValidCompactionType(compactionType)) {
                 throw new IllegalArgumentException("Invalid compaction type. Must be 'MAJOR', 'MINOR' or 'REBALANCE'");
             }
-            
             if ((null != ctx.clusteredIntoClause() || null != ctx.orderByClause())
                     && !"REBALANCE".equalsIgnoreCase(compactionType)) {
                 throw new IllegalArgumentException("[CLUSTERED INTO n BUCKETS] and [ORDER BY col_list] clauses can only be used with REBALANCE compaction");
             }
         }
-        
         return result;
     }
     
