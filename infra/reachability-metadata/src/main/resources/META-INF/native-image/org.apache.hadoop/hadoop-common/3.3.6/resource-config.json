@@ -3,6 +3,9 @@
   "includes":[{
     "condition":{"typeReachable":"org.apache.hadoop.conf.Configuration"},
     "pattern":"\\Qhadoop-site.xml\\E"
+  }, {
+    "condition":{"typeReachable":"org.apache.hadoop.conf.Configuration"},
+    "pattern":"\\Qcore-default.xml\\E"
   }]},
   "bundles":[]
 }

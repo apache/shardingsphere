@@ -2,17 +2,8 @@
 {
   "condition":{"typeReachable":"ch.qos.logback.core.joran.action.NestedComplexPropertyIA"},
   "name":"ch.qos.logback.classic.encoder.PatternLayoutEncoder",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.util.beans.BeanDescriptionFactory"},
-  "name":"ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+  "methods":[{"name":"<init>","parameterTypes":[] }],
   "queryAllPublicMethods":true
-},
-{
-  "condition":{"typeReachable":"ch.qos.logback.core.pattern.parser.Compiler"},
-  "name":"ch.qos.logback.classic.pattern.DateConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "condition":{"typeReachable":"ch.qos.logback.core.pattern.parser.Compiler"},
@@ -40,21 +31,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.action.AppenderAction"},
-  "name":"ch.qos.logback.core.ConsoleAppender",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.util.beans.BeanDescriptionFactory"},
-  "name":"ch.qos.logback.core.ConsoleAppender",
-  "queryAllPublicMethods":true
-},
-{
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.util.PropertySetter"},
-  "name":"ch.qos.logback.core.OutputStreamAppender",
-  "methods":[{"name":"setEncoder","parameterTypes":["ch.qos.logback.core.encoder.Encoder"] }]
-},
-{
   "condition":{"typeReachable":"ch.qos.logback.core.joran.action.NestedComplexPropertyIA"},
   "name":"ch.qos.logback.core.encoder.Encoder",
   "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
@@ -65,12 +41,7 @@
   "methods":[{"name":"setParent","parameterTypes":["ch.qos.logback.core.spi.ContextAware"] }]
 },
 {
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.util.PropertySetter"},
-  "name":"ch.qos.logback.core.pattern.PatternLayoutEncoderBase",
-  "methods":[{"name":"setPattern","parameterTypes":["java.lang.String"] }]
-},
-{
-  "condition":{"typeReachable":"ch.qos.logback.core.joran.action.NestedComplexPropertyIA"},
+  "condition":{"typeReachable":"ch.qos.logback.core.joran.util.StringToObjectConverter"},
   "name":"ch.qos.logback.core.spi.ContextAware",
   "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
 },

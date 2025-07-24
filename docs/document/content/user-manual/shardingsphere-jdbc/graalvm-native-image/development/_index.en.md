@@ -275,3 +275,41 @@ the unit test of `org.apache.shardingsphere.test.natived.jdbc.modes.cluster.Etcd
 
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` has been disabled
 because executing this unit test in Github Actions Runner will cause JDBC connection leaks in other unit tests.
+
+### `CodeCachePoolMXBean` limitation
+
+Currently executing `./mvnw -PnativeTestInShardingSphere -e -T 1C clean verify` will involve warning logs for `com.oracle.svm.core.code.CodeCachePoolMXBean`.
+
+```shell
+org.graalvm.nativeimage.MissingReflectionRegistrationError: The program tried to reflectively access
+
+   com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool.getConstructors()
+
+without it being registered for runtime reflection. Add com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool.getConstructors() to the reflection metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection for help.
+  java.base@24.0.2/java.lang.Class.getConstructors(DynamicHub.java:1128)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@24.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+org.graalvm.nativeimage.MissingReflectionRegistrationError: The program tried to reflectively access
+
+   com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool.getConstructors()
+
+without it being registered for runtime reflection. Add com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool.getConstructors() to the reflection metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection for help.
+  java.base@24.0.2/java.lang.Class.getConstructors(DynamicHub.java:1128)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@24.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+```
+
+The relevant warning cannot be avoided on `GraalVM CE For JDK 24.0.2`.
+Because the no-argument constructor of `com.oracle.svm.core.code.CodeCachePoolMXBean` is marked as an element that is only visible during Native Image generation and cannot be used at Runtime, 
+regardless of the actual Platform,
+through the Java class `org.graalvm.nativeimage.Platform.HOSTED_ONLY`.

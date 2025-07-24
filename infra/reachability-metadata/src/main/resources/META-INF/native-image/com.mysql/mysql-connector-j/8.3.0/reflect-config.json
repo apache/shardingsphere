@@ -1,10 +1,5 @@
 [
 {
-  "condition":{"typeReachable":"com.mysql.cj.jdbc.ConnectionImpl"},
-  "name":"com.mysql.cj.PerConnectionLRUFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"com.mysql.cj.exceptions.ExceptionFactory"},
   "name":"com.mysql.cj.exceptions.CJException",
   "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]

@@ -10,6 +10,9 @@
     "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherFactory"},
     "pattern":"\\QMETA-INF/services/org.junit.platform.launcher.PostDiscoveryFilter\\E"
   }, {
+    "condition":{"typeReachable":"org.junit.platform.commons.util.ClasspathScannerLoader"},
+    "pattern":"\\QMETA-INF/services/org.junit.platform.commons.support.scanning.ClasspathScanner\\E"
+  }, {
     "condition":{"typeReachable":"org.junit.platform.launcher.core.LauncherConfigurationParameters"},
     "pattern":"\\Qjunit-platform.properties\\E"
   }]},
