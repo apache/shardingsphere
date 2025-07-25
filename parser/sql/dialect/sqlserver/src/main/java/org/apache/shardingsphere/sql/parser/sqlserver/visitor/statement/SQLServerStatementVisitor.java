@@ -251,6 +251,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Cur
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintExtendedContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LinkedServerNameContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -367,7 +368,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             OwnerSegment ownerSegment = new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier()));
             if (null != ctx.databaseName()) {
                 DatabaseNameContext databaseName = ctx.databaseName();
-                ownerSegment.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
+                OwnerSegment databaseSegment = new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier()));
+                ownerSegment.setOwner(databaseSegment);
+                setLinkedServerForDatabase(databaseSegment, ctx);
             }
             result.setOwner(ownerSegment);
         } else if (null != ctx.databaseName()) {
@@ -375,6 +378,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
         }
         return result;
+    }
+    
+    private void setLinkedServerForDatabase(final OwnerSegment databaseSegment, final TableNameContext ctx) {
+        if (null != ctx.linkedServerName()) {
+            LinkedServerNameContext linkedServerName = ctx.linkedServerName();
+            OwnerSegment linkedServerSegment =
+                    new OwnerSegment(linkedServerName.getStart().getStartIndex(), linkedServerName.getStop().getStopIndex(), (IdentifierValue) visit(linkedServerName.identifier()));
+            databaseSegment.setOwner(linkedServerSegment);
+        }
     }
     
     @Override
