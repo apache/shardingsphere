@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.migration.distsql.statement.updatable;
 
 import lombok.Getter;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
 
 import java.util.Collection;
 
@@ -25,7 +26,7 @@ import java.util.Collection;
  * Unregister migration source storage unit statement.
  */
 @Getter
-public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
+public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatablePipelineRALStatement {
     
     private final Collection<String> names;
     

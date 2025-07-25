@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.queryable;
 
+import org.apache.shardingsphere.data.pipeline.distsql.statement.queryable.QueryablePipelineRALStatement;
+
 /**
  * Show streaming list statement.
  */
-public final class ShowStreamingListStatement extends QueryableCDCRALStatement {
+public final class ShowStreamingListStatement extends QueryablePipelineRALStatement {
 }

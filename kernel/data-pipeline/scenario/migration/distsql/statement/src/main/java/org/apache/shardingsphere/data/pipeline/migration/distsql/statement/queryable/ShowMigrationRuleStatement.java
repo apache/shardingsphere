@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.migration.distsql.statement.queryable;
 
+import org.apache.shardingsphere.data.pipeline.distsql.statement.queryable.QueryablePipelineRALStatement;
+
 /**
  * Show migration rule statement.
  */
-public final class ShowMigrationRuleStatement extends QueryableMigrationRALStatement {
+public final class ShowMigrationRuleStatement extends QueryablePipelineRALStatement {
 }

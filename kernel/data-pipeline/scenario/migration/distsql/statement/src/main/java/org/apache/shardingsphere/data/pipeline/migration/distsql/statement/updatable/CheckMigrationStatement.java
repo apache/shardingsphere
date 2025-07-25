@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.statement.upda
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CheckMigrationStatement extends UpdatableMigrationRALStatement {
+public final class CheckMigrationStatement extends UpdatablePipelineRALStatement {
     
     private final String jobId;
     
