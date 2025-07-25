@@ -382,34 +382,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer"
-      },
-      "type": "org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "org.antlr.v4.runtime.CharStream"
-          ]
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.hive.parser.HiveParser"
-      },
-      "type": "org.apache.shardingsphere.sql.parser.hive.parser.HiveParser",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "org.antlr.v4.runtime.TokenStream"
-          ]
-        }
-      ]
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"
       },
       "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",

@@ -129,7 +129,7 @@ services:
       ports:
          - "8091:8091"
    mysql:
-      image: mysql:9.1.0
+      image: mysql:9.4.0
       environment:
          MYSQL_ROOT_PASSWORD: example
       volumes:
@@ -228,7 +228,7 @@ add the Maven dependency of MySQL JDBC Driver.
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
-    <version>9.1.0</version>
+    <version>9.4.0</version>
 </dependency>
 ```
 
