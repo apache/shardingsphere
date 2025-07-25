@@ -19,13 +19,14 @@ package org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
 
 /**
  * Drop streaming statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropStreamingStatement extends UpdatableCDCRALStatement {
+public final class DropStreamingStatement extends UpdatablePipelineRALStatement {
     
     private final String jobId;
 }

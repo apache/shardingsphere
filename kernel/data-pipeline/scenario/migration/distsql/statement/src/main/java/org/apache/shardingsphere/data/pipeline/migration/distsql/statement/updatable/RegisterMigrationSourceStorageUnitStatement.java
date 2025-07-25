@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.statement.upda
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 
 import java.util.Collection;
@@ -28,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
+public final class RegisterMigrationSourceStorageUnitStatement extends UpdatablePipelineRALStatement {
     
     private final Collection<DataSourceSegment> dataSources;
 }
