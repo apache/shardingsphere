@@ -11227,4 +11227,16 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_aggregation_function_over_clause">
+        <projections start-index="7" stop-index="59">
+            <column-projection name="Name" start-index="7" stop-index="10" />
+            <aggregation-projection type="MIN" expression="MIN(Rate) OVER (PARTITION BY edh.DepartmentID)" start-index="14" stop-index="59" />
+        </projections>
+        <from>
+            <simple-table name="EmployeePayHistory" start-index="66" stop-index="98">
+                <owner name="HumanResources" start-index="66" stop-index="79" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
