@@ -11097,4 +11097,146 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_forceseek_table_hint">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="171">
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="SalesOrderHeader" alias="h" start-index="14" stop-index="40">
+                        <owner name="Sales" start-index="14" stop-index="18"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="SalesOrderDetail" alias="d" start-index="53" stop-index="79">
+                        <owner name="Sales" start-index="53" stop-index="57"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="101" stop-index="131">
+                        <left>
+                            <column name="SalesOrderID" start-index="101" stop-index="114">
+                                <owner name="h" start-index="101" stop-index="101"/>
+                            </column>
+                        </left>
+                        <right>
+                            <column name="SalesOrderID" start-index="118" stop-index="131">
+                                <owner name="d" start-index="118" stop-index="118"/>
+                            </column>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <with-table-hint start-index="100" stop-index="115">
+            <table-hint value="FORCESEEK" start-index="106" stop-index="114"/>
+        </with-table-hint>
+        <where start-index="133" stop-index="154">
+            <expr>
+                <binary-operation-expression start-index="139" stop-index="154">
+                    <left>
+                        <column name="TotalDue" start-index="139" stop-index="148">
+                            <owner name="h" start-index="139" stop-index="139"/>
+                        </column>
+                    </left>
+                    <right>
+                        <literal-expression value="100" start-index="152" stop-index="154"/>
+                    </right>
+                    <operator>&gt;</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_hash_join_hint">
+        <projections start-index="7" stop-index="32">
+            <column-projection name="Name" start-index="7" stop-index="12">
+                <owner name="p" start-index="7" stop-index="7"/>
+            </column-projection>
+            <column-projection name="ProductReviewID" start-index="15" stop-index="32">
+                <owner name="pr" start-index="15" stop-index="16"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="LEFT" join-hint="HASH">
+                <left>
+                    <simple-table name="Product" alias="p" start-index="39" stop-index="61">
+                        <owner name="Production" start-index="39" stop-index="48"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="ProductReview" alias="pr" start-index="84" stop-index="113">
+                        <owner name="Production" start-index="84" stop-index="93"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="118" stop-index="143">
+                        <left>
+                            <column name="ProductID" start-index="118" stop-index="128">
+                                <owner name="p" start-index="118" stop-index="118"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="ProductID" start-index="132" stop-index="143">
+                                <owner name="pr" start-index="132" stop-index="133"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_merge_join_hint">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="PurchaseOrderID" start-index="7" stop-index="25">
+                <owner name="poh" start-index="7" stop-index="9"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER" join-hint="MERGE">
+                <left>
+                    <simple-table name="PurchaseOrderHeader" alias="poh" start-index="32" stop-index="68">
+                        <owner name="Purchasing" start-index="32" stop-index="41"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="PurchaseOrderDetail" alias="pod" start-index="87" stop-index="123">
+                        <owner name="Purchasing" start-index="87" stop-index="96"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="128" stop-index="168">
+                        <left>
+                            <column name="PurchaseOrderID" start-index="128" stop-index="146">
+                                <owner name="poh" start-index="128" stop-index="130"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="PurchaseOrderID" start-index="150" stop-index="168">
+                                <owner name="pod" start-index="150" stop-index="152"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_aggregation_function_over_clause">
+        <projections start-index="7" stop-index="59">
+            <column-projection name="Name" start-index="7" stop-index="10" />
+            <aggregation-projection type="MIN" expression="MIN(Rate) OVER (PARTITION BY edh.DepartmentID)" start-index="14" stop-index="59" />
+        </projections>
+        <from>
+            <simple-table name="EmployeePayHistory" start-index="66" stop-index="98">
+                <owner name="HumanResources" start-index="66" stop-index="79" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
