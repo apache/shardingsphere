@@ -306,7 +306,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
     ;
 
 aggregationFunctionName
