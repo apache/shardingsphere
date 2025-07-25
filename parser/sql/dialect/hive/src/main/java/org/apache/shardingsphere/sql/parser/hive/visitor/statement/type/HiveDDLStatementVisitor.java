@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTabl
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MsckStatementContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -98,6 +99,13 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         return "MAJOR".equalsIgnoreCase(compactionType)
                 || "MINOR".equalsIgnoreCase(compactionType)
                 || "REBALANCE".equalsIgnoreCase(compactionType);
+    }
+    
+    @Override
+    public ASTNode visitMsckStatement(final MsckStatementContext ctx) {
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
     }
     
     @SuppressWarnings("unchecked")
