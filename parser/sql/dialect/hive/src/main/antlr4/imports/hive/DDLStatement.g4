@@ -68,7 +68,7 @@ alterTable
     | alterTableCommonClause partitionSpec? CONCATENATE
     | alterTableCommonClause partitionSpec? UPDATE COLUMNS
     | alterTableCommonClause ADD ifNotExists? partitionSpec storageLocation? (COMMA_ partitionSpec storageLocation?)*
-    | alterTableCommonClause DROP ifExists? partitionSpec (COMMA_ partitionSpec)* (IGNORE PROTECTION)? (PURGE)?
+    | alterTableCommonClause DROP ifExists? partitionSpec (COMMA_ partitionSpec)* (IGNORE PROTECTION)? PURGE?
     | alterTableCommonClause partitionSpec RENAME TO partitionSpec
     | alterTableCommonClause EXCHANGE partitionSpec WITH TABLE tableName
     | alterTableCommonClause ARCHIVE partitionSpec
@@ -360,7 +360,7 @@ tblpropertiesClause
     ;
 
 msckStatement
-    : MSCK REPAIR? TABLE tableName (msckAction)?
+    : MSCK REPAIR? TABLE tableName msckAction?
     ;
 
 msckAction
