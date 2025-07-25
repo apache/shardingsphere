@@ -307,5 +307,45 @@
   "allDeclaredMethods": true,
   "allPublicMethods": true,
   "allDeclaredFields": true
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.ExpandoMetaClassBeanInfo"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.MetaClassImplBeanInfo"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.MetaClassImplCustomizer"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.ExpandoMetaClassCustomizer"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.BindingBeanInfo"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.GroovyObjectSupportBeanInfo"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.GroovyObjectSupportCustomizer"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.BindingCustomizer"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.GroovyShellBeanInfo"
+},
+{
+  "condition":{"typeReachable":"groovy.lang.MetaClassImpl"},
+  "name":"groovy.lang.GroovyShellCustomizer"
 }
 ]
