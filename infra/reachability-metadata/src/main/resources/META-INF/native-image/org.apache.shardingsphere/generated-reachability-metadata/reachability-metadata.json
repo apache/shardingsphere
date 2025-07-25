@@ -2261,18 +2261,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
-      },
-      "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry"
-      },
-      "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator"
       },
       "type": "org.apache.shardingsphere.driver.ShardingSphereDriver"
@@ -10213,6 +10201,34 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
+      "type": "org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.antlr.v4.runtime.CharStream"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.hive.parser.HiveParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.antlr.v4.runtime.TokenStream"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
       "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade"
     },
     {
@@ -10248,6 +10264,20 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDDLStatementVisitor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+          ]
         }
       ]
     },

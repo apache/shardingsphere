@@ -44,7 +44,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,6 +73,8 @@ class ZookeeperServiceDiscoveryTest {
     
     private String jdbcUrlPrefix;
     
+    private TestShardingService testShardingService;
+    
     @BeforeEach
     void beforeEach() {
         assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
@@ -98,7 +99,6 @@ class ZookeeperServiceDiscoveryTest {
      */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
-        TestShardingService testShardingService;
         int randomPortFirst = InstanceSpec.getRandomPort();
         try (
                 GenericContainer<?> hs2Container = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
@@ -114,6 +114,7 @@ class ZookeeperServiceDiscoveryTest {
             jdbcUrlPrefix = "jdbc:hive2://" + zookeeperContainer.getHost() + ":" + zookeeperContainer.getMappedPort(2181) + "/";
             logicDataSource = createDataSource(hs2Container.getMappedPort(randomPortFirst));
             testShardingService = new TestShardingService(logicDataSource);
+            initEnvironment();
             testShardingService.processSuccessInHive();
         }
         int randomPortSecond = InstanceSpec.getRandomPort();
@@ -130,12 +131,14 @@ class ZookeeperServiceDiscoveryTest {
             hs2Container.start();
             extracted(hs2Container.getMappedPort(randomPortSecond));
             testShardingService.processSuccessInHive();
+            testShardingService.cleanEnvironment();
         }
     }
     
-    private Connection openConnection() throws SQLException {
-        Properties props = new Properties();
-        return DriverManager.getConnection(jdbcUrlPrefix + jdbcUrlSuffix, props);
+    private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().truncateTable();
+        testShardingService.getOrderItemRepository().truncateTable();
+        testShardingService.getAddressRepository().truncateTable();
     }
     
     private DataSource createDataSource(final Integer hiveServer2Port) throws SQLException {
@@ -162,11 +165,11 @@ class ZookeeperServiceDiscoveryTest {
             }
         });
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection().close();
+            DriverManager.getConnection(jdbcUrlPrefix + jdbcUrlSuffix).close();
             return true;
         });
         try (
-                Connection connection = openConnection();
+                Connection connection = DriverManager.getConnection(jdbcUrlPrefix + jdbcUrlSuffix);
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE demo_ds_0");
             statement.execute("CREATE DATABASE demo_ds_1");
@@ -176,8 +179,7 @@ class ZookeeperServiceDiscoveryTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table`,
-     *  `truncate table` and `drop table` statements yet,
+     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table` statements yet,
      *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
      * Hive does not support `AUTO_INCREMENT`,
      * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
@@ -210,9 +212,6 @@ class ZookeeperServiceDiscoveryTest {
                     + "    address_name string NOT NULL,\n"
                     + "    PRIMARY KEY (address_id) disable novalidate\n"
                     + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("TRUNCATE TABLE t_order");
-            statement.execute("TRUNCATE TABLE t_order_item");
-            statement.execute("TRUNCATE TABLE t_address");
         } catch (final SQLException exception) {
             throw new RuntimeException(exception);
         }

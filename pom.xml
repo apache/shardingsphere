@@ -146,11 +146,11 @@
         <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
-        <junit.version>5.11.2</junit.version>
+        <junit.version>5.13.4</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
-        <awaitility.version>4.2.2</awaitility.version>
-        <testcontainers.version>1.21.0</testcontainers.version>
+        <awaitility.version>4.3.0</awaitility.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.2</graal-sdk.version>

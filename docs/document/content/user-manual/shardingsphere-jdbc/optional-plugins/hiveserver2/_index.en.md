@@ -150,8 +150,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 ### Create ShardingSphere data source in business projects
@@ -213,9 +211,11 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE user_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
         }
     }
 }
@@ -432,7 +432,7 @@ ShardingSphere is only integrated tested for HiveServer2 `4.0.1`.
 
 ### Uber JAR Limitation of HiveServer2 JDBC Driver
 
-Affected by https://issues.apache.org/jira/browse/HIVE-28445,
+Affected by https://issues.apache.org/jira/browse/HIVE-28445 ,
 users should not use `org.apache.hive:hive-jdbc:4.0.1` with `classifier` as `standalone` to avoid dependency conflicts.
 
 ### Embedded HiveServer2 Limitation
@@ -440,7 +440,7 @@ users should not use `org.apache.hive:hive-jdbc:4.0.1` with `classifier` as `sta
 Embedded HiveServer2 is no longer considered user-friendly by the Hive community, 
 and users should not try to start embedded HiveServer2 through ShardingSphere's configuration file.
 Users should always start HiveServer2 through HiveServer2's Docker Image `apache/hive:4.0.1`.
-Reference https://issues.apache.org/jira/browse/HIVE-28418.
+Reference https://issues.apache.org/jira/browse/HIVE-28418 .
 
 ### Hadoop Limitations
 
@@ -475,9 +475,37 @@ so it is reasonable to exclude all additional dependencies of `org.apache.hadoop
 
 HiveServer2 does not guarantee that every `insert` related DML SQL can be executed successfully, although no exception may be thrown.
 
-ShardingSphere JDBC DataSource does not yet support executing HiveServer2's `set`, `create table`, `truncate table`, 
-and `drop table` statements.
-Users should consider submitting a PR containing unit tests for ShardingSphere.
+ShardingSphere JDBC DataSource does not yet support executing the `set` statement of HiveServer2.
+
+ShardingSphere JDBC DataSource currently supports creating normal tables by executing the `create table` statement, 
+but does not support creating Iceberg tables by executing the `create table` statement.
+This means that ShardingSphere JDBC DataSource can execute statements similar to the following,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+create table IF NOT EXISTS t_order (
+    order_id   BIGINT NOT NULL,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     VARCHAR(50),
+    PRIMARY KEY (order_id) disable novalidate
+) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
+```
+
+But ShardingSphere JDBC DataSource cannot execute statements like the following,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE TABLE IF NOT EXISTS t_order (
+    order_id   BIGINT NOT NULL,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     string,
+    PRIMARY KEY (order_id) disable novalidate
+) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
+```
 
 #### Use `initFile` parameter to partially bypass SQL restrictions
 

@@ -33,8 +33,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
   nativetest:
     if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
     name: GraalVM - GraalVM CE for JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
@@ -74,4 +78,4 @@ jobs:
         run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
       - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
         if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=70.0" clean verify
+        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify
