@@ -132,6 +132,10 @@ schemaName
     : identifier
     ;
 
+linkedServerName
+    : identifier
+    ;
+
 functionName
     : ((databaseName DOT_)? (owner DOT_))? name
     ;
@@ -154,6 +158,7 @@ sequenceName
 
 tableName
     : ((databaseName DOT_)? (owner? DOT_))? name
+    | ((linkedServerName DOT_ databaseName DOT_)? (owner DOT_))? name
     ;
 
 queueName
