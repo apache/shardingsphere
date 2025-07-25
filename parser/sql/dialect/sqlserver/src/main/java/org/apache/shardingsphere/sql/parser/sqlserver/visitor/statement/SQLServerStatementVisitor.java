@@ -1881,6 +1881,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.joinSpecification()) {
             visitJoinSpecification(ctx.joinSpecification(), result);
         }
+        if (null != ctx.joinHint()) {
+            result.setJoinHint(ctx.joinHint().getChild(0).getText());
+        }
         return result;
     }
     

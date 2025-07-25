@@ -204,9 +204,13 @@ pivotValue
     ;
 
 joinedTable
-    : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
-    | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    : NATURAL? ((INNER | CROSS)? joinHint? JOIN) tableFactor joinSpecification?
+    | NATURAL? (LEFT | RIGHT | FULL) OUTER? joinHint? JOIN tableFactor joinSpecification?
     | (CROSS | OUTER) APPLY tableFactor joinSpecification?
+    ;
+
+joinHint
+    : LOOP | HASH | MERGE | REMOTE | REDUCE | REPLICATE | REDISTRIBUTE (LP_ NUMBER_ RP_)?
     ;
 
 joinSpecification

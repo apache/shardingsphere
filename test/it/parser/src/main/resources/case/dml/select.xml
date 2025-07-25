@@ -11150,4 +11150,81 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_hash_join_hint">
+        <projections start-index="7" stop-index="32">
+            <column-projection name="Name" start-index="7" stop-index="12">
+                <owner name="p" start-index="7" stop-index="7"/>
+            </column-projection>
+            <column-projection name="ProductReviewID" start-index="15" stop-index="32">
+                <owner name="pr" start-index="15" stop-index="16"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="LEFT" join-hint="HASH">
+                <left>
+                    <simple-table name="Product" alias="p" start-index="39" stop-index="61">
+                        <owner name="Production" start-index="39" stop-index="48"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="ProductReview" alias="pr" start-index="84" stop-index="113">
+                        <owner name="Production" start-index="84" stop-index="93"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="118" stop-index="143">
+                        <left>
+                            <column name="ProductID" start-index="118" stop-index="128">
+                                <owner name="p" start-index="118" stop-index="118"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="ProductID" start-index="132" stop-index="143">
+                                <owner name="pr" start-index="132" stop-index="133"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_merge_join_hint">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="PurchaseOrderID" start-index="7" stop-index="25">
+                <owner name="poh" start-index="7" stop-index="9"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER" join-hint="MERGE">
+                <left>
+                    <simple-table name="PurchaseOrderHeader" alias="poh" start-index="32" stop-index="68">
+                        <owner name="Purchasing" start-index="32" stop-index="41"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="PurchaseOrderDetail" alias="pod" start-index="87" stop-index="123">
+                        <owner name="Purchasing" start-index="87" stop-index="96"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="128" stop-index="168">
+                        <left>
+                            <column name="PurchaseOrderID" start-index="128" stop-index="146">
+                                <owner name="poh" start-index="128" stop-index="130"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="PurchaseOrderID" start-index="150" stop-index="168">
+                                <owner name="pod" start-index="150" stop-index="152"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
