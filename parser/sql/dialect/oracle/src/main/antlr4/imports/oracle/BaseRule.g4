@@ -21,6 +21,7 @@ import Symbol, Keyword, OracleKeyword, Literals;
 
 parameterMarker
     : QUESTION_
+    | COLON_ (identifier | INTEGER_)
     ;
 
 literals
@@ -569,7 +570,7 @@ jsonOnNullClause
 jsonReturnClause
     : RETURNING VARCHAR2 (LP_ INTEGER_ ( BYTE | CHAR)? RP_)?
     ;
-    
+
 jsonObjectKeyValue
     : (KEY? expr VALUE expr) (FORMAT JSON)?
     ;

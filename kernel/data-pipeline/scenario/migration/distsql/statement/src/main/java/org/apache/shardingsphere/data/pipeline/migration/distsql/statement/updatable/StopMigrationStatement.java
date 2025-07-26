@@ -19,13 +19,14 @@ package org.apache.shardingsphere.data.pipeline.migration.distsql.statement.upda
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
 
 /**
  * Stop migration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StopMigrationStatement extends UpdatableMigrationRALStatement {
+public final class StopMigrationStatement extends UpdatablePipelineRALStatement {
     
     private final String jobId;
 }

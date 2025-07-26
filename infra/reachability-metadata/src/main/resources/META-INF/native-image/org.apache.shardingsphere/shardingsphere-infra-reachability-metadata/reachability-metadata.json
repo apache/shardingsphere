@@ -298,27 +298,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService"
-      },
-      "type": "org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration",
-      "allDeclaredFields": true,
-      "methods": [
-        {
-          "name": "getDefaultType",
-          "parameterTypes": []
-        },
-        {
-          "name": "getProps",
-          "parameterTypes": []
-        },
-        {
-          "name": "getProviderType",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration"
       },
       "type": "org.apache.shardingsphere.authority.yaml.config.YamlUserConfiguration",
@@ -341,14 +320,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration"
-      },
-      "type": "org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration",
-      "allPublicMethods": true,
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics"
       },
       "type": "org.apache.shardingsphere.infra.yaml.data.pojo.YamlRowStatistics",
@@ -360,6 +331,54 @@
       },
       "type": "org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration",
       "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfigurationBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfigurationCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfigurationBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration"
+      },
+      "type": "org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfigurationCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTableCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn"
+      },
+      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumnCustomizer"
     },
     {
       "condition": {
@@ -444,27 +463,6 @@
       },
       "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
       "allPublicConstructors": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.function.mysql.MySQLFunctionRegister"
-      },
-      "type": "org.apache.shardingsphere.sqlfederation.compiler.function.mysql.impl.MySQLBinFunction",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.function.postgresql.PostgreSQLFunctionRegister"
-      },
-      "type": "org.apache.shardingsphere.sqlfederation.compiler.function.postgresql.impl.PostgreSQLSystemFunction",
-      "allPublicMethods": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sqlfederation.compiler.function.opengauss.OpenGaussFunctionRegister"
-      },
-      "type": "org.apache.shardingsphere.sqlfederation.compiler.function.opengauss.impl.OpenGaussSystemFunction",
-      "allPublicMethods": true
     },
     {
       "condition": {
@@ -579,6 +577,18 @@
           ]
         }
       ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.hadoop.security.UserGroupInformation"
+      },
+      "type": "com.sun.security.auth.NTUserPrincipal"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.hadoop.security.UserGroupInformation"
+      },
+      "type": "com.sun.security.auth.UnixPrincipal"
     }
   ],
   "resources": [

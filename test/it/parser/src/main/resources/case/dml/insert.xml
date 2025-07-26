@@ -4363,4 +4363,28 @@
             </projections>
         </select>
     </insert>
+
+    <insert sql-case-id="insert_into_four_level_naming">
+        <table name="Department" start-index="25" stop-index="68">
+            <owner name="HumanResources" start-index="44" stop-index="57">
+                <owner name="AdventureWorks2022" start-index="25" stop-index="42">
+                    <owner name="MyLinkServer" start-index="12" stop-index="23" />
+                </owner>
+            </owner>
+        </table>
+        <columns start-index="70" stop-index="86">
+            <column name="Name" start-index="71" stop-index="74" />
+            <column name="GroupName" start-index="77" stop-index="85" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Public Relations" start-index="96" stop-index="114" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Executive General and Administration" start-index="117" stop-index="155" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

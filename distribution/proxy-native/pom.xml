@@ -75,6 +75,7 @@
                             <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
                             <imageName>${proxy.native.image.filename}</imageName>
                             <buildArgs>
+                                <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
                                 <buildArg>-H:+AddAllCharsets</buildArg>
                                 <buildArg>-H:+IncludeAllLocales</buildArg>
                             </buildArgs>

@@ -57,6 +57,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
                  <extensions>true</extensions>
                  <configuration>
                     <buildArgs>
+                       <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
                        <buildArg>-H:+AddAllCharsets</buildArg>
                        <buildArg>-H:+IncludeAllLocales</buildArg>
                     </buildArgs>
@@ -105,10 +106,12 @@ dependencies {
 graalvmNative {
    binaries {
       main {
+         buildArgs.add('-H:+UnlockExperimentalVMOptions')
          buildArgs.add('-H:+AddAllCharsets')
          buildArgs.add('-H:+IncludeAllLocales')
       }
       test {
+         buildArgs.add('-H:+UnlockExperimentalVMOptions')
          buildArgs.add('-H:+AddAllCharsets')
          buildArgs.add('-H:+IncludeAllLocales')
       }

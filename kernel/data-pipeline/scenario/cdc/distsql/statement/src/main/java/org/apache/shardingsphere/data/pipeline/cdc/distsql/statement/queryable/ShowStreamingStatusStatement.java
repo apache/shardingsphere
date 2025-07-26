@@ -19,13 +19,14 @@ package org.apache.shardingsphere.data.pipeline.cdc.distsql.statement.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.distsql.statement.queryable.QueryablePipelineRALStatement;
 
 /**
  * Show streaming status statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowStreamingStatusStatement extends QueryableCDCRALStatement {
+public final class ShowStreamingStatusStatement extends QueryablePipelineRALStatement {
     
     private final String jobId;
 }
