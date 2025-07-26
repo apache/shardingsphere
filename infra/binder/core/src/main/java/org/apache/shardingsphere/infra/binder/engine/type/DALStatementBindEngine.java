@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.binder.engine.type;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.AnalyzeTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.dal.ExplainStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.dal.FlushStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.FlushStatement;
 
 /**
  * DAL statement bind engine.
@@ -42,6 +44,9 @@ public final class DALStatementBindEngine {
         }
         if (statement instanceof ExplainStatement) {
             return new ExplainStatementBinder().bind((ExplainStatement) statement, binderContext);
+        }
+        if (statement instanceof FlushStatement) {
+            return new FlushStatementBinder().bind((FlushStatement) statement, binderContext);
         }
         return statement;
     }
