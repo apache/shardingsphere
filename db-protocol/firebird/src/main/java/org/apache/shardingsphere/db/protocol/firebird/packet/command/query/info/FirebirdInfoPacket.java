@@ -43,15 +43,12 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
     
     private final int maxLength;
     
-    private final FirebirdPacketPayload payload;
-    
     public FirebirdInfoPacket(final FirebirdPacketPayload payload, final IntFunction<FirebirdInfoPacketType> valueOf) {
         payload.skipReserved(4);
         handle = payload.readInt4();
         incarnation = payload.readInt4();
         parseInfo(payload.readBuffer(), valueOf);
         maxLength = payload.readInt4();
-        this.payload = payload;
     }
     
     private void parseInfo(final ByteBuf buffer, final IntFunction<FirebirdInfoPacketType> valueOf) {

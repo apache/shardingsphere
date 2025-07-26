@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.state
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
@@ -41,16 +41,18 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transacti
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdRollbackTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdStartTransactionCommandExecutor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdCommandExecutorFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -118,10 +120,6 @@ class FirebirdCommandExecutorFactoryTest {
     
     @Test
     void assertNewInstanceWithUnsupportedCommand() throws SQLException {
-        FirebirdCommandPacketType unsupported = mock(FirebirdCommandPacketType.class);
-        when(unsupported.name()).thenReturn("UNSUPPORTED");
-        FirebirdCommandPacket unknownPacket = mock(FirebirdCommandPacket.class);
-        assertThat(FirebirdCommandExecutorFactory.newInstance(unsupported, unknownPacket, connectionSession),
-                instanceOf(FirebirdUnsupportedCommandExecutor.class));
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.VOID, mock(CommandPacket.class), connectionSession), instanceOf(FirebirdUnsupportedCommandExecutor.class));
     }
 }
