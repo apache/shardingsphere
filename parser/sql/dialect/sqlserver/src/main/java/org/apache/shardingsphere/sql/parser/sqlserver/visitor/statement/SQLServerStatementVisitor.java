@@ -1167,6 +1167,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.intoClause()) {
             result.setInto((TableSegment) visit(ctx.intoClause()));
+            if (null != ctx.onFileGroupClause()) {
+                result.setOnFileGroup((IdentifierValue) visit(ctx.onFileGroupClause()));
+            }
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());

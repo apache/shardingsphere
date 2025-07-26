@@ -11239,4 +11239,21 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_on_clause">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <into start-index="14" stop-index="40">
+            <simple-table start-index="14" stop-index="40" name="FactResellerSalesXL" start-delimiter="[" end-delimiter="]">
+                <owner name="dbo" start-delimiter="[" end-delimiter="]" start-index="14" stop-index="18"/>
+            </simple-table>
+        </into>
+        <on-filegroup name="FG2" start-index="49" stop-index="51"/>
+        <from>
+            <simple-table start-index="54" stop-index="78" name="FactResellerSales" start-delimiter="[" end-delimiter="]">
+                <owner name="dbo" start-delimiter="[" end-delimiter="]" start-index="54" stop-index="58"/>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

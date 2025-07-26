@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -63,6 +64,8 @@ public final class SelectStatement extends DMLStatement {
     private WithSegment with;
     
     private SubqueryType subqueryType;
+    
+    private IdentifierValue onFileGroup;
     
     private LimitSegment limit;
     
@@ -204,6 +207,15 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<WithTableHintSegment> getWithTableHint() {
         return Optional.ofNullable(withTableHint);
+    }
+    
+    /**
+     * Get on FileGroup.
+     *
+     * @return on FileGroup
+     */
+    public Optional<IdentifierValue> getOnFileGroup() {
+        return Optional.ofNullable(onFileGroup);
     }
     
     @Override
