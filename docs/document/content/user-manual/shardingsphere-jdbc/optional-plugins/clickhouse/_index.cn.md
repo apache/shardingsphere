@@ -43,7 +43,9 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:25.4.5.24
+    image: clickhouse/clickhouse-server:25.6.5.41
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:
       - "8123:8123"
 ```
@@ -225,3 +227,9 @@ ClickHouse 不支持 ShardingSphere 集成级别的本地事务，XA 事务或 S
 嵌入式 ClickHouse `chDB` 尚未发布 Java 客户端，
 ShardingSphere 不针对 SNAPSHOT 版本的 https://github.com/chdb-io/chdb-java 做集成测试。
 参考 https://github.com/chdb-io/chdb/issues/243 。
+
+### ClickHouse JDBC Driver V2 限制
+
+ClickHouse JDBC Driver V2 自 https://github.com/ClickHouse/clickhouse-java/pull/2368 所在的 `0.8.6` 里程碑开始，
+使用 `org.antlr:antlr4-maven-plugin:4.13.2`。这与 ShardingSphere 使用的 `org.antlr:antlr4-runtime:4.10.1` 产生冲突。
+ShardingSphere 仅使用 `com.clickhouse:clickhouse-jdbc:0.6.3:http` 测试 ClickHouse 集成。

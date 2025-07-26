@@ -53,7 +53,7 @@ class FirebirdTest {
     
     @SuppressWarnings("resource")
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("firebirdsql/firebird:5.0.1")
+    private final GenericContainer<?> container = new GenericContainer<>("firebirdsql/firebird:5.0.3")
             .withEnv("FIREBIRD_ROOT_PASSWORD", password)
             .withEnv("FIREBIRD_USER", "alice")
             .withEnv("FIREBIRD_PASSWORD", password)
@@ -93,7 +93,7 @@ class FirebirdTest {
     }
     
     /**
-     * Docker Image `ghcr.io/fdcastel/firebird:5.0.1` cannot use `TRUNCATE TABLE`.
+     * Docker Image `firebirdsql/firebird` cannot use `TRUNCATE TABLE`.
      * See <a href="https://github.com/FirebirdSQL/firebird/issues/2892">FirebirdSQL/firebird#2892</a>.
      *
      * @throws SQLException SQL Exception

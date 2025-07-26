@@ -98,7 +98,7 @@ aopalliance:aopalliance:jar:1.0
 ```yaml
 services:
    postgres:
-      image: postgres:17.2-bookworm
+      image: postgres:17.5-bookworm
       environment:
          POSTGRES_PASSWORD: example
       volumes:

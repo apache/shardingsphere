@@ -104,7 +104,7 @@ public final class OrderItemRepository {
     
     /**
      * create table in Firebird.
-     * Cannot use `create table if not exists` for Docker Image `ghcr.io/fdcastel/firebird:5.0.1`,
+     * Cannot use `create table if not exists` for Docker Image `firebirdsql/firebird`,
      * see <a href="https://github.com/FirebirdSQL/firebird/issues/8062">FirebirdSQL/firebird#8062</a>.
      *
      * @throws SQLException SQL exception
@@ -117,6 +117,29 @@ public final class OrderItemRepository {
                 + "phone VARCHAR(50),\n"
                 + "status VARCHAR(50)\n"
                 + ")";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
+     * create ACID table in HiveServer2.
+     * Hive does not support `AUTO_INCREMENT`,
+     * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createAcidTableInHiveServer2() throws SQLException {
+        String sql = "create table IF NOT EXISTS t_order_item (\n"
+                + "    order_item_id BIGINT NOT NULL,\n"
+                + "    order_id      BIGINT NOT NULL,\n"
+                + "    user_id       INT    NOT NULL,\n"
+                + "    phone         VARCHAR(50),\n"
+                + "    status        VARCHAR(50),\n"
+                + "    PRIMARY KEY (order_item_id) disable novalidate\n"
+                + ") CLUSTERED BY (order_item_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true')";
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -140,7 +163,7 @@ public final class OrderItemRepository {
     
     /**
      * drop table in Firebird.
-     * Docker Image `ghcr.io/fdcastel/firebird:5.0.1` does not work with `DROP TABLE IF EXISTS`.
+     * Docker Image `firebirdsql/firebird` does not work with `DROP TABLE IF EXISTS`.
      * See <a href="https://github.com/FirebirdSQL/firebird/issues/4203">FirebirdSQL/firebird#4203</a> .
      *
      * @throws SQLException SQL exception

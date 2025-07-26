@@ -42,7 +42,7 @@ Write a Docker Compose file to start Firebird.
 ```yaml
 services:
   firebird:
-    image: firebirdsql/firebird:5.0.1
+    image: firebirdsql/firebird:5.0.3
     environment:
       FIREBIRD_ROOT_PASSWORD: masterkey
       FIREBIRD_USER: alice
