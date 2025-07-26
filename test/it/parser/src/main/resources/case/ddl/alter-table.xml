@@ -1992,4 +1992,124 @@
     <alter-table sql-case-id="alter_table_partition_update_columns">
         <table name="parquet_event_log" start-index="12" stop-index="28" />
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_basic">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_more_partition">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_if_not_exists">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_location">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_both_options">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_partition_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_basic">
+        <table name="target_table" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_multiple">
+        <table name="target_table" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_partition_retention_basic">
+        <table name="log_data" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_partition_retention_with_discover">
+        <table name="log_data" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_basic">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table_add">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table_drop">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table_sync">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_add">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_drop">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_sync">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_recover_partitions_emr">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_basic">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_if_exists">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_purge">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_ignore_protection">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_if_exists_purge">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_if_exists_ignore_protection">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_multiple_partitions_if_exists_purge">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_all_options">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_multiple_partitions_all_options">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_archive_partition_basic">
+        <table name="log_table" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_unarchive_partition_basic">
+        <table name="log_table" start-index="12" stop-index="20" />
+    </alter-table>
 </sql-parser-test-cases>

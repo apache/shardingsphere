@@ -3313,3 +3313,23 @@ NOVALIDEATE
 POOL
     : P O O L
     ;
+
+ARCHIVE
+    : A R C H I V E
+    ;
+
+UNARCHIVE
+    : U N A R C H I V E
+    ;
+
+PROTECTION
+    : P R O T E C T I O N
+    ;
+
+MSCK
+    : M S C K
+    ;
+
+SYNC
+    : S Y N C
+    ;

@@ -33,6 +33,7 @@ execute
     | createTable
     | dropTable
     | truncateTable
+    | msckStatement
     | alterTable
     ) (SEMI_ EOF? | EOF)
     | EOF

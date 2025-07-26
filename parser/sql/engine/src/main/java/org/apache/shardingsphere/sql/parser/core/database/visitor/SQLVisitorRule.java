@@ -55,6 +55,8 @@ public enum SQLVisitorRule {
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
     
+    MSCK("MsckStatement", SQLStatementType.DDL),
+    
     ALTER_TYPE("AlterType", SQLStatementType.DDL),
     
     ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),

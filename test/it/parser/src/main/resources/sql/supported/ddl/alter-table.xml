@@ -294,4 +294,34 @@
     <sql-case id="alter_table_partition_concatenate" value="ALTER TABLE sales_orc PARTITION (region='asia', dt='2025-07-23') CONCATENATE" db-types="Hive" />
     <sql-case id="alter_table_update_columns_basic" value="ALTER TABLE avro_user_data UPDATE COLUMNS" db-types="Hive" />
     <sql-case id="alter_table_partition_update_columns" value="ALTER TABLE parquet_event_log PARTITION (event_type='click') UPDATE COLUMNS" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_basic" value="ALTER TABLE test_table ADD PARTITION (part_col='part_value')" db-types="Hive" />
+    <sql-case id="alter_table_add_more_partition" value="ALTER TABLE test_table ADD PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_if_not_exists" value="ALTER TABLE test_table ADD IF NOT EXISTS PARTITION (part_col='part_value')" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_location" value="ALTER TABLE test_table ADD PARTITION (part_col='part_value') LOCATION '/user/hive/warehouse/test_table/part_value'" db-types="Hive" />
+    <sql-case id="alter_table_add_partition_with_both_options" value="ALTER TABLE test_table ADD IF NOT EXISTS PARTITION (part_col='part_value') LOCATION '/user/hive/warehouse/test_partition'" db-types="Hive" />
+    <sql-case id="alter_table_rename_partition_basic" value="ALTER TABLE sales PARTITION (dt='2025-07-01') RENAME TO PARTITION (dt='20250701')" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_basic" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_exchange_partition_multiple" value="ALTER TABLE target_table EXCHANGE PARTITION (dt='2025-07-25', region='asia') WITH TABLE source_table" db-types="Hive" />
+    <sql-case id="alter_table_set_partition_retention_basic" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='30d')" db-types="Hive" />
+    <sql-case id="alter_table_set_partition_retention_with_discover" value="ALTER TABLE log_data SET TBLPROPERTIES ('partition.retention.period'='7d', 'discover.partitions'='true')" db-types="Hive" />
+    <sql-case id="msck_check_table" value="MSCK TABLE sales" db-types="Hive" />
+    <sql-case id="msck_repair_table_basic" value="MSCK REPAIR TABLE sales" db-types="Hive" />
+    <sql-case id="msck_check_table_add" value="MSCK TABLE sales ADD PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_check_table_drop" value="MSCK TABLE sales DROP PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_check_table_sync" value="MSCK TABLE sales SYNC PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_add" value="MSCK REPAIR TABLE sales ADD PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_drop" value="MSCK REPAIR TABLE sales DROP PARTITIONS" db-types="Hive" />
+    <sql-case id="msck_repair_table_sync" value="MSCK REPAIR TABLE sales SYNC PARTITIONS" db-types="Hive" />
+    <sql-case id="alter_table_recover_partitions_emr" value="ALTER TABLE sales RECOVER PARTITIONS" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_basic" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us')" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_purge" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_ignore_protection" value="ALTER TABLE page_view DROP PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists_purge" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_if_exists_ignore_protection" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION" db-types="Hive" />
+    <sql-case id="alter_table_drop_multiple_partitions_if_exists_purge" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_partition_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us') IGNORE PROTECTION PURGE" db-types="Hive" />
+    <sql-case id="alter_table_drop_multiple_partitions_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') IGNORE PROTECTION PURGE" db-types="Hive" />
+    <sql-case id="alter_table_archive_partition_basic" value="ALTER TABLE log_table ARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
+    <sql-case id="alter_table_unarchive_partition_basic" value="ALTER TABLE log_table UNARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
 </sql-cases>

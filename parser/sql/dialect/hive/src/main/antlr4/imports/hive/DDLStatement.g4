@@ -67,6 +67,13 @@ alterTable
     | alterTableCommonClause partitionSpec? COMPACT string_ (AND WAIT)? clusteredIntoClause? orderByClause? poolClause? tblpropertiesClause?
     | alterTableCommonClause partitionSpec? CONCATENATE
     | alterTableCommonClause partitionSpec? UPDATE COLUMNS
+    | alterTableCommonClause ADD ifNotExists? partitionSpec storageLocation? (COMMA_ partitionSpec storageLocation?)*
+    | alterTableCommonClause DROP ifExists? partitionSpec (COMMA_ partitionSpec)* (IGNORE PROTECTION)? PURGE?
+    | alterTableCommonClause partitionSpec RENAME TO partitionSpec
+    | alterTableCommonClause EXCHANGE partitionSpec WITH TABLE tableName
+    | alterTableCommonClause ARCHIVE partitionSpec
+    | alterTableCommonClause UNARCHIVE partitionSpec
+    | alterTableCommonClause RECOVER PARTITIONS
     ;
 
 alterDatabaseSpecification_
@@ -350,4 +357,14 @@ poolClause
 
 tblpropertiesClause
     : WITH OVERWRITE tblProperties
+    ;
+
+msckStatement
+    : MSCK REPAIR? TABLE tableName msckAction?
+    ;
+
+msckAction
+    : ADD PARTITIONS
+    | DROP PARTITIONS
+    | SYNC PARTITIONS
     ;
