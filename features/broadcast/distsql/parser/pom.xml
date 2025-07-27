@@ -78,7 +78,6 @@
                                     <goal>antlr4</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceDirectory>src/main/antlr4/broadcast/</sourceDirectory>
                                     <libDirectory>src/main/antlr4/imports/broadcast</libDirectory>
                                     <listener>false</listener>
                                     <visitor>true</visitor>
