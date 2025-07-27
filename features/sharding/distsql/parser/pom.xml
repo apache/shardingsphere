@@ -71,7 +71,6 @@
                                     <goal>antlr4</goal>
                                 </goals>
                                 <configuration>
-                                    <sourceDirectory>src/main/antlr4/sharding/</sourceDirectory>
                                     <libDirectory>src/main/antlr4/imports/sharding/</libDirectory>
                                     <listener>false</listener>
                                     <visitor>true</visitor>
