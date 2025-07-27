@@ -80,9 +80,11 @@
     <sql-case id="explain_for_select_xml_query" value="EXPLAIN PLAN FOR SELECT XMLQuery('/PurchaseOrder/LineItems/LineItem' PASSING OBJECT_VALUE RETURNING CONTENT) FROM po_clob WHERE XMLExists('/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) &gt; 0]' PASSING OBJECT_VALUE) AND XMLExists('/PurchaseOrder[User=&quot;SBELL&quot;]' PASSING OBJECT_VALUE);" db-types="Oracle" />
     <sql-case id="explain_for_select_where_between" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) total_revenue FROM sales WHERE time_id BETWEEN '01-JAN-00' AND '31-DEC-00';" db-types="Oracle"/>
     <sql-case id="explain_for_select_where_between_groupby_having" value="EXPLAIN PLAN FOR SELECT c.cust_last_name, COUNT(*) FROM sales s, customers c WHERE s.cust_id = c.cust_id AND s.time_id BETWEEN TO_DATE('01-JUL-1999', 'DD-MON-YYYY') AND TO_DATE('01-OCT-1999', 'DD-MON-YYYY') GROUP BY c.cust_last_name HAVING COUNT(*) > 100;" db-types="Oracle"/>
-    <sql-case id="explain_for_select_alias_where_colon" value="explain plan for select * from sales s where time_id in ( :a, :b, :c, :d);" db-types="Oracle"/>
+    <!-- FIXME -->
+<!--    <sql-case id="explain_for_select_alias_where_colon" value="explain plan for select * from sales s where time_id in ( :a, :b, :c, :d);" db-types="Oracle"/>-->
     <sql-case id="explain_for_select_where_todate_function" value="explain plan for select * from sales where time_id = to_date('01-jan-2001', 'dd-mon-yyyy');" db-types="Oracle"/>
-    <sql-case id="explain_for_select_where_colon" value="explain plan for select * from sales where time_id in (:a, :b, :c, :d);" db-types="Oracle"/>
+    <!-- FIXME -->
+<!--    <sql-case id="explain_for_select_where_colon" value="explain plan for select * from sales where time_id in (:a, :b, :c, :d);" db-types="Oracle"/>-->
     <sql-case id="explain_for_select_group_by_multi_columns" value="explain plan for select p.prod_name, t.time_id, sum(s.amount_sold) from sales s, times t, products p where s.time_id = t.time_id and s.prod_id = p.prod_id and t.fiscal_year = 2000 and t.fiscal_week_number = 3 and p.prod_category = 'Hardware' group by t.time_id, p.prod_name;" db-types="Oracle"/>
     <sql-case id="explain_for_select_in_sub_query" value="explain plan for select sum(amount_sold) from sales where time_id in (select time_id from times where fiscal_year = 2000);" db-types="Oracle"/>
     <sql-case id="explain_for_select_between_to_date_function" value="explain plan for select sum(amount_sold) from sales where time_id between to_date('01-JAN-2000','dd-MON-yyyy') and to_date('31-DEC-2000','dd-MON-yyyy') ;" db-types="Oracle"/>

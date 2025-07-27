@@ -23,14 +23,10 @@ showEncryptRules
     : SHOW ENCRYPT (TABLE? tableRule | RULES) (FROM databaseName)?
     ;
 
-tableRule
-    : RULE tableName
-    ;
-
 countEncryptRule
     : COUNT ENCRYPT RULE (FROM databaseName)?
     ;
 
-databaseName
-    : IDENTIFIER_
+showEncryptAlgorithmPlugins
+    : SHOW ENCRYPT ALGORITHM PLUGINS
     ;
