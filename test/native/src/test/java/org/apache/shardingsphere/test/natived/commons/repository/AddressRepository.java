@@ -105,6 +105,25 @@ public final class AddressRepository {
     }
     
     /**
+     * create table in Doris FE. Doris FE does not support the use of `PRIMARY KEY`.
+     * TODO The `shardingsphere-parser-sql-doris` module does not support the `create table` statement with the
+     *  `UNIQUE KEY (order_id) DISTRIBUTED BY HASH(order_id)` part.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createTableInDorisFE() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_address ("
+                + "address_id BIGINT NOT NULL,\n"
+                + "address_name VARCHAR(100) NOT NULL)\n"
+                + "PROPERTIES ('replication_num' = '1')";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table t_address in MySQL.
      *
      * @throws SQLException SQL exception

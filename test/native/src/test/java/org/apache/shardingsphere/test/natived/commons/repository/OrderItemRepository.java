@@ -148,6 +148,28 @@ public final class OrderItemRepository {
     }
     
     /**
+     * create table in Doris FE. Doris FE does not support the use of `PRIMARY KEY`.
+     * TODO The `shardingsphere-parser-sql-doris` module does not support the `create table` statement with the
+     *  `UNIQUE KEY (order_id) DISTRIBUTED BY HASH(order_id)` part.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void createTableInDorisFE() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS t_order_item \n"
+                + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT,\n"
+                + "order_id BIGINT NOT NULL,\n"
+                + "user_id INT NOT NULL,\n"
+                + "phone VARCHAR(50),\n"
+                + "status VARCHAR(50))\n"
+                + "PROPERTIES ('replication_num' = '1')";
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql);
+        }
+    }
+    
+    /**
      * drop table in MySQL.
      *
      * @throws SQLException SQL exception

@@ -36,7 +36,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -88,6 +87,9 @@ class DorisFETest {
     }
     
     private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().createTableInDorisFE();
+        testShardingService.getOrderItemRepository().createTableInDorisFE();
+        testShardingService.getAddressRepository().createTableInDorisFE();
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();
@@ -109,7 +111,6 @@ class DorisFETest {
             statement.executeUpdate("CREATE DATABASE demo_ds_1");
             statement.executeUpdate("CREATE DATABASE demo_ds_2");
         }
-        Stream.of("demo_ds_0", "demo_ds_1", "demo_ds_2").forEach(this::initDatabase);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/doris.yaml?placeholder-type=system_props");
@@ -117,41 +118,5 @@ class DorisFETest {
         System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
         System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");
         return new HikariDataSource(config);
-    }
-    
-    /**
-     * TODO `shardingsphere-parser-sql-doris` module does not support `create table` statements yet.
-     * Doris FE does not support the use of `PRIMARY KEY`.
-     *
-     * @param databaseName database name
-     * @throws RuntimeException Runtime exception
-     */
-    @SuppressWarnings("SqlNoDataSourceInspection")
-    private void initDatabase(final String databaseName) {
-        try (
-                Connection con = DriverManager.getConnection(jdbcUrlPrefix + databaseName, "root", null);
-                Statement stmt = con.createStatement()) {
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_order (\n"
-                    + "    order_id BIGINT NOT NULL AUTO_INCREMENT,\n"
-                    + "    order_type INT(11),\n"
-                    + "    user_id INT NOT NULL,\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    status VARCHAR(50)\n"
-                    + ")\n"
-                    + "UNIQUE KEY (order_id) DISTRIBUTED BY HASH(order_id) PROPERTIES ('replication_num' = '1')");
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_order_item \n"
-                    + "(order_item_id BIGINT NOT NULL AUTO_INCREMENT,\n"
-                    + "order_id BIGINT NOT NULL,\n"
-                    + "user_id INT NOT NULL,\n"
-                    + "phone VARCHAR(50),\n"
-                    + "status VARCHAR(50))\n"
-                    + "UNIQUE KEY (order_item_id) DISTRIBUTED BY HASH(order_item_id) PROPERTIES ('replication_num' = '1')");
-            stmt.execute("CREATE TABLE IF NOT EXISTS t_address ("
-                    + "address_id BIGINT NOT NULL,\n"
-                    + "address_name VARCHAR(100) NOT NULL)\n"
-                    + "UNIQUE KEY (address_id) DISTRIBUTED BY HASH(address_id) PROPERTIES ('replication_num' = '1')");
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

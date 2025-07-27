@@ -25,12 +25,14 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
@@ -109,9 +111,23 @@ public final class DatabaseTypeEngine {
      * @throws SQLWrapperException SQL wrapper exception
      * @throws RuntimeException Runtime exception
      */
+    @SuppressWarnings("SqlNoDataSourceInspection")
     public static DatabaseType getStorageType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeFactory.get(connection.getMetaData().getURL());
+            String url = connection.getMetaData().getURL();
+            if ("mysql".equals(url.split(":")[1])) {
+                ResultSet resultSet = connection.createStatement().executeQuery("SHOW VARIABLES LIKE 'version_comment'");
+                while (resultSet.next()) {
+                    if (resultSet.getString("Value").toLowerCase().contains("doris")) {
+                        return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)
+                                .stream()
+                                .filter(databaseType -> databaseType.getType().equals("Doris"))
+                                .findFirst()
+                                .orElse(DatabaseTypeFactory.get(url));
+                    }
+                }
+            }
+            return DatabaseTypeFactory.get(url);
         } catch (final SQLFeatureNotSupportedException sqlFeatureNotSupportedException) {
             try (Connection connection = dataSource.getConnection()) {
                 Class<?> hiveConnectionClass = Class.forName("org.apache.hive.jdbc.HiveConnection");

@@ -3434,9 +3434,15 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+      },
+      "type": "org.apache.shardingsphere.infra.database.doris.metadata.database.DorisDatabaseMetaData"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.doris.DorisDatabaseType"
+      "type": "org.apache.shardingsphere.infra.database.doris.type.DorisDatabaseType"
     },
     {
       "condition": {
@@ -4911,21 +4917,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.initializer.BootstrapInitializer"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexBeanInfo"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereIndexCustomizer"
     },
     {
       "condition": {
@@ -10061,6 +10055,34 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
+      "type": "org.apache.shardingsphere.sql.parser.doris.parser.DorisLexer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.antlr.v4.runtime.CharStream"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.doris.parser.DorisParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.antlr.v4.runtime.TokenStream"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
       "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade"
     },
     {
@@ -10096,6 +10118,20 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDDLStatementVisitor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+          ]
         }
       ]
     },

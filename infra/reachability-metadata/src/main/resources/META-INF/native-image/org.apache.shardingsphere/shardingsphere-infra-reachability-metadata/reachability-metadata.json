@@ -396,6 +396,13 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDMLStatementVisitor"
+      },
+      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.type.DorisDMLStatementVisitor",
+      "allPublicConstructors": true
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"
       },
       "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",

@@ -279,8 +279,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 After the business project introduces the dependencies involved in the `prerequisites`,
@@ -338,6 +336,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
@@ -398,8 +397,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 At this point,
@@ -414,9 +411,11 @@ public class ExampleUtils {
     void test(HikariDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
         }
     }
 }

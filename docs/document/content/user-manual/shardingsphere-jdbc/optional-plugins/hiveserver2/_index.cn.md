@@ -147,8 +147,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 ### 在业务项目创建 ShardingSphere 数据源
@@ -209,9 +207,11 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE user_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
         }
     }
 }
@@ -275,8 +275,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
@@ -333,6 +331,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
