@@ -39,10 +39,6 @@ SHOW
     : S H O W
     ;
 
-RESOURCE
-    : R E S O U R C E
-    ;
-
 RULE
     :  R U L E
     ;

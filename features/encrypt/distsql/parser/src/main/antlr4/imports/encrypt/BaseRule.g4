@@ -56,6 +56,14 @@ property
     : key=STRING_ EQ_ value=literal
     ;
 
+databaseName
+    : IDENTIFIER_
+    ;
+
 tableName
     : IDENTIFIER_
+    ;
+
+tableRule
+    : RULE tableName
     ;
