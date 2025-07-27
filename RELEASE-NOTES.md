@@ -69,6 +69,7 @@
 1. SQL Parser: Support Hive ALTER PARTITION statement parse - [#36072](https://github.com/apache/shardingsphere/pull/36072)
 1. SQL Parser: Add support for COLON_ parameter marker in Oracle - [#36076](https://github.com/apache/shardingsphere/pull/36076)
 
+
 ### Bug Fixes
 
 1. Kernel: Fix not return generate key when id set null - [35783](https://github.com/apache/shardingsphere/pull/35783)
