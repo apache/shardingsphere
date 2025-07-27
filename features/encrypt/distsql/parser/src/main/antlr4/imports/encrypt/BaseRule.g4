@@ -64,6 +64,14 @@ tableName
     : IDENTIFIER_
     ;
 
-tableRule
-    : RULE tableName
+columnName
+    : IDENTIFIER_
+    ;
+
+ifExists
+    : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;
