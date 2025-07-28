@@ -1,5 +1,9 @@
 ## Release 5.5.3-SNAPSHOT
 
+### CVE
+
+1. Fixes CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
+
 ### Metadata Storage Changes
 
 1. Remove `default_strategies` prefix on sharding rule metadata persist [#34664](https://github.com/apache/shardingsphere/pull/34664)
