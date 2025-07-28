@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.MigrationCheckAlgorithmTypeAndClassMapper
+org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.query.MigrationCheckAlgorithmTypeAndClassMapper
