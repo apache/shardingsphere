@@ -65,8 +65,6 @@ public final class SelectStatement extends DMLStatement {
     
     private SubqueryType subqueryType;
     
-    private IdentifierValue onFileGroup;
-    
     private LimitSegment limit;
     
     private LockSegment lock;
@@ -207,15 +205,6 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<WithTableHintSegment> getWithTableHint() {
         return Optional.ofNullable(withTableHint);
-    }
-    
-    /**
-     * Get on FileGroup.
-     *
-     * @return on FileGroup
-     */
-    public Optional<IdentifierValue> getOnFileGroup() {
-        return Optional.ofNullable(onFileGroup);
     }
     
     @Override
