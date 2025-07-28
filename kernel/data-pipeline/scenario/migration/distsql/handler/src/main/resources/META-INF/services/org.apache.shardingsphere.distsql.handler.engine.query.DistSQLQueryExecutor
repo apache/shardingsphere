@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationRuleExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationListExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationJobStatusExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationCheckStatusExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.migration.query.ShowMigrationSourceStorageUnitsExecutor
+org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.query.ShowMigrationRuleExecutor
+org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.query.ShowMigrationListExecutor
+org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.query.ShowMigrationJobStatusExecutor
+org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.query.ShowMigrationCheckStatusExecutor
+org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.query.ShowMigrationSourceStorageUnitsExecutor
