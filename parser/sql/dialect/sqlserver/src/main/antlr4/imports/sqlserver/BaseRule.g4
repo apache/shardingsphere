@@ -465,7 +465,7 @@ openQueryFunction
     ;
 
 rowSetFunction
-    : openRowSetFunction | openQueryFunction
+    : openRowSetFunction | openQueryFunction | openDatasourceFunction
     ;
 
 regularFunction
