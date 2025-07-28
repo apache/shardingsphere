@@ -67,6 +67,7 @@
 1. SQL Parser: Support Hive ALTER TABLE statement parse - [#36066](https://github.com/apache/shardingsphere/pull/36066)
 1. SQL Binder: Fix is unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
 1. SQL Parser: Support Hive ALTER PARTITION statement parse - [#36072](https://github.com/apache/shardingsphere/pull/36072)
+1. SQL Parser: Support Hive ALTER COLUMN statement parse - [#36096](https://github.com/apache/shardingsphere/pull/36096)
 
 ### Bug Fixes
 
