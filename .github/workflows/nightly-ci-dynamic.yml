@@ -156,4 +156,4 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Run nativeTest with GraalVM CE
-        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=70.0" clean verify
+        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify

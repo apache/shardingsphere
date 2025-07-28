@@ -40,14 +40,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-@SuppressWarnings({"resource", "deprecation"})
+@SuppressWarnings({"resource", "deprecation", "SqlNoDataSourceInspection"})
 @EnabledInNativeImage
 @Testcontainers
 class StandaloneMetastoreTest {
@@ -88,6 +87,8 @@ class StandaloneMetastoreTest {
     
     private String jdbcUrlPrefix;
     
+    private TestShardingService testShardingService;
+    
     @BeforeEach
     void beforeEach() {
         assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
@@ -107,22 +108,25 @@ class StandaloneMetastoreTest {
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://localhost:" + hs2Container.getMappedPort(10000) + "/";
         logicDataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(logicDataSource);
+        testShardingService = new TestShardingService(logicDataSource);
+        initEnvironment();
         testShardingService.processSuccessInHive();
+        testShardingService.cleanEnvironment();
     }
     
-    private Connection openConnection() throws SQLException {
-        Properties props = new Properties();
-        return DriverManager.getConnection(jdbcUrlPrefix, props);
+    private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().truncateTable();
+        testShardingService.getOrderItemRepository().truncateTable();
+        testShardingService.getAddressRepository().truncateTable();
     }
     
     private DataSource createDataSource() throws SQLException {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
-            openConnection().close();
+            DriverManager.getConnection(jdbcUrlPrefix).close();
             return true;
         });
         try (
-                Connection connection = openConnection();
+                Connection connection = DriverManager.getConnection(jdbcUrlPrefix);
                 Statement statement = connection.createStatement()) {
             statement.execute("CREATE DATABASE demo_ds_0");
             statement.execute("CREATE DATABASE demo_ds_1");
@@ -139,8 +143,7 @@ class StandaloneMetastoreTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table`,
-     *  `truncate table` and `drop table` statements yet,
+     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table` statements yet,
      *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
      * Hive does not support `AUTO_INCREMENT`,
      * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
@@ -173,9 +176,6 @@ class StandaloneMetastoreTest {
                     + "    address_name string NOT NULL,\n"
                     + "    PRIMARY KEY (address_id) disable novalidate\n"
                     + ") STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2')");
-            statement.execute("TRUNCATE TABLE t_order");
-            statement.execute("TRUNCATE TABLE t_order_item");
-            statement.execute("TRUNCATE TABLE t_address");
         } catch (final SQLException exception) {
             throw new RuntimeException(exception);
         }

@@ -393,8 +393,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 此时，旧的 ShardingSphere JDBC DataSource 仍可在不重新创建 JDBC DataSource 的情况下，
@@ -409,9 +407,11 @@ public class ExampleUtils {
     void test(HikariDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
         }
     }
 }
@@ -469,8 +469,36 @@ ShardingSphere 仅需要使用 `org.apache.hadoop.mapred.JobConf` 类，
 
 HiveServer2 并不能保证每一条 `insert` 相关的 DML SQL 都能成功执行，尽管可能没有任何异常被抛出。
 
-ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set`，`create table`，`truncate table` 和 `drop table` 语句。
-用户应考虑为 ShardingSphere 提交包含单元测试的 PR。
+ShardingSphere JDBC DataSource 尚不支持执行 HiveServer2 的 `set` 语句。
+
+ShardingSphere JDBC DataSource 当前支持通过执行 `create table` 语句创建普通表，但不支持通过执行 `create table` 语句创建 Iceberg 表。
+这意味着 ShardingSphere JDBC DataSource 可执行类似如下的语句,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+create table IF NOT EXISTS t_order (
+    order_id   BIGINT NOT NULL,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     VARCHAR(50),
+    PRIMARY KEY (order_id) disable novalidate
+) CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true');
+```
+
+但 ShardingSphere JDBC DataSource 无法执行类似如下的语句,
+
+```sql
+-- noinspection SqlNoDataSourceInspectionForFile
+CREATE TABLE IF NOT EXISTS t_order (
+    order_id   BIGINT NOT NULL,
+    order_type INT,
+    user_id    INT    NOT NULL,
+    address_id BIGINT NOT NULL,
+    status     string,
+    PRIMARY KEY (order_id) disable novalidate
+) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
+```
 
 #### 使用 `initFile` 参数部分绕开 SQL 限制
 
