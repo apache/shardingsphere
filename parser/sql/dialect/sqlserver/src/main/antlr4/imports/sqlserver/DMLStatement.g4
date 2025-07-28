@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -162,6 +162,10 @@ unqualifiedShorthand
 
 qualifiedShorthand
     : identifier DOT_ASTERISK_
+    ;
+
+onFileGroupClause
+    : ON identifier
     ;
 
 intoClause
