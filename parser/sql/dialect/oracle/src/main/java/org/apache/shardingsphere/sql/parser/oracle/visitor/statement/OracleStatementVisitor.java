@@ -253,9 +253,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.intervalLiterals()) {
             return visit(ctx.intervalLiterals());
         }
-        if (null != ctx.bindLiterals()) {
-            return visit(ctx.bindLiterals());
-        }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, interval, boolean or null.");
     }
     

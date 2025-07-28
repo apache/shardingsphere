@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.update.DropStreamingExecutor
+org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.update.DropStreamingExecutor

@@ -400,6 +400,8 @@ public final class TableExtractor {
             extractTablesFromUpdate((UpdateStatement) sqlStatement);
         } else if (sqlStatement instanceof DeleteStatement) {
             extractTablesFromDelete((DeleteStatement) sqlStatement);
+        } else if (sqlStatement instanceof CreateViewStatement) {
+            extractTablesFromCreateViewStatement((CreateViewStatement) sqlStatement);
         }
     }
     
