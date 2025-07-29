@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo.MigrateSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
@@ -53,15 +53,15 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         ShardingSpherePreconditions.checkState(contextManager.getMetaDataContexts().getMetaData().containsDatabase(targetDatabaseName),
                 () -> new MissingRequiredTargetDatabaseException(targetDatabaseName));
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), getSourceTargetEntries(sqlStatement), targetDatabaseName);
+        jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), getMigrationSourceTargetEntries(sqlStatement), targetDatabaseName);
     }
     
-    private Collection<MigrateSourceTargetEntry> getSourceTargetEntries(final MigrateTableStatement sqlStatement) {
-        Collection<MigrateSourceTargetEntry> result = new LinkedList<>();
+    private Collection<MigrationSourceTargetEntry> getMigrationSourceTargetEntries(final MigrateTableStatement sqlStatement) {
+        Collection<MigrationSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
             DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
             dataNode.setSchemaName(each.getSourceSchemaName());
-            result.add(new MigrateSourceTargetEntry(dataNode, each.getTargetDatabaseName(), each.getTargetTableName()));
+            result.add(new MigrationSourceTargetEntry(dataNode, each.getTargetDatabaseName(), each.getTargetTableName()));
         }
         return result;
     }
