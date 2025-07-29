@@ -15,16 +15,10 @@
  * limitations under the License.
  */
 
-grammar EncryptDistSQLStatement;
+grammar RALStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import BaseRule;
 
-execute
-    : (createEncryptRule
-    | alterEncryptRule
-    | dropEncryptRule
-    | showEncryptRules
-    | countEncryptRule
-    | showEncryptAlgorithmPlugins
-    ) SEMI_? EOF
+showEncryptAlgorithmPlugins
+    : SHOW ENCRYPT ALGORITHM PLUGINS
     ;
