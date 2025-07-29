@@ -258,14 +258,14 @@ class MigrationJobAPITest {
     
     @Test
     void assertCreateJobConfigFailedOnMoreThanOneSourceTable() {
-        List<SourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
+        Collection<SourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
                 .map(each -> new SourceTargetEntry("logic_db", new DataNode("ds_0", each), "t_order")).collect(Collectors.toList());
         assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.schedule(PipelineContextUtils.getContextKey(), sourceTargetEntries, "logic_db"));
     }
     
     @Test
     void assertCreateJobConfigFailedOnDataSourceNotExist() {
-        List<SourceTargetEntry> sourceTargetEntries = Collections.singletonList(new SourceTargetEntry("logic_db", new DataNode("ds_not_exists", "t_order"), "t_order"));
+        Collection<SourceTargetEntry> sourceTargetEntries = Collections.singleton(new SourceTargetEntry("logic_db", new DataNode("ds_not_exists", "t_order"), "t_order"));
         assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.schedule(PipelineContextUtils.getContextKey(), sourceTargetEntries, "logic_db"));
     }
     
@@ -273,7 +273,7 @@ class MigrationJobAPITest {
     void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
         SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
-        String jobId = jobAPI.schedule(PipelineContextUtils.getContextKey(), Collections.singletonList(sourceTargetEntry), "logic_db");
+        String jobId = jobAPI.schedule(PipelineContextUtils.getContextKey(), Collections.singleton(sourceTargetEntry), "logic_db");
         MigrationJobConfiguration actual = jobConfigManager.getJobConfiguration(jobId);
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));
         List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();

@@ -115,13 +115,13 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
      * @param targetDatabaseName target database name
      * @return job id
      */
-    public String schedule(final PipelineContextKey contextKey, final List<SourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
+    public String schedule(final PipelineContextKey contextKey, final Collection<SourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
         MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, sourceTargetEntries, targetDatabaseName));
         jobManager.start(jobConfig);
         return jobConfig.getJobId();
     }
     
-    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey, final List<SourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
+    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey, final Collection<SourceTargetEntry> sourceTargetEntries, final String targetDatabaseName) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName(targetDatabaseName);
         Map<String, DataSourcePoolProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, "MIGRATION");

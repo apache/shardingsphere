@@ -35,8 +35,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 
 /**
@@ -61,8 +61,8 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), getSourceTargetEntries(sqlStatement), targetDatabaseName);
     }
     
-    private List<SourceTargetEntry> getSourceTargetEntries(final MigrateTableStatement sqlStatement) {
-        List<SourceTargetEntry> result = new ArrayList<>(sqlStatement.getSourceTargetEntries().size());
+    private Collection<SourceTargetEntry> getSourceTargetEntries(final MigrateTableStatement sqlStatement) {
+        Collection<SourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
             DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
             dataNode.setSchemaName(each.getSourceSchemaName());
