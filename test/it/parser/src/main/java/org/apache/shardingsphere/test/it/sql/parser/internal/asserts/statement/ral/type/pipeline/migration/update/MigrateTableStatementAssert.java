@@ -44,12 +44,13 @@ public final class MigrateTableStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final MigrateTableStatement actual, final MigrateTableStatementTestCase expected) {
         assertThat(assertContext.getText("target database name does not match"), actual.getTargetDatabaseName(), is(expected.getTargetDatabaseName()));
         assertThat(actual.getSourceTargetEntries().size(), is(1));
-        MigrationSourceTargetSegment segment = actual.getSourceTargetEntries().get(0);
-        DataNode dataNode = new DataNode(segment.getSourceDatabaseName(), segment.getSourceTableName());
-        dataNode.setSchemaName(segment.getSourceSchemaName());
-        assertThat(assertContext.getText("source database name does not match"), dataNode.getDataSourceName(), is(expected.getSourceResourceName()));
-        assertThat(assertContext.getText("source schema name does not match"), dataNode.getSchemaName(), is(expected.getSourceSchemaName()));
-        assertThat(assertContext.getText("source table name does not match"), dataNode.getTableName(), is(expected.getSourceTableName()));
-        assertThat(assertContext.getText("target table name does not match"), segment.getTargetTableName(), is(expected.getTargetTableName()));
+        for (MigrationSourceTargetSegment each : actual.getSourceTargetEntries()) {
+            DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
+            dataNode.setSchemaName(each.getSourceSchemaName());
+            assertThat(assertContext.getText("source database name does not match"), dataNode.getDataSourceName(), is(expected.getSourceResourceName()));
+            assertThat(assertContext.getText("source schema name does not match"), dataNode.getSchemaName(), is(expected.getSourceSchemaName()));
+            assertThat(assertContext.getText("source table name does not match"), dataNode.getTableName(), is(expected.getSourceTableName()));
+            assertThat(assertContext.getText("target table name does not match"), each.getTargetTableName(), is(expected.getTargetTableName()));
+        }
     }
 }
