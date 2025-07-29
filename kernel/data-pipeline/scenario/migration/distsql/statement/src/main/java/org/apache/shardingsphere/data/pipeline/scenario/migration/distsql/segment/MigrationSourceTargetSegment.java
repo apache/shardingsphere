@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
-
-import java.util.List;
+import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
 /**
- * Migrate table statement.
+ * Migration source target segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MigrateTableStatement extends UpdatablePipelineRALStatement {
+public final class MigrationSourceTargetSegment implements DistSQLSegment {
     
-    private final List<MigrationSourceTargetSegment> sourceTargetEntries;
+    private final String sourceDatabaseName;
+    
+    private final String sourceSchemaName;
+    
+    private final String sourceTableName;
     
     private final String targetDatabaseName;
+    
+    private final String targetTableName;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.parse
 import com.google.common.base.Splitter;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.AlterTransmissionRuleStatement;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo.SourceTargetEntry;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.queryable.ShowMigrationCheckStatusStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.queryable.ShowMigrationListStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.queryable.ShowMigrationRuleStatement;
@@ -80,7 +80,6 @@ import org.apache.shardingsphere.distsql.segment.TransmissionRuleSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -160,21 +159,19 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitMigrateTable(final MigrateTableContext ctx) {
-        SourceTargetEntry sourceTargetEntry = buildSourceTargetEntry(ctx.sourceTableName(), ctx.targetTableName());
-        return new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), sourceTargetEntry.getTargetDatabaseName());
+        MigrationSourceTargetSegment migrationSourceTargetSegment = buildMigrationSourceTargetSegment(ctx.sourceTableName(), ctx.targetTableName());
+        return new MigrateTableStatement(Collections.singletonList(migrationSourceTargetSegment), migrationSourceTargetSegment.getTargetDatabaseName());
     }
     
-    private SourceTargetEntry buildSourceTargetEntry(final SourceTableNameContext sourceContext, final TargetTableNameContext targetContext) {
+    private MigrationSourceTargetSegment buildMigrationSourceTargetSegment(final SourceTableNameContext sourceContext, final TargetTableNameContext targetContext) {
         List<String> source = Splitter.on('.').splitToList(getRequiredIdentifierValue(sourceContext));
         List<String> target = Splitter.on('.').splitToList(getRequiredIdentifierValue(targetContext));
-        String sourceResourceName = source.get(0);
+        String sourceDatabaseName = source.get(0);
         String sourceSchemaName = 3 == source.size() ? source.get(1) : null;
         String sourceTableName = source.get(source.size() - 1);
         String targetDatabaseName = target.size() > 1 ? target.get(0) : null;
         String targetTableName = target.get(target.size() - 1);
-        SourceTargetEntry result = new SourceTargetEntry(targetDatabaseName, new DataNode(sourceResourceName, sourceTableName), targetTableName);
-        result.getSource().setSchemaName(sourceSchemaName);
-        return result;
+        return new MigrationSourceTargetSegment(sourceDatabaseName, sourceSchemaName, sourceTableName, targetDatabaseName, targetTableName);
     }
     
     private String getRequiredIdentifierValue(final ParseTree context) {
