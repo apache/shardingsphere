@@ -159,19 +159,24 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitMigrateTable(final MigrateTableContext ctx) {
-        MigrationSourceTargetSegment migrationSourceTargetSegment = buildMigrationSourceTargetSegment(ctx.sourceTableName(), ctx.targetTableName());
-        return new MigrateTableStatement(Collections.singletonList(migrationSourceTargetSegment), migrationSourceTargetSegment.getTargetDatabaseName());
+        String targetDatabaseName = getTargetDatabaseName(ctx.targetTableName());
+        MigrationSourceTargetSegment migrationSourceTargetSegment = getMigrationSourceTargetSegment(ctx.sourceTableName(), ctx.targetTableName());
+        return new MigrateTableStatement(targetDatabaseName, Collections.singleton(migrationSourceTargetSegment));
     }
     
-    private MigrationSourceTargetSegment buildMigrationSourceTargetSegment(final SourceTableNameContext sourceContext, final TargetTableNameContext targetContext) {
+    private String getTargetDatabaseName(final TargetTableNameContext targetContext) {
+        List<String> targetDatabaseNames = Splitter.on('.').splitToList(getRequiredIdentifierValue(targetContext));
+        return targetDatabaseNames.size() > 1 ? targetDatabaseNames.get(0) : null;
+    }
+    
+    private MigrationSourceTargetSegment getMigrationSourceTargetSegment(final SourceTableNameContext sourceContext, final TargetTableNameContext targetContext) {
         List<String> source = Splitter.on('.').splitToList(getRequiredIdentifierValue(sourceContext));
         List<String> target = Splitter.on('.').splitToList(getRequiredIdentifierValue(targetContext));
         String sourceDatabaseName = source.get(0);
         String sourceSchemaName = 3 == source.size() ? source.get(1) : null;
         String sourceTableName = source.get(source.size() - 1);
-        String targetDatabaseName = target.size() > 1 ? target.get(0) : null;
         String targetTableName = target.get(target.size() - 1);
-        return new MigrationSourceTargetSegment(sourceDatabaseName, sourceSchemaName, sourceTableName, targetDatabaseName, targetTableName);
+        return new MigrationSourceTargetSegment(sourceDatabaseName, sourceSchemaName, sourceTableName, targetTableName);
     }
     
     private String getRequiredIdentifierValue(final ParseTree context) {

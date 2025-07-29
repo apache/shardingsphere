@@ -34,7 +34,5 @@ public final class MigrationSourceTargetSegment implements DistSQLSegment {
     
     private final String sourceTableName;
     
-    private final String targetDatabaseName;
-    
     private final String targetTableName;
 }

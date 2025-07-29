@@ -31,7 +31,7 @@ import java.util.Collection;
 @Getter
 public final class MigrateTableStatement extends UpdatablePipelineRALStatement {
     
-    private final Collection<MigrationSourceTargetSegment> sourceTargetEntries;
-    
     private final String targetDatabaseName;
+    
+    private final Collection<MigrationSourceTargetSegment> sourceTargetEntries;
 }
