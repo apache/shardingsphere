@@ -330,6 +330,7 @@
     <sql-case id="alter_table_change_with_partition_column_comment_after_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move after region with comment' AFTER region CASCADE" db-types="Hive" />
     <sql-case id="alter_table_change_with_partition_column_comment_after_restrict" value="ALTER TABLE logs PARTITION (level='info') CHANGE COLUMN msg log_msg STRING COMMENT 'position after timestamp' AFTER timestamp RESTRICT" db-types="Hive" />
     <sql-case id="alter_table_change_with_quoted_column1" value="ALTER TABLE sales CHANGE COLUMN `order.date` `order_date` STRING COMMENT 'rename column with dot' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column2" value="ALTER TABLE logs PARTITION (level='error') CHANGE COLUMN `msg:content` `message_content` STRING COMMENT 'rename column with colon' AFTER timestamp RESTRICT" db-types="Hive" />
     <sql-case id="alter_table_add_columns_basic" value="ALTER TABLE sales ADD COLUMNS (gender STRING)" db-types="Hive" />
     <sql-case id="alter_table_replace_columns_basic" value="ALTER TABLE users REPLACE COLUMNS (id INT, name STRING)" db-types="Hive" />
     <sql-case id="alter_table_add_columns_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (gender STRING)" db-types="Hive" />

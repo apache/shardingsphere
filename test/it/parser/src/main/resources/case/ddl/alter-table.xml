@@ -2198,16 +2198,20 @@
         </change-column>
     </alter-table>
 
-    <alter-table sql-case-id="alter_table_change_with_quoted_column5">
-        <table name="orders" start-index="12" stop-index="17" />
-        <change-column start-index="24" stop-index="123">
-            <previous-column name="order:id" start-delimiter="`" end-delimiter="`" start-index="38" stop-index="47" />
-            <column-definition type="INT" start-delimiter="`" end-delimiter="`" start-index="44" stop-index="59">
-                <column name="order_id"/>
+    <alter-table sql-case-id="alter_table_change_with_quoted_column2">
+        <table name="logs" start-index="12" stop-index="15" />
+        <partition spec="level='error'" start-index="18" stop-index="34" />
+        <change-column start-index="36" stop-index="125">
+            <previous-column name="msg:content" start-delimiter="`" end-delimiter="`" start-index="57" stop-index="69" />
+            <column-definition type="STRING" start-delimiter="`" end-delimiter="`" start-index="71" stop-index="94">
+                <column name="message_content"/>
             </column-definition>
-            <comment value="rename column with colon and quotes" start-index="61" stop-index="92" />
-            <position after="user_id" start-index="94" stop-index="114" />
-            <cascade start-index="116" stop-index="122" />
+            <comment value="rename column with colon" start-index="80" stop-index="101" />
+            <column-position start-index="137" stop-index="145">
+                <column name="timestamp"/>
+                <after-column name="timestamp"/>
+            </column-position>
+            <restrict start-index="125" stop-index="134" />
         </change-column>
     </alter-table>
 
