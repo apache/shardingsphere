@@ -15,18 +15,10 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+grammar RALStatement;
 
 import BaseRule;
 
-showEncryptRules
-    : SHOW ENCRYPT (TABLE? tableRule | RULES) (FROM databaseName)?
-    ;
-
-tableRule
-    : RULE tableName
-    ;
-
-countEncryptRule
-    : COUNT ENCRYPT RULE (FROM databaseName)?
+showEncryptAlgorithmPlugins
+    : SHOW ENCRYPT ALGORITHM PLUGINS
     ;
