@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequire
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo.SourceTargetEntry;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo.MigrateSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.updatable.MigrateTableStatement;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
@@ -56,12 +56,12 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), getSourceTargetEntries(sqlStatement), targetDatabaseName);
     }
     
-    private Collection<SourceTargetEntry> getSourceTargetEntries(final MigrateTableStatement sqlStatement) {
-        Collection<SourceTargetEntry> result = new LinkedList<>();
+    private Collection<MigrateSourceTargetEntry> getSourceTargetEntries(final MigrateTableStatement sqlStatement) {
+        Collection<MigrateSourceTargetEntry> result = new LinkedList<>();
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
             DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
             dataNode.setSchemaName(each.getSourceSchemaName());
-            result.add(new SourceTargetEntry(each.getTargetDatabaseName(), dataNode, each.getTargetTableName()));
+            result.add(new MigrateSourceTargetEntry(dataNode, each.getTargetDatabaseName(), each.getTargetTableName()));
         }
         return result;
     }
