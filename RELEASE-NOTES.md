@@ -73,14 +73,6 @@
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
-1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
-1. SQL Parser: Support Hive DROP TABLE statement parse - [#36018](https://github.com/apache/shardingsphere/pull/36018)
-1. SQL Parser: Support Hive USE DATABASE statement parse - [#36024](https://github.com/apache/shardingsphere/pull/36024)
-1. SQL Parser: Support Hive CREATE TABLE statement parse - [#36040](https://github.com/apache/shardingsphere/pull/36040)
-1. SQL Parser: Support Hive TRUNCATE TABLE statement parse - [#36049](https://github.com/apache/shardingsphere/pull/36049)
-1. SQL Parser: Support Hive ALTER TABLE statement parse - [#36066](https://github.com/apache/shardingsphere/pull/36066)
-1. SQL Binder: Fix is unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
-1. SQL Parser: Support Hive ALTER PARTITION statement parse - [#36072](https://github.com/apache/shardingsphere/pull/36072)
 1. SQL Parser: Support Hive ALTER COLUMN statement parse - [#36096](https://github.com/apache/shardingsphere/pull/36096)
 
 ### Bug Fixes
