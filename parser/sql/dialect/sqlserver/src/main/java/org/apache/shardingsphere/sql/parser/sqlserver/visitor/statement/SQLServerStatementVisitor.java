@@ -252,6 +252,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Par
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintExtendedContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LinkedServerNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenDatasourceFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1069,6 +1070,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
+    public ASTNode visitOpenDatasourceFunction(final OpenDatasourceFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENDATASOURCE().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        if (null != ctx.tableName()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx), ctx.expr());
     }
@@ -1347,8 +1360,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitRowSetFunction(final RowSetFunctionContext ctx) {
         if (null != ctx.openRowSetFunction()) {
             return visit(ctx.openRowSetFunction());
-        } else {
+        } else if (null != ctx.openQueryFunction()) {
             return visit(ctx.openQueryFunction());
+        } else {
+            return visit(ctx.openDatasourceFunction());
         }
     }
     
