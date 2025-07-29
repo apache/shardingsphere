@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.api;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
 /**
- * Migrate source target entry.
+ * Migration source target entry.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode(of = {"source", "targetTableName"})
-public final class MigrateSourceTargetEntry {
+public final class MigrationSourceTargetEntry {
     
     private final DataNode source;
     
