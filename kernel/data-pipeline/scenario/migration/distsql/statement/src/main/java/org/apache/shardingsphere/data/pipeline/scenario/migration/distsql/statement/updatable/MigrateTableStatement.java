@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.distsql.statement.updatable.UpdatablePipelineRALStatement;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.segment.MigrationSourceTargetSegment;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Migrate table statement.
@@ -31,7 +31,7 @@ import java.util.List;
 @Getter
 public final class MigrateTableStatement extends UpdatablePipelineRALStatement {
     
-    private final List<MigrationSourceTargetSegment> sourceTargetEntries;
+    private final Collection<MigrationSourceTargetSegment> sourceTargetEntries;
     
     private final String targetDatabaseName;
 }
