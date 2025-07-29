@@ -100,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 
@@ -129,12 +130,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     private Collection<String> getExpectedPrivileges(final CheckPrivilegesContext ctx) {
-        return null == ctx ? Collections.emptySet() : ctx.privilegeType().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
+        return null == ctx ? Collections.emptySet() : ctx.privilegeType().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toSet());
     }
     
     @Override
     public ASTNode visitShowTableMetadata(final ShowTableMetadataContext ctx) {
-        Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
+        Collection<String> tableNames = ctx.tableName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toSet());
         return new ShowTableMetaDataStatement(tableNames, null == ctx.databaseName()
                 ? null
                 : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
@@ -142,13 +143,14 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitStorageUnitDefinition(final StorageUnitDefinitionContext ctx) {
-        String user = getIdentifierValue(ctx.user());
+        String user = IdentifierValueUtils.getValue(ctx.user());
         String password = null == ctx.password() ? "" : new StringLiteralValue(StringUtils.replaceStandardEscapes(ctx.password().getText())).getValue();
         Properties props = getProperties(ctx.propertiesDefinition());
         return null == ctx.urlSource()
-                ? new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()),
-                        getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), getIdentifierValue(ctx.simpleSource().dbName()), user, password, props)
-                : new URLBasedDataSourceSegment(getIdentifierValue(ctx.storageUnitName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
+                ? new HostnameAndPortBasedDataSourceSegment(IdentifierValueUtils.getValue(ctx.storageUnitName()),
+                        IdentifierValueUtils.getValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(), IdentifierValueUtils.getValue(ctx.simpleSource().dbName()), user, password,
+                        props)
+                : new URLBasedDataSourceSegment(IdentifierValueUtils.getValue(ctx.storageUnitName()), IdentifierValueUtils.getValue(ctx.urlSource().url()), user, password, props);
     }
     
     @Override
@@ -178,23 +180,23 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitLabelComputeNode(final LabelComputeNodeContext ctx) {
-        Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new LabelComputeNodeStatement(null != ctx.RELABEL(), getIdentifierValue(ctx.instanceId()), labels);
+        Collection<String> labels = ctx.label().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList());
+        return new LabelComputeNodeStatement(null != ctx.RELABEL(), IdentifierValueUtils.getValue(ctx.instanceId()), labels);
     }
     
     @Override
     public ASTNode visitUnlabelComputeNode(final UnlabelComputeNodeContext ctx) {
-        Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new UnlabelComputeNodeStatement(getIdentifierValue(ctx.instanceId()), labels);
+        Collection<String> labels = ctx.label().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList());
+        return new UnlabelComputeNodeStatement(IdentifierValueUtils.getValue(ctx.instanceId()), labels);
     }
     
     private SetComputeNodeStateStatement buildSetComputeNodeStateStatement(final String status, final InstanceIdContext instanceIdContext) {
-        return new SetComputeNodeStateStatement(status, getIdentifierValue(instanceIdContext));
+        return new SetComputeNodeStateStatement(status, IdentifierValueUtils.getValue(instanceIdContext));
     }
     
     @Override
     public ASTNode visitAlterComputeNode(final AlterComputeNodeContext ctx) {
-        return new AlterComputeNodeStatement(getIdentifierValue(ctx.instanceId()), getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValues()));
+        return new AlterComputeNodeStatement(IdentifierValueUtils.getValue(ctx.instanceId()), IdentifierValueUtils.getValue(ctx.variableName()), IdentifierValueUtils.getValue(ctx.variableValues()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -220,7 +222,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitShowStorageUnits(final ShowStorageUnitsContext ctx) {
         FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
-        String likePattern = null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern());
+        String likePattern = null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern());
         return new ShowStorageUnitsStatement(fromDatabase, likePattern);
     }
     
@@ -231,28 +233,28 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitSetDistVariable(final SetDistVariableContext ctx) {
-        return new SetDistVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
+        return new SetDistVariableStatement(IdentifierValueUtils.getValue(ctx.variableName()), IdentifierValueUtils.getValue(ctx.variableValue()));
     }
     
     @Override
     public ASTNode visitShowLogicalTables(final ShowLogicalTablesContext ctx) {
         FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
-        return new ShowLogicalTablesStatement(null != ctx.FULL(), fromDatabase, null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
+        return new ShowLogicalTablesStatement(null != ctx.FULL(), fromDatabase, null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
     }
     
     @Override
     public ASTNode visitShowDistVariable(final ShowDistVariableContext ctx) {
-        return new ShowDistVariableStatement(Objects.requireNonNull(getIdentifierValue(ctx.variableName())).toUpperCase());
+        return new ShowDistVariableStatement(Objects.requireNonNull(IdentifierValueUtils.getValue(ctx.variableName())).toUpperCase());
     }
     
     @Override
     public ASTNode visitShowDistVariables(final ShowDistVariablesContext ctx) {
-        return new ShowDistVariablesStatement(null == ctx.showLike() ? null : getIdentifierValue(ctx.showLike().likePattern()));
+        return new ShowDistVariablesStatement(null == ctx.showLike() ? null : IdentifierValueUtils.getValue(ctx.showLike().likePattern()));
     }
     
     @Override
     public ASTNode visitRefreshDatabaseMetadata(final RefreshDatabaseMetadataContext ctx) {
-        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()), null != ctx.FORCE());
+        return new RefreshDatabaseMetaDataStatement(null == ctx.databaseName() ? null : IdentifierValueUtils.getValue(ctx.databaseName()), null != ctx.FORCE());
     }
     
     @Override
@@ -262,55 +264,56 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
         }
         String storageUnitName = null;
         String schemaName = null;
-        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
+        String tableName = IdentifierValueUtils.getValue(ctx.refreshScope().tableName());
         if (null != ctx.refreshScope().fromSegment()) {
             FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
-            storageUnitName = getIdentifierValue(fromSegment.storageUnitName());
-            schemaName = null == fromSegment.schemaName() ? null : getIdentifierValue(fromSegment.schemaName());
+            storageUnitName = IdentifierValueUtils.getValue(fromSegment.storageUnitName());
+            schemaName = null == fromSegment.schemaName() ? null : IdentifierValueUtils.getValue(fromSegment.schemaName());
         }
         return new RefreshTableMetaDataStatement(tableName, storageUnitName, schemaName);
     }
     
     @Override
     public ASTNode visitExportDatabaseConfiguration(final ExportDatabaseConfigurationContext ctx) {
-        return new ExportDatabaseConfigurationStatement(getIdentifierValue(ctx.filePath()),
+        return new ExportDatabaseConfigurationStatement(IdentifierValueUtils.getValue(ctx.filePath()),
                 null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitExportMetaData(final ExportMetaDataContext ctx) {
-        return new ExportMetaDataStatement(null == ctx.filePath() ? null : getIdentifierValue(ctx.filePath()));
+        return new ExportMetaDataStatement(null == ctx.filePath() ? null : IdentifierValueUtils.getValue(ctx.filePath()));
     }
     
     @Override
     public ASTNode visitExportStorageNodes(final ExportStorageNodesContext ctx) {
-        return new ExportStorageNodesStatement(null == ctx.databaseName() ? null : getIdentifierValue(ctx.databaseName()), null == ctx.filePath() ? null : getIdentifierValue(ctx.filePath()));
+        return new ExportStorageNodesStatement(
+                null == ctx.databaseName() ? null : IdentifierValueUtils.getValue(ctx.databaseName()), null == ctx.filePath() ? null : IdentifierValueUtils.getValue(ctx.filePath()));
     }
     
     @Override
     public ASTNode visitConvertYamlConfiguration(final ConvertYamlConfigurationContext ctx) {
-        return new ConvertYamlConfigurationStatement(getIdentifierValue(ctx.filePath()));
+        return new ConvertYamlConfigurationStatement(IdentifierValueUtils.getValue(ctx.filePath()));
     }
     
     @Override
     public ASTNode visitShowRulesUsedStorageUnit(final ShowRulesUsedStorageUnitContext ctx) {
-        return new ShowRulesUsedStorageUnitStatement(getIdentifierValue(ctx.storageUnitName()),
+        return new ShowRulesUsedStorageUnitStatement(IdentifierValueUtils.getValue(ctx.storageUnitName()),
                 null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitImportDatabaseConfiguration(final ImportDatabaseConfigurationContext ctx) {
-        return new ImportDatabaseConfigurationStatement(getIdentifierValue(ctx.filePath()));
+        return new ImportDatabaseConfigurationStatement(IdentifierValueUtils.getValue(ctx.filePath()));
     }
     
     @Override
     public ASTNode visitImportMetaData(final ImportMetaDataContext ctx) {
-        return new ImportMetaDataStatement(null == ctx.metaDataValue() ? null : QuoteCharacter.unwrapText(ctx.metaDataValue().getText()), getIdentifierValue(ctx.filePath()));
+        return new ImportMetaDataStatement(null == ctx.metaDataValue() ? null : QuoteCharacter.unwrapText(ctx.metaDataValue().getText()), IdentifierValueUtils.getValue(ctx.filePath()));
     }
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
+        return new AlgorithmSegment(IdentifierValueUtils.getValue(ctx.algorithmTypeName()), buildProperties(ctx.propertiesDefinition()));
     }
     
     private Properties buildProperties(final PropertiesDefinitionContext ctx) {
@@ -326,21 +329,17 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitLockCluster(final LockClusterContext ctx) {
-        return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()), Long.parseLong(getIdentifierValue(ctx.INT_())));
+        return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()), Long.parseLong(IdentifierValueUtils.getValue(ctx.INT_())));
     }
     
     @Override
     public ASTNode visitUnlockCluster(final UnlockClusterContext ctx) {
-        return new UnlockClusterStatement(Long.parseLong(getIdentifierValue(ctx.INT_())));
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
+        return new UnlockClusterStatement(Long.parseLong(IdentifierValueUtils.getValue(ctx.INT_())));
     }
     
     @Override
     public ASTNode visitShowPluginImplementations(final ShowPluginImplementationsContext ctx) {
-        return new ShowPluginsStatement("COMMON", getIdentifierValue(ctx.pluginClass()));
+        return new ShowPluginsStatement("COMMON", IdentifierValueUtils.getValue(ctx.pluginClass()));
     }
     
     @Override

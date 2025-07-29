@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.parser.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementParser.AlterSQLParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLParserDistSQLStatementParser.CacheOptionContext;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.parser.distsql.statement.queryable.ShowSQLParse
 import org.apache.shardingsphere.parser.distsql.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 
 /**
  * SQL statement visitor for SQL parser DistSQL.
@@ -55,11 +54,7 @@ public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStat
     @Override
     public CacheOptionSegment visitCacheOption(final CacheOptionContext ctx) {
         return new CacheOptionSegment(
-                null == ctx.initialCapacity() ? null : Integer.parseInt(getIdentifierValue(ctx.initialCapacity())),
-                null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())));
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
+                null == ctx.initialCapacity() ? null : Integer.parseInt(IdentifierValueUtils.getValue(ctx.initialCapacity())),
+                null == ctx.maximumSize() ? null : Long.parseLong(IdentifierValueUtils.getValue(ctx.maximumSize())));
     }
 }
