@@ -93,6 +93,12 @@ class PostgreSQLBinaryProtocolValueFactoryTest {
     }
     
     @Test
+    void assertGetBoolArrayBinaryProtocolValue() {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.BOOL_ARRAY);
+        assertThat(binaryProtocolValue, instanceOf(PostgreSQLBoolArrayBinaryProtocolValue.class));
+    }
+    
+    @Test
     void assertGetBinaryProtocolValueExThrown() {
         assertThrows(IllegalArgumentException.class, () -> PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.XML));
     }

@@ -20,6 +20,11 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
+
+
 /**
  * Binary protocol value for boolean array for PostgreSQL.
  */
@@ -41,6 +46,24 @@ public final class PostgreSQLBoolArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedSQLOperationException("PostgreSQLBoolArrayBinaryProtocolValue.write()");
+        StringBuilder result = new StringBuilder("{");
+        List<String> boolStrings = new ArrayList<>();
+
+        if (value instanceof boolean[]) {
+            for (boolean b : (boolean[]) value) {
+                boolStrings.add(b ? "t" : "f");
+            }
+        } else if (value instanceof Boolean[]) {
+            for (Boolean b : (Boolean[]) value) {
+                boolStrings.add(Boolean.TRUE.equals(b) ? "t" : "f");
+            }
+        } else {
+            throw new UnsupportedSQLOperationException("Unsupported type for PostgreSQLBoolArrayBinaryProtocolValue.write()");
+        }
+
+        result.append(String.join(",", boolStrings)).append("}");
+        byte[] bytes = result.toString().getBytes(StandardCharsets.UTF_8);
+        payload.getByteBuf().writeInt(bytes.length);
+        payload.getByteBuf().writeBytes(bytes);
     }
 }
