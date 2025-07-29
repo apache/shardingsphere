@@ -48,7 +48,7 @@ class ShardingIndexTokenGeneratorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    private final DatabaseType postgresqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private final ShardingIndexTokenGenerator generator = new ShardingIndexTokenGenerator(mock(ShardingRule.class));
     
@@ -61,13 +61,13 @@ class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyIndex() {
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(postgreSQLDatabaseType));
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(postgresqlDatabaseType));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsGenerateSQLToken() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(postgreSQLDatabaseType);
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(postgresqlDatabaseType);
         sqlStatement.setIndex(mock(IndexSegment.class));
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
