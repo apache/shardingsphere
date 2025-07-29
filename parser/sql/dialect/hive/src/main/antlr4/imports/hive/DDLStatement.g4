@@ -334,7 +334,7 @@ addConstraint
 
 changeColumn
     : CHANGE COLUMN constraintName constraintName dataTypeClause CONSTRAINT constraintName
-    | CHANGE COLUMN? columnName columnName dataTypeClause (COMMENT string_)? (CONSTRAINT constraintName)? (FIRST | AFTER columnName)? (CASCADE | RESTRICT)?
+    | CHANGE COLUMN? columnName columnName dataTypeClause (COMMENT string_)? (FIRST | AFTER columnName)? (CASCADE | RESTRICT)?
     ;
 
 alterTableConstrintClause
