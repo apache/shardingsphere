@@ -27,12 +27,10 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(of = {"source", "targetTableName"})
+@EqualsAndHashCode
 public final class MigrationSourceTargetEntry {
     
     private final DataNode source;
-    
-    private final String targetDatabaseName;
     
     private final String targetTableName;
 }

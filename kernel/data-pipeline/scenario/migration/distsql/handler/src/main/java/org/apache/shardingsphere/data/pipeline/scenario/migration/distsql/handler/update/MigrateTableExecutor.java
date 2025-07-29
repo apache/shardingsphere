@@ -61,7 +61,7 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
         for (MigrationSourceTargetSegment each : sqlStatement.getSourceTargetEntries()) {
             DataNode dataNode = new DataNode(each.getSourceDatabaseName(), each.getSourceTableName());
             dataNode.setSchemaName(each.getSourceSchemaName());
-            result.add(new MigrationSourceTargetEntry(dataNode, each.getTargetDatabaseName(), each.getTargetTableName()));
+            result.add(new MigrationSourceTargetEntry(dataNode, each.getTargetTableName()));
         }
         return result;
     }
