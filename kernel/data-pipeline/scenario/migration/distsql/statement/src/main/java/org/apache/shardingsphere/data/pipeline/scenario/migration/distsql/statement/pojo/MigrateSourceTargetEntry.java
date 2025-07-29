@@ -23,16 +23,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 
 /**
- * Source target entry.
+ * Migrate source target entry.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode(of = {"source", "targetTableName"})
-public final class SourceTargetEntry {
-    
-    private final String targetDatabaseName;
+public final class MigrateSourceTargetEntry {
     
     private final DataNode source;
+    
+    private final String targetDatabaseName;
     
     private final String targetTableName;
 }

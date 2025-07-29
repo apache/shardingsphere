@@ -48,7 +48,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarr
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo.SourceTargetEntry;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.statement.pojo.MigrateSourceTargetEntry;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -258,21 +258,21 @@ class MigrationJobAPITest {
     
     @Test
     void assertCreateJobConfigFailedOnMoreThanOneSourceTable() {
-        Collection<SourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
-                .map(each -> new SourceTargetEntry("logic_db", new DataNode("ds_0", each), "t_order")).collect(Collectors.toList());
+        Collection<MigrateSourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
+                .map(each -> new MigrateSourceTargetEntry(new DataNode("ds_0", each), "logic_db", "t_order")).collect(Collectors.toList());
         assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.schedule(PipelineContextUtils.getContextKey(), sourceTargetEntries, "logic_db"));
     }
     
     @Test
     void assertCreateJobConfigFailedOnDataSourceNotExist() {
-        Collection<SourceTargetEntry> sourceTargetEntries = Collections.singleton(new SourceTargetEntry("logic_db", new DataNode("ds_not_exists", "t_order"), "t_order"));
+        Collection<MigrateSourceTargetEntry> sourceTargetEntries = Collections.singleton(new MigrateSourceTargetEntry(new DataNode("ds_not_exists", "t_order"), "logic_db", "t_order"));
         assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.schedule(PipelineContextUtils.getContextKey(), sourceTargetEntries, "logic_db"));
     }
     
     @Test
     void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
-        SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
+        MigrateSourceTargetEntry sourceTargetEntry = new MigrateSourceTargetEntry(new DataNode("ds_0", "t_order"), "logic_db", "t_order");
         String jobId = jobAPI.schedule(PipelineContextUtils.getContextKey(), Collections.singleton(sourceTargetEntry), "logic_db");
         MigrationJobConfiguration actual = jobConfigManager.getJobConfiguration(jobId);
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));
