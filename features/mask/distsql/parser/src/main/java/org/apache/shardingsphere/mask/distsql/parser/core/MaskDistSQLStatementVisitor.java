@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlterMaskRuleContext;
@@ -45,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Properties;
@@ -67,12 +67,12 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     
     @Override
     public ASTNode visitDropMaskRule(final DropMaskRuleContext ctx) {
-        return new DropMaskRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropMaskRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitShowMaskRules(final ShowMaskRulesContext ctx) {
-        return new ShowMaskRulesStatement(null == ctx.RULE() ? null : getIdentifierValue(ctx.ruleName()),
+        return new ShowMaskRulesStatement(null == ctx.RULE() ? null : IdentifierValueUtils.getValue(ctx.ruleName()),
                 null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
@@ -83,21 +83,17 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     
     @Override
     public ASTNode visitMaskRuleDefinition(final MaskRuleDefinitionContext ctx) {
-        return new MaskRuleSegment(getIdentifierValue(ctx.ruleName()), ctx.columnDefinition().stream().map(each -> (MaskColumnSegment) visit(each)).collect(Collectors.toList()));
+        return new MaskRuleSegment(IdentifierValueUtils.getValue(ctx.ruleName()), ctx.columnDefinition().stream().map(each -> (MaskColumnSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        return new MaskColumnSegment(getIdentifierValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return new MaskColumnSegment(IdentifierValueUtils.getValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
+        return new AlgorithmSegment(IdentifierValueUtils.getValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
