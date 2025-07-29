@@ -53,7 +53,7 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
             targetDatabaseName = database.getName();
         }
         MigrationJobAPI jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
-        jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
+        jobAPI.schedule(new PipelineContextKey(InstanceType.PROXY), sqlStatement.getSourceTargetEntries(), targetDatabaseName);
     }
     
     @Override
