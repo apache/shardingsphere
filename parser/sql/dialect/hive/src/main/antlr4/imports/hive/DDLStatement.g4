@@ -74,6 +74,9 @@ alterTable
     | alterTableCommonClause ARCHIVE partitionSpec
     | alterTableCommonClause UNARCHIVE partitionSpec
     | alterTableCommonClause RECOVER PARTITIONS
+    | alterTableCommonClause partitionSpec? changeColumn
+    | alterTableCommonClause partitionSpec? addColumns
+    | alterTableCommonClause partitionSpec? replaceColumns
     ;
 
 alterDatabaseSpecification_
@@ -331,6 +334,7 @@ addConstraint
 
 changeColumn
     : CHANGE COLUMN constraintName constraintName dataTypeClause CONSTRAINT constraintName
+    | CHANGE COLUMN? columnName columnName dataTypeClause (COMMENT string_)? (FIRST | AFTER columnName)? (CASCADE | RESTRICT)?
     ;
 
 alterTableConstrintClause
@@ -367,4 +371,12 @@ msckAction
     : ADD PARTITIONS
     | DROP PARTITIONS
     | SYNC PARTITIONS
+    ;
+
+addColumns
+    : ADD COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ (CASCADE | RESTRICT)?
+    ;
+
+replaceColumns
+    : REPLACE COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ (CASCADE | RESTRICT)?
     ;

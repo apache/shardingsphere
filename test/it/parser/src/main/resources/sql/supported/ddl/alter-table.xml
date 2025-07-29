@@ -324,4 +324,39 @@
     <sql-case id="alter_table_drop_multiple_partitions_all_options" value="ALTER TABLE page_view DROP IF EXISTS PARTITION (dt='2008-08-08', country='us'), PARTITION (dt='2008-08-09', country='cn') IGNORE PROTECTION PURGE" db-types="Hive" />
     <sql-case id="alter_table_archive_partition_basic" value="ALTER TABLE log_table ARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
     <sql-case id="alter_table_unarchive_partition_basic" value="ALTER TABLE log_table UNARCHIVE PARTITION (dt='2025-07-25')" db-types="Hive" />
+    <sql-case id="alter_table_change_column_basic" value="ALTER TABLE test_change CHANGE a a1 INT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_first_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move to first with comment' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_first_restrict" value="ALTER TABLE logs PARTITION (level='warn') CHANGE COLUMN msg warning_msg STRING COMMENT 'set as first column' FIRST RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_after_cascade" value="ALTER TABLE sales PARTITION (dt='2025-07') CHANGE COLUMN dt sale_date STRING COMMENT 'move after region with comment' AFTER region CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_partition_column_comment_after_restrict" value="ALTER TABLE logs PARTITION (level='info') CHANGE COLUMN msg log_msg STRING COMMENT 'position after timestamp' AFTER timestamp RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column1" value="ALTER TABLE sales CHANGE COLUMN `order.date` `order_date` STRING COMMENT 'rename column with dot' FIRST CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_change_with_quoted_column2" value="ALTER TABLE logs PARTITION (level='error') CHANGE COLUMN `msg:content` `message_content` STRING COMMENT 'rename column with colon' AFTER timestamp RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_basic" value="ALTER TABLE sales ADD COLUMNS (gender STRING)" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_basic" value="ALTER TABLE users REPLACE COLUMNS (id INT, name STRING)" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_partition" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (gender STRING)" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_partition" value="ALTER TABLE logs PARTITION (level='info') REPLACE COLUMNS (timestamp STRING, message STRING)" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_comment" value="ALTER TABLE products ADD COLUMNS (gender STRING COMMENT 'This is a comment')" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_comment" value="ALTER TABLE orders REPLACE COLUMNS (order_id INT COMMENT 'unique order identifier', total DECIMAL(10,2))" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_cascade" value="ALTER TABLE sales ADD COLUMNS (tax_rate FLOAT) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_restrict" value="ALTER TABLE sales ADD COLUMNS (tax_rate FLOAT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_cascade" value="ALTER TABLE users REPLACE COLUMNS (user_id INT, email STRING) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_restrict" value="ALTER TABLE users REPLACE COLUMNS (user_id INT, email STRING) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_with_partition_and_comment" value="ALTER TABLE sales PARTITION (dt='2025-07') ADD COLUMNS (shipping_fee DECIMAL(8,2) COMMENT 'delivery cost for the order')" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_partition_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-08') ADD COLUMNS (refund_amt DECIMAL(10,2)) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_partition_restrict1" value="ALTER TABLE users PARTITION (region='asia') ADD COLUMNS (login_count INT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_comment_cascade" value="ALTER TABLE sales ADD COLUMNS (discountverseas_fee DECIMAL(8,2) COMMENT 'international shipping fee') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_comment_restrict" value="ALTER TABLE products ADD COLUMNS (material STRING COMMENT 'product material composition') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_with_partition_and_comment" value="ALTER TABLE sales PARTITION (dt='2025-07') REPLACE COLUMNS (order_id INT, shipping_fee DECIMAL(8,2) COMMENT 'delivery cost for the order')" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_partition_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-08') REPLACE COLUMNS (product_id INT, refund_amt DECIMAL(10,2)) CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_partition_restrict1" value="ALTER TABLE users PARTITION (region='asia') REPLACE COLUMNS (username STRING, login_count INT) RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_comment_cascade" value="ALTER TABLE sales REPLACE COLUMNS (overseas_fee DECIMAL(8,2) COMMENT 'international shipping fee', service_charge DECIMAL(6,2) COMMENT 'platform service fee') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_replace_columns_comment_restrict" value="ALTER TABLE products REPLACE COLUMNS (material STRING COMMENT 'product material composition', origin STRING COMMENT 'production place') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_full_combination1" value="ALTER TABLE sales PARTITION (dt='2025-09') ADD COLUMNS (insurance_fee DECIMAL(6,2) COMMENT 'order insurance cost') CASCADE" db-types="Hive" />
+    <sql-case id="alter_table_add_columns_full_combination2" value="ALTER TABLE users PARTITION (region='europe') ADD COLUMNS (last_login TIMESTAMP COMMENT 'latest login time') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_partition_comment_cascade1" value="ALTER TABLE sales PARTITION (dt='2025-10') REPLACE COLUMNS (order_id INT COMMENT 'unique order identifier', final_amount DECIMAL(10,2) COMMENT 'total amount after discounts') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_partition_comment_restrict1" value="ALTER TABLE users PARTITION (region='africa') REPLACE COLUMNS (user_name STRING COMMENT 'user full name', signup_date DATE COMMENT 'account creation date') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted1" value="ALTER TABLE sales PARTITION (dt='2025-11') REPLACE COLUMNS (`order id` INT COMMENT 'unique order number', `final amount` DECIMAL(10,2) COMMENT 'total after tax') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted2" value="ALTER TABLE users PARTITION (region='south_america') REPLACE COLUMNS (`user name` STRING COMMENT 'full name of user', `login count` INT COMMENT 'number of logins') RESTRICT" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted3" value="ALTER TABLE products PARTITION (cat='clothing') REPLACE COLUMNS (`size info` STRING COMMENT 'size specification', `color code` INT COMMENT 'RGB color value') CASCADE" db-types="Hive" />
+    <sql-case id="alter_replace_columns_quoted4" value="ALTER TABLE orders PARTITION (status='shipped') REPLACE COLUMNS (`ship date` DATE COMMENT 'actual shipping date', `tracking id` STRING COMMENT 'logistics tracking number') RESTRICT" db-types="Hive" />
 </sql-cases>
