@@ -185,10 +185,8 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitChangeColumn(final ChangeColumnContext ctx) {
-        // Old column
         ColumnSegment oldColumn = new ColumnSegment(ctx.columnName(0).getStart().getStartIndex(), ctx.columnName(0).getStop().getStopIndex(),
                 new IdentifierValue(ctx.columnName(0).getText()));
-        // New column definition
         ColumnSegment newColumn = new ColumnSegment(ctx.columnName(1).getStart().getStartIndex(), ctx.columnName(1).getStop().getStopIndex(),
                 new IdentifierValue(ctx.columnName(1).getText()));
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataTypeClause());
