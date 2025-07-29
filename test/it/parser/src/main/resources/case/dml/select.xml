@@ -11256,4 +11256,29 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_language_identifier">
+        <from>
+            <simple-table name="dm_external_script_execution_stats" start-index="40" stop-index="77">
+                <owner name="sys" start-index="40" stop-index="42"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="counter_name" start-index="7" stop-index="18"/>
+            <column-projection name="counter_value" start-index="21" stop-index="33"/>
+        </projections>
+        <where start-index="79" stop-index="103">
+            <expr>
+                <binary-operation-expression text="language = 'Python'" start-index="85" stop-index="103">
+                    <left>
+                        <column name="language" start-index="85" stop-index="92"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="Python" start-index="96" stop-index="103"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
