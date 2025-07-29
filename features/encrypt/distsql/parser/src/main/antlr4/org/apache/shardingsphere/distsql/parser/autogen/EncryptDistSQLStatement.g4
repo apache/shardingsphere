@@ -17,7 +17,7 @@
 
 grammar EncryptDistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (createEncryptRule
