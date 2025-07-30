@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import org.apache.groovy.util.Maps;
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InUsedStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
