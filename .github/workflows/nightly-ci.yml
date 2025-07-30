@@ -29,7 +29,7 @@ jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-
+  
   ci:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
@@ -99,7 +99,7 @@ jobs:
           java-version: 8
       - name: Run Tests with JDK 8
         run: ./mvnw test -B -ntp -fae -T1C
-
+  
   ci-native-test:
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: NativeTest CI - GraalVM CE on ${{ matrix.os }}
