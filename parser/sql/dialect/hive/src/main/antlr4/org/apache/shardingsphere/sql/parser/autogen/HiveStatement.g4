@@ -35,6 +35,7 @@ execute
     | truncateTable
     | msckStatement
     | alterTable
+    | createView
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;
