@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.natived.jdbc.databases.hive;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.curator.test.InstanceSpec;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
 import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
 import org.awaitility.Awaitility;
@@ -28,13 +27,14 @@ import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
+import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -46,40 +46,33 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-@SuppressWarnings({"resource", "deprecation", "SqlNoDataSourceInspection"})
+@SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection", "resource"})
 @EnabledInNativeImage
 @Testcontainers
-class StandaloneMetastoreTest {
-    
-    private final int randomPort = InstanceSpec.getRandomPort();
+class SystemSchemasTest {
     
     @AutoClose
     private final Network network = Network.newNetwork();
     
-    /**
-     * TODO {@link org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader} needs to
-     *  actively connect to HMS, which leads to the use of {@link FixedHostPortGenericContainer} .
-     *  This is not a reasonable behavior and requires further changes.
-     */
     @Container
     @AutoClose
-    private final GenericContainer<?> hmsContainer = new FixedHostPortGenericContainer<>("apache/hive:4.0.1")
-            .withEnv("SERVICE_NAME", "metastore")
-            .withEnv("METASTORE_PORT", String.valueOf(randomPort))
+    private final GenericContainer<?> postgres = new GenericContainer<>("postgres:17.5-bookworm")
+            .withEnv("POSTGRES_PASSWORD", "example")
             .withNetwork(network)
-            .withNetworkAliases("metastore")
-            .withFixedExposedPort(randomPort, randomPort);
+            .withNetworkAliases("some-postgres");
     
     @Container
     @AutoClose
-    private final GenericContainer<?> hs2Container = new GenericContainer<>("apache/hive:4.0.1")
+    private final GenericContainer<?> hs2 = new GenericContainer<>("ghcr.io/linghengqian/hive:4.0.1-all-in-one")
             .withEnv("SERVICE_NAME", "hiveserver2")
-            .withEnv("IS_RESUME", "true")
-            .withEnv("SERVICE_OPTS", "-Dhive.metastore.uris=thrift://metastore:" + randomPort)
+            .withEnv("DB_DRIVER", "postgres")
+            .withEnv("SERVICE_OPTS", "-Djavax.jdo.option.ConnectionDriverName=org.postgresql.Driver" + " "
+                    + "-Djavax.jdo.option.ConnectionURL=jdbc:postgresql://some-postgres:5432/postgres" + " "
+                    + "-Djavax.jdo.option.ConnectionUserName=postgres" + " "
+                    + "-Djavax.jdo.option.ConnectionPassword=example")
             .withNetwork(network)
             .withExposedPorts(10000)
-            .dependsOn(hmsContainer)
-            .withStartupTimeout(Duration.ofMinutes(2L));
+            .dependsOn(postgres);
     
     private final String systemPropKeyPrefix = "fixture.test-native.yaml.database.hive.hms.";
     
@@ -105,8 +98,20 @@ class StandaloneMetastoreTest {
     }
     
     @Test
-    void assertShardingInLocalTransactions() throws SQLException {
-        jdbcUrlPrefix = "jdbc:hive2://localhost:" + hs2Container.getMappedPort(10000) + "/";
+    void assertShardingInLocalTransactions() throws SQLException, IOException, InterruptedException {
+        ExecResult initResult = hs2.execInContainer(
+                "/opt/hive/bin/schematool", "-initSchema",
+                "-dbType", "hive",
+                "-metaDbType", "postgres",
+                "-url", "jdbc:hive2://localhost:10000/default");
+        assertThat(initResult.getStdout(), is("Initializing the schema to: 4.0.0\n"
+                + "Metastore connection URL:\t jdbc:hive2://localhost:10000/default\n"
+                + "Metastore connection Driver :\t org.apache.hive.jdbc.HiveDriver\n"
+                + "Metastore connection User:\t APP\n"
+                + "Starting metastore schema initialization to 4.0.0\n"
+                + "Initialization script hive-schema-4.0.0.hive.sql\n"
+                + "Initialization script completed\n"));
+        jdbcUrlPrefix = "jdbc:hive2://localhost:" + hs2.getMappedPort(10000) + "/";
         logicDataSource = createDataSource();
         testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
@@ -135,7 +140,7 @@ class StandaloneMetastoreTest {
         Stream.of("demo_ds_0", "demo_ds_1", "demo_ds_2").parallel().forEach(this::initTable);
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/standalone-hms.yaml?placeholder-type=system_props");
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/hive/system-schemas.yaml?placeholder-type=system_props");
         System.setProperty(systemPropKeyPrefix + "ds0.jdbc-url", jdbcUrlPrefix + "demo_ds_0");
         System.setProperty(systemPropKeyPrefix + "ds1.jdbc-url", jdbcUrlPrefix + "demo_ds_1");
         System.setProperty(systemPropKeyPrefix + "ds2.jdbc-url", jdbcUrlPrefix + "demo_ds_2");

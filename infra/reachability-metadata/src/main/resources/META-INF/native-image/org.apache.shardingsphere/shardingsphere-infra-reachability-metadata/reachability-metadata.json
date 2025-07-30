@@ -526,18 +526,6 @@
     },
     {
       "condition": {
-        "typeReached": "javax.security.auth.login.Configuration"
-      },
-      "type": "sun.security.provider.ConfigFile",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
         "typeReached": "sun.security.provider.SecureRandom"
       },
       "type": "sun.security.provider.SecureRandom",
@@ -552,15 +540,15 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.hadoop.security.UserGroupInformation"
+        "typeReached": "javax.security.auth.login.Configuration"
       },
-      "type": "com.sun.security.auth.NTUserPrincipal"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.hadoop.security.UserGroupInformation"
-      },
-      "type": "com.sun.security.auth.UnixPrincipal"
+      "type": "sun.security.provider.ConfigFile",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     }
   ],
   "resources": [
