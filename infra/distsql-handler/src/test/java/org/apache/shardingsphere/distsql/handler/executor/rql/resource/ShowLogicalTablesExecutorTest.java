@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowLogicalTablesStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowLogicalTablesStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;

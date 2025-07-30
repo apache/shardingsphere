@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.AlterComputeNodeStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.LockClusterStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlabelComputeNodeStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.AlterComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.type.updatable.AlterComputeNodeStatementAssert;

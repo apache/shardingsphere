@@ -26,7 +26,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.DropBroadcastTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.BroadcastDistSQLStatementParser.ShowBroadcastTableRulesContext;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
