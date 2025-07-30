@@ -89,6 +89,7 @@ public final class FirebirdCommandPacketFactory {
         try {
             return getLength(commandPacketType, payload, protocolVersion) <= capacity;
         } catch (final IndexOutOfBoundsException ignored) {
+            payload.getByteBuf().resetReaderIndex();
             return false;
         }
     }
