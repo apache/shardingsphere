@@ -353,4 +353,5 @@
     <sql-case id="select_merge_join_hint" value="SELECT poh.PurchaseOrderID FROM Purchasing.PurchaseOrderHeader AS poh INNER MERGE JOIN Purchasing.PurchaseOrderDetail AS pod ON poh.PurchaseOrderID = pod.PurchaseOrderID;" db-types="SQLServer"/>
     <sql-case id="select_aggregation_function_over_clause" value="SELECT Name , MIN(Rate) OVER (PARTITION BY edh.DepartmentID) FROM HumanResources.EmployeePayHistory" db-types="SQLServer" />
     <sql-case id="select_on_clause" value="SELECT * INTO [dbo].[FactResellerSalesXL] ON FG2 FROM [dbo].[FactResellerSales];" db-types="SQLServer"/>
+    <sql-case id="select_language_identifier" value="SELECT counter_name, counter_value FROM sys.dm_external_script_execution_stats WHERE language = 'Python';" db-types="SQLServer"/>
 </sql-cases>
