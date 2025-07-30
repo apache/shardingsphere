@@ -292,7 +292,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+AddAllCharsets,-H:+IncludeAllLocales,--static-nolibc" clean package
+./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+UnlockExperimentalVMOptions,-H:+AddAllCharsets,-H:+IncludeAllLocales,--static-nolibc" clean package
 ```
 
 #### Build a fully statically linked GraalVM Native Image
@@ -302,7 +302,7 @@ You can execute the following command to build.
 ```shell
 git clone git@github.com:apache/shardingsphere.git
 cd ./shardingsphere/
-./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+AddAllCharsets,-H:+IncludeAllLocales,--static,--libc=musl" clean package
+./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+UnlockExperimentalVMOptions,-H:+AddAllCharsets,-H:+IncludeAllLocales,--static,--libc=musl" clean package
 ```
 
 #### Use GraalVM Native Image

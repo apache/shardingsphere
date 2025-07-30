@@ -3273,6 +3273,63 @@ NOVALIDATE
 MAP
     : M A P
     ;
+
 ORC
     : O R C
+    ;
+
+MAJOR
+    : M A J O R
+    ;
+
+MINOR
+    : M I N O R
+    ;
+
+REBALANCE
+    : R E B A L A N C E
+    ;
+
+CONCATENATE
+    : C O N C A T E N A T E
+    ;
+
+UNSET
+    : U N S E T
+    ;
+
+FILEFORMAT
+    : F I L E F O R M A T
+    ;
+
+TOUCH
+    : T O U C H
+    ;
+
+NOVALIDEATE
+    : N O V A L I D E A T E
+    ;
+
+POOL
+    : P O O L
+    ;
+
+ARCHIVE
+    : A R C H I V E
+    ;
+
+UNARCHIVE
+    : U N A R C H I V E
+    ;
+
+PROTECTION
+    : P R O T E C T I O N
+    ;
+
+MSCK
+    : M S C K
+    ;
+
+SYNC
+    : S Y N C
     ;

@@ -72,7 +72,7 @@ mergeInsertClause
     ;
 
 withTableHint
-    : WITH? LP_ (tableHintLimited+) RP_
+    : WITH? LP_ (tableHintLimited | tableHintExtended) (COMMA_ (tableHintLimited | tableHintExtended))* RP_
     ;
 
 exec
@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -164,6 +164,10 @@ qualifiedShorthand
     : identifier DOT_ASTERISK_
     ;
 
+onFileGroupClause
+    : ON identifier
+    ;
+
 intoClause
     : INTO tableName
     ;
@@ -181,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? (AS? alias)? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -204,9 +208,13 @@ pivotValue
     ;
 
 joinedTable
-    : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
-    | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    : NATURAL? ((INNER | CROSS)? joinHint? JOIN) tableFactor joinSpecification?
+    | NATURAL? (LEFT | RIGHT | FULL) OUTER? joinHint? JOIN tableFactor joinSpecification?
     | (CROSS | OUTER) APPLY tableFactor joinSpecification?
+    ;
+
+joinHint
+    : LOOP | HASH | MERGE | REMOTE | REDUCE | REPLICATE | REDISTRIBUTE (LP_ NUMBER_ RP_)?
     ;
 
 joinSpecification

@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingListExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingJobStatusExecutor
-org.apache.shardingsphere.data.pipeline.distsql.handler.cdc.query.ShowStreamingRuleExecutor
+org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query.ShowStreamingListExecutor
+org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query.ShowStreamingJobStatusExecutor
+org.apache.shardingsphere.data.pipeline.cdc.distsql.handler.query.ShowStreamingRuleExecutor

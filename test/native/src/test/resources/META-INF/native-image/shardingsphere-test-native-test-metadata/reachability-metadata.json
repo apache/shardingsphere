@@ -206,9 +206,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.StandaloneMetastoreTest"
+        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.SystemSchemasTest"
       },
-      "type": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.StandaloneMetastoreTest",
+      "type": "org.apache.shardingsphere.test.natived.jdbc.databases.hive.SystemSchemasTest",
       "allDeclaredFields": true,
       "allDeclaredConstructors": true,
       "allDeclaredMethods": true,
@@ -278,37 +278,37 @@
   "resources": [
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.PrestoTest"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
       "glob": "test-native/properties/**/*.properties"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
       "glob": "test-native/sh/**/*.sh"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.SQLServerTest"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
       "glob": "test-native/yaml/**/*.yaml"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
       "glob": "test-native/sql/**/*.sql"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.transactions.base.SeataTest"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
       "glob": "*.conf"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.test.natived.jdbc.databases.SQLServerTest"
+        "typeReached": "org.apache.shardingsphere.infra.url.classpath.ClassPathURLLoader"
       },
       "glob": "container-license-acceptance.txt"
     },

@@ -126,12 +126,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-          cache: 'maven'
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Push Docker Image by arm64 or x64
         run: |
           ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} "-DskipTests" clean package
@@ -158,12 +164,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-          cache: 'maven'
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
+            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Push Docker Image
         run: |
           ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package

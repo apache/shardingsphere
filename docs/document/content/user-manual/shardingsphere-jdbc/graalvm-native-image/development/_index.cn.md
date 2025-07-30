@@ -265,3 +265,40 @@ class SolutionTest {
 
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` 已被禁用，
 因为在 Github Actions Runner 执行此单元测试将导致其他单元测试出现 JDBC 连接泄露。
+
+### `CodeCachePoolMXBean` 限制
+
+当前执行 `./mvnw -PnativeTestInShardingSphere -e -T 1C clean verify` 将涉及到针对 `com.oracle.svm.core.code.CodeCachePoolMXBean` 的警告日志，
+
+```shell
+org.graalvm.nativeimage.MissingReflectionRegistrationError: The program tried to reflectively access
+
+   com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool.getConstructors()
+
+without it being registered for runtime reflection. Add com.oracle.svm.core.code.CodeCachePoolMXBean$CodeAndDataPool.getConstructors() to the reflection metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection for help.
+  java.base@24.0.2/java.lang.Class.getConstructors(DynamicHub.java:1128)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@24.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+org.graalvm.nativeimage.MissingReflectionRegistrationError: The program tried to reflectively access
+
+   com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool.getConstructors()
+
+without it being registered for runtime reflection. Add com.oracle.svm.core.code.CodeCachePoolMXBean$NativeMetadataPool.getConstructors() to the reflection metadata to solve this problem. See https://www.graalvm.org/latest/reference-manual/native-image/metadata/#reflection for help.
+  java.base@24.0.2/java.lang.Class.getConstructors(DynamicHub.java:1128)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.findConstructors(MBeanIntrospector.java:459)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getClassMBeanInfo(MBeanIntrospector.java:430)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanIntrospector.getMBeanInfo(MBeanIntrospector.java:389)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MBeanSupport.<init>(MBeanSupport.java:137)
+  java.management@24.0.2/com.sun.jmx.mbeanserver.MXBeanSupport.<init>(MXBeanSupport.java:66)
+  java.management@24.0.2/javax.management.StandardMBean.construct(StandardMBean.java:174)
+  java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
+```
+
+相关警告在 `GraalVM CE For JDK 24.0.2` 上无法避免。
+因为 `com.oracle.svm.core.code.CodeCachePoolMXBean` 的无参构造函数通过 Java 类 `org.graalvm.nativeimage.Platform.HOSTED_ONLY` 被标记为无论实际的 Platform 是什么，
+仅在 Native Image 生成期间可见，且无法在 Runtime 使用的元素。

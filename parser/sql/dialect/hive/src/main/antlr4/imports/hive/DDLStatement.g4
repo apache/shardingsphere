@@ -40,12 +40,47 @@ createTable
     | createTableCommonClause LIKE existingTableName storageLocation?
     ;
 
+createView
+    : CREATE VIEW ifNotExists? viewNameWithDb (LP_ columnName (COMMENT string_)? (COMMA_ columnName (COMMENT string_)?)* RP_)? (COMMENT string_)? tblProperties? AS select
+    ;
+
 dropTable
-    : DROP TABLE ifExists? tableList (PURGE)?
+    : DROP TABLE ifExists? tableNameWithDb (PURGE)?
     ;
 
 truncateTable
     : TRUNCATE (TABLE)? tableNameWithDb partitionSpec?
+    ;
+
+alterTable
+    : alterTableCommonClause RENAME TO tableName
+    | alterTableCommonClause SET tblProperties
+    | alterTableCommonClause partitionSpec? SET SERDE string_ (WITH SERDEPROPERTIES LP_ propertyList RP_)?
+    | alterTableCommonClause partitionSpec? SET SERDEPROPERTIES LP_ propertyList RP_
+    | alterTableCommonClause partitionSpec? UNSET SERDEPROPERTIES LP_ string_ RP_
+    | alterTableCommonClause clusteredBy
+    | alterTableCommonClause skewedBy
+    | alterTableCommonClause NOT SKEWED
+    | alterTableCommonClause NOT STORED AS DIRECTORIES
+    | alterTableCommonClause SET SKEWED storageLocation
+    | alterTableCommonClause SET SKEWED skewedLocationClause
+    | alterTableCommonClause alterTableConstrintClause
+    | alterTableCommonClause partitionSpec? SET FILEFORMAT fileFormat
+    | alterTableCommonClause partitionSpec? SET storageLocation
+    | alterTableCommonClause TOUCH partitionSpec?
+    | alterTableCommonClause partitionSpec? COMPACT string_ (AND WAIT)? clusteredIntoClause? orderByClause? poolClause? tblpropertiesClause?
+    | alterTableCommonClause partitionSpec? CONCATENATE
+    | alterTableCommonClause partitionSpec? UPDATE COLUMNS
+    | alterTableCommonClause ADD ifNotExists? partitionSpec storageLocation? (COMMA_ partitionSpec storageLocation?)*
+    | alterTableCommonClause DROP ifExists? partitionSpec (COMMA_ partitionSpec)* (IGNORE PROTECTION)? PURGE?
+    | alterTableCommonClause partitionSpec RENAME TO partitionSpec
+    | alterTableCommonClause EXCHANGE partitionSpec WITH TABLE tableName
+    | alterTableCommonClause ARCHIVE partitionSpec
+    | alterTableCommonClause UNARCHIVE partitionSpec
+    | alterTableCommonClause RECOVER PARTITIONS
+    | alterTableCommonClause partitionSpec? changeColumn
+    | alterTableCommonClause partitionSpec? addColumns
+    | alterTableCommonClause partitionSpec? replaceColumns
     ;
 
 alterDatabaseSpecification_
@@ -75,11 +110,19 @@ createTableCommonClause
     : CREATE createTableSpecification? TABLE ifNotExists? tableNameWithDb
     ;
 
+alterTableCommonClause
+    : ALTER TABLE tableName
+    ;
+
 createTableSpecification
     : TEMPORARY? EXTERNAL?
     ;
 
 tableNameWithDb
+    : (identifier DOT_)? identifier
+    ;
+
+viewNameWithDb
     : (identifier DOT_)? identifier
     ;
 
@@ -192,6 +235,10 @@ constraintName
     : identifier
     ;
 
+tableName
+    : identifier
+    ;
+
 tableConstraintOption
     : PRIMARY KEY LP_ columnNames RP_ constraintAttributes?
     | UNIQUE LP_ columnNames RP_ constraintAttributes?
@@ -269,6 +316,14 @@ storageLocation
     : LOCATION string_
     ;
 
+skewedLocationClause
+    : LOCATION LP_ skewedLocationPair (COMMA_ skewedLocationPair)* RP_
+    ;
+
+skewedLocationPair
+    : identifier EQ_ string_
+    ;
+
 tblProperties
     : TBLPROPERTIES LP_ propertyList RP_
     ;
@@ -279,4 +334,57 @@ propertyList
 
 property
     : string_ EQ_ string_
+    ;
+
+addConstraint
+    : ADD CONSTRAINT constraintName
+    ;
+
+changeColumn
+    : CHANGE COLUMN constraintName constraintName dataTypeClause CONSTRAINT constraintName
+    | CHANGE COLUMN? columnName columnName dataTypeClause (COMMENT string_)? (FIRST | AFTER columnName)? (CASCADE | RESTRICT)?
+    ;
+
+alterTableConstrintClause
+    : addConstraint PRIMARY KEY LP_ columnNames RP_ DISABLE NOVALIDATE
+    | addConstraint FOREIGN KEY LP_ columnNames RP_ REFERENCES tableName LP_ columnNames RP_ DISABLE NOVALIDATE RELY
+    | addConstraint UNIQUE LP_ columnNames RP_ DISABLE NOVALIDATE
+    | changeColumn NOT NULL ENABLE
+    | changeColumn DEFAULT string_ ENABLE
+    | changeColumn CHECK LP_ expr RP_ ENABLE
+    | DROP CONSTRAINT constraintName
+    ;
+
+clusteredIntoClause
+    : CLUSTERED INTO NUMBER_ BUCKETS
+    ;
+
+orderByClause
+    : ORDER BY columnNames
+    ;
+
+poolClause
+    : POOL string_
+    ;
+
+tblpropertiesClause
+    : WITH OVERWRITE tblProperties
+    ;
+
+msckStatement
+    : MSCK REPAIR? TABLE tableName msckAction?
+    ;
+
+msckAction
+    : ADD PARTITIONS
+    | DROP PARTITIONS
+    | SYNC PARTITIONS
+    ;
+
+addColumns
+    : ADD COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ (CASCADE | RESTRICT)?
+    ;
+
+replaceColumns
+    : REPLACE COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ (CASCADE | RESTRICT)?
     ;

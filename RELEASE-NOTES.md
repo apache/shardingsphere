@@ -1,5 +1,9 @@
 ## Release 5.5.3-SNAPSHOT
 
+### CVE
+
+1. Fixes CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
+
 ### Metadata Storage Changes
 
 1. Remove `default_strategies` prefix on sharding rule metadata persist [#34664](https://github.com/apache/shardingsphere/pull/34664)
@@ -18,12 +22,15 @@
 ### New Features
 
 1. Decouple database types as pluggable [#35346](https://github.com/apache/shardingsphere/pull/35346)
+1. Decouple features as pluggable [#36086](https://github.com/apache/shardingsphere/pull/36086)
+1. Decouple mode repositories as pluggable [#36087](https://github.com/apache/shardingsphere/pull/36087)
 1. Firebird: Support Firebird Proxy [#35937](https://github.com/apache/shardingsphere/pull/35937)
 
 ### Enhancements
 
 1. Build: Support compiling and using ShardingSphere under OpenJDK 24 - [#35145](https://github.com/apache/shardingsphere/pull/35145)
 1. Infra: Support for connecting to Presto's Memory Connector in ShardingSphere config - [#34432](https://github.com/apache/shardingsphere/pull/34432)
+1. Infra: Eliminate HiveServer2 integration's dependency on Hive Metastore Client - [#36114](https://github.com/apache/shardingsphere/pull/36114)
 1. Metadata: Add support for partition tables in PostgreSQL [#34346](https://github.com/apache/shardingsphere/pull/34346)
 1. SQL Parser: Support MySQL SELECT CAST AS YEAR statement parse - [#34638](https://github.com/apache/shardingsphere/pull/34638)
 1. SQL Parser: Support MySQL SELECT MAX(ALL expr) statement parse - [#34639](https://github.com/apache/shardingsphere/pull/34639)
@@ -42,6 +49,15 @@
 1. SQL Parser: Support mysql quantify operator parse and upgrade calcite to 1.40.0 - [#35675](https://github.com/apache/shardingsphere/pull/35675)
 1. SQL Parser: Support Oracle create table with lob storage clause sql parsing - [#35782](https://github.com/apache/shardingsphere/pull/35782)
 1. SQL Parser: Support Oracle multiple backslash literal parsing - [#35784](https://github.com/apache/shardingsphere/pull/35784)
+1. SQL Parser: Support Hive Loading files into tables statement parse - [#36001](https://github.com/apache/shardingsphere/pull/36001)
+1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
+1. SQL Parser: Support Hive DROP TABLE statement parse - [#36018](https://github.com/apache/shardingsphere/pull/36018)
+1. SQL Parser: Support Hive USE DATABASE statement parse - [#36024](https://github.com/apache/shardingsphere/pull/36024)
+1. SQL Parser: Support Hive CREATE TABLE statement parse - [#36040](https://github.com/apache/shardingsphere/pull/36040)
+1. SQL Parser: Support Hive TRUNCATE TABLE statement parse - [#36049](https://github.com/apache/shardingsphere/pull/36049)
+1. SQL Parser: Support Hive ALTER TABLE statement parse - [#36066](https://github.com/apache/shardingsphere/pull/36066)
+1. SQL Binder: Fix is unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
+1. SQL Parser: Support Hive ALTER PARTITION statement parse - [#36072](https://github.com/apache/shardingsphere/pull/36072)
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
 1. SQL Binder: Support case when then else segment bind - [#34600](https://github.com/apache/shardingsphere/pull/34600)
@@ -57,13 +73,9 @@
 1. Proxy: Implement write method for PostgreSQL bool binary data type - [#35831](https://github.com/apache/shardingsphere/pull/35831)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
-1. SQL Parser: Support Hive Loading files into tables statement parse - [#36001](https://github.com/apache/shardingsphere/pull/36001)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
-1. SQL Parser: Support Hive ALTER DATABASE statement parse - [#36008](https://github.com/apache/shardingsphere/pull/36008)
-1. SQL Parser: Support Hive DROP TABLE statement parse - [#36018](https://github.com/apache/shardingsphere/pull/36018)
-1. SQL Parser: Support Hive USE DATABASE statement parse - [#36024](https://github.com/apache/shardingsphere/pull/36024)
-1. SQL Parser: Support Hive CREATE TABLE statement parse - [#36040](https://github.com/apache/shardingsphere/pull/36040)
-1. SQL Parser: Support Hive TRUNCATE TABLE statement parse - [#36049](https://github.com/apache/shardingsphere/pull/36049)
+1. SQL Parser: Support Hive ALTER COLUMN statement parse - [#36096](https://github.com/apache/shardingsphere/pull/36096)
+1. SQL Parser: Support Hive CREATE VIEW statement parse - [#36120](https://github.com/apache/shardingsphere/pull/36120)
 
 ### Bug Fixes
 

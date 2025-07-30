@@ -1,9 +1,5 @@
 [
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ArrayBuilders"},
-  "name":"[Lorg.testcontainers.shaded.com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;"
-},
-{
   "condition":{"typeReachable":"org.testcontainers.jdbc.ContainerDatabaseDriver"},
   "name":"org.testcontainers.containers.ClickHouseProvider"
 },
@@ -52,15 +48,6 @@
   "name":"org.testcontainers.dockerclient.TestcontainersHostPropertyClientProviderStrategy"
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.DockerClientFactory"},
-  "name":"org.testcontainers.dockerclient.UnixSocketClientProviderStrategy"
-},
-{
-  "condition":{"typeReachable":"org.testcontainers.dockerclient.DockerClientProviderStrategy"},
-  "name":"org.testcontainers.dockerclient.UnixSocketClientProviderStrategy",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.ext.Java7Support"},
   "name":"org.testcontainers.shaded.com.fasterxml.jackson.databind.ext.Java7SupportImpl",
   "methods":[{"name":"<init>","parameterTypes":[] }]
@@ -102,11 +89,6 @@
   "allDeclaredFields": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.exec.ExecCreateCmdExec"},
-  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.AbstrDockerCmd",
-  "queryAllDeclaredMethods":true
-},
-{
   "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.exec.CreateNetworkCmdExec"},
   "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateNetworkCmdImpl",
   "allDeclaredFields":true,
@@ -123,20 +105,22 @@
   "methods":[{"name":"getContainerId","parameterTypes":[] }, {"name":"getEnv","parameterTypes":[] }, {"name":"getPrivileged","parameterTypes":[] }, {"name":"getUser","parameterTypes":[] }, {"name":"getWorkingDir","parameterTypes":[] }]
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.DefaultInvocationBuilder"},
-  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.ExecStartCmdImpl",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl",
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors": true
+},
+{
+  "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl"},
+  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl$NetworkingConfig",
+  "allDeclaredFields": true,
+  "allDeclaredMethods": true,
+  "allDeclaredConstructors": true
 },
 {
   "condition":{"typeReachable":"org.testcontainers.containers.GenericContainer"},
   "name":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1",
   "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"org.testcontainers.containers.GenericContainer$$Lambda/0x00007f841f23d008"},
-  "name":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
 },
 {
   "condition":{"typeReachable":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory"},
@@ -155,41 +139,13 @@
   "name":"org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"},
-  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl",
-  "allDeclaredMethods": true,
-  "allDeclaredConstructors": true
-},
-{
   "condition":{"typeReachable":"org.testcontainers.junit.jupiter.Testcontainers"},
   "name":"org.testcontainers.junit.jupiter.Testcontainers",
   "allPublicMethods": true
 },
 {
-  "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl"},
-  "name":"org.testcontainers.shaded.com.github.dockerjava.core.command.CreateContainerCmdImpl$NetworkingConfig",
-  "allDeclaredFields": true,
-  "allDeclaredMethods": true,
-  "allDeclaredConstructors": true
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
-  "name":"com.github.dockerjava.api.model.Network",
-  "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
-  "name":"com.github.dockerjava.api.model.Network$Ipam",
-  "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
-  "name":"com.github.dockerjava.api.model.Network$Ipam$Config",
-  "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
-  "name":"com.github.dockerjava.api.model.Network$ContainerNetworkConfig",
-  "allDeclaredMethods": true
+  "condition":{"typeReachable":"org.testcontainers.junit.jupiter.Container"},
+  "name":"org.testcontainers.junit.jupiter.Container",
+  "allPublicMethods": true
 }
 ]

@@ -31,7 +31,7 @@
                             </right>
                             <operator>%</operator>
                         </binary-operation-expression>
-                    </expr>    
+                    </expr>
                 </expression-projection>
                 <expression-projection text="10 mod 7" start-index="32" stop-index="39">
                     <expr>
@@ -1460,42 +1460,6 @@
         </select>
     </explain>
 
-    <explain sql-case-id="explain_for_select_alias_where_colon">
-        <select>
-            <projections start-index="24" stop-index="24">
-                <shorthand-projection start-index="24" stop-index="24"/>
-            </projections>
-            <from>
-                <simple-table name="sales" alias="s" start-index="31" stop-index="37"/>
-            </from>
-            <where start-index="39" stop-index="72">
-                <expr>
-                    <in-expression start-index="45" stop-index="72">
-                        <left>
-                            <column name="time_id" start-index="45" stop-index="51"/>
-                        </left>
-                        <right>
-                            <list-expression start-index="56" stop-index="72">
-                                <items>
-                                    <common-expression start-index="58" stop-index="59" text=":a"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="62" stop-index="63" text=":b"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="66" stop-index="67" text=":c"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="70" stop-index="71" text=":d"/>
-                                </items>
-                            </list-expression>
-                        </right>
-                    </in-expression>
-                </expr>
-            </where>
-        </select>
-    </explain>
-
     <explain sql-case-id="explain_for_select_where_todate_function">
         <select>
             <projections start-index="24" stop-index="24">
@@ -1522,42 +1486,6 @@
                             </function>
                         </right>
                     </binary-operation-expression>
-                </expr>
-            </where>
-        </select>
-    </explain>
-
-    <explain sql-case-id="explain_for_select_where_colon">
-        <select>
-            <projections start-index="24" stop-index="24">
-                <shorthand-projection start-index="24" stop-index="24"/>
-            </projections>
-            <from>
-                <simple-table name="sales" start-index="31" stop-index="35"/>
-            </from>
-            <where start-index="37" stop-index="69">
-                <expr>
-                    <in-expression start-index="43" stop-index="69">
-                        <left>
-                            <column name="time_id" start-index="43" stop-index="49"/>
-                        </left>
-                        <right>
-                            <list-expression start-index="54" stop-index="69">
-                                <items>
-                                    <common-expression start-index="55" stop-index="56" text=":a"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="59" stop-index="60" text=":b"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="63" stop-index="64" text=":c"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="67" stop-index="68" text=":d"/>
-                                </items>
-                            </list-expression>
-                        </right>
-                    </in-expression>
                 </expr>
             </where>
         </select>

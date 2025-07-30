@@ -250,6 +250,9 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Piv
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintExtendedContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LinkedServerNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenDatasourceFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -366,7 +369,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             OwnerSegment ownerSegment = new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier()));
             if (null != ctx.databaseName()) {
                 DatabaseNameContext databaseName = ctx.databaseName();
-                ownerSegment.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
+                OwnerSegment databaseSegment = new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier()));
+                ownerSegment.setOwner(databaseSegment);
+                setLinkedServerForDatabase(databaseSegment, ctx);
             }
             result.setOwner(ownerSegment);
         } else if (null != ctx.databaseName()) {
@@ -374,6 +379,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
         }
         return result;
+    }
+    
+    private void setLinkedServerForDatabase(final OwnerSegment databaseSegment, final TableNameContext ctx) {
+        if (null != ctx.linkedServerName()) {
+            LinkedServerNameContext linkedServerName = ctx.linkedServerName();
+            OwnerSegment linkedServerSegment =
+                    new OwnerSegment(linkedServerName.getStart().getStartIndex(), linkedServerName.getStop().getStopIndex(), (IdentifierValue) visit(linkedServerName.identifier()));
+            databaseSegment.setOwner(linkedServerSegment);
+        }
     }
     
     @Override
@@ -1056,6 +1070,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
+    public ASTNode visitOpenDatasourceFunction(final OpenDatasourceFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENDATASOURCE().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        if (null != ctx.tableName()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitRegularFunction(final RegularFunctionContext ctx) {
         return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.regularFunctionName().getText(), getOriginalText(ctx), ctx.expr());
     }
@@ -1334,21 +1360,30 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitRowSetFunction(final RowSetFunctionContext ctx) {
         if (null != ctx.openRowSetFunction()) {
             return visit(ctx.openRowSetFunction());
-        } else {
+        } else if (null != ctx.openQueryFunction()) {
             return visit(ctx.openQueryFunction());
+        } else {
+            return visit(ctx.openDatasourceFunction());
         }
     }
     
     @Override
     public ASTNode visitWithTableHint(final WithTableHintContext ctx) {
         WithTableHintSegment result = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
         if (null != ctx.tableHintLimited()) {
-            Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
             for (TableHintLimitedContext each : ctx.tableHintLimited()) {
                 tableHintLimitedSegments.add((TableHintLimitedSegment) visit(each));
             }
-            result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         }
+        if (null != ctx.tableHintExtended()) {
+            for (TableHintExtendedContext each : ctx.tableHintExtended()) {
+                TableHintLimitedSegment segment = new TableHintLimitedSegment(each.start.getStartIndex(), each.stop.getStopIndex());
+                segment.setValue(each.getText());
+                tableHintLimitedSegments.add(segment);
+            }
+        }
+        result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         return result;
     }
     
@@ -1872,6 +1907,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setJoinType(getJoinType(ctx));
         if (null != ctx.joinSpecification()) {
             visitJoinSpecification(ctx.joinSpecification(), result);
+        }
+        if (null != ctx.joinHint()) {
+            result.setJoinHint(ctx.joinHint().getChild(0).getText());
         }
         return result;
     }

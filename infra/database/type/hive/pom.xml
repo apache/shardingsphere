@@ -44,7 +44,7 @@
             <groupId>io.github.linghengqian</groupId>
             <artifactId>hive-server2-jdbc-driver-thin</artifactId>
             <version>${hive-server2-jdbc-driver-thin.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
             <optional>true</optional>
         </dependency>
         

@@ -2086,3 +2086,31 @@ PERCENT_RANK
 CUME_DIST
     : C U M E UL_ D I S T
     ;
+
+FORCESEEK
+    : F O R C E S E E K
+    ;
+
+FORCESCAN
+    : F O R C E S C A N
+    ;
+
+NOEXPAND
+    : N O E X P A N D
+    ;
+
+SPATIAL_WINDOW_MAX_CELLS
+    : S P A T I A L UL_ W I N D O W UL_ M A X UL_ C E L L S
+    ;
+
+LOOP
+    : L O O P
+    ;
+
+REDUCE
+    : R E D U C E
+    ;
+
+REDISTRIBUTE
+    : R E D I S T R I B U T E
+    ;

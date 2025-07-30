@@ -33,6 +33,10 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropData
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MsckStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ChangeColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -43,12 +47,24 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnFirstPositionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnAfterPositionSegment;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AddColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ReplaceColumnsContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ReplaceColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameWithDbContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import java.util.Collections;
 
 /**
@@ -75,12 +91,54 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         return new AlterDatabaseStatement(getDatabaseType());
     }
     
+    @Override
+    public ASTNode visitAlterTable(final AlterTableContext ctx) {
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.alterTableCommonClause().tableName()));
+        if (null != ctx.changeColumn()) {
+            ChangeColumnDefinitionSegment changeColumnSegment = (ChangeColumnDefinitionSegment) visit(ctx.changeColumn());
+            result.getChangeColumnDefinitions().add(changeColumnSegment);
+        }
+        if (null != ctx.addColumns()) {
+            AddColumnDefinitionSegment addSeg = (AddColumnDefinitionSegment) visit(ctx.addColumns());
+            result.getAddColumnDefinitions().add(addSeg);
+        }
+        if (null != ctx.replaceColumns()) {
+            ReplaceColumnDefinitionSegment repSeg = (ReplaceColumnDefinitionSegment) visit(ctx.replaceColumns());
+            result.getReplaceColumnDefinitions().add(repSeg);
+        }
+        if (null != ctx.COMPACT()) {
+            String compactionType = ctx.string_().getText().replace("'", "");
+            if (!isValidCompactionType(compactionType)) {
+                throw new IllegalArgumentException("Invalid compaction type. Must be 'MAJOR', 'MINOR' or 'REBALANCE'");
+            }
+            if ((null != ctx.clusteredIntoClause() || null != ctx.orderByClause())
+                    && !"REBALANCE".equalsIgnoreCase(compactionType)) {
+                throw new IllegalArgumentException("[CLUSTERED INTO n BUCKETS] and [ORDER BY col_list] clauses can only be used with REBALANCE compaction");
+            }
+        }
+        return result;
+    }
+    
+    private boolean isValidCompactionType(final String compactionType) {
+        return "MAJOR".equalsIgnoreCase(compactionType)
+                || "MINOR".equalsIgnoreCase(compactionType)
+                || "REBALANCE".equalsIgnoreCase(compactionType);
+    }
+    
+    @Override
+    public ASTNode visitMsckStatement(final MsckStatementContext ctx) {
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        result.getTables().add((SimpleTableSegment) visit(ctx.tableNameWithDb()));
         return result;
     }
     
@@ -129,6 +187,48 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false, getText(ctx));
     }
     
+    @Override
+    public ASTNode visitChangeColumn(final ChangeColumnContext ctx) {
+        ColumnSegment oldColumn = new ColumnSegment(ctx.columnName(0).getStart().getStartIndex(), ctx.columnName(0).getStop().getStopIndex(),
+                new IdentifierValue(ctx.columnName(0).getText()));
+        ColumnSegment newColumn = new ColumnSegment(ctx.columnName(1).getStart().getStartIndex(), ctx.columnName(1).getStop().getStopIndex(),
+                new IdentifierValue(ctx.columnName(1).getText()));
+        DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataTypeClause());
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.columnName(1).getStart().getStartIndex(),
+                ctx.dataTypeClause().getStop().getStopIndex(), newColumn, dataType, false, false, getText(ctx));
+        ChangeColumnDefinitionSegment result = new ChangeColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
+        result.setPreviousColumn(oldColumn);
+        if (null != ctx.FIRST()) {
+            ColumnFirstPositionSegment firstPos = new ColumnFirstPositionSegment(ctx.FIRST().getSymbol().getStartIndex(), ctx.FIRST().getSymbol().getStopIndex(), null);
+            result.setColumnPosition(firstPos);
+        } else if (null != ctx.AFTER()) {
+            ColumnNameContext afterCtx = ctx.columnName(ctx.columnName().size() - 1);
+            ColumnSegment afterColumn = new ColumnSegment(afterCtx.getStart().getStartIndex(), afterCtx.getStop().getStopIndex(),
+                    new IdentifierValue(afterCtx.getText()));
+            ColumnAfterPositionSegment afterPos = new ColumnAfterPositionSegment(afterCtx.getStart().getStartIndex(), afterCtx.getStop().getStopIndex(), afterColumn);
+            result.setColumnPosition(afterPos);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAddColumns(final AddColumnsContext ctx) {
+        java.util.Collection<ColumnDefinitionSegment> cols = new java.util.LinkedList<>();
+        for (ColumnDefinitionContext each : ctx.columnDefinition()) {
+            cols.add((ColumnDefinitionSegment) visit(each));
+        }
+        return new AddColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), cols);
+    }
+    
+    @Override
+    public ASTNode visitReplaceColumns(final ReplaceColumnsContext ctx) {
+        java.util.Collection<ColumnDefinitionSegment> cols = new java.util.LinkedList<>();
+        for (ColumnDefinitionContext each : ctx.columnDefinition()) {
+            cols.add((ColumnDefinitionSegment) visit(each));
+        }
+        return new ReplaceColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), cols);
+    }
+    
     private String getText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
     }
@@ -170,5 +270,39 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
         return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    @Override
+    public ASTNode visitCreateView(final CreateViewContext ctx) {
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.viewNameWithDb()));
+        if (null != ctx.COMMENT() && !ctx.string_().isEmpty()) {
+            result.setViewDefinition(ctx.string_(ctx.string_().size() - 1).getText().replace("'", ""));
+        }
+        if (null != ctx.tblProperties()) {
+            result.setViewDefinition(getText(ctx.tblProperties()));
+        }
+        HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+        ASTNode selectNode = dmlVisitor.visit(ctx.select());
+        if (selectNode instanceof SelectStatement) {
+            result.setSelect((SelectStatement) selectNode);
+        }
+        result.setViewDefinition(getText(ctx));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitViewNameWithDb(final ViewNameWithDbContext ctx) {
+        if (1 == ctx.identifier().size()) {
+            return new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    new IdentifierValue(ctx.identifier(0).getText())));
+        } else {
+            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier(1).getStart().getStartIndex(),
+                    ctx.identifier(1).getStop().getStopIndex(), new IdentifierValue(ctx.identifier(1).getText())));
+            result.setOwner(new org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment(
+                    ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(),
+                    new IdentifierValue(ctx.identifier(0).getText())));
+            return result;
+        }
     }
 }

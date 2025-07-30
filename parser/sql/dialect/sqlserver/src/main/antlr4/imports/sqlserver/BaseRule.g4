@@ -121,7 +121,7 @@ unreservedWord
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
     | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
-    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT | RANK | ROLLUP | PIVOT | UNPIVOT | PARSE | TRY_PARSE | HIERARCHYID | PATINDEX | POSITION
+    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT | RANK | ROLLUP | PIVOT | UNPIVOT | PARSE | TRY_PARSE | HIERARCHYID | PATINDEX | POSITION | FORCESEEK | FORCESCAN | NOEXPAND | SPATIAL_WINDOW_MAX_CELLS | LANGUAGE
     ;
 
 databaseName
@@ -129,6 +129,10 @@ databaseName
     ;
 
 schemaName
+    : identifier
+    ;
+
+linkedServerName
     : identifier
     ;
 
@@ -154,6 +158,7 @@ sequenceName
 
 tableName
     : ((databaseName DOT_)? (owner? DOT_))? name
+    | ((linkedServerName DOT_ databaseName DOT_)? (owner DOT_))? name
     ;
 
 queueName
@@ -306,7 +311,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
     ;
 
 aggregationFunctionName
@@ -460,7 +465,7 @@ openQueryFunction
     ;
 
 rowSetFunction
-    : openRowSetFunction | openQueryFunction
+    : openRowSetFunction | openQueryFunction | openDatasourceFunction
     ;
 
 regularFunction
@@ -700,6 +705,19 @@ tableHintLimited
     | TABLOCKX
     | UPDLOCK
     | XLOCK
+    ;
+
+tableHintExtended
+    : NOEXPAND
+    | INDEX LP_ indexValue (COMMA_ indexValue)* RP_
+    | INDEX EQ_ LP_ indexValue RP_
+    | FORCESEEK (LP_ indexValue (LP_ columnName (COMMA_ columnName)* RP_)? RP_)?
+    | FORCESCAN
+    | SPATIAL_WINDOW_MAX_CELLS EQ_ NUMBER_
+    ;
+
+indexValue
+    : indexName | NUMBER_
     ;
 
 matchExpression
