@@ -112,6 +112,7 @@ public final class FirebirdCommandPacketFactory {
                     return true;
             }
         } catch (final IndexOutOfBoundsException ignored) {
+            payload.getByteBuf().resetReaderIndex();
             return false;
         }
     }
