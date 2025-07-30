@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.nio.charset.StandardCharsets;
 
-
 /**
  * Binary protocol value for boolean array for PostgreSQL.
  */
@@ -48,7 +47,6 @@ public final class PostgreSQLBoolArrayBinaryProtocolValue implements PostgreSQLB
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
         StringBuilder result = new StringBuilder("{");
         List<String> boolStrings = new ArrayList<>();
-
         if (value instanceof boolean[]) {
             for (boolean b : (boolean[]) value) {
                 boolStrings.add(b ? "t" : "f");
@@ -60,7 +58,6 @@ public final class PostgreSQLBoolArrayBinaryProtocolValue implements PostgreSQLB
         } else {
             throw new UnsupportedSQLOperationException("Unsupported type for PostgreSQLBoolArrayBinaryProtocolValue.write()");
         }
-
         result.append(String.join(",", boolStrings)).append("}");
         byte[] bytes = result.toString().getBytes(StandardCharsets.UTF_8);
         payload.getByteBuf().writeInt(bytes.length);
