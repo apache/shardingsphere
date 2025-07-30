@@ -40,10 +40,6 @@ createTable
     | createTableCommonClause LIKE existingTableName storageLocation?
     ;
 
-createView
-    : CREATE VIEW ifNotExists? viewNameWithDb (LP_ columnName (COMMENT string_)? (COMMA_ columnName (COMMENT string_)?)* RP_)? (COMMENT string_)? tblProperties? AS select
-    ;
-
 dropTable
     : DROP TABLE ifExists? tableNameWithDb (PURGE)?
     ;
@@ -81,6 +77,14 @@ alterTable
     | alterTableCommonClause partitionSpec? changeColumn
     | alterTableCommonClause partitionSpec? addColumns
     | alterTableCommonClause partitionSpec? replaceColumns
+    ;
+
+createView
+    : CREATE VIEW ifNotExists? viewNameWithDb (LP_ columnName (COMMENT string_)? (COMMA_ columnName (COMMENT string_)?)* RP_)? (COMMENT string_)? tblProperties? AS select
+    ;
+
+dropView
+    : DROP VIEW ifExists? viewNameWithDb
     ;
 
 alterDatabaseSpecification_
