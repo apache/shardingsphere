@@ -1100,8 +1100,8 @@
             <group-by>
                 <column-item name="deptno" start-index="91" stop-index="96" />
             </group-by>
-            <order-by start-index="65" stop-index="84">
-                <column-item name="total" order-direction="DESC" start-index="74" stop-index="78" />
+            <order-by>
+                <column-item name="deptno" order-direction="ASC" start-index="107" stop-index="112" />
             </order-by>
         </select>
     </create-view>
