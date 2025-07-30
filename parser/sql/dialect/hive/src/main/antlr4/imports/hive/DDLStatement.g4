@@ -40,6 +40,10 @@ createTable
     | createTableCommonClause LIKE existingTableName storageLocation?
     ;
 
+createView
+    : CREATE VIEW ifNotExists? viewNameWithDb (LP_ columnName (COMMENT string_)? (COMMA_ columnName (COMMENT string_)?)* RP_)? (COMMENT string_)? tblProperties? AS select
+    ;
+
 dropTable
     : DROP TABLE ifExists? tableNameWithDb (PURGE)?
     ;
@@ -115,6 +119,10 @@ createTableSpecification
     ;
 
 tableNameWithDb
+    : (identifier DOT_)? identifier
+    ;
+
+viewNameWithDb
     : (identifier DOT_)? identifier
     ;
 

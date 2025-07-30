@@ -61,6 +61,10 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AddColum
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ReplaceColumnsContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ReplaceColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameWithDbContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import java.util.Collections;
 
 /**
@@ -266,5 +270,39 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
         return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    @Override
+    public ASTNode visitCreateView(final CreateViewContext ctx) {
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.viewNameWithDb()));
+        if (null != ctx.COMMENT() && !ctx.string_().isEmpty()) {
+            result.setViewDefinition(ctx.string_(ctx.string_().size() - 1).getText().replace("'", ""));
+        }
+        if (null != ctx.tblProperties()) {
+            result.setViewDefinition(getText(ctx.tblProperties()));
+        }
+        HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+        ASTNode selectNode = dmlVisitor.visit(ctx.select());
+        if (selectNode instanceof SelectStatement) {
+            result.setSelect((SelectStatement) selectNode);
+        }
+        result.setViewDefinition(getText(ctx));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitViewNameWithDb(final ViewNameWithDbContext ctx) {
+        if (1 == ctx.identifier().size()) {
+            return new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    new IdentifierValue(ctx.identifier(0).getText())));
+        } else {
+            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier(1).getStart().getStartIndex(),
+                    ctx.identifier(1).getStop().getStopIndex(), new IdentifierValue(ctx.identifier(1).getText())));
+            result.setOwner(new org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment(
+                    ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(),
+                    new IdentifierValue(ctx.identifier(0).getText())));
+            return result;
+        }
     }
 }
