@@ -47,7 +47,7 @@ public final class DatabaseRuleDefinitionExecutorFactory {
         }
         result.get().setDatabase(database);
         Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(result.get().getRuleClass());
-        rule.ifPresent(optional -> result.get().setRule(optional));
+        result.get().setRule(rule.orElse(null));
         return result;
     }
 }
