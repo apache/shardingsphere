@@ -15,49 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database;
+package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Database rule drop executor.
+ * Database rule create executor.
  *
  * @param <T> type of SQL statement
  * @param <R> type of rule
  * @param <C> type of rule configuration
  */
-public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
     
     /**
-     * TODO Remove temporary default implementation
-     * Build to be dropped rule configuration.
+     * Build to be created rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @return to be dropped rule configuration
+     * @return to be created rule configuration
      */
-    default C buildToBeDroppedRuleConfiguration(final T sqlStatement) {
-        return null;
-    }
-    
-    /**
-     * Build to be altered rule configuration.
-     *
-     * @param sqlStatement SQL statement
-     * @return to be altered rule configuration
-     */
-    default C buildToBeAlteredRuleConfiguration(final T sqlStatement) {
-        return null;
-    }
-    
-    /**
-     * Whether there is dropped data.
-     *
-     * @param sqlStatement SQL statement
-     * @return dropped data exists or does not exist
-     */
-    default boolean hasAnyOneToBeDropped(final T sqlStatement) {
-        return true;
-    }
+    C buildToBeCreatedRuleConfiguration(T sqlStatement);
 }

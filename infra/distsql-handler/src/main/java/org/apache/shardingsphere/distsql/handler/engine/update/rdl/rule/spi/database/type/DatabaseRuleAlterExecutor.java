@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database;
+package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Database rule create executor.
+ * Database rule alter executor.
  *
  * @param <T> type of SQL statement
  * @param <R> type of rule
  * @param <C> type of rule configuration
  */
-public interface DatabaseRuleCreateExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
     
     /**
-     * Build to be created rule configuration.
+     * Build to be altered rule configuration.
      *
      * @param sqlStatement SQL statement
-     * @return to be created rule configuration
+     * @return to be altered rule configuration
      */
-    C buildToBeCreatedRuleConfiguration(T sqlStatement);
+    C buildToBeAlteredRuleConfiguration(T sqlStatement);
+    
+    /**
+     * Build to be dropped rule configuration.
+     *
+     * @param toBeAlteredRuleConfig new rule configuration to be renewed
+     * @return to be dropped rule configuration
+     */
+    C buildToBeDroppedRuleConfiguration(C toBeAlteredRuleConfig);
 }
