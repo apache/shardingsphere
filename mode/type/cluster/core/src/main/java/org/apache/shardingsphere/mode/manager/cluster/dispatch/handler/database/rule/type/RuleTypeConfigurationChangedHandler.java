@@ -21,20 +21,19 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.RuleItemConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.node.path.NodePath;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathPattern;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleItem;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 
 /**
- * Named rule item configuration changed handler.
+ * Rule type configuration changed handler.
  */
-public final class NamedRuleItemConfigurationChangedHandler extends RuleItemConfigurationChangedHandler {
+public final class RuleTypeConfigurationChangedHandler extends RuleItemConfigurationChangedHandler {
     
-    public NamedRuleItemConfigurationChangedHandler(final ContextManager contextManager) {
+    public RuleTypeConfigurationChangedHandler(final ContextManager contextManager) {
         super(contextManager);
     }
     
     @Override
     public NodePath getSubscribedNodePath(final String databaseName) {
-        return new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, new DatabaseRuleItem(NodePathPattern.IDENTIFIER, "((?!(versions|active_version)$)[\\w-]+(?:[:.][\\w-]+)*)"));
+        return new DatabaseRuleNodePath(databaseName, NodePathPattern.IDENTIFIER, null);
     }
 }
