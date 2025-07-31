@@ -11281,4 +11281,56 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_clustered_index">
+        <projections start-index="7" stop-index="24">
+            <column-projection name="BusinessEntityID" start-index="7" stop-index="24">
+                <owner name="e" start-index="7" stop-index="7"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="Employee" alias="e" start-index="31" stop-index="40">
+                        <with-table-hint start-index="42" stop-index="40">
+                            <table-hint-limited value="INDEX = 1" start-index="48" stop-index="57" />
+                        </with-table-hint>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="Person" alias="pp" start-index="70" stop-index="78" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="83" stop-index="122">
+                        <left>
+                            <column name="BusinessEntityID" start-index="83" stop-index="100">
+                                <owner name="e" start-index="83" stop-index="83" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="BusinessEntityID" start-index="104" stop-index="122">
+                                <owner name="pp" start-index="104" stop-index="105" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="124" stop-index="152">
+            <expr>
+                <binary-operation-expression text="pp.LastName = 'Johnson'" start-index="130" stop-index="152">
+                    <left>
+                        <column name="LastName" start-index="130" stop-index="140">
+                            <owner name="pp" start-index="130" stop-index="131" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="Johnson" start-index="144" stop-index="152"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
