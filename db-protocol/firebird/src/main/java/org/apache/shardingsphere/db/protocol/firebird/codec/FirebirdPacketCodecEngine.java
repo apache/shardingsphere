@@ -29,6 +29,7 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 
 import java.nio.charset.Charset;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private static final int FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 8;
     
-    private CompositeByteBuf pendingMessages;
+    private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
     private FirebirdCommandPacketType pendingPacketType;
     
@@ -53,7 +54,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (pendingMessages == null && isValidHeader(in.readableBytes())) {
+        if (pendingMessages.isEmpty() && isValidHeader(in.readableBytes())) {
             int type = in.getInt(in.readerIndex());
             pendingPacketType = FirebirdCommandPacketType.valueOf(type);
             if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
@@ -76,16 +77,15 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         if (in.writerIndex() == in.capacity()) {
-            CompositeByteBuf result = pendingMessages == null
-                    ? context.alloc().compositeBuffer(1)
-                    : pendingMessages.capacity(pendingMessages.capacity() + 1);
-            result.addComponent(true, in.readRetainedSlice(in.readableBytes()));
+            ByteBuf bufferPart = in.readRetainedSlice(in.readableBytes());
+            CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+            result.addComponents(true, pendingMessages).addComponent(true, bufferPart);
             FirebirdPacketPayload payload = new FirebirdPacketPayload(result, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
             if (FirebirdCommandPacketFactory.isValidLength(pendingPacketType, payload, result.readableBytes(), context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get())) {
                 out.add(result);
-                pendingMessages = null;
+                pendingMessages.clear();
             } else {
-                pendingMessages = result;
+                pendingMessages.add(bufferPart);
             }
         } else {
             writePendingMessages(context, in, out);
@@ -93,13 +93,13 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     private void writePendingMessages(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (pendingMessages == null) {
+        if (pendingMessages.isEmpty()) {
             out.add(in.readRetainedSlice(in.readableBytes()));
         } else {
-            CompositeByteBuf result = pendingMessages.capacity(pendingMessages.capacity() + 1);
-            result.addComponent(true, in.readRetainedSlice(in.readableBytes()));
+            CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+            result.addComponents(true, pendingMessages).addComponent(true, in.readRetainedSlice(in.readableBytes()));
             out.add(result);
-            pendingMessages = null;
+            pendingMessages.clear();
         }
     }
     
