@@ -70,7 +70,7 @@ public final class OpenGaussSystemTableQueryExecutorCreator {
     
     /**
      * Create.
-     * 
+     *
      * @return database admin executor
      */
     public Optional<DatabaseAdminExecutor> create() {
