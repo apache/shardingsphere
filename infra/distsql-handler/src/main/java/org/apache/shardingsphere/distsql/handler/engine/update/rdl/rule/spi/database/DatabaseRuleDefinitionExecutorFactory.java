@@ -39,15 +39,17 @@ public final class DatabaseRuleDefinitionExecutorFactory {
      * @param database database
      * @return found instance 
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     public static Optional<DatabaseRuleDefinitionExecutor> findInstance(final DistSQLStatement sqlStatement, final ShardingSphereDatabase database) {
         Optional<DatabaseRuleDefinitionExecutor> result = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
-        if (!result.isPresent()) {
-            return result;
-        }
-        result.get().setDatabase(database);
-        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(result.get().getRuleClass());
-        result.get().setRule(rule.orElse(null));
+        result.ifPresent(optional -> setAttributes(database, optional));
         return result;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void setAttributes(final ShardingSphereDatabase database, final DatabaseRuleDefinitionExecutor executor) {
+        executor.setDatabase(database);
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
+        executor.setRule(rule.orElse(null));
     }
 }
