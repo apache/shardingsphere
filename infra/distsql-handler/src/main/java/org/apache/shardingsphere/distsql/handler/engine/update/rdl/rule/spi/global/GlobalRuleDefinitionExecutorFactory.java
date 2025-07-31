@@ -33,6 +33,7 @@ public final class GlobalRuleDefinitionExecutorFactory {
      * Create new instance.
      *
      * @param sqlStatement SQL statement
+     * @param globalRuleMetaData global rule meta data
      * @return created instance 
      */
     @SuppressWarnings("rawtypes")
