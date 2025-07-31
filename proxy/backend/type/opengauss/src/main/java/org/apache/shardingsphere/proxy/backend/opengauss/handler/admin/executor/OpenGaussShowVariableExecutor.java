@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
+package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
