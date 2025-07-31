@@ -110,7 +110,6 @@
 1. SQL Parser: Support SQL Server the OPENDATASOURCE function in INSERT statements parse - [#36093](https://github.com/apache/shardingsphere/pull/36093)
 1. SQL Parser: Support SQL Server the LANGUAGE identifier parse - [#36110](https://github.com/apache/shardingsphere/pull/36110)
 
-
 ### Bug Fixes
 
 1. Kernel: Fix not return generate key when id set null - [35783](https://github.com/apache/shardingsphere/pull/35783)
