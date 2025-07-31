@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableCon
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DataTypeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterTableContext;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -304,5 +306,13 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
                     new IdentifierValue(ctx.identifier(0).getText())));
             return result;
         }
+    }
+    
+    @Override
+    public ASTNode visitDropView(final DropViewContext ctx) {
+        DropViewStatement result = new DropViewStatement(getDatabaseType());
+        result.setIfExists(null != ctx.ifExists());
+        result.getViews().add((SimpleTableSegment) visit(ctx.viewNameWithDb()));
+        return result;
     }
 }

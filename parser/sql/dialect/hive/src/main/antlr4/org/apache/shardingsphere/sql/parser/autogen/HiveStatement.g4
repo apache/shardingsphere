@@ -36,6 +36,7 @@ execute
     | msckStatement
     | alterTable
     | createView
+    | dropView
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

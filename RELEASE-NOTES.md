@@ -76,6 +76,7 @@
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
 1. SQL Parser: Support Hive ALTER COLUMN statement parse - [#36096](https://github.com/apache/shardingsphere/pull/36096)
 1. SQL Parser: Support Hive CREATE VIEW statement parse - [#36120](https://github.com/apache/shardingsphere/pull/36120)
+1. SQL Parser: Support Hive DROP VIEW statement parse - [#36122](https://github.com/apache/shardingsphere/pull/36122)
 
 ### Bug Fixes
 
