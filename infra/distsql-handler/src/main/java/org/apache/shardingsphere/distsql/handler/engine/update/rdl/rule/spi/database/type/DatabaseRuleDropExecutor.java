@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database;
+package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Database rule alter executor.
+ * Database rule drop executor.
  *
  * @param <T> type of SQL statement
  * @param <R> type of rule
  * @param <C> type of rule configuration
  */
-public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+public interface DatabaseRuleDropExecutor<T extends SQLStatement, R extends ShardingSphereRule, C extends RuleConfiguration> extends DatabaseRuleDefinitionExecutor<T, R> {
+    
+    /**
+     * TODO Remove temporary default implementation
+     * Build to be dropped rule configuration.
+     *
+     * @param sqlStatement SQL statement
+     * @return to be dropped rule configuration
+     */
+    default C buildToBeDroppedRuleConfiguration(final T sqlStatement) {
+        return null;
+    }
     
     /**
      * Build to be altered rule configuration.
@@ -36,13 +48,17 @@ public interface DatabaseRuleAlterExecutor<T extends SQLStatement, R extends Sha
      * @param sqlStatement SQL statement
      * @return to be altered rule configuration
      */
-    C buildToBeAlteredRuleConfiguration(T sqlStatement);
+    default C buildToBeAlteredRuleConfiguration(final T sqlStatement) {
+        return null;
+    }
     
     /**
-     * Build to be dropped rule configuration.
+     * Whether there is dropped data.
      *
-     * @param toBeAlteredRuleConfig new rule configuration to be renewed
-     * @return to be dropped rule configuration
+     * @param sqlStatement SQL statement
+     * @return dropped data exists or does not exist
      */
-    C buildToBeDroppedRuleConfiguration(C toBeAlteredRuleConfig);
+    default boolean hasAnyOneToBeDropped(final T sqlStatement) {
+        return true;
+    }
 }
