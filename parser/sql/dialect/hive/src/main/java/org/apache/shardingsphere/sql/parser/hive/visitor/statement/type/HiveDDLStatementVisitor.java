@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropView
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MsckStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
@@ -66,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import java.util.Collections;
 
@@ -313,6 +315,21 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         DropViewStatement result = new DropViewStatement(getDatabaseType());
         result.setIfExists(null != ctx.ifExists());
         result.getViews().add((SimpleTableSegment) visit(ctx.viewNameWithDb()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterView(final AlterViewContext ctx) {
+        AlterViewStatement result = new AlterViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.alterViewCommonClause().viewNameWithDb()));
+        if (null != ctx.select()) {
+            HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+            ASTNode selectNode = dmlVisitor.visit(ctx.select());
+            if (selectNode instanceof SelectStatement) {
+                result.setSelect((SelectStatement) selectNode);
+            }
+            result.setViewDefinition(getText(ctx.select()));
+        }
         return result;
     }
 }

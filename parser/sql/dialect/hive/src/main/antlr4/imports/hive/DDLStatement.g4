@@ -87,6 +87,11 @@ dropView
     : DROP VIEW ifExists? viewNameWithDb
     ;
 
+alterView
+    : alterViewCommonClause SET tblProperties
+    | alterViewCommonClause AS select
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
@@ -116,6 +121,10 @@ createTableCommonClause
 
 alterTableCommonClause
     : ALTER TABLE tableName
+    ;
+
+alterViewCommonClause
+    : ALTER VIEW viewNameWithDb
     ;
 
 createTableSpecification

@@ -77,6 +77,7 @@
 1. SQL Parser: Support Hive ALTER COLUMN statement parse - [#36096](https://github.com/apache/shardingsphere/pull/36096)
 1. SQL Parser: Support Hive CREATE VIEW statement parse - [#36120](https://github.com/apache/shardingsphere/pull/36120)
 1. SQL Parser: Support Hive DROP VIEW statement parse - [#36122](https://github.com/apache/shardingsphere/pull/36122)
+1. SQL Parser: Support Hive DROP VIEW statement parse - [#36134](https://github.com/apache/shardingsphere/pull/36134)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
 1. SQL Parser: Support SQL Server CHANGETABLE function parse - [#35920](https://github.com/apache/shardingsphere/pull/35920)
 1. SQL Parser: Support SQL Server AI_GENERATE_EMBEDDINGS function parse - [#35922](https://github.com/apache/shardingsphere/pull/35922)
