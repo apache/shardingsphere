@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.g
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutorFactory;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
@@ -73,8 +74,8 @@ public final class DistSQLUpdateExecuteEngine {
         if (databaseExecutor.isPresent()) {
             new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, database, databaseExecutor.get()).executeUpdate();
         } else {
-            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement,
-                    contextManager, TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass())).executeUpdate();
+            GlobalRuleDefinitionExecutor globalExecutor = GlobalRuleDefinitionExecutorFactory.newInstance(sqlStatement, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
+            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, globalExecutor).executeUpdate();
         }
     }
     
