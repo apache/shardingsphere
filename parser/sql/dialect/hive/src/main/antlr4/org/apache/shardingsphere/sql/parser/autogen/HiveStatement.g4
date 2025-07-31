@@ -37,6 +37,7 @@ execute
     | alterTable
     | createView
     | dropView
+    | alterView
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;
