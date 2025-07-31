@@ -63,12 +63,13 @@ public final class DropDatabaseRuleOperator implements DatabaseRuleOperator {
         RuleConfiguration toBeDroppedRuleItemConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         metaDataManagerPersistService.removeRuleConfigurationItem(database, toBeDroppedRuleItemConfig);
         RuleConfiguration toBeAlteredRuleConfig = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        if (null != toBeAlteredRuleConfig
-                && TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeAlteredRuleConfig)) {
-            YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
-            metaDataManagerPersistService.removeRuleConfiguration(database, currentRuleConfig, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RuleNodeTupleEntity.class)).value());
-        } else {
-            metaDataManagerPersistService.alterRuleConfiguration(database, toBeAlteredRuleConfig);
+        if (null != toBeAlteredRuleConfig) {
+            if (TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeAlteredRuleConfig)) {
+                YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfiguration(currentRuleConfig);
+                metaDataManagerPersistService.removeRuleConfiguration(database, currentRuleConfig, Objects.requireNonNull(yamlRuleConfig.getClass().getAnnotation(RuleNodeTupleEntity.class)).value());
+            } else {
+                metaDataManagerPersistService.alterRuleConfiguration(database, toBeAlteredRuleConfig);
+            }
         }
     }
 }
