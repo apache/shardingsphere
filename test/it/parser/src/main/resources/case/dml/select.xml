@@ -11333,4 +11333,38 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_catalog_identifier">
+        <projections start-index="7" stop-index="59">
+            <column-projection name="name" start-index="7" stop-index="18">
+                <owner name="catalog" start-index="7" stop-index="13"/>
+            </column-projection>
+            <column-projection name="catalog_id" start-index="21" stop-index="38">
+                <owner name="catalog" start-index="21" stop-index="27"/>
+            </column-projection>
+            <column-projection name="database_id" start-index="41" stop-index="59">
+                <owner name="catalog" start-index="41" stop-index="47"/>
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="dm_fts_active_catalogs" start-index="66" stop-index="99" alias="catalog">
+                <owner name="sys" start-index="66" stop-index="68"/>
+            </simple-table>
+        </from>
+        <where start-index="101" stop-index="135">
+            <expr>
+                <binary-operation-expression start-index="107" stop-index="135">
+                    <left>
+                        <column name="database_id" start-index="107" stop-index="125">
+                            <owner name="catalog" start-index="107" stop-index="113"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function start-index="129" stop-index="135" text="DB_ID()" function-name="DB_ID"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

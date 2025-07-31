@@ -109,6 +109,7 @@
 1. SQL Parser: Support SQL Server ON clause in SELECT INTO statements parse - [#36075](https://github.com/apache/shardingsphere/pull/36075)
 1. SQL Parser: Support SQL Server the OPENDATASOURCE function in INSERT statements parse - [#36093](https://github.com/apache/shardingsphere/pull/36093)
 1. SQL Parser: Support SQL Server the LANGUAGE identifier parse - [#36110](https://github.com/apache/shardingsphere/pull/36110)
+1. SQL Parser: Support SQL Server clustered index parse - [#36132](https://github.com/apache/shardingsphere/pull/36132)
 
 ### Bug Fixes
 
