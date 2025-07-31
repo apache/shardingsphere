@@ -50,12 +50,10 @@ public final class DatabaseRuleDefinitionExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() throws SQLException {
-        executor.setDatabase(contextManager.getDatabase(databaseName));
-        Optional<ShardingSphereRule> rule = contextManager.getDatabase(databaseName).getRuleMetaData().findSingleRule(executor.getRuleClass());
-        executor.setRule(rule.orElse(null));
         checkBeforeUpdate();
-        RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
+        Optional<ShardingSphereRule> rule = contextManager.getDatabase(databaseName).getRuleMetaData().findSingleRule(executor.getRuleClass());
         if (getRefreshStatus(rule.isPresent())) {
+            RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
             DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, contextManager.getDatabase(databaseName), currentRuleConfig);
         }
     }

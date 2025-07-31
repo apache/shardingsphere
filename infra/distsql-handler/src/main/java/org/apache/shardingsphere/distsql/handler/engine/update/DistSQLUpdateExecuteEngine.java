@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSette
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
@@ -67,7 +68,7 @@ public final class DistSQLUpdateExecuteEngine {
     
     @SuppressWarnings("rawtypes")
     private void executeRuleDefinitionUpdate() throws SQLException {
-        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
+        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = DatabaseRuleDefinitionExecutorFactory.findInstance(sqlStatement, contextManager.getDatabase(databaseName));
         if (databaseExecutor.isPresent()) {
             new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, databaseName, databaseExecutor.get()).executeUpdate();
         } else {
