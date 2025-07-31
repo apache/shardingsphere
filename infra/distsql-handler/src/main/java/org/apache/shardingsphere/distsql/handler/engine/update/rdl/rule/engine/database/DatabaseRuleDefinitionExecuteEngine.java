@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.data
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.DatabaseRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -39,28 +40,29 @@ public final class DatabaseRuleDefinitionExecuteEngine {
     
     private final ContextManager contextManager;
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
     @SuppressWarnings("rawtypes")
     private final DatabaseRuleDefinitionExecutor executor;
     
     /**
      * Execute update.
+     *
      * @throws SQLException SQL Exception
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() throws SQLException {
         checkBeforeUpdate();
-        Optional<ShardingSphereRule> rule = contextManager.getDatabase(databaseName).getRuleMetaData().findSingleRule(executor.getRuleClass());
+        Optional<ShardingSphereRule> rule = database.getRuleMetaData().findSingleRule(executor.getRuleClass());
         if (getRefreshStatus(rule.isPresent())) {
             RuleConfiguration currentRuleConfig = rule.map(ShardingSphereRule::getConfiguration).orElse(null);
-            DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, contextManager.getDatabase(databaseName), currentRuleConfig);
+            DatabaseRuleOperatorFactory.newInstance(contextManager, executor).operate(sqlStatement, database, currentRuleConfig);
         }
     }
     
     @SuppressWarnings("unchecked")
     private void checkBeforeUpdate() {
-        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, contextManager.getDatabase(databaseName));
+        new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.checkBeforeUpdate(sqlStatement);
     }
     
