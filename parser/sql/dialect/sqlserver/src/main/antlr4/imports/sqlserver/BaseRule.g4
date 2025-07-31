@@ -711,6 +711,7 @@ tableHintExtended
     : NOEXPAND
     | INDEX LP_ indexValue (COMMA_ indexValue)* RP_
     | INDEX EQ_ LP_ indexValue RP_
+    | INDEX EQ_ indexValue
     | FORCESEEK (LP_ indexValue (LP_ columnName (COMMA_ columnName)* RP_)? RP_)?
     | FORCESCAN
     | SPATIAL_WINDOW_MAX_CELLS EQ_ NUMBER_
