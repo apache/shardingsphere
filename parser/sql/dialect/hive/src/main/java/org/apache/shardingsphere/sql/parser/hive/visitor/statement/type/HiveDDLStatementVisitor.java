@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterVie
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MsckStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -53,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -331,5 +333,10 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
             result.setViewDefinition(getText(ctx.select()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
+        return new CreateMaterializedViewStatement(getDatabaseType());
     }
 }
