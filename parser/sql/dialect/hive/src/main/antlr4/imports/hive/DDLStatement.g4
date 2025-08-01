@@ -96,6 +96,10 @@ createMaterializedView
     : CREATE MATERIALIZED VIEW ifNotExists? viewNameWithDb materializedViewOptions? AS select
     ;
 
+dropMaterializedView
+    : DROP MATERIALIZED VIEW viewNameWithDb
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
