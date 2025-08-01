@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.type.DALStatementBindEngine;
+import org.apache.shardingsphere.infra.binder.engine.type.DCLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DDLStatementBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.type.DMLStatementBindEngine;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
@@ -74,6 +76,9 @@ public final class SQLBindEngine {
         }
         if (sqlStatement instanceof DDLStatement) {
             return new DDLStatementBindEngine().bind((DDLStatement) sqlStatement, binderContext);
+        }
+        if (sqlStatement instanceof DCLStatement) {
+            return new DCLStatementBindEngine().bind((DCLStatement) sqlStatement, binderContext);
         }
         if (sqlStatement instanceof DALStatement) {
             return new DALStatementBindEngine().bind((DALStatement) sqlStatement, binderContext);
