@@ -355,4 +355,5 @@
     <sql-case id="select_on_clause" value="SELECT * INTO [dbo].[FactResellerSalesXL] ON FG2 FROM [dbo].[FactResellerSales];" db-types="SQLServer"/>
     <sql-case id="select_language_identifier" value="SELECT counter_name, counter_value FROM sys.dm_external_script_execution_stats WHERE language = 'Python';" db-types="SQLServer"/>
     <sql-case id="select_with_clustered_index" value="SELECT e.BusinessEntityID FROM Employee e WITH (INDEX = 1) INNER JOIN Person pp ON e.BusinessEntityID = pp.BusinessEntityID WHERE pp.LastName = 'Johnson';" db-types="SQLServer"/>
+    <sql-case id="select_catalog_identifier" value="SELECT catalog.name, catalog.catalog_id, catalog.database_id FROM sys.dm_fts_active_catalogs catalog WHERE catalog.database_id = DB_ID();" db-types="SQLServer"/>
 </sql-cases>
