@@ -3333,3 +3333,15 @@ MSCK
 SYNC
     : S Y N C
     ;
+
+MATERIALIZED
+    : M A T E R I A L I Z E D
+    ;
+
+REWRITE
+    : R E W R I T E
+    ;
+
+DISTRIBUTED
+    : D I S T R I B U T E D
+    ;

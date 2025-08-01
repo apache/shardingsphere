@@ -92,6 +92,10 @@ alterView
     | alterViewCommonClause AS select
     ;
 
+createMaterializedView
+    : CREATE MATERIALIZED VIEW ifNotExists? viewNameWithDb materializedViewOptions? AS select
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
@@ -400,4 +404,24 @@ addColumns
 
 replaceColumns
     : REPLACE COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ (CASCADE | RESTRICT)?
+    ;
+
+materializedViewOptions
+    : materializedViewOption*
+    ;
+
+materializedViewOption
+    : DISABLE REWRITE
+    | COMMENT string_
+    | PARTITIONED ON LP_ columnNames RP_
+    | clusteredOrDistrbutedClause
+    | rowFormat
+    | storedAs
+    | storageLocation
+    | tblProperties
+    ;
+
+clusteredOrDistrbutedClause
+    : CLUSTERED ON LP_ columnNames RP_
+    | DISTRIBUTED ON LP_ columnNames RP_ SORTED ON LP_ columnNames RP_
     ;
