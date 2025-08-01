@@ -112,6 +112,7 @@
 1. SQL Parser: Support SQL Server the OPENDATASOURCE function in INSERT statements parse - [#36093](https://github.com/apache/shardingsphere/pull/36093)
 1. SQL Parser: Support SQL Server the LANGUAGE identifier parse - [#36110](https://github.com/apache/shardingsphere/pull/36110)
 1. SQL Parser: Support SQL Server clustered index parse - [#36132](https://github.com/apache/shardingsphere/pull/36132)
+1. SQL Parser: Support SQL Server the CATALOG identifier parse - [#36137](https://github.com/apache/shardingsphere/pull/36137)
 
 ### Bug Fixes
 
