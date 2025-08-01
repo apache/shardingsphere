@@ -100,6 +100,10 @@ dropMaterializedView
     : DROP MATERIALIZED VIEW viewNameWithDb
     ;
 
+alterMaterializedView
+    : ALTER MATERIALIZED VIEW viewNameWithDb (ENABLE | DISABLE) REWRITE
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
