@@ -40,6 +40,7 @@ execute
     | alterView
     | createMaterializedView
     | dropMaterializedView
+    | alterMaterializedView
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

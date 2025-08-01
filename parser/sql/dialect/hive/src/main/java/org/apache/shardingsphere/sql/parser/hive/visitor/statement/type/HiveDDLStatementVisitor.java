@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ChangeCo
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -60,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -345,5 +347,10 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
         return new DropMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
+        return new AlterMaterializedViewStatement(getDatabaseType());
     }
 }
