@@ -26,6 +26,10 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 public final class PostgreSQLInt8ArrayBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     private static final PostgreSQLArrayParameterDecoder ARRAY_PARAMETER_DECODER = new PostgreSQLArrayParameterDecoder();
+    private static final int DIMENSIONS = 1;
+    private static final int FLAGS_NO_NULLS = 0;
+    private static final int LOWER_BOUND = 1;
+    private static final int INT8_LENGTH = 8;
     
     @Override
     public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
@@ -41,6 +45,29 @@ public final class PostgreSQLInt8ArrayBinaryProtocolValue implements PostgreSQLB
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedSQLOperationException("PostgreSQLInt8ArrayBinaryProtocolValue.write()");
+        if (!(value instanceof Object[])) {
+            throw new IllegalArgumentException("Expected Object[] for int8 array, but got: " + value.getClass().getSimpleName());
+        }
+        Object[] elements = (Object[]) value;
+        final int DIMENSIONS = 1;
+        final int FLAGS_NO_NULLS = 0;
+        final int INT8_OID = 20;
+        final int LOWER_BOUND = 1;
+        final int INT8_LENGTH = 8;
+        payload.writeInt4(DIMENSIONS);
+        payload.writeInt4(FLAGS_NO_NULLS);
+        payload.writeInt4(INT8_OID);
+        payload.writeInt4(elements.length);
+        payload.writeInt4(LOWER_BOUND);
+        for (Object element : elements) {
+            if (element == null) {
+                payload.writeInt4(-1);
+            } else if (element instanceof Number) {
+                payload.writeInt4(INT8_LENGTH);
+                payload.writeInt8(((Number) element).longValue());
+            } else {
+                throw new IllegalArgumentException("Invalid element type in int8 array: " + element);
+            }
+        }
     }
 }
