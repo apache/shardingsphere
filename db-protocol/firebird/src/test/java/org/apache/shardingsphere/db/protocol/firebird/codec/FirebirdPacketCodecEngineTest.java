@@ -66,7 +66,7 @@ class FirebirdPacketCodecEngineTest {
         when(context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
         when(context.alloc().compositeBuffer(anyInt())).thenAnswer(invocation -> new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, invocation.getArgument(0)));
     }
-
+    
     @Test
     void assertIsValidHeader() {
         assertTrue(new FirebirdPacketCodecEngine().isValidHeader(50));
