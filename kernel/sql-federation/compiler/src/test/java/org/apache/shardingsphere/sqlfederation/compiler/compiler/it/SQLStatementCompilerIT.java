@@ -46,7 +46,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,7 +92,7 @@ class SQLStatementCompilerIT {
     private Collection<SqlOperatorTable> getOperatorTables() {
         SqlOperatorTable operatorTable =
                 SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(Arrays.asList(SqlLibrary.STANDARD, SqlLibrary.MYSQL));
-        return new ArrayList<>(Arrays.asList(new MySQLOperatorTable(), operatorTable));
+        return Arrays.asList(new MySQLOperatorTable(), operatorTable);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {

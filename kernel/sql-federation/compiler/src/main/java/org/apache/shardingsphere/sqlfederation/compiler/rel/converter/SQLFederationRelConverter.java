@@ -60,12 +60,12 @@ public final class SQLFederationRelConverter {
         RelDataTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
         CalciteConnectionConfig connectionConfig = compilerContext.getConnectionConfig();
         CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
-        SqlValidator validator = createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig, compilerContext.getOperatorTables());
+        SqlValidator validator = createSqlValidator(catalogReader, typeFactory, connectionConfig, compilerContext.getOperatorTables());
         RelOptCluster relOptCluster = createRelOptCluster(typeFactory, convention);
         sqlToRelConverter = createSqlToRelConverter(catalogReader, validator, relOptCluster, compilerContext.getSqlParserRule(), databaseType, true);
     }
     
-    private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory typeFactory, final DatabaseType databaseType,
+    private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory typeFactory,
                                             final CalciteConnectionConfig connectionConfig, final Collection<SqlOperatorTable> operatorTables) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT.withLenientOperatorLookup(connectionConfig.lenientOperatorLookup()).withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation()).withIdentifierExpansion(true);
