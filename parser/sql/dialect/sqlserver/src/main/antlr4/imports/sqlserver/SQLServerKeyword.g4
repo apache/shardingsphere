@@ -2114,3 +2114,7 @@ REDUCE
 REDISTRIBUTE
     : R E D I S T R I B U T E
     ;
+
+PRODUCT
+    : P R O D U C T
+    ;

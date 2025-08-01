@@ -11367,4 +11367,56 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_product_function">
+        <projections start-index="7" stop-index="125">
+            <column-projection name="Name" start-index="7" stop-index="12">
+                <owner name="e" start-index="7" stop-index="7"/>
+            </column-projection>
+            <aggregation-projection type="PRODUCT" expression="PRODUCT(1 + edh.rateOfReturn) OVER (PARTITION BY e.DepartmentID ORDER BY edh.EffectiveDate)" alias="CompoundedReturn" start-index="15" stop-index="105">
+                <parameter>
+                    <binary-operation-expression start-index="21" stop-index="42">
+                        <left>
+                            <literal-expression value="1" start-index="21" stop-index="21" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <column name="rateOfReturn" start-index="23" stop-index="42">
+                                <owner name="edh" start-index="23" stop-index="25"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="Employee" alias="e" start-index="132" stop-index="156">
+                        <owner name="HumanResources" start-index="132" stop-index="145"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="EmployeePayHistory" alias="edh" start-index="163" stop-index="199">
+                        <owner name="HumanResources" start-index="163" stop-index="176"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="204" stop-index="244">
+                        <left>
+                            <column name="BusinessEntityID" start-index="204" stop-index="221">
+                                <owner name="e" start-index="204" stop-index="204"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="BusinessEntityID" start-index="225" stop-index="244">
+                                <owner name="edh" start-index="225" stop-index="227"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
