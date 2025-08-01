@@ -30,8 +30,6 @@ import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperatorTable;
-import org.apache.calcite.sql.fun.SqlLibrary;
-import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.calcite.sql.util.SqlOperatorTables;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorUtil;
@@ -44,13 +42,11 @@ import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.catalog.SQLFederationCatalogReader;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.view.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.compiler.planner.builder.SQLFederationPlannerBuilder;
-import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -58,38 +54,29 @@ import java.util.Objects;
  */
 public final class SQLFederationRelConverter {
     
-    private static final Map<String, SqlLibrary> DATABASE_TYPE_SQL_LIBRARIES = new HashMap<>();
-    
-    static {
-        DATABASE_TYPE_SQL_LIBRARIES.put("MySQL", SqlLibrary.MYSQL);
-        DATABASE_TYPE_SQL_LIBRARIES.put("PostgreSQL", SqlLibrary.POSTGRESQL);
-        DATABASE_TYPE_SQL_LIBRARIES.put("openGauss", SqlLibrary.POSTGRESQL);
-        DATABASE_TYPE_SQL_LIBRARIES.put("Oracle", SqlLibrary.ORACLE);
-    }
-    
     private final SqlToRelConverter sqlToRelConverter;
     
     public SQLFederationRelConverter(final CompilerContext compilerContext, final List<String> schemaPath, final DatabaseType databaseType, final Convention convention) {
         RelDataTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
         CalciteConnectionConfig connectionConfig = compilerContext.getConnectionConfig();
         CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
-        SqlValidator validator = createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig);
+        SqlValidator validator = createSqlValidator(catalogReader, typeFactory, databaseType, connectionConfig, compilerContext.getOperatorTables());
         RelOptCluster relOptCluster = createRelOptCluster(typeFactory, convention);
         sqlToRelConverter = createSqlToRelConverter(catalogReader, validator, relOptCluster, compilerContext.getSqlParserRule(), databaseType, true);
     }
     
     private SqlValidator createSqlValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory typeFactory, final DatabaseType databaseType,
-                                            final CalciteConnectionConfig connectionConfig) {
+                                            final CalciteConnectionConfig connectionConfig, final Collection<SqlOperatorTable> operatorTables) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT.withLenientOperatorLookup(connectionConfig.lenientOperatorLookup()).withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation()).withIdentifierExpansion(true);
-        SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(catalogReader, databaseType.getTrunkDatabaseType().orElse(databaseType));
+        SqlOperatorTable sqlOperatorTable = getSQLOperatorTable(operatorTables, catalogReader);
         return SqlValidatorUtil.newValidator(sqlOperatorTable, catalogReader, typeFactory, validatorConfig);
     }
     
-    private static SqlOperatorTable getSQLOperatorTable(final CalciteCatalogReader catalogReader, final DatabaseType databaseType) {
-        SqlOperatorTable operatorTable =
-                SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(Arrays.asList(SqlLibrary.STANDARD, DATABASE_TYPE_SQL_LIBRARIES.getOrDefault(databaseType.getType(), SqlLibrary.MYSQL)));
-        return SqlOperatorTables.chain(Arrays.asList(new MySQLOperatorTable(), operatorTable, catalogReader));
+    private static SqlOperatorTable getSQLOperatorTable(final Collection<SqlOperatorTable> operatorTables, final CalciteCatalogReader catalogReader) {
+        Collection<SqlOperatorTable> allOperatorTables = new LinkedList<>(operatorTables);
+        allOperatorTables.add(catalogReader);
+        return SqlOperatorTables.chain(allOperatorTables);
     }
     
     private SqlToRelConverter createSqlToRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelOptCluster cluster, final SQLParserRule sqlParserRule,
