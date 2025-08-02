@@ -259,17 +259,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Add resource.
-     *
-     * @param distSQL dist SQL
-     * @throws SQLException SQL exception
-     */
-    // TODO Use registerStorageUnit instead, and remove the method, keep it now
-    public void addResource(final String distSQL) throws SQLException {
-        proxyExecuteWithLog(distSQL, 2);
-    }
-    
-    /**
      * Show storage units names.
      *
      * @return storage units names
@@ -400,6 +389,17 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public void proxyExecuteWithLog(final String sql, final int sleepSeconds) throws SQLException {
         log.info("proxy execute: {}", sql);
+        proxyExecute(sql, sleepSeconds);
+    }
+    
+    /**
+     * Proxy execute.
+     *
+     * @param sql SQL
+     * @param sleepSeconds sleep seconds
+     * @throws SQLException SQL exception
+     */
+    public void proxyExecute(final String sql, final int sleepSeconds) throws SQLException {
         List<String> sqlList = Splitter.on(";").trimResults().omitEmptyStrings().splitToList(sql);
         try (Connection connection = proxyDataSource.getConnection()) {
             for (String each : sqlList) {
