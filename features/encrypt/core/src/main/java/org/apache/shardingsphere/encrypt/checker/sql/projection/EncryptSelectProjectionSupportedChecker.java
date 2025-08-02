@@ -45,7 +45,7 @@ public final class EncryptSelectProjectionSupportedChecker implements SupportedS
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getTablesContext().getSimpleTables().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && !sqlStatementContext.getTablesContext().getSimpleTables().isEmpty();
     }
     
     @Override
