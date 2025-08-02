@@ -46,7 +46,7 @@ public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTo
     }
     
     @Override
-    public SQLToken generateSQLToken(final CursorHeldSQLStatementContext  sqlStatementContext) {
+    public SQLToken generateSQLToken(final CursorHeldSQLStatementContext sqlStatementContext) {
         FetchStatement fetchStatement = (FetchStatement) sqlStatementContext.getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);
