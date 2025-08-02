@@ -87,32 +87,38 @@ public final class FirebirdCommandPacketFactory {
      */
     public static boolean isValidLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final int capacity, final FirebirdProtocolVersion protocolVersion) {
         try {
-            switch (commandPacketType) {
-                case INFO_DATABASE:
-                case INFO_SQL:
-                    return FirebirdInfoPacket.getLength(payload) <= capacity;
-                case TRANSACTION:
-                    return FirebirdStartTransactionPacket.getLength(payload) <= capacity;
-                case ALLOCATE_STATEMENT:
-                    return FirebirdAllocateStatementPacket.getLength(payload) <= capacity;
-                case PREPARE_STATEMENT:
-                    return FirebirdPrepareStatementPacket.getLength(payload) <= capacity;
-                case EXECUTE:
-                case EXECUTE2:
-                    return FirebirdExecuteStatementPacket.getLength(payload, protocolVersion) <= capacity;
-                case FETCH:
-                    return FirebirdFetchStatementPacket.getLength(payload) <= capacity;
-                case COMMIT:
-                    return FirebirdCommitTransactionPacket.getLength(payload) <= capacity;
-                case ROLLBACK:
-                    return FirebirdRollbackTransactionPacket.getLength(payload) <= capacity;
-                case FREE_STATEMENT:
-                    return FirebirdFreeStatementPacket.getLength(payload) <= capacity;
-                default:
-                    return true;
-            }
+            return getLength(commandPacketType, payload, protocolVersion) <= capacity;
         } catch (final IndexOutOfBoundsException ignored) {
+            payload.getByteBuf().resetReaderIndex();
             return false;
+        }
+    }
+    
+    private static int getLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload,
+                                 final FirebirdProtocolVersion protocolVersion) throws IndexOutOfBoundsException {
+        switch (commandPacketType) {
+            case INFO_DATABASE:
+            case INFO_SQL:
+                return FirebirdInfoPacket.getLength(payload);
+            case TRANSACTION:
+                return FirebirdStartTransactionPacket.getLength(payload);
+            case ALLOCATE_STATEMENT:
+                return FirebirdAllocateStatementPacket.getLength();
+            case PREPARE_STATEMENT:
+                return FirebirdPrepareStatementPacket.getLength(payload);
+            case EXECUTE:
+            case EXECUTE2:
+                return FirebirdExecuteStatementPacket.getLength(payload, protocolVersion);
+            case FETCH:
+                return FirebirdFetchStatementPacket.getLength(payload);
+            case COMMIT:
+                return FirebirdCommitTransactionPacket.getLength();
+            case ROLLBACK:
+                return FirebirdRollbackTransactionPacket.getLength();
+            case FREE_STATEMENT:
+                return FirebirdFreeStatementPacket.getLength();
+            default:
+                return 0;
         }
     }
 }

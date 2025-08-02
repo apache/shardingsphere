@@ -63,6 +63,7 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
         if (data == null) {
             return;
         }
+        int nullBitsStartIndex = payload.getByteBuf().writerIndex();
         int nullBits = (data.getCells().size() + 7) / 8;
         nullBits += (4 - nullBits) & 3;
         payload.getByteBuf().writeZero(nullBits);
@@ -72,8 +73,9 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
                 FirebirdBinaryProtocolValue type = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType());
                 type.write(payload, cell.getData());
             } else {
-                byte nullBitsByte = payload.getByteBuf().getByte(i / 8);
-                payload.getByteBuf().setByte(i / 8, nullBitsByte | (1 << i % 8));
+                int nullBitsIndex = nullBitsStartIndex + i / 8;
+                byte nullBitsByte = payload.getByteBuf().getByte(nullBitsIndex);
+                payload.getByteBuf().setByte(nullBitsIndex, nullBitsByte | (1 << i % 8));
             }
             i++;
         }

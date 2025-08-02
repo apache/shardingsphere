@@ -260,7 +260,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @return buffer length with padding added
      */
     public int getBufferLength(final int index) {
-        int length = byteBuf.getInt(index);
+        int length = byteBuf.getInt(index) + 4;
         return length + getPadding(length);
     }
 }

@@ -176,6 +176,6 @@ class FirebirdPacketPayloadTest {
     @Test
     void assertGetBufferLength() {
         when(byteBuf.getInt(0)).thenReturn(5);
-        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).getBufferLength(0), is(8));
+        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).getBufferLength(0), is(12));
     }
 }
