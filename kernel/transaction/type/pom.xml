@@ -29,7 +29,6 @@
     
     <modules>
         <module>xa</module>
-        <module>xa-jakarta</module>
         <module>base</module>
     </modules>
 </project>
