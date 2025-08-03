@@ -52,7 +52,7 @@ public final class AlterDatabaseRuleOperator implements DatabaseRuleOperator {
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         metaDataManagerPersistService.alterRuleConfiguration(database, decorateRuleConfiguration(database, toBeAlteredRuleConfig));
         RuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(toBeAlteredRuleConfig);
-        if (toBeDroppedRuleConfig != null
+        if (null != toBeDroppedRuleConfig
                 && !TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, toBeAlteredRuleConfig.getClass()).isEmpty((DatabaseRuleConfiguration) toBeDroppedRuleConfig)) {
             metaDataManagerPersistService.removeRuleConfigurationItem(database, toBeDroppedRuleConfig);
         }

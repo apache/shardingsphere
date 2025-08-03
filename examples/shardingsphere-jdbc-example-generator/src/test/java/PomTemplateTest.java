@@ -55,8 +55,7 @@ public final class PomTemplateTest {
         Template template = templateConfig.getTemplate("pom.ftl");
         StringWriter writer = new StringWriter();
         template.process(dataModel, writer);
-        String result = writer.toString();
-        assertThat(result, containsString("shardingsphere-standalone-mode-repository-jdbc"));
+        assertThat(writer.toString(), containsString("shardingsphere-standalone-mode-repository-jdbc"));
     }
     
     @Test
@@ -71,7 +70,6 @@ public final class PomTemplateTest {
         Template template = templateConfig.getTemplate("pom.ftl");
         StringWriter writer = new StringWriter();
         template.process(dataModel, writer);
-        String result = writer.toString();
-        assertThat(result, not(containsString("shardingsphere-standalone-mode-repository-jdbc")));
+        assertThat(writer.toString(), not(containsString("shardingsphere-standalone-mode-repository-jdbc")));
     }
 }

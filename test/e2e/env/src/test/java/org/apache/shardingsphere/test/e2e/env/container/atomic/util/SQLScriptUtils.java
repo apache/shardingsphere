@@ -71,6 +71,6 @@ public final class SQLScriptUtils {
     
     private static Reader getReader(final String scriptFilePath) throws FileNotFoundException {
         InputStream resourceAsStream = SQLScriptUtils.class.getClassLoader().getResourceAsStream(StringUtils.removeStart(scriptFilePath, "/"));
-        return resourceAsStream == null ? new FileReader(scriptFilePath) : new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
+        return null == resourceAsStream ? new FileReader(scriptFilePath) : new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
     }
 }

@@ -270,7 +270,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             Projection projection = projectionEngine.createProjection(each).orElse(null);
             if (projection instanceof ShorthandProjection) {
                 result.addAll(processShorthandProjection(sqlStatementContext, schema, (ShorthandProjection) projection));
-            } else if (!(projection instanceof DerivedProjection) && projection != null) {
+            } else if (!(projection instanceof DerivedProjection) && null != projection) {
                 result.add(projection);
             }
         }
@@ -283,7 +283,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         Collection<Projection> result = new LinkedList<>();
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
-        if (tablesContext != null) {
+        if (null != tablesContext) {
             for (String tableName : tablesContext.getTableNames()) {
                 ShardingSphereTable table = schema.getTable(tableName);
                 table.getAllColumns().forEach(each -> {

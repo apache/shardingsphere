@@ -121,7 +121,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQ
         boolean result = enumerator.moveNext();
         if (result) {
             Object current = enumerator.current();
-            currentRows = null != current ? getCurrentRows(current) : new Object[]{null};
+            currentRows = null == current ? new Object[]{null} : getCurrentRows(current);
         } else {
             currentRows = new Object[]{null};
             processEngine.completeSQLExecution(processId);
