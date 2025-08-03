@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class FirebirdFetchStatementPacketTest {
-
+    
     @Test
     void assertParse() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
@@ -57,7 +57,7 @@ class FirebirdFetchStatementPacketTest {
         assertThat(packet.getParameterTypes().get(0), is(FirebirdBinaryColumnType.LONG));
         assertThat(packet.getParameterTypes().get(1), is(FirebirdBinaryColumnType.SHORT));
     }
-
+    
     @Test
     void assertLength() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
