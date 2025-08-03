@@ -3,6 +3,7 @@
 ### CVE
 
 1. Fixes CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
+1. Fixes CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
 
 ### Metadata Storage Changes
 
