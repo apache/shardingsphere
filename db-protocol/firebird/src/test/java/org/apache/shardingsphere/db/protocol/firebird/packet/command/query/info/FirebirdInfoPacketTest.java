@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
