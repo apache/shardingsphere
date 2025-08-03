@@ -26,7 +26,6 @@
 1. Decouple features as pluggable [#36086](https://github.com/apache/shardingsphere/pull/36086)
 1. Decouple mode repositories as pluggable [#36087](https://github.com/apache/shardingsphere/pull/36087)
 1. Firebird: Support Firebird Proxy [#35937](https://github.com/apache/shardingsphere/pull/35937)
-1. Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec [#35810](https://github.com/apache/shardingsphere/pull/35810)
 
 ### Enhancements
 
