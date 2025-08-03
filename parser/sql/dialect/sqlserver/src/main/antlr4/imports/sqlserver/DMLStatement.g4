@@ -185,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? (AS? alias)? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -205,6 +205,22 @@ pivotValueList
 
 pivotValue
     : LBT_ expr RBT_ | expr
+    ;
+
+forSystemTimeClause
+    : FOR SYSTEM_TIME systemTimeClause
+    ;
+
+systemTimeClause
+    : AS OF dateTimeExpression
+    | FROM dateTimeExpression TO dateTimeExpression
+    | BETWEEN dateTimeExpression AND dateTimeExpression
+    | CONTAINED IN LP_ dateTimeExpression COMMA_ dateTimeExpression RP_
+    | ALL
+    ;
+
+dateTimeExpression
+    : literals | parameterMarker
     ;
 
 joinedTable
