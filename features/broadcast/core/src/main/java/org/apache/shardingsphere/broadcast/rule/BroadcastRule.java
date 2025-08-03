@@ -49,12 +49,12 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final RuleAttributes attributes;
     
-    public BroadcastRule(final BroadcastRuleConfiguration config, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
-        configuration = config;
+    public BroadcastRule(final BroadcastRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+        configuration = ruleConfig;
         Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
                 .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
         dataSourceNames = new CaseInsensitiveSet<>(aggregatedDataSources.keySet());
-        tables = new CaseInsensitiveSet<>(config.getTables());
+        tables = new CaseInsensitiveSet<>(ruleConfig.getTables());
         attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables),
                 new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
     }
