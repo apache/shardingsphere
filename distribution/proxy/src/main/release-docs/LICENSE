@@ -227,7 +227,7 @@ The text of each license is the standard Apache 2.0 license.
     commons-codec 1.16.0: https://github.com/apache/commons-codec, Apache 2.0
     commons-dbcp2 2.11.0: https://commons.apache.org/proper/commons-dbcp, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
-    commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
+    commons-io 2.20.0: https://github.com/apache/commons-io, Apache 2.0
     commons-lang3 3.18.0: https://github.com/apache/commons-lang, Apache 2.0
     commons-math3 3.6.1: https://commons.apache.org/proper/commons-math, Apache 2.0
     commons-pool2 2.12.0: https://commons.apache.org/proper/commons-pool, Apache 2.0
