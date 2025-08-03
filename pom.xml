@@ -77,6 +77,7 @@
         <commons-codec.version>1.16.0</commons-codec.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <commons-pool2.version>2.12.0</commons-pool2.version>
+        <aggdesigner-algorithm.version>6.1</aggdesigner-algorithm.version>
         <caffeine.version>2.9.3</caffeine.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <java-util.version>2.4.0</java-util.version>
@@ -244,6 +245,11 @@
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.hydromatic</groupId>
+                <artifactId>aggdesigner-algorithm</artifactId>
+                <version>${aggdesigner-algorithm.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
