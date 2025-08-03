@@ -34,23 +34,23 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdInt16BinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Mock
     private ByteBuf byteBuf;
-
+    
     @Mock
     private ByteBuf result;
-
+    
     @Test
     void assertRead() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readSlice(16)).thenReturn(result);
         assertThat(new FirebirdInt16BinaryProtocolValue().read(payload), is(result));
     }
-
+    
     @Test
     void assertWriteWithInteger() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
@@ -58,7 +58,7 @@ class FirebirdInt16BinaryProtocolValueTest {
         verify(byteBuf).writeZero(12);
         verify(payload).writeInt4(1);
     }
-
+    
     @Test
     void assertWriteWithBigDecimal() {
         when(payload.getByteBuf()).thenReturn(byteBuf);

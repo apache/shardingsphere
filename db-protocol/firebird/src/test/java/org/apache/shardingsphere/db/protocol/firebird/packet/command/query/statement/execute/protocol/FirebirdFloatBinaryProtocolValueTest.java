@@ -33,16 +33,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdFloatBinaryProtocolValueTest {
-
+    
     @Mock
     private ByteBuf byteBuf;
-
+    
     @Test
     void assertRead() {
         when(byteBuf.readFloat()).thenReturn(1.0F);
         assertThat(new FirebirdFloatBinaryProtocolValue().read(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)), is(1.0F));
     }
-
+    
     @Test
     void assertWrite() {
         new FirebirdFloatBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0F);

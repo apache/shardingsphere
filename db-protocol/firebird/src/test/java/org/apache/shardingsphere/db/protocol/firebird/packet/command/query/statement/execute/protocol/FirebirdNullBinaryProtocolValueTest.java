@@ -28,15 +28,15 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdNullBinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertRead() {
         assertNull(new FirebirdNullBinaryProtocolValue().read(payload));
     }
-
+    
     @Test
     void assertWrite() {
         new FirebirdNullBinaryProtocolValue().write(payload, null);

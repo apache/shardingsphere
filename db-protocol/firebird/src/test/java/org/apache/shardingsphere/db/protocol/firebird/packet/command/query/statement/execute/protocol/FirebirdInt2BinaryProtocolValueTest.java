@@ -30,16 +30,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdInt2BinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertRead() {
         when(payload.readInt4()).thenReturn(1);
         assertThat(new FirebirdInt2BinaryProtocolValue().read(payload), is(1));
     }
-
+    
     @Test
     void assertWrite() {
         new FirebirdInt2BinaryProtocolValue().write(payload, 1);

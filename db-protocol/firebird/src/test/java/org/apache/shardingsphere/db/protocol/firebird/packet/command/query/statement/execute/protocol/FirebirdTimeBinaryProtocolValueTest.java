@@ -37,10 +37,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdTimeBinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertRead() {
         LocalDateTime dateTime = LocalDateTime.of(1970, 1, 1, 12, 0, 0);
@@ -48,7 +48,7 @@ class FirebirdTimeBinaryProtocolValueTest {
         when(payload.readInt4()).thenReturn(encoded);
         assertThat(new FirebirdTimeBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtil.getTime(encoded)));
     }
-
+    
     @Test
     void assertWrite() {
         Time time = Time.valueOf(LocalTime.of(12, 0, 0));

@@ -30,29 +30,29 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdInt4BinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertRead() {
         when(payload.readInt4()).thenReturn(1);
         new FirebirdInt4BinaryProtocolValue().read(payload);
         verify(payload).readInt4();
     }
-
+    
     @Test
     void assertWriteWithBigDecimal() {
         new FirebirdInt4BinaryProtocolValue().write(payload, BigDecimal.ONE);
         verify(payload).writeInt4(1);
     }
-
+    
     @Test
     void assertWriteWithInteger() {
         new FirebirdInt4BinaryProtocolValue().write(payload, 1);
         verify(payload).writeInt4(1);
     }
-
+    
     @Test
     void assertWriteWithLong() {
         new FirebirdInt4BinaryProtocolValue().write(payload, 1L);

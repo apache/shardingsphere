@@ -35,10 +35,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdTimestampTZBinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertRead() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
@@ -47,7 +47,7 @@ class FirebirdTimestampTZBinaryProtocolValueTest {
         when(payload.readInt4()).thenReturn(encodedDate, encodedTime, 60);
         assertThat(new FirebirdTimestampTZBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtil.getDateTimeWithOffset(encodedDate, encodedTime, 60)));
     }
-
+    
     @Test
     void assertWrite() {
         OffsetDateTime value = OffsetDateTime.of(LocalDateTime.of(2024, 1, 1, 12, 0), ZoneOffset.ofHours(2));

@@ -32,23 +32,23 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdByteBinaryProtocolValueTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertRead() {
         ByteBuf buf = Unpooled.buffer();
         when(payload.readBuffer()).thenReturn(buf);
         assertThat(new FirebirdByteBinaryProtocolValue().read(payload), is(buf));
     }
-
+    
     @Test
     void assertWriteWithString() {
         new FirebirdByteBinaryProtocolValue().write(payload, "foo");
         verify(payload).writeString("foo");
     }
-
+    
     @Test
     void assertWriteWithBytes() {
         byte[] bytes = {1, 2};
