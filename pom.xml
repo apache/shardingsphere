@@ -78,6 +78,7 @@
         <commons-codec.version>1.16.0</commons-codec.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <commons-pool2.version>2.12.0</commons-pool2.version>
+        <commons-io.version>2.20.0</commons-io.version>
         <aggdesigner-algorithm.version>6.1</aggdesigner-algorithm.version>
         <caffeine.version>2.9.3</caffeine.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
@@ -336,6 +337,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>${commons-pool2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             
             <dependency>
