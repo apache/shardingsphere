@@ -1,0 +1,10 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"
+      },
+      "type": "com.microsoft.sqlserver.jdbc.ConfigurableRetryLogic"
+    }
+  ]
+}

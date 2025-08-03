@@ -127,7 +127,7 @@
         
         <postgresql.version>42.7.5</postgresql.version>
         <mysql-connector-java.version>8.3.0</mysql-connector-java.version>
-        <mssql.version>6.1.7.jre8-preview</mssql.version>
+        <mssql.version>12.10.1.jre8</mssql.version>
         <h2.version>2.2.224</h2.version>
         <opengauss.version>3.1.0-og</opengauss.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
@@ -160,6 +160,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
         <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
+        <transformer-maven-plugin.version>0.5.0</transformer-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
@@ -1075,6 +1076,16 @@
                     </plugins>
                 </pluginManagement>
             </build>
+        </profile>
+        <profile>
+            <id>jdk17+</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <properties>
+                <!--TODO See https://github.com/eclipse-transformer/transformer/issues/475 -->
+                <transformer-maven-plugin.version>1.0.0</transformer-maven-plugin.version>
+            </properties>
         </profile>
         <profile>
             <id>generateMetadata</id>
