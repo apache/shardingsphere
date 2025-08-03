@@ -601,7 +601,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.fieldDefinition().dataType().charsetWithOptBinary()) {
             result.setCharsetName(ctx.fieldDefinition().dataType().charsetWithOptBinary().charsetName().textOrIdentifier().identifier().IDENTIFIER_().getText());
         }
-        ctx.fieldDefinition().columnAttribute().stream().filter(each -> each.collateClause() != null).findFirst()
+        ctx.fieldDefinition().columnAttribute().stream().filter(each -> null != each.collateClause()).findFirst()
                 .ifPresent(optional -> result.setCollateName(optional.collateClause().collationName().textOrIdentifier().identifier().IDENTIFIER_().getText()));
         return result;
     }

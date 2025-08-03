@@ -105,7 +105,7 @@ public final class ColumnSegmentBinder {
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {
         IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
         IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();
-        if (originalDatabase != null && originalSchema != null) {
+        if (null != originalDatabase && null != originalSchema) {
             owner.setTableBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema));
         }
         return owner;

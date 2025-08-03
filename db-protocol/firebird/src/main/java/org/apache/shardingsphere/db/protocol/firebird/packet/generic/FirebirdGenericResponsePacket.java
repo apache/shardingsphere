@@ -115,7 +115,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
         payload.writeInt4(handle);
         payload.writeInt8(id);
-        if (data != null) {
+        if (null != data) {
             payload.getByteBuf().writeZero(4);
             int index = payload.getByteBuf().readableBytes();
             data.write(payload);
@@ -125,7 +125,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         } else {
             payload.writeBuffer(new byte[0]);
         }
-        if (statusVector != null) {
+        if (null != statusVector) {
             statusVector.write(payload);
         } else {
             payload.getByteBuf().writeZero(4);

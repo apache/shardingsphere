@@ -32,6 +32,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,6 +49,6 @@ class TablelessInstanceBroadcastRouteEngineTest {
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("foo_ds_1"));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("foo_ds_1"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
     }
 }

@@ -36,7 +36,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitUse(final UseContext ctx) {
-        String database = null != ctx.DEFAULT() ? "default" : new IdentifierValue(ctx.identifier().getText()).getValue();
+        String database = null == ctx.DEFAULT() ? new IdentifierValue(ctx.identifier().getText()).getValue() : "default";
         return new HiveUseStatement(getDatabaseType(), database);
     }
 }

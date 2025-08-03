@@ -481,7 +481,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.pivotInClause()) {
             ctx.pivotInClause().pivotInClauseExpr().forEach(each -> {
                 ExpressionSegment expr = (ExpressionSegment) visit(each.expr());
-                String columnName = null != each.alias() && null != each.alias().identifier() ? each.alias().identifier().IDENTIFIER_().getText() : expr.getText();
+                String columnName = null == each.alias() || null == each.alias().identifier() ? expr.getText() : each.alias().identifier().IDENTIFIER_().getText();
                 ColumnSegment columnSegment = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(columnName));
                 pivotInColumns.add(columnSegment);
             });
@@ -594,7 +594,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             left.getWith().ifPresent(result::setWith);
             createSelectCombineClause(ctx, result, left);
         } else {
-            result = null != ctx.queryBlock() ? (SelectStatement) visit(ctx.queryBlock()) : (SelectStatement) visit(ctx.parenthesisSelectSubquery());
+            result = null == ctx.queryBlock() ? (SelectStatement) visit(ctx.parenthesisSelectSubquery()) : (SelectStatement) visit(ctx.queryBlock());
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));

@@ -73,18 +73,18 @@ public final class ShadowRule implements DatabaseRule {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         return shadowAlgorithmConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-                entry -> TypedSPILoader.getService(ShadowAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()), (a, b) -> b, LinkedHashMap::new));
+                entry -> TypedSPILoader.getService(ShadowAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     private Map<String, ShadowDataSourceRule> createDataSourceRules(final Collection<ShadowDataSourceConfiguration> dataSourceConfigs) {
         return dataSourceConfigs.stream().collect(Collectors.toMap(ShadowDataSourceConfiguration::getName,
-                each -> new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName()), (a, b) -> b, CaseInsensitiveMap::new));
+                each -> new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName()), (oldValue, currentValue) -> currentValue, CaseInsensitiveMap::new));
     }
     
     private Map<String, ShadowTableRule> createTableRules(final Map<String, ShadowTableConfiguration> tableConfigs) {
         return tableConfigs.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> new ShadowTableRule(entry.getKey(), entry.getValue().getDataSourceNames(), entry.getValue().getShadowAlgorithmNames(), shadowAlgorithms),
-                (a, b) -> b, CaseInsensitiveMap::new));
+                (oldValue, currentValue) -> currentValue, CaseInsensitiveMap::new));
     }
     
     /**

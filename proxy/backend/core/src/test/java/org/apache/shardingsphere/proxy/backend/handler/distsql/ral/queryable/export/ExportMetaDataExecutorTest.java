@@ -235,17 +235,17 @@ class ExportMetaDataExecutorTest {
             return;
         }
         assertThat(actual.size(), is(expected.size()));
-        ConfigurationProperties actualConfigProperties = new ConfigurationProperties(actual);
-        ConfigurationProperties expectedConfigProperties = new ConfigurationProperties(expected);
-        TemporaryConfigurationProperties actualTemporaryConfigProperties = new TemporaryConfigurationProperties(actual);
-        TemporaryConfigurationProperties expectedTemporaryConfigProperties = new TemporaryConfigurationProperties(expected);
+        ConfigurationProperties actualConfigProps = new ConfigurationProperties(actual);
+        ConfigurationProperties expectedConfigProps = new ConfigurationProperties(expected);
+        TemporaryConfigurationProperties actualTemporaryConfigProps = new TemporaryConfigurationProperties(actual);
+        TemporaryConfigurationProperties expectedTemporaryConfigProps = new TemporaryConfigurationProperties(expected);
         for (Entry<Object, Object> entry : expected.entrySet()) {
             Object actualValue = findConfigurationPropertyKey(String.valueOf(entry.getKey()))
-                    .map(actualConfigProperties::getValue)
-                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(actualTemporaryConfigProperties::getValue).orElse(null));
+                    .map(actualConfigProps::getValue)
+                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(actualTemporaryConfigProps::getValue).orElse(null));
             Object expectedValue = findConfigurationPropertyKey(String.valueOf(entry.getKey()))
-                    .map(expectedConfigProperties::getValue)
-                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(expectedTemporaryConfigProperties::getValue).orElse(null));
+                    .map(expectedConfigProps::getValue)
+                    .orElseGet(() -> findTemporaryConfigurationPropertyKey(String.valueOf(entry.getKey())).map(expectedTemporaryConfigProps::getValue).orElse(null));
             assertThat(actualValue, is(expectedValue));
         }
     }
