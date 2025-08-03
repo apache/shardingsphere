@@ -531,6 +531,10 @@ DELAYED
     : D E L A Y E D
     ;
 
+DEFERRED
+    : D E F E R R E D
+    ;
+
 DELAY_KEY_WRITE
     : D E L A Y UL_ K E Y UL_ W R I T E
     ;
@@ -1017,6 +1021,10 @@ INDEX
 
 INDEXES
     : I N D E X E S
+    ;
+
+IDXPROPERTIES
+    : I D X P R O P E R T I E S
     ;
 
 INFILE

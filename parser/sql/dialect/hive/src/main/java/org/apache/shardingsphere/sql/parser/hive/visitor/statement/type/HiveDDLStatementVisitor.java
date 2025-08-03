@@ -286,8 +286,8 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewNameWithDb()));
-        if (null != ctx.COMMENT() && !ctx.string_().isEmpty()) {
-            result.setViewDefinition(ctx.string_(ctx.string_().size() - 1).getText().replace("'", ""));
+        if (null != ctx.commentClause() && !ctx.commentClause().isEmpty()) {
+            result.setViewDefinition(ctx.commentClause(ctx.commentClause().size() - 1).string_().getText().replace("'", ""));
         }
         if (null != ctx.tblProperties()) {
             result.setViewDefinition(getText(ctx.tblProperties()));
