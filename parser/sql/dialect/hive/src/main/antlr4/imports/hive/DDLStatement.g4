@@ -454,7 +454,7 @@ createIndexOption
     ;
 
 indexType
-    : identifier
+    : string_
     ;
 
 indexTableName

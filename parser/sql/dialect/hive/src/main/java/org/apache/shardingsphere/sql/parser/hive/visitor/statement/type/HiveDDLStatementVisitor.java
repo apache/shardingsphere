@@ -76,6 +76,10 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateVi
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import java.util.Collections;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateIndexContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 
 /**
  * DDL statement visitor for Hive.
@@ -352,5 +356,20 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
         return new AlterMaterializedViewStatement(getDatabaseType());
+    }
+
+    @Override
+    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
+        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
+        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                        new IdentifierValue(ctx.indexName().getText()))));
+        result.setTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        if (null != ctx.columnNamesCommonClause()) {
+            for (ColumnNameContext each : ctx.columnNamesCommonClause().columnNames().columnName()) {
+                result.getColumns().add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+            }
+        }
+        return result;
     }
 }
