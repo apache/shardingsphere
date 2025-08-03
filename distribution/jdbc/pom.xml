@@ -462,5 +462,17 @@
                 </dependency>
             </dependencies>
         </profile>
+        
+        <profile>
+            <id>native</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-infra-reachability-metadata</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 </project>
