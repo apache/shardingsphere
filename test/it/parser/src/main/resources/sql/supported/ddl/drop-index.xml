@@ -45,4 +45,7 @@
     <sql-case id="drop_index_if_exists_on_table" value="DROP INDEX IF EXISTS order_index ON t_order" db-types="SQLServer" />
     -->
     <sql-case id="drop_index_with_online_force_invalidation" value="DROP INDEX order_index ONLINE FORCE DEFERRED INVALIDATION" db-types="Oracle" />
+    <sql-case id="drop_index_basic" value="DROP INDEX product_id ON orders" db-types="Hive" />
+    <sql-case id="drop_index_with_if_exists" value="DROP INDEX IF EXISTS customer_id ON customers" db-types="Hive" />
+    <sql-case id="drop_index_with_database" value="DROP INDEX product_id ON mydb.orders" db-types="Hive" />
 </sql-cases>
