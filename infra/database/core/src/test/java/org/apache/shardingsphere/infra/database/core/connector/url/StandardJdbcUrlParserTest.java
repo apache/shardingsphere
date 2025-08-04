@@ -81,4 +81,13 @@ class StandardJdbcUrlParserTest {
     void assertParseIncorrectURL() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
+    
+    @Test
+    void assertParseMySQLJdbcUrlWithIPV6() {
+        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://[fe80::d114:22b3:a0d9:2b3]:3306/db_test");
+        assertThat(actual.getHostname(), is("fe80::d114:22b3:a0d9:2b3"));
+        assertThat(actual.getPort(), is(3306));
+        assertThat(actual.getDatabase(), is("db_test"));
+        assertTrue(actual.getQueryProperties().isEmpty());
+    }
 }

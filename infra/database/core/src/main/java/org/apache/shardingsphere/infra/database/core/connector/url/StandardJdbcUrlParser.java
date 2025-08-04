@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
+import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +48,16 @@ public final class StandardJdbcUrlParser {
     
     private static final String QUERY_GROUP_KEY = "query";
     
+    private static final String HOST_PORT_PATTERN = "((?<hostname>[\\w-.+%]+)|(\\[(?<ipv6hostname>[^]]+)]))\\s*(:\\s*(?<port>\\d+))?";
+    
+    private static final Pattern HOST_PORT_PATTERN_PATTERN = Pattern.compile(HOST_PORT_PATTERN);
+    
+    private static final String HOSTNAME_GROUP_KEY = "hostname";
+    
+    private static final String IPV6_HOSTNAME_GROUP_KEY = "ipv6hostname";
+    
+    private static final String PORT_GROUP_KEY = "port";
+    
     /**
      * Parse JDBC URL.
      *
@@ -56,24 +67,21 @@ public final class StandardJdbcUrlParser {
     public JdbcUrl parse(final String jdbcUrl) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         ShardingSpherePreconditions.checkState(matcher.matches(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
+        
         String authority = matcher.group(AUTHORITY_GROUP_KEY);
         ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-        return new JdbcUrl(parseHostname(authority), parsePort(authority), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
+        
+        Matcher hostMatcher = HOST_PORT_PATTERN_PATTERN.matcher(authority);
+        ShardingSpherePreconditions.checkState(hostMatcher.find(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
+        return new JdbcUrl(parseHostname(hostMatcher), parsePort(hostMatcher), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
     }
     
-    private String parseHostname(final String authority) {
-        return authority.contains(":") ? authority.split(":")[0] : authority;
+    private String parseHostname(final Matcher hostMatcher) {
+        return Optional.ofNullable(hostMatcher.group(IPV6_HOSTNAME_GROUP_KEY)).orElse(hostMatcher.group(HOSTNAME_GROUP_KEY));
     }
     
-    private int parsePort(final String authority) {
-        if (!authority.contains(":")) {
-            return -1;
-        }
-        String port = authority.split(":")[1];
-        if (port.contains(",")) {
-            port = port.split(",")[0];
-        }
-        return Integer.parseInt(port);
+    private int parsePort(final Matcher hostMatcher) {
+        return Optional.ofNullable(hostMatcher.group(PORT_GROUP_KEY)).map(Integer::parseInt).orElse(-1);
     }
     
     /**
