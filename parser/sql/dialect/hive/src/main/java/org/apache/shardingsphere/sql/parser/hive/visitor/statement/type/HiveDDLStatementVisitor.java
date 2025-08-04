@@ -387,7 +387,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
         AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
