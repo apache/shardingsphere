@@ -84,6 +84,7 @@
 1. SQL Parser: Support Hive ALTER MATERIALIZED VIEW statement parse - [#36146](https://github.com/apache/shardingsphere/pull/36146)
 1. SQL Parser: Support Hive CREATE INDEX statement parse - [#36157](https://github.com/apache/shardingsphere/pull/36157)
 1. SQL Parser: Support Hive DROP INDEX statement parse - [#36166](https://github.com/apache/shardingsphere/pull/36166)
+1. SQL Parser: Support Hive ALTER INDEX statement parse - [#36167](https://github.com/apache/shardingsphere/pull/36167)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
 1. SQL Parser: Support SQL Server CHANGETABLE function parse - [#35920](https://github.com/apache/shardingsphere/pull/35920)
 1. SQL Parser: Support SQL Server AI_GENERATE_EMBEDDINGS function parse - [#35922](https://github.com/apache/shardingsphere/pull/35922)

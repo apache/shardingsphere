@@ -44,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropMate
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
@@ -382,6 +384,16 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
                 new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
+        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
+        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IdentifierValue(ctx.indexName().getText()));
+        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
         return result;
     }
