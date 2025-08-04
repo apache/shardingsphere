@@ -42,16 +42,20 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNa
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
@@ -286,8 +290,8 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewNameWithDb()));
-        if (null != ctx.COMMENT() && !ctx.string_().isEmpty()) {
-            result.setViewDefinition(ctx.string_(ctx.string_().size() - 1).getText().replace("'", ""));
+        if (null != ctx.commentClause() && !ctx.commentClause().isEmpty()) {
+            result.setViewDefinition(ctx.commentClause(ctx.commentClause().size() - 1).string_().getText().replace("'", ""));
         }
         if (null != ctx.tblProperties()) {
             result.setViewDefinition(getText(ctx.tblProperties()));
@@ -352,5 +356,20 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
         return new AlterMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
+        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
+        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                        new IdentifierValue(ctx.indexName().getText()))));
+        result.setTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        if (null != ctx.columnNamesCommonClause()) {
+            for (ColumnNameContext each : ctx.columnNamesCommonClause().columnNames().columnName()) {
+                result.getColumns().add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+            }
+        }
+        return result;
     }
 }
