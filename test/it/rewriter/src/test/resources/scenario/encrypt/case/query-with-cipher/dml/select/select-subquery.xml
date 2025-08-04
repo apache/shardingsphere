@@ -84,7 +84,7 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_predicate_not_exists" db-types="Oracle">
         <input sql="SELECT 1 FROM t_account_bak u WHERE EXISTS(SELECT 1 FROM t_order WHERE NOT EXISTS(SELECT 1 from t_account b where b.certificate_number=u.certificate_number))" />
-        <output sql="SELECT 1 FROM &quot;ENCRYPT_DS&quot;.t_account_bak u WHERE EXISTS(SELECT 1 FROM &quot;ENCRYPT_DS&quot;.t_order WHERE NOT EXISTS(SELECT 1 from &quot;ENCRYPT_DS&quot;.t_account b where b.&quot;assisted_query_certificate_number&quot;=u.&quot;assisted_query_certificate_number&quot;))" />
+        <output sql="SELECT 1 FROM t_account_bak u WHERE EXISTS(SELECT 1 FROM t_order WHERE NOT EXISTS(SELECT 1 from t_account b where b.&quot;assisted_query_certificate_number&quot;=u.&quot;assisted_query_certificate_number&quot;))" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_predicate_in_condition" db-types="MySQL">
