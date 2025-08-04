@@ -39,11 +39,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr4-runtime</artifactId>
-                <version>${antlr4.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -59,6 +54,12 @@
             <artifactId>shardingsphere-infra-database-mysql</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.httpcomponents.core5</groupId>
+            <artifactId>httpcore5</artifactId>
+            <version>${httpcore5.version}</version>
         </dependency>
         
         <dependency>
