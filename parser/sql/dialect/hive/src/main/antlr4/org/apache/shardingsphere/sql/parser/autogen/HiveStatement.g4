@@ -42,6 +42,7 @@ execute
     | dropMaterializedView
     | alterMaterializedView
     | createIndex
+    | dropIndex
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

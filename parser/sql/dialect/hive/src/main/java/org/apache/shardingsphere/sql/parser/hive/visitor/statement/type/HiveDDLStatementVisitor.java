@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMa
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -56,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
@@ -370,6 +372,17 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
                 result.getColumns().add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
             }
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropIndex(final DropIndexContext ctx) {
+        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
+        result.setIfExists(null != ctx.ifExists());
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IdentifierValue(ctx.indexName().getText()));
+        result.getIndexes().add(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
+        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
         return result;
     }
 }
