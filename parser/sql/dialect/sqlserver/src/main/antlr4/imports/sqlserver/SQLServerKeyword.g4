@@ -2122,3 +2122,11 @@ PRODUCT
 CONTAINED
     : C O N T A I N E D
     ;
+
+SYSTEM
+    : S Y S T E M
+    ;
+
+TABLESAMPLE
+    : T A B L E S A M P L E
+    ;

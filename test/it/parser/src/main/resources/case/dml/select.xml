@@ -11442,4 +11442,15 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_from_tablesample">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Customer" start-index="14" stop-index="27">
+                <owner name="Sales" start-index="14" stop-index="18" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

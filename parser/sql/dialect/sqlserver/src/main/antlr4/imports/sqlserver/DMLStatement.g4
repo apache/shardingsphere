@@ -185,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -205,6 +205,10 @@ pivotValueList
 
 pivotValue
     : LBT_ expr RBT_ | expr
+    ;
+
+tableSampleClause
+    : TABLESAMPLE SYSTEM? LP_ numberLiterals (PERCENT | ROWS)? RP_ (REPEATABLE LP_ numberLiterals RP_)?
     ;
 
 forSystemTimeClause
