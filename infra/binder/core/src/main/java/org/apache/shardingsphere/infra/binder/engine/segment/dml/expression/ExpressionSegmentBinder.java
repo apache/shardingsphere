@@ -91,7 +91,7 @@ public final class ExpressionSegmentBinder {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, binderContext, tableBinderContexts);
+            return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ColumnSegment) {
             return ColumnSegmentBinder.bind((ColumnSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);

@@ -140,6 +140,7 @@
 1. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
 1. Encrypt: Resolve rewrite issue in nested concat function - [35815](https://github.com/apache/shardingsphere/pull/35815)
+1. SQL Binder: Fix is unable to find the outer table in the NotExpressionBinder - [36135](https://github.com/apache/shardingsphere/pull/36135)
 
 ### Change Logs
 
