@@ -39,7 +39,6 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
