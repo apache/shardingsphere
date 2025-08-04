@@ -123,7 +123,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
             payload.getByteBuf().setInt(index - 4, length);
             payload.getByteBuf().writeBytes(new byte[(4 - length) & 3]);
         } else {
-            payload.writeBuffer(new byte[0]);
+            payload.writeInt4(0);
         }
         if (null != statusVector) {
             statusVector.write(payload);
