@@ -11419,4 +11419,27 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_for_system_time">
+        <projections start-index="7" stop-index="38">
+            <column-projection name="DepartmentNumber" start-index="7" stop-index="22" />
+            <column-projection name="DepartmentName" start-index="25" stop-index="38" />
+        </projections>
+        <from>
+            <simple-table name="DEPARTMENT" start-index="45" stop-index="54" />
+        </from>
+        <where start-index="91" stop-index="109">
+            <expr>
+                <binary-operation-expression text="ManagerID = 5" start-index="97" stop-index="109">
+                    <left>
+                        <column name="ManagerID" start-index="97" stop-index="105" />
+                    </left>
+                    <right>
+                        <literal-expression start-index="109" stop-index="109" value="5" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

@@ -2118,3 +2118,7 @@ REDISTRIBUTE
 PRODUCT
     : P R O D U C T
     ;
+
+CONTAINED
+    : C O N T A I N E D
+    ;
