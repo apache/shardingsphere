@@ -41,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.io.IOException;
 import java.net.URI;
@@ -75,8 +76,8 @@ public abstract class ExternalSQLParserIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) throws ReflectiveOperationException {
-            ExternalCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) throws ReflectiveOperationException {
+            ExternalCaseSettings settings = context.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
             Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
             return getTestParameters(settings).map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
         }

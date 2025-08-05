@@ -114,7 +114,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
         Map<String, Collection<ShardingSphereSchema>> result = new HashMap<>(databaseNames.size());
         for (String dbName : databaseNames) {
             Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(dbName);
-            if (schemas != null) {
+            if (null != schemas) {
                 result.put(dbName, schemas);
             }
         }

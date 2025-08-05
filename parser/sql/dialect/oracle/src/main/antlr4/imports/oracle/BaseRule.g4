@@ -32,15 +32,10 @@ literals
     | booleanLiterals
     | nullValueLiterals
     | intervalLiterals
-    | bindLiterals
     ;
 
 intervalLiterals
     : INTERVAL simpleExpr intervalUnit (intervalPrecision)? (TO intervalUnit (intervalPrecision)?)?
-    ;
-
-bindLiterals
-    : COLON_ identifier
     ;
 
 intervalPrecision
@@ -480,6 +475,7 @@ bitExpr
 
 simpleExpr
     : functionCall
+    | pseudorecord
     | parameterMarker
     | literals
     | simpleExpr OR_ simpleExpr
@@ -495,6 +491,10 @@ simpleExpr
 
 functionCall
     : aggregationFunction | analyticFunction | specialFunction | regularFunction | xmlFunction
+    ;
+
+pseudorecord
+    : COLON_ (NEW | OLD | PARENT) DOT_ identifier
     ;
 
 aggregationFunction
@@ -569,7 +569,7 @@ jsonOnNullClause
 jsonReturnClause
     : RETURNING VARCHAR2 (LP_ INTEGER_ ( BYTE | CHAR)? RP_)?
     ;
-    
+
 jsonObjectKeyValue
     : (KEY? expr VALUE expr) (FORMAT JSON)?
     ;

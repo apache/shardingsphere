@@ -82,6 +82,11 @@
         <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password, u.`cipher_certificate_number` AS certificate_number FROM t_account_bak u WHERE NOT EXISTS(SELECT b.assisted_query_certificate_number from t_account b where b.`assisted_query_certificate_number`=u.`assisted_query_certificate_number`)" />
     </rewrite-assertion>
 
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_not_exists" db-types="Oracle">
+        <input sql="SELECT 1 FROM t_account_bak u WHERE EXISTS(SELECT 1 FROM t_order WHERE NOT EXISTS(SELECT 1 from t_account b where b.certificate_number=u.certificate_number))" />
+        <output sql="SELECT 1 FROM t_account_bak u WHERE EXISTS(SELECT 1 FROM t_order WHERE NOT EXISTS(SELECT 1 from t_account b where b.&quot;assisted_query_certificate_number&quot;=u.&quot;assisted_query_certificate_number&quot;))" />
+    </rewrite-assertion>
+
     <rewrite-assertion id="select_not_nested_subquery_in_predicate_in_condition" db-types="MySQL">
         <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE u.certificate_number IN (SELECT certificate_number FROM t_account WHERE password=?) AND u.password=?" parameters="1, 2" />
         <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password, u.`cipher_certificate_number` AS certificate_number FROM t_account_bak u, t_account c WHERE u.`assisted_query_certificate_number` IN (SELECT assisted_query_certificate_number FROM t_account WHERE `assisted_query_password`=?) AND u.`assisted_query_password`=?" parameters="assisted_query_1, assisted_query_2" />

@@ -259,6 +259,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.DropIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro.CreateMacroStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro.DropMacroStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.CreateOperatorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.DropOperatorStatementTestCase;
@@ -1751,6 +1753,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "open")
     private final List<PostgreSQLOpenStatementTestCase> openTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-macro")
+    private final List<CreateMacroStatementTestCase> createMacroTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-macro")
+    private final List<DropMacroStatementTestCase> dropMacroTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

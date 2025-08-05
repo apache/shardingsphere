@@ -39,7 +39,6 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -266,6 +265,12 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -285,6 +290,25 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sharding-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
@@ -498,6 +522,40 @@
         </profile>
         
         <profile>
+            <id>transaction-atomikos</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>transaction-narayana</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>transaction-seata</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        
+        <profile>
             <id>mode-repo-memory</id>
             <dependencies>
                 <dependency>
@@ -541,6 +599,58 @@
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        
+        <profile>
+            <id>feature-database-time-service</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-database-time-service</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-sharding</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>feature-sharding-mysql</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-sharding-mysql</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>

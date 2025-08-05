@@ -47,28 +47,33 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
         }
     }
     
-    private void parseSQLInfo(final FirebirdPacketPayload data, final FirebirdSQLInfoPacketType type) {
+    private void parseSQLInfo(final FirebirdPacketPayload payload, final FirebirdSQLInfoPacketType type) {
         // TODO implement other request types handle
         switch (type) {
             case RECORDS:
                 // TODO handle actual update count
-                data.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
-                data.writeInt2LE(0);
-                data.writeInt1(FirebirdSQLInfoReturnValue.SELECT.getCode());
-                data.writeInt2LE(4);
-                data.writeInt4LE(0);
-                data.writeInt1(FirebirdSQLInfoReturnValue.INSERT.getCode());
-                data.writeInt2LE(4);
-                data.writeInt4LE(0);
-                data.writeInt1(FirebirdSQLInfoReturnValue.UPDATE.getCode());
-                data.writeInt2LE(4);
-                data.writeInt4LE(0);
-                data.writeInt1(FirebirdSQLInfoReturnValue.DELETE.getCode());
-                data.writeInt2LE(4);
-                data.writeInt4LE(0);
-                break;
+                processRecords(payload);
+                return;
             default:
                 throw new FirebirdProtocolException("Unknown database information request type %d", type.getCode());
         }
+    }
+    
+    private void processRecords(final FirebirdPacketPayload payload) {
+        // TODO handle actual update count
+        payload.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
+        payload.writeInt2LE(0);
+        payload.writeInt1(FirebirdSQLInfoReturnValue.SELECT.getCode());
+        payload.writeInt2LE(4);
+        payload.writeInt4LE(0);
+        payload.writeInt1(FirebirdSQLInfoReturnValue.INSERT.getCode());
+        payload.writeInt2LE(4);
+        payload.writeInt4LE(0);
+        payload.writeInt1(FirebirdSQLInfoReturnValue.UPDATE.getCode());
+        payload.writeInt2LE(4);
+        payload.writeInt4LE(0);
+        payload.writeInt1(FirebirdSQLInfoReturnValue.DELETE.getCode());
+        payload.writeInt2LE(4);
+        payload.writeInt4LE(0);
     }
 }

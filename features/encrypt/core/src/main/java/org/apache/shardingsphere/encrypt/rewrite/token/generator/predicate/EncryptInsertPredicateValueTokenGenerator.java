@@ -39,7 +39,7 @@ import java.util.List;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptInsertPredicateValueTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ParametersAware, EncryptConditionsAware {
+public final class EncryptInsertPredicateValueTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, ParametersAware, EncryptConditionsAware {
     
     private final EncryptRule rule;
     
@@ -56,10 +56,10 @@ public final class EncryptInsertPredicateValueTokenGenerator implements Collecti
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
         EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(rule, database);
         generator.setParameters(parameters);
         generator.setEncryptConditions(encryptConditions);
-        return generator.generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());
+        return generator.generateSQLTokens(sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }

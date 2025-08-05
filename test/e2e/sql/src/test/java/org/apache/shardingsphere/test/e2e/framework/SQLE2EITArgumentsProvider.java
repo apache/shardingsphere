@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.test.e2e.framework;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
+import org.apache.shardingsphere.test.e2e.framework.type.SQLCommandType;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -36,8 +37,8 @@ import java.util.stream.Stream;
 public final class SQLE2EITArgumentsProvider implements ArgumentsProvider {
     
     @Override
-    public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-        SQLE2EITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLE2EITSettings.class);
+    public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+        SQLE2EITSettings settings = context.getRequiredTestClass().getAnnotation(SQLE2EITSettings.class);
         Preconditions.checkNotNull(settings, "Annotation `%s` is required.", SQLE2EITSettings.class.getSimpleName());
         return settings.batch() ? getBatchTestCaseArguments(settings.value()) : getSingleTestCaseArguments(settings.value());
     }

@@ -7,8 +7,8 @@
     "condition":{"typeReachable":"org.testcontainers.containers.GenericContainer"},
     "pattern":"\\QMETA-INF/services/org.testcontainers.core.CreateContainerCmdModifier\\E"
   }, {
-    "condition":{"typeReachable":"org.testcontainers.DockerClientFactory"},
-    "pattern":"\\QMETA-INF/services/org.testcontainers.dockerclient.DockerClientProviderStrategy\\E"
+    "condition":{"typeReachable":"org.testcontainers.utility.ImageNameSubstitutor"},
+    "pattern":"\\QMETA-INF/services/org.testcontainers.utility.ImageNameSubstitutor\\E"
   }, {
     "condition":{"typeReachable":"org.testcontainers.shaded.com.google.common.io.Resources"},
     "pattern":"\\Qcontainer-license-acceptance.txt\\E"
@@ -18,9 +18,6 @@
   }, {
     "condition":{"typeReachable":"org.testcontainers.utility.ClasspathScanner"},
     "pattern":"\\Qtestcontainers.properties\\E"
-  }, {
-    "condition":{"typeReachable":"org.testcontainers.utility.ImageNameSubstitutor"},
-    "pattern":"\\QMETA-INF/services/org.testcontainers.utility.ImageNameSubstitutor\\E"
   }, {
     "condition":{"typeReachable":"org.testcontainers.shaded.com.github.dockerjava.core.DefaultDockerClientConfig"},
     "pattern":"\\Qdocker-java.properties\\E"

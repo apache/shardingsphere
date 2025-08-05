@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.la
 
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.LabelComputeNodeStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.persist.facade.ClusterPersistServiceFacade;

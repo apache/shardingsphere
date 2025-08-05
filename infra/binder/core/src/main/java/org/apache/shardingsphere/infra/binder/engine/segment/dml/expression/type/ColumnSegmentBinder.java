@@ -59,7 +59,7 @@ import java.util.Optional;
 public final class ColumnSegmentBinder {
     
     private static final Collection<String> EXCLUDE_BIND_COLUMNS = new CaseInsensitiveSet<>(Arrays.asList(
-            "ROWNUM", "ROW_NUMBER", "ROWNUM_", "ROWID", "SYSDATE", "SYSTIMESTAMP", "CURRENT_TIMESTAMP", "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "LEVEL"));
+            "ROWNUM", "ROW_NUMBER", "ROWNUM_", "ROWID", "SYSDATE", "SYSTIMESTAMP", "CURRENT_TIMESTAMP", "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "LEVEL", "DAY"));
     
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
@@ -105,7 +105,7 @@ public final class ColumnSegmentBinder {
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {
         IdentifierValue originalDatabase = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalDatabase();
         IdentifierValue originalSchema = null == inputColumnSegment ? null : inputColumnSegment.getColumnBoundInfo().getOriginalSchema();
-        if (originalDatabase != null && originalSchema != null) {
+        if (null != originalDatabase && null != originalSchema) {
             owner.setTableBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema));
         }
         return owner;

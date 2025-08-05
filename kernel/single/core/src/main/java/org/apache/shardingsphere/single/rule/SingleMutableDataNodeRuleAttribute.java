@@ -111,8 +111,8 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     }
     
     @Override
-    public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
+    public ShardingSphereRule reloadRule(final RuleConfiguration ruleConfig, final String databaseName, final Map<String, DataSource> dataSourceMap,
                                          final Collection<ShardingSphereRule> builtRules) {
-        return new SingleRule((SingleRuleConfiguration) config, databaseName, protocolType, dataSourceMap, builtRules);
+        return new SingleRule((SingleRuleConfiguration) ruleConfig, databaseName, protocolType, dataSourceMap, builtRules);
     }
 }

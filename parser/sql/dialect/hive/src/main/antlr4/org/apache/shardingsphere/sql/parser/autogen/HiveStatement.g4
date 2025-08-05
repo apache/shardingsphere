@@ -30,7 +30,22 @@ execute
     | dropDatabase
     | alterDatabase
     | use
+    | createTable
     | dropTable
+    | truncateTable
+    | msckStatement
+    | alterTable
+    | createView
+    | dropView
+    | alterView
+    | createMaterializedView
+    | dropMaterializedView
+    | alterMaterializedView
+    | createIndex
+    | dropIndex
+    | alterIndex
+    | createMacro
+    | dropMacro
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

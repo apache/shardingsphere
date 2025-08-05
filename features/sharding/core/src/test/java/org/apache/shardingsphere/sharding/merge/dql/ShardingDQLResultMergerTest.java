@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.metadata.database.enums.Nul
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByMemoryMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.GroupByStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;

@@ -257,7 +257,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
         SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
-        if (ctx.firstSkipClause() != null) {
+        if (null != ctx.firstSkipClause()) {
             result.setLimit((LimitSegment) visit(ctx.firstSkipClause()));
         }
         if (!ctx.selectSpecification().isEmpty()) {
@@ -286,12 +286,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitFirstSkipClause(final FirstSkipClauseContext ctx) {
         PaginationValueSegment rowCount = null;
         PaginationValueSegment offset = null;
-        if (ctx.FIRST() != null) {
+        if (null != ctx.FIRST()) {
             rowCount = (PaginationValueSegment) visit(ctx.firstValue());
-            if (ctx.SKIP_() != null) {
+            if (null != ctx.SKIP_()) {
                 offset = (PaginationValueSegment) visit(ctx.skipValue());
             }
-        } else if (ctx.SKIP_() != null) {
+        } else if (null != ctx.SKIP_()) {
             offset = (PaginationValueSegment) visit(ctx.skipValue());
         }
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);

@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 
-FROM ghcr.io/graalvm/native-image-community:22.0.2 AS nativebuild
+FROM ghcr.io/graalvm/native-image-community:24.0.2 AS nativebuild
+ENV NATIVE_IMAGE_OPTIONS="--static-nolibc"
 WORKDIR /build
 COPY ./ .
-RUN --mount=type=cache,target=/root/.m2 ./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+AddAllCharsets,-H:+StaticExecutableWithDynamicLibC" clean package
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" clean package
 
 FROM gcr.io/distroless/base-debian12:latest
 LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"

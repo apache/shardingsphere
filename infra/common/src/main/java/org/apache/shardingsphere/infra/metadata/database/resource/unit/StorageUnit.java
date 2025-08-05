@@ -52,7 +52,7 @@ public final class StorageUnit {
         Map<String, Object> standardProps = dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties();
         String url = standardProps.get("url").toString();
         Object originUsername = standardProps.get("username");
-        String username = null != originUsername ? originUsername.toString() : "";
+        String username = null == originUsername ? "" : originUsername.toString();
         storageType = DatabaseTypeFactory.get(url);
         boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
         String catalog = isInstanceConnectionAvailable ? DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, storageType).parse(url, username, null).getCatalog() : null;

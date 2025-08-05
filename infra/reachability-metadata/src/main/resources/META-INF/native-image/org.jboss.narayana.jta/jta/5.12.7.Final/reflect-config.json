@@ -35,14 +35,6 @@
   "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
 },
 {
-  "condition":{"typeReachable":"com.arjuna.ats.arjuna.logging.tsLogger"},
-  "name":"com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger_zh"
-},
-{
-  "condition":{"typeReachable":"com.arjuna.ats.arjuna.logging.tsLogger"},
-  "name":"com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger_zh_CN"
-},
-{
   "condition":{"typeReachable":"com.arjuna.ats.arjuna.recovery.TransactionStatusManager"},
   "name":"com.arjuna.ats.arjuna.recovery.ActionStatusService",
   "queryAllPublicConstructors":true,
@@ -83,31 +75,16 @@
   "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
 },
 {
-  "condition":{"typeReachable":"com.arjuna.ats.jbossatx.logging.jbossatxLogger"},
-  "name":"com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger_zh"
-},
-{
-  "condition":{"typeReachable":"com.arjuna.ats.jbossatx.logging.jbossatxLogger"},
-  "name":"com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger_zh_CN"
-},
-{
   "condition":{"typeReachable":"com.arjuna.ats.jta.common.jtaPropertyManager"},
   "name":"com.arjuna.ats.jta.common.JTAEnvironmentBean",
   "allDeclaredFields":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }, {"name":"getAsyncCommitPoolSize","parameterTypes":[] }, {"name":"getCommitMarkableResourceJNDINames","parameterTypes":[] }, {"name":"getCommitMarkableResourceRecordDeleteBatchSize","parameterTypes":[] }, {"name":"getCommitMarkableResourceRecordDeleteBatchSizeMap","parameterTypes":[] }, {"name":"getCommitMarkableResourceTableNameMap","parameterTypes":[] }, {"name":"getLastResourceOptimisationInterface","parameterTypes":[] }, {"name":"getLastResourceOptimisationInterfaceClassName","parameterTypes":[] }, {"name":"getOrphanSafetyInterval","parameterTypes":[] }, {"name":"getPerformImmediateCleanupOfCommitMarkableResourceBranchesMap","parameterTypes":[] }, {"name":"getTransactionManager","parameterTypes":[] }, {"name":"getTransactionManagerClassName","parameterTypes":[] }, {"name":"getTransactionManagerJNDIContext","parameterTypes":[] }, {"name":"getTransactionSynchronizationRegistry","parameterTypes":[] }, {"name":"getTransactionSynchronizationRegistryClassName","parameterTypes":[] }, {"name":"getTransactionSynchronizationRegistryJNDIContext","parameterTypes":[] }, {"name":"getUserTransaction","parameterTypes":[] }, {"name":"getUserTransactionClassName","parameterTypes":[] }, {"name":"getUserTransactionJNDIContext","parameterTypes":[] }, {"name":"getUserTransactionOperationsProviderClassName","parameterTypes":[] }, {"name":"getXaRecoveryNodes","parameterTypes":[] }, {"name":"getXaResourceIsSameRMClassNames","parameterTypes":[] }, {"name":"getXaResourceMapClassNames","parameterTypes":[] }, {"name":"getXaResourceMaps","parameterTypes":[] }, {"name":"getXaResourceOrphanFilterClassNames","parameterTypes":[] }, {"name":"getXaResourceOrphanFilters","parameterTypes":[] }, {"name":"getXaResourceRecordWrappingPluginClassName","parameterTypes":[] }, {"name":"getXaResourceRecoveries","parameterTypes":[] }, {"name":"getXaResourceRecoveryClassNames","parameterTypes":[] }, {"name":"isNotifyCommitMarkableResourceRecoveryModuleOfCompleteBranches","parameterTypes":[] }, {"name":"isPerformImmediateCleanupOfCommitMarkableResourceBranches","parameterTypes":[] }, {"name":"isStrictJTA12DuplicateXAENDPROTOErr","parameterTypes":[] }, {"name":"isSupportSubtransactions","parameterTypes":[] }, {"name":"isTransactionToThreadListenersEnabled","parameterTypes":[] }, {"name":"isXaAssumeRecoveryComplete","parameterTypes":[] }, {"name":"isXaRollbackOptimization","parameterTypes":[] }, {"name":"isXaTransactionTimeoutEnabled","parameterTypes":[] }, {"name":"setAsyncCommitPoolSize","parameterTypes":["int"] }, {"name":"setCommitMarkableResourceJNDINames","parameterTypes":["java.util.List"] }, {"name":"setCommitMarkableResourceRecordDeleteBatchSize","parameterTypes":["int"] }, {"name":"setCommitMarkableResourceRecordDeleteBatchSizeMap","parameterTypes":["java.util.Map"] }, {"name":"setCommitMarkableResourceTableName","parameterTypes":["java.lang.String"] }, {"name":"setCommitMarkableResourceTableNameMap","parameterTypes":["java.util.Map"] }, {"name":"setDefaultTransactionOperationsProviderClassName","parameterTypes":["java.lang.String"] }, {"name":"setLastResourceOptimisationInterface","parameterTypes":["java.lang.Class"] }, {"name":"setLastResourceOptimisationInterfaceClassName","parameterTypes":["java.lang.String"] }, {"name":"setNotifyCommitMarkableResourceRecoveryModuleOfCompleteBranches","parameterTypes":["boolean"] }, {"name":"setOrphanSafetyInterval","parameterTypes":["int"] }, {"name":"setPerformImmediateCleanupOfCommitMarkableResourceBranches","parameterTypes":["boolean"] }, {"name":"setPerformImmediateCleanupOfCommitMarkableResourceBranchesMap","parameterTypes":["java.util.Map"] }, {"name":"setStrictJTA12DuplicateXAENDPROTOErr","parameterTypes":["boolean"] }, {"name":"setSupportSubtransactions","parameterTypes":["boolean"] }, {"name":"setTransactionManager","parameterTypes":["javax.transaction.TransactionManager"] }, {"name":"setTransactionManagerClassName","parameterTypes":["java.lang.String"] }, {"name":"setTransactionManagerJNDIContext","parameterTypes":["java.lang.String"] }, {"name":"setTransactionSynchronizationRegistry","parameterTypes":["javax.transaction.TransactionSynchronizationRegistry"] }, {"name":"setTransactionSynchronizationRegistryClassName","parameterTypes":["java.lang.String"] }, {"name":"setTransactionSynchronizationRegistryJNDIContext","parameterTypes":["java.lang.String"] }, {"name":"setTransactionToThreadListenersEnabled","parameterTypes":["boolean"] }, {"name":"setUserTransaction","parameterTypes":["javax.transaction.UserTransaction"] }, {"name":"setUserTransactionClassName","parameterTypes":["java.lang.String"] }, {"name":"setUserTransactionJNDIContext","parameterTypes":["java.lang.String"] }, {"name":"setUserTransactionOperationsProvider","parameterTypes":["org.jboss.tm.usertx.UserTransactionOperationsProvider"] }, {"name":"setUserTransactionOperationsProviderClassName","parameterTypes":["java.lang.String"] }, {"name":"setXaAssumeRecoveryComplete","parameterTypes":["boolean"] }, {"name":"setXaRecoveryNodes","parameterTypes":["java.util.List"] }, {"name":"setXaResourceIsSameRMClassNames","parameterTypes":["java.util.List"] }, {"name":"setXaResourceMapClassNames","parameterTypes":["java.util.List"] }, {"name":"setXaResourceMaps","parameterTypes":["java.util.List"] }, {"name":"setXaResourceOrphanFilterClassNames","parameterTypes":["java.util.List"] }, {"name":"setXaResourceOrphanFilters","parameterTypes":["java.util.List"] }, {"name":"setXaResourceRecordWrappingPlugin","parameterTypes":["com.arjuna.ats.internal.jta.resources.arjunacore.XAResourceRecordWrappingPlugin"] }, {"name":"setXaResourceRecordWrappingPluginClassName","parameterTypes":["java.lang.String"] }, {"name":"setXaResourceRecoveries","parameterTypes":["java.util.List"] }, {"name":"setXaResourceRecoveryClassNames","parameterTypes":["java.util.List"] }, {"name":"setXaRollbackOptimization","parameterTypes":["boolean"] }, {"name":"setXaTransactionTimeoutEnabled","parameterTypes":["boolean"] }]
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"com.arjuna.ats.jta.logging.jtaLogger"},
   "name":"com.arjuna.ats.jta.logging.jtaI18NLogger_$logger",
   "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
-},
-{
-  "condition":{"typeReachable":"com.arjuna.ats.jta.logging.jtaLogger"},
-  "name":"com.arjuna.ats.jta.logging.jtaI18NLogger_$logger_zh"
-},
-{
-  "condition":{"typeReachable":"com.arjuna.ats.jta.logging.jtaLogger"},
-  "name":"com.arjuna.ats.jta.logging.jtaI18NLogger_$logger_zh_CN"
 },
 {
   "condition":{"typeReachable":"com.arjuna.ats.jta.common.JTAEnvironmentBean"},
@@ -117,14 +94,6 @@
   "condition":{"typeReachable":"com.arjuna.common.logging.commonLogger"},
   "name":"com.arjuna.common.logging.commonI18NLogger_$logger",
   "methods":[{"name":"<init>","parameterTypes":["org.jboss.logging.Logger"] }]
-},
-{
-  "condition":{"typeReachable":"com.arjuna.common.logging.commonLogger"},
-  "name":"com.arjuna.common.logging.commonI18NLogger_$logger_zh"
-},
-{
-  "condition":{"typeReachable":"com.arjuna.common.logging.commonLogger"},
-  "name":"com.arjuna.common.logging.commonI18NLogger_$logger_zh_CN"
 },
 {
   "condition":{"typeReachable":"com.arjuna.common.util.propertyservice.PropertiesFactory"},
@@ -139,12 +108,16 @@
 {
   "condition":{"typeReachable":"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule"},
   "name":"com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule",
-  "fields":[{"name":"_recoveryStore"}]
+  "fields":[{"name":"_recoveryStore"}],
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule"},
   "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule",
-  "fields":[{"name":"registeredXARecoveryModule"}]
+  "fields":[{"name":"registeredXARecoveryModule"}],
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"com.arjuna.ats.arjuna.objectstore.StoreManager"},
@@ -152,19 +125,33 @@
   "allDeclaredFields":true
 },
 {
-  "condition":{"typeReachable":"com.arjuna.common.logging.commonI18NLogger"},
-  "name":"com.arjuna.common.logging.commonI18NLogger_$logger_en"
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.CommitMarkableResourceRecordRecoveryModule"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.CommitMarkableResourceRecordRecoveryModule",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"com.arjuna.ats.arjuna.logging.arjunaI18NLogger"},
-  "name":"com.arjuna.ats.arjuna.logging.arjunaI18NLogger_$logger_en"
+  "condition":{"typeReachable":"com.arjuna.ats.internal.txoj.recovery.TORecoveryModule"},
+  "name":"com.arjuna.ats.internal.txoj.recovery.TORecoveryModule",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger"},
-  "name":"com.arjuna.ats.jbossatx.logging.jbossatxI18NLogger_$logger_en"
+  "condition":{"typeReachable":"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner"},
+  "name":"com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner",
+  "allDeclaredConstructors":true,
+  "allDeclaredMethods":true
 },
 {
-  "condition":{"typeReachable":"com.arjuna.ats.jta.logging.jtaI18NLogger"},
-  "name":"com.arjuna.ats.jta.logging.jtaI18NLogger_$logger_en"
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter"
+},
+{
+  "condition":{"typeReachable":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter"},
+  "name":"com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAResourceOrphanFilter"
 }
 ]

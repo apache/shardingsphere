@@ -73,10 +73,12 @@
         <j2objc-annotations.version>1.3</j2objc-annotations.version>
         <calcite.version>1.40.0</calcite.version>
         
-        <commons-lang3.version>3.15.0</commons-lang3.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <commons-codec.version>1.16.0</commons-codec.version>
         <commons-math3.version>3.6.1</commons-math3.version>
         <commons-pool2.version>2.12.0</commons-pool2.version>
+        <commons-io.version>2.20.0</commons-io.version>
+        <aggdesigner-algorithm.version>6.1</aggdesigner-algorithm.version>
         <caffeine.version>2.9.3</caffeine.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         <java-util.version>2.4.0</java-util.version>
@@ -100,7 +102,6 @@
         <narayana.version>5.12.7.Final</narayana.version>
         <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
-        <seata.version>2.3.0</seata.version>
         
         <netty.version>4.1.121.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
@@ -112,7 +113,7 @@
         <vertx.version>4.5.1</vertx.version>
         
         <grpc.version>1.65.1</grpc.version>
-        <protobuf.version>3.21.12</protobuf.version>
+        <protobuf.version>3.25.8</protobuf.version>
         <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
@@ -134,7 +135,6 @@
         <clickhouse-jdbc.version>0.6.3</clickhouse-jdbc.version>
         <hive-jdbc.version>4.0.1</hive-jdbc.version>
         <hive-server2-jdbc-driver-thin.version>1.7.0</hive-server2-jdbc-driver-thin.version>
-        <hadoop.version>3.3.6</hadoop.version>
         <presto.version>0.292</presto.version>
         <jaybird.version>5.0.6.java8</jaybird.version>
         
@@ -146,11 +146,11 @@
         <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
-        <junit.version>5.11.2</junit.version>
+        <junit.version>5.13.4</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
-        <awaitility.version>4.2.2</awaitility.version>
-        <testcontainers.version>1.21.0</testcontainers.version>
+        <awaitility.version>4.3.0</awaitility.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.2</graal-sdk.version>
@@ -160,7 +160,7 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <os-detector-maven-plugin.version>0.3.1</os-detector-maven-plugin.version>
-        <native-maven-plugin.version>0.10.6</native-maven-plugin.version>
+        <native-maven-plugin.version>0.11.0</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
@@ -246,6 +246,11 @@
                 <version>${commons-codec.version}</version>
             </dependency>
             <dependency>
+                <groupId>net.hydromatic</groupId>
+                <artifactId>aggdesigner-algorithm</artifactId>
+                <version>${aggdesigner-algorithm.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
@@ -329,6 +334,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
                 <version>${commons-pool2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             
             <dependency>
@@ -647,6 +657,7 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -1082,13 +1093,10 @@
                 <pluginManagement>
                     <plugins>
                         <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-surefire-plugin</artifactId>
                             <version>${maven-surefire-plugin.version}</version>
                             <configuration>
-                                <includes>
-                                    <include>org.apache.shardingsphere.test.natived.**</include>
-                                </includes>
+                                <skipTests>true</skipTests>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -1119,23 +1127,42 @@
                             </configuration>
                             <executions>
                                 <execution>
-                                    <id>build-native</id>
+                                    <id>merge-agent-files-in-integration-test</id>
                                     <goals>
-                                        <goal>compile-no-fork</goal>
+                                        <goal>merge-agent-files</goal>
                                     </goals>
-                                    <phase>package</phase>
+                                    <phase>integration-test</phase>
                                 </execution>
+                                <!--TODO See https://github.com/graalvm/native-build-tools/pull/748 -->
                                 <execution>
-                                    <id>test-native</id>
+                                    <id>metadata-copy-manually</id>
                                     <goals>
-                                        <goal>test</goal>
+                                        <goal>metadata-copy</goal>
                                     </goals>
-                                    <phase>test</phase>
+                                    <phase>deploy</phase>
                                 </execution>
                             </executions>
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>org.apache.shardingsphere.test.natived.**</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>
@@ -1145,25 +1172,10 @@
                     <plugins>
                         <plugin>
                             <artifactId>maven-surefire-plugin</artifactId>
+                            <version>${maven-surefire-plugin.version}</version>
                             <configuration>
-                                <includes>
-                                    <include>org.apache.shardingsphere.test.natived.**</include>
-                                </includes>
+                                <skipTests>true</skipTests>
                             </configuration>
-                        </plugin>
-                        <!--TODO See https://github.com/graalvm/native-build-tools/issues/727 .-->
-                        <plugin>
-                            <artifactId>maven-jar-plugin</artifactId>
-                            <version>${maven-jar-plugin.version}</version>
-                            <executions>
-                                <execution>
-                                    <id>jar-in-test-phase</id>
-                                    <goals>
-                                        <goal>jar</goal>
-                                    </goals>
-                                    <phase>test</phase>
-                                </execution>
-                            </executions>
                         </plugin>
                         <plugin>
                             <groupId>org.graalvm.buildtools</groupId>
@@ -1172,11 +1184,14 @@
                             <extensions>true</extensions>
                             <configuration>
                                 <buildArgs>
-                                    <buildArg>-H:+AddAllCharsets</buildArg>
                                     <buildArg>-H:+UnlockExperimentalVMOptions</buildArg>
-                                    <buildArg>-H:ThrowMissingRegistrationErrors=</buildArg>
-                                    <buildArg>-H:MissingRegistrationReportingMode=Warn</buildArg>
+                                    <buildArg>-H:+AddAllCharsets</buildArg>
+                                    <buildArg>-H:+IncludeAllLocales</buildArg>
+                                    <buildArg>--exact-reachability-metadata</buildArg>
                                 </buildArgs>
+                                <runtimeArgs>
+                                    <runtimeArg>-XX:MissingRegistrationReportingMode=Warn</runtimeArg>
+                                </runtimeArgs>
                                 <quickBuild>true</quickBuild>
                             </configuration>
                             <executions>
@@ -1185,12 +1200,30 @@
                                     <goals>
                                         <goal>test</goal>
                                     </goals>
-                                    <phase>test</phase>
+                                    <phase>verify</phase>
                                 </execution>
                             </executions>
                         </plugin>
                     </plugins>
                 </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <includes>
+                                <include>org.apache.shardingsphere.test.natived.**</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>

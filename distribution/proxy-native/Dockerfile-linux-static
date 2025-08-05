@@ -15,10 +15,11 @@
 # limitations under the License.
 #
 
-FROM ghcr.io/graalvm/native-image-community:22.0.2-muslib AS nativebuild
+FROM ghcr.io/graalvm/native-image-community:24.0.2-muslib AS nativebuild
+ENV NATIVE_IMAGE_OPTIONS="--static,--libc=musl"
 WORKDIR /build
 COPY ./ .
-RUN --mount=type=cache,target=/root/.m2 ./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" "-DbuildArgs=-H:+AddAllCharsets,--static,--libc=musl" clean package
+RUN --mount=type=cache,target=/root/.m2 ./mvnw -am -pl distribution/proxy-native -T1C -DskipTests "-Prelease.native" clean package
 
 FROM scratch
 LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache.org"

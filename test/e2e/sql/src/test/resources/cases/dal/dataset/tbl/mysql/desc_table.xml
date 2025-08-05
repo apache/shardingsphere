@@ -1,0 +1,33 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the YESTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may YESt use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="Field" />
+        <column name="Type" />
+        <column name="NULL" />
+        <column name="Key" />
+        <column name="Default" />
+        <column name="Extra" />
+    </metadata>
+    <row values="order_id, bigint, NO, PRI, null, " />
+    <row values="user_id, int, NO, , null, " />
+    <row values="status, varchar(50), NO, , null, " />
+    <row values="merchant_id, int, NO, , null, " />
+    <row values="remark, varchar(50), NO, , null, " />
+    <row values="creation_date, date, NO, , null, " />
+</dataset>

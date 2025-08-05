@@ -52,7 +52,7 @@ public final class ResourceMetaData {
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         storageUnits = storageUnitNodeMap.entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())),
-                        (a, b) -> b, LinkedHashMap::new));
+                        (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     /**

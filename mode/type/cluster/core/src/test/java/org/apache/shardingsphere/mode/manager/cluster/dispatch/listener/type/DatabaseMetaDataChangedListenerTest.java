@@ -61,4 +61,10 @@ class DatabaseMetaDataChangedListenerTest {
         listener.onChange(new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/rule/", "value", Type.ADDED));
         verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
     }
+    
+    @Test
+    void assertOnChangeWithRuleConfigurationDropped() {
+        listener.onChange(new DataChangedEvent("/metadata/foo_db/rules/foo_rule", "value", Type.DELETED));
+        verify(contextManager.getComputeNodeInstanceContext().getEventBusContext(), times(0)).post(any());
+    }
 }

@@ -131,7 +131,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = ctx.dataType() != null ? (DataTypeSegment) visit(ctx.dataType()) : null;
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.dataTypeOption().stream().anyMatch(each -> null != each.primaryKey());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
         for (DataTypeOptionContext each : ctx.dataTypeOption()) {

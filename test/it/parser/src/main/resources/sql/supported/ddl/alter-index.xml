@@ -57,4 +57,7 @@
     <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_with_schema" value="ALTER INDEX public.t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
     -->
+    <sql-case id="alter_index_rebuild_basic" value="ALTER INDEX idx_product_id ON orders REBUILD" db-types="Hive" />
+    <sql-case id="alter_index_rebuild_with_partition" value="ALTER INDEX idx_sales_region ON sales PARTITION (region='Asia') REBUILD" db-types="Hive" />
+    <sql-case id="alter_index_rebuild_with_db" value="ALTER INDEX idx_product_id ON db.orders REBUILD" db-types="Hive" />
 </sql-cases>

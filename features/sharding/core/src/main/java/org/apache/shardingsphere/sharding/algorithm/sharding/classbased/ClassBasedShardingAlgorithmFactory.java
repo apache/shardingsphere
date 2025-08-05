@@ -67,7 +67,7 @@ public final class ClassBasedShardingAlgorithmFactory {
         };
         
         for (ClassLoader cl : classLoaders) {
-            if (cl != null) {
+            if (null != cl) {
                 try {
                     return Class.forName(className, true, cl);
                 } catch (final ClassNotFoundException ex) {

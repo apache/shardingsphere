@@ -43,16 +43,11 @@ public final class HiveConnectionPropertiesParser implements ConnectionPropertie
                     + "See https://issues.apache.org/jira/browse/HIVE-28418 . "
                     + "Users should start local HiveServer2 through Docker Image https://hub.docker.com/r/apache/hive .");
         }
-        Properties queryProperties = new Properties();
-        queryProperties.putAll(params.getSessionVars());
-        queryProperties.putAll(params.getHiveConfs());
-        queryProperties.putAll(params.getHiveVars());
-        return new StandardConnectionProperties(params.getHost(),
-                params.getPort(),
-                params.getDbName(),
-                null,
-                queryProperties,
-                new Properties());
+        Properties queryProps = new Properties();
+        queryProps.putAll(params.getSessionVars());
+        queryProps.putAll(params.getHiveConfs());
+        queryProps.putAll(params.getHiveVars());
+        return new StandardConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps, new Properties());
     }
     
     @Override

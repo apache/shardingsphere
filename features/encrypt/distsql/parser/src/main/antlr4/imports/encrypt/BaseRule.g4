@@ -56,6 +56,22 @@ property
     : key=STRING_ EQ_ value=literal
     ;
 
+databaseName
+    : IDENTIFIER_
+    ;
+
 tableName
     : IDENTIFIER_
+    ;
+
+columnName
+    : IDENTIFIER_
+    ;
+
+ifExists
+    : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

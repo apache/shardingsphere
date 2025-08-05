@@ -34,7 +34,7 @@ public final class FirebirdStringBinaryProtocolValue implements FirebirdBinaryPr
         if (value instanceof byte[]) {
             payload.writeBuffer((byte[]) value);
         } else {
-            payload.writeString(value != null ? value.toString() : "");
+            payload.writeString(null != value ? value.toString() : "");
         }
     }
     

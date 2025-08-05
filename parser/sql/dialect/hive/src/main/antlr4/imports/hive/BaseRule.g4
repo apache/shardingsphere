@@ -652,6 +652,10 @@ constraintName
     : identifier
     ;
 
+macroName
+    : identifier
+    ;
+
 oldColumn
     : columnName
     ;

@@ -43,6 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
@@ -330,8 +331,8 @@ public abstract class TransactionBaseE2EIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            TransactionE2ESettings settings = extensionContext.getRequiredTestClass().getAnnotation(TransactionE2ESettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            TransactionE2ESettings settings = context.getRequiredTestClass().getAnnotation(TransactionE2ESettings.class);
             Preconditions.checkNotNull(settings, "Annotation TransactionE2ESettings is required.");
             return getTransactionTestParameters(settings.value()).stream().map(Arguments::of);
         }

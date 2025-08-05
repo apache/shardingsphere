@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.state
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
@@ -63,7 +63,7 @@ public final class FirebirdCommandExecutorFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdCommandPacket commandPacket,
+    public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket,
                                               final ConnectionSession connectionSession) throws SQLException {
         switch (commandPacketType) {
             case INFO_DATABASE:

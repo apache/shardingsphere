@@ -43,7 +43,9 @@ Write a Docker Compose file to start ClickHouse.
 ```yaml
 services:
   clickhouse-server:
-    image: clickhouse/clickhouse-server:25.4.5.24
+    image: clickhouse/clickhouse-server:25.6.5.41
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"
     ports:
       - "8123:8123"
 ```
@@ -231,3 +233,10 @@ See https://github.com/ClickHouse/clickhouse-java/issues/2023 .
 The embedded ClickHouse `chDB` Java client has not been released yet.
 ShardingSphere does not do integration testing for the SNAPSHOT version of https://github.com/chdb-io/chdb-java .
 Refer to https://github.com/chdb-io/chdb/issues/243 .
+
+### Limitations of ClickHouse JDBC Driver V2
+
+Starting from the `0.8.6` milestone at https://github.com/ClickHouse/clickhouse-java/pull/2368 , 
+ClickHouse JDBC Driver V2 uses `org.antlr:antlr4-maven-plugin:4.13.2`. 
+This conflicts with `org.antlr:antlr4-runtime:4.10.1` used by ShardingSphere.
+ShardingSphere only uses `com.clickhouse:clickhouse-jdbc:0.6.3:http` to test ClickHouse integration.
