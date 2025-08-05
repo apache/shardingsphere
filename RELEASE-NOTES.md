@@ -66,6 +66,7 @@
 1. SQL Binder: Support explain statement sql bind - [#35439](https://github.com/apache/shardingsphere/pull/35439)
 1. SQL Binder: Support AnalyzeTable statement SQL bind - [#35954](https://github.com/apache/shardingsphere/pull/35954)
 1. SQL Binder: Support Comment statement SQL bind - [#36012](https://github.com/apache/shardingsphere/pull/36012)
+1. SQL Binder: Support Prepare statement SQL bind - [#36064](https://github.com/apache/shardingsphere/pull/36064)
 1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
