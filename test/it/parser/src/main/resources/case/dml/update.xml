@@ -2396,4 +2396,32 @@
             </projections>
         </returning>
     </update>
+
+    <update sql-case-id="update_with_option_label_hint">
+        <table start-index="7" stop-index="16">
+            <simple-table name="DimProduct" start-index="7" stop-index="16" />
+        </table>
+        <set start-index="18" stop-index="46">
+            <assignment start-index="22" stop-index="46">
+                <column name="ProductSubcategoryKey" start-index="22" stop-index="42" />
+                <assignment-value>
+                    <literal-expression value="2" start-index="46" stop-index="46" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="48" stop-index="69">
+            <expr>
+                <binary-operation-expression start-index="54" stop-index="69">
+                    <left>
+                        <column name="ProductKey" start-index="54" stop-index="63" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="313" start-index="67" stop-index="69" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <option-hint start-index="71" stop-index="96" text="OPTION (LABEL = N'label1')" />
+    </update>
 </sql-parser-test-cases>

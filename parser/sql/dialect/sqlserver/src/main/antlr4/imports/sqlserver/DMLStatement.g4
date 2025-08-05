@@ -106,7 +106,7 @@ delete
     ;
 
 optionHint
-    : OPTION queryHint
+    : OPTION LP_ queryHint (COMMA_ queryHint)* RP_
     ;
 
 singleTableClause
@@ -314,7 +314,7 @@ queryHint
     | MAXDOP INT_NUM_
     | MAXRECURSION INT_NUM_
     | NO_PERFORMANCE_SPOOL
-    | LP_ OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_ RP_
+    | OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
     | QUERYTRACEON INT_NUM_
@@ -322,6 +322,7 @@ queryHint
     | ROBUST PLAN
     | USE HINT LP_ useHitName* RP_
     | USE PLAN NCHAR_TEXT
+    | LABEL EQ_ stringLiterals
     ;
 
 useHitName
