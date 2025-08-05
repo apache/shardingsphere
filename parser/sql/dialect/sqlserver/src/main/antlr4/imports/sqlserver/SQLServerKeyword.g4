@@ -2130,3 +2130,7 @@ SYSTEM
 TABLESAMPLE
     : T A B L E S A M P L E
     ;
+
+LABEL
+    : L A B E L
+    ;
