@@ -76,18 +76,18 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({ProxyBackendHandlerFactory.class, ProxyContext.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FirebirdExecuteStatementCommandExecutorTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-
+    
     @Mock
     private FirebirdExecuteStatementPacket packet;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
-
+    
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
-
+    
     @BeforeEach
     void setUp() {
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
@@ -101,7 +101,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(updateContext.getSqlStatement()).thenReturn(new org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement(databaseType));
         registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext()));
     }
-
+    
     @Test
     void assertIsQueryResponse() throws SQLException {
         when(packet.getStatementId()).thenReturn(1);
@@ -127,7 +127,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         executor.close();
         verify(proxyBackendHandler).close();
     }
-
+    
     @Test
     void assertIsUpdateResponse() throws SQLException {
         when(packet.getStatementId()).thenReturn(2);
