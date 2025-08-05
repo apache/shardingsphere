@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 
-import lombok.SneakyThrows;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.CalciteSchema;
@@ -252,9 +251,8 @@ class SQLStatementCompilerIT {
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
-        @SneakyThrows(IOException.class)
         @Override
-        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) throws IOException {
             return TestCasesLoader.getInstance().generate().stream().map(Arguments::of);
         }
     }
