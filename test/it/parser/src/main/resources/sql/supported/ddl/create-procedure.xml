@@ -58,4 +58,7 @@
     <sql-case id="create_procedure_with_charset_parameters_and_insert" value="CREATE PROCEDURE bug18293 (IN ins1 CHAR(50), IN ins2 CHAR(50) CHARACTER SET cp932, IN ind DECIMAL(10,2)) BEGIN INSERT INTO t4 VALUES (ins1, ins2, ind); END;" db-types="MySQL" />
     <sql-case id="create_procedure_with_create_table_and_show_create_table_schema" value="CREATE PROCEDURE mysqltest2.p2() BEGIN CREATE TABLE t2(col1 VARCHAR(10)); SHOW CREATE TABLE t2; END;" db-types="MySQL" />
     <sql-case id="create_procedure_with_show_create_table_in_default_schema" value="CREATE PROCEDURE p1() BEGIN CREATE TABLE t1(col1 VARCHAR(10)); SHOW CREATE TABLE t1; END;" db-types="MySQL" />
+    <sql-case id="create_procedure_with_custom_collation_and_insert" value="create procedure p () begin declare a varchar(1) charset utf8mb4 collate utf8mb4_test_ci; set @a = 'a' collate utf8mb4_test_ci; create table tp (t varchar(1) collate utf8mb4_test_ci); insert into t values (@a); end;" db-types="MySQL"/>
+    <sql-case id="create_procedure_with_alter_event" value="create procedure p1() begin alter event e1 rename to e2; end;" db-types="MySQL"/>
+    <sql-case id="create_procedure_with_drop_event" value="create procedure p1() begin drop event e1; end;" db-types="MySQL"/>
 </sql-cases>

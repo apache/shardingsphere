@@ -3353,3 +3353,7 @@ REWRITE
 DISTRIBUTED
     : D I S T R I B U T E D
     ;
+
+MACRO
+    : M A C R O
+    ;
