@@ -11453,4 +11453,34 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_option_clause">
+        <projections start-index="7" stop-index="25">
+            <column-projection name="ProductID" start-index="7" stop-index="15" />
+            <column-projection name="OrderQty" start-index="18" stop-index="25" />
+        </projections>
+        <from start-index="49" stop-index="53">
+            <simple-table name="SalesOrderDetail" start-index="32" stop-index="53">
+                <owner name="Sales" start-index="32" stop-index="36" />
+            </simple-table>
+        </from>
+        <where start-index="55" stop-index="76">
+            <expr>
+                <binary-operation-expression start-index="61" stop-index="76">
+                    <left>
+                        <column name="UnitPrice" start-index="61" stop-index="69" />
+                    </left>
+                    <right>
+                        <literal-expression value="5.00" start-index="73" stop-index="76" />
+                    </right>
+                    <operator>&lt;</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <group-by start-index="98" stop-index="106">
+            <column-item name="ProductID" start-index="87" stop-index="95" />
+            <column-item name="OrderQty" start-index="98" stop-index="105" />
+        </group-by>
+        <option-hint start-index="107" stop-index="132" text="OPTION (HASH GROUP, LABEL = N'label1')" />
+    </select>
 </sql-parser-test-cases>
