@@ -28,6 +28,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 import org.postgresql.util.PSQLState;
 
 import java.util.stream.Stream;
@@ -47,7 +48,7 @@ class PostgreSQLDialectExceptionMapperTest {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(Arguments.of(DatabaseCreateExistsException.class, "42P04"),
                     Arguments.of(InTransactionException.class, PSQLState.TRANSACTION_STATE_INVALID.getState()),
                     Arguments.of(InsertColumnsAndValuesMismatchedException.class, PSQLState.SYNTAX_ERROR.getState()),

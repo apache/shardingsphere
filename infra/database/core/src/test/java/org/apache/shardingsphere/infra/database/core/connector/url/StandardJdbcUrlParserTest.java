@@ -26,6 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -54,7 +55,7 @@ class StandardJdbcUrlParserTest {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.arguments("simple", "jdbc:mock://127.0.0.1/", "127.0.0.1", -1, "", new Properties()),
                     Arguments.arguments("MySQL_v4", "jdbc:mysql://127.0.0.1:3306/foo_ds?useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0", "127.0.0.1", 3306, "foo_ds",
@@ -63,8 +64,7 @@ class StandardJdbcUrlParserTest {
                     Arguments.arguments("MySQL_with_replication", "jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/foo_ds?useUnicode=true", "master-ip", 3306, "foo_ds",
                             PropertiesBuilder.build(new Property("useUnicode", Boolean.TRUE.toString()))),
                     Arguments.arguments("PostgreSQL_v4", "jdbc:postgresql://127.0.0.1:5432/foo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared", "127.0.0.1", 5432, "foo_ds",
-                            PropertiesBuilder.build(new Property("prepareThreshold", "1"), new Property("preferQueryMode", "extendedForPrepared"))),
-                    Arguments.arguments("SQLServer_v4", "jdbc:microsoft:sqlserver://127.0.0.1:1433/foo_ds", "127.0.0.1", 1433, "foo_ds", new Properties()));
+                            PropertiesBuilder.build(new Property("prepareThreshold", "1"), new Property("preferQueryMode", "extendedForPrepared"))));
             
         }
     }

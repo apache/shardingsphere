@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.database.oracle.connector;
 
+import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -29,6 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.stream.Stream;
 
@@ -60,7 +61,7 @@ class OracleConnectionPropertiesParserTest {
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("port", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds", "127.0.0.1", 9999, "foo_ds", "test"),
                     Arguments.of("domainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/foo_ds", "ax-xx.frex.cc", 9999, "foo_ds", "test"),

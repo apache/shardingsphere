@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -57,7 +58,7 @@ class ShowShadowAlgorithmsExecutorTest extends DistSQLDatabaseRuleQueryExecutorT
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(Arguments.arguments("normal", createRuleConfiguration(), new ShowShadowAlgorithmsStatement(null),
                     Collections.singleton(new LocalDataQueryResultRow("shadowAlgorithmName", "sql_hint", "{\"foo\":\"bar\"}", "false"))));
         }

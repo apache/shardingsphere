@@ -31,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -65,7 +66,7 @@ class HiveConnectionPropertiesParserTest {
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("simple_first", "jdbc:hive2://localhost:10001/default", "localhost", 10001, "default", null, new Properties()),
                     Arguments.of("simple_second", "jdbc:hive2://localhost/notdefault", "localhost", 10000, "notdefault", null, new Properties()),
