@@ -78,6 +78,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -101,12 +107,6 @@
             <scope>test</scope>
         </dependency>
         
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-grpc</artifactId>
@@ -136,22 +136,6 @@
             <artifactId>jboss-logging</artifactId>
             <version>${jboss-logging.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.seata</groupId>
-            <artifactId>seata-all</artifactId>
-            <version>${seata.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-runtime</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-lang</groupId>
-                    <artifactId>commons-lang</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         
         <dependency>

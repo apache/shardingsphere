@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,9 +40,9 @@ import java.util.stream.Stream;
 public final class PipelineE2ETestCaseArgumentsProvider implements ArgumentsProvider {
     
     @Override
-    public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+    public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
         Collection<Arguments> result = new LinkedList<>();
-        PipelineE2ESettings settings = extensionContext.getRequiredTestClass().getAnnotation(PipelineE2ESettings.class);
+        PipelineE2ESettings settings = context.getRequiredTestClass().getAnnotation(PipelineE2ESettings.class);
         Preconditions.checkNotNull(settings, "Annotation PipelineE2ESettings is required.");
         for (PipelineE2EDatabaseSettings each : settings.database()) {
             result.addAll(provideArguments(settings, each));

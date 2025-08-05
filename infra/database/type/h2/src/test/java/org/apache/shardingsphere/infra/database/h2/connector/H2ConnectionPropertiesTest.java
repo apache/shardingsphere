@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.stream.Stream;
 
@@ -60,7 +61,7 @@ class H2ConnectionPropertiesTest {
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("mem", "jdbc:h2:mem:foo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "foo_ds", null),
                     Arguments.of("symbol", "jdbc:h2:~:foo-ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "", -1, "foo-ds", null),
@@ -73,7 +74,7 @@ class H2ConnectionPropertiesTest {
     private static class IsInSameDatabaseInstanceTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("mem", "jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", true),
                     Arguments.of("symbol", "jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", true),

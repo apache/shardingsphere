@@ -108,6 +108,14 @@ createIndex
     : CREATE INDEX indexName ON TABLE tableNameWithDb columnNamesCommonClause AS indexType createIndexOptions?
     ;
 
+dropIndex
+    : DROP INDEX ifExists? indexName ON tableNameWithDb
+    ;
+
+alterIndex
+    : ALTER INDEX indexName ON tableNameWithDb partitionSpec? REBUILD
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
