@@ -15,37 +15,17 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.macro;
 
-import Comments, DMLStatement, DDLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | loadStatement
-    | createDatabase
-    | dropDatabase
-    | alterDatabase
-    | use
-    | createTable
-    | dropTable
-    | truncateTable
-    | msckStatement
-    | alterTable
-    | createView
-    | dropView
-    | alterView
-    | createMaterializedView
-    | dropMaterializedView
-    | alterMaterializedView
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | createMacro
-    | dropMacro
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Drop macro statement.
+ */
+public final class DropMacroStatement extends DDLStatement {
+    
+    public DropMacroStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+}

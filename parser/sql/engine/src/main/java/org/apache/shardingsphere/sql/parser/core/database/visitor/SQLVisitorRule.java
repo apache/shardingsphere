@@ -671,6 +671,8 @@ public enum SQLVisitorRule {
     
     CREATE_MACRO("CreateMacro", SQLStatementType.DDL),
     
+    DROP_MACRO("DropMacro", SQLStatementType.DDL),
+    
     CREATE_MATERIALIZED_VIEW_LOG("CreateMaterializedViewLog", SQLStatementType.DDL),
     
     CREATE_OPERATOR("CreateOperator", SQLStatementType.DDL),
