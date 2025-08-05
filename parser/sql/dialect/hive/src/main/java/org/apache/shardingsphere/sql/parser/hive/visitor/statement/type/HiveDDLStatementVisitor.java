@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterMat
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMacroContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -70,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.macro.CreateMacroStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -396,5 +398,10 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
         result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateMacro(final CreateMacroContext ctx) {
+        return new CreateMacroStatement(getDatabaseType());
     }
 }

@@ -116,6 +116,10 @@ alterIndex
     : ALTER INDEX indexName ON tableNameWithDb partitionSpec? REBUILD
     ;
 
+createMacro
+    : CREATE TEMPORARY MACRO macroName LP_ macroParameterList? RP_ expr
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
@@ -475,4 +479,12 @@ columnNamesCommonClause
 
 propertyListCommonClause
     : LP_ propertyList RP_
+    ;
+
+macroParameterList
+    : macroParameter (COMMA_ macroParameter)*
+    ;
+
+macroParameter
+    : columnName dataTypeClause
     ;
