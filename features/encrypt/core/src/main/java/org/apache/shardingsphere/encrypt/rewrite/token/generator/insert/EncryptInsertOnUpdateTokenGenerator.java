@@ -86,9 +86,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         for (ColumnAssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftColumnIsEncrypt = encryptTable.isEncryptColumn(each.getColumns().get(0).getIdentifier().getValue());
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
-                Optional<ExpressionSegment> rightColumnSegment = ((FunctionSegment) each.getValue()).getParameters().stream().findFirst();
-                Preconditions.checkState(rightColumnSegment.isPresent());
-                boolean rightColumnIsEncrypt = encryptTable.isEncryptColumn(((ColumnSegment) rightColumnSegment.get()).getIdentifier().getValue());
+                FunctionSegment functionSegment = (FunctionSegment) each.getValue();
+                ExpressionSegment rightColumnSegment = functionSegment.getParameters().isEmpty() ? null : functionSegment.getParameters().iterator().next();
+                ShardingSpherePreconditions.checkNotNull(rightColumnSegment, () -> new IllegalArgumentException("right column segment can not be null"));
+                boolean rightColumnIsEncrypt = encryptTable.isEncryptColumn(((ColumnSegment) rightColumnSegment).getIdentifier().getValue());
                 if (!leftColumnIsEncrypt && !rightColumnIsEncrypt) {
                     continue;
                 }
@@ -139,9 +140,9 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                                                           final QuoteCharacter quoteCharacter) {
         ColumnSegment columnSegment = assignmentSegment.getColumns().get(0);
         String column = columnSegment.getIdentifier().getValue();
-        Optional<ExpressionSegment> valueColumnSegment = functionSegment.getParameters().stream().findFirst();
-        Preconditions.checkState(valueColumnSegment.isPresent());
-        String valueColumn = ((ColumnSegment) valueColumnSegment.get()).getIdentifier().getValue();
+        ExpressionSegment valueColumnSegment = functionSegment.getParameters().isEmpty() ? null : functionSegment.getParameters().iterator().next();
+        ShardingSpherePreconditions.checkNotNull(valueColumnSegment, () -> new IllegalArgumentException("value column segment can not be null"));
+        String valueColumn = ((ColumnSegment) valueColumnSegment).getIdentifier().getValue();
         EncryptFunctionAssignmentToken result =
                 new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex(), quoteCharacter);
         boolean isEncryptColumn = encryptTable.isEncryptColumn(column);
