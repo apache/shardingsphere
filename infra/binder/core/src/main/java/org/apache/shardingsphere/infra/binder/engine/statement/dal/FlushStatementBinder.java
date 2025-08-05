@@ -25,11 +25,12 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.FlushStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Flush statement binder.
@@ -43,26 +44,25 @@ public final class FlushStatementBinder implements SQLStatementBinder<FlushState
             return sqlStatement;
         }
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        Collection<SimpleTableSegment> boundTables = tables.stream()
-                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts))
-                .collect(Collectors.toList());
+        Collection<SimpleTableSegment> boundTables = new ArrayList<>();
+        for (SimpleTableSegment each : tables) {
+            boundTables.add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts));
+        }
         return copyFlushStatement(sqlStatement, boundTables);
     }
     
     private FlushStatement copyFlushStatement(final FlushStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
-        FlushStatement result = new FlushStatement(sqlStatement.getDatabaseType()) {
-            
-            @Override
-            public Collection<SimpleTableSegment> getTables() {
-                return tables;
-            }
-            
-            @Override
-            public boolean isFlushTable() {
-                return sqlStatement.isFlushTable();
-            }
-        };
-        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        return result;
+        if (tables.equals(sqlStatement.getTables())) {
+            return sqlStatement;
+        }
+        try {
+            FlushStatement result = sqlStatement.getClass()
+                    .getDeclaredConstructor(DatabaseType.class, Collection.class, boolean.class)
+                    .newInstance(sqlStatement.getDatabaseType(), tables, sqlStatement.isFlushTable());
+            SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            return sqlStatement;
+        }
     }
 }
