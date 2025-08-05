@@ -120,6 +120,10 @@ createMacro
     : CREATE TEMPORARY MACRO macroName LP_ macroParameterList? RP_ expr
     ;
 
+dropMacro
+    : DROP TEMPORARY MACRO ifExists? macroName
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier

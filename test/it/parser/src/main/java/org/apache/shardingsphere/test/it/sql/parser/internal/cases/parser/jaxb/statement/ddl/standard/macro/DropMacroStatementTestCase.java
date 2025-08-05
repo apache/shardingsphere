@@ -15,37 +15,12 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro;
 
-import Comments, DMLStatement, DDLStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | loadStatement
-    | createDatabase
-    | dropDatabase
-    | alterDatabase
-    | use
-    | createTable
-    | dropTable
-    | truncateTable
-    | msckStatement
-    | alterTable
-    | createView
-    | dropView
-    | alterView
-    | createMaterializedView
-    | dropMaterializedView
-    | alterMaterializedView
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | createMacro
-    | dropMacro
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Drop macro statement test case.
+ */
+public final class DropMacroStatementTestCase extends SQLParserTestCase {
+}
