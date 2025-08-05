@@ -18,76 +18,54 @@
 package org.apache.shardingsphere.infra.database.core.connector.url;
 
 import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandardJdbcUrlParserTest {
     
-    @Test
-    void assertParseSimpleJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mock://127.0.0.1/");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getDatabase(), is(""));
-        assertTrue(actual.getQueryProperties().isEmpty());
-    }
-    
-    @Test
-    void assertParseMySQLJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/demo_ds?useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(2));
-        assertThat(actual.getQueryProperties().getProperty("useSSL"), is(Boolean.FALSE.toString()));
-        assertThat(actual.getQueryProperties().getProperty("sessionVariables"), is("group_concat_max_len=204800,SQL_SAFE_UPDATES=0"));
-    }
-    
-    @Test
-    void assertParseMySQLJdbcUrlWithReplication() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/demo_ds?useUnicode=true");
-        assertThat(actual.getHostname(), is("master-ip"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(1));
-        assertThat(actual.getQueryProperties().getProperty("useUnicode"), is(Boolean.TRUE.toString()));
-    }
-    
-    @Test
-    void assertParseMySQLJdbcUrlWithIPV6() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://[fe80::d114:22b3:a0d9:2b3]:3306/db_test");
-        assertThat(actual.getHostname(), is("fe80::d114:22b3:a0d9:2b3"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("db_test"));
-        assertTrue(actual.getQueryProperties().isEmpty());
-    }
-    
-    @Test
-    void assertParsePostgreSQLJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:postgresql://127.0.0.1:5432/demo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(2));
-        assertThat(actual.getQueryProperties().getProperty("prepareThreshold"), is("1"));
-        assertThat(actual.getQueryProperties().getProperty("preferQueryMode"), is("extendedForPrepared"));
-    }
-    
-    @Test
-    void assertParseMicrosoftSQLServerJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertTrue(actual.getQueryProperties().isEmpty());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertParse(final String name, final String actualURL, final String expectedHostname, final int expectedPort, final String expectedDatabaseName, final Properties expectedQueryProps) {
+        JdbcUrl actual = new StandardJdbcUrlParser().parse(actualURL);
+        assertThat(actual.getHostname(), is(expectedHostname));
+        assertThat(actual.getPort(), is(expectedPort));
+        assertThat(actual.getDatabase(), is(expectedDatabaseName));
+        assertThat(actual.getQueryProperties(), is(expectedQueryProps));
     }
     
     @Test
     void assertParseIncorrectURL() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
+    }
+    
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.arguments("simple", "jdbc:mock://127.0.0.1/", "127.0.0.1", -1, "", new Properties()),
+                    Arguments.arguments("MySQL_v4", "jdbc:mysql://127.0.0.1:3306/foo_ds?useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0", "127.0.0.1", 3306, "foo_ds",
+                            PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("sessionVariables", "group_concat_max_len=204800,SQL_SAFE_UPDATES=0"))),
+                    Arguments.arguments("MySQL_v6", "jdbc:mysql://[fe80::d114:22b3:a0d9:2b3]:3306/foo_ds", "fe80::d114:22b3:a0d9:2b3", 3306, "foo_ds", new Properties()),
+                    Arguments.arguments("MySQL_with_replication", "jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/foo_ds?useUnicode=true", "master-ip", 3306, "foo_ds",
+                            PropertiesBuilder.build(new Property("useUnicode", Boolean.TRUE.toString()))),
+                    Arguments.arguments("PostgreSQL_v4", "jdbc:postgresql://127.0.0.1:5432/foo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared", "127.0.0.1", 5432, "foo_ds",
+                            PropertiesBuilder.build(new Property("prepareThreshold", "1"), new Property("preferQueryMode", "extendedForPrepared"))),
+                    Arguments.arguments("SQLServer_v4", "jdbc:microsoft:sqlserver://127.0.0.1:1433/foo_ds", "127.0.0.1", 1433, "foo_ds", new Properties()));
+            
+        }
     }
 }
