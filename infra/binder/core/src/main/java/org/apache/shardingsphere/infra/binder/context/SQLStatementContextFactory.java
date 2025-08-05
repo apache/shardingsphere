@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dcl.RevokeStatementContext;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -40,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
@@ -127,9 +125,6 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
-        if (sqlStatement instanceof RevokeStatement) {
-            return new RevokeStatementContext((RevokeStatement) sqlStatement);
-        }
         return new CommonSQLStatementContext(sqlStatement);
     }
     

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyU
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Revoke statement binder.
@@ -39,10 +39,10 @@ public final class RevokeStatementBinder implements SQLStatementBinder<RevokeSta
     @Override
     public RevokeStatement bind(final RevokeStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        Collection<SimpleTableSegment> boundTables = sqlStatement.getTables()
-                .stream()
-                .map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts))
-                .collect(Collectors.toList());
+        Collection<SimpleTableSegment> boundTables = new ArrayList<>();
+        for (SimpleTableSegment each : sqlStatement.getTables()) {
+            boundTables.add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts));
+        }
         return copy(sqlStatement, boundTables);
     }
     
