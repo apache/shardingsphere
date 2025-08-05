@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Load statement for PostgreSQL.
  */
 public final class PostgreSQLLoadStatement extends DALStatement {
+    
+    public PostgreSQLLoadStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

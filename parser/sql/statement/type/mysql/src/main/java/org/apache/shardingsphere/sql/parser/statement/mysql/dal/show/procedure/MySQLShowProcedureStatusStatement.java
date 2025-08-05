@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.procedure;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show procedure status statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowProcedureStatusStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
+    
+    public MySQLShowProcedureStatusStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
+        super(databaseType);
+        this.filter = filter;
+    }
 }

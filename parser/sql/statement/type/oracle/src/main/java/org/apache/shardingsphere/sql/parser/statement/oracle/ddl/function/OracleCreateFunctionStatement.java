@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
@@ -28,11 +28,16 @@ import java.util.List;
 /**
  * Create function statement for Oracle.
  */
-@RequiredArgsConstructor
 @Getter
 public final class OracleCreateFunctionStatement extends CreateFunctionStatement {
     
     private final List<SQLStatementSegment> sqlStatements;
     
     private final List<ProcedureCallNameSegment> procedureCallNames;
+    
+    public OracleCreateFunctionStatement(final DatabaseType databaseType, final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames) {
+        super(databaseType);
+        this.sqlStatements = sqlStatements;
+        this.procedureCallNames = procedureCallNames;
+    }
 }

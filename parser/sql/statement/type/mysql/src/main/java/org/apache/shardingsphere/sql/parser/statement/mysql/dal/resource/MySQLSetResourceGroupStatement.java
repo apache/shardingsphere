@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Set resource group statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLSetResourceGroupStatement extends DALStatement {
     
     private final String groupName;
+    
+    public MySQLSetResourceGroupStatement(final DatabaseType databaseType, final String groupName) {
+        super(databaseType);
+        this.groupName = groupName;
+    }
 }

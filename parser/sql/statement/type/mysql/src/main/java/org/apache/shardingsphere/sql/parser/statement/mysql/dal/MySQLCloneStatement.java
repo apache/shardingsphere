@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Clone statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLCloneStatement extends DALStatement {
     
     private final CloneActionSegment cloneAction;
+    
+    public MySQLCloneStatement(final DatabaseType databaseType, final CloneActionSegment cloneAction) {
+        super(databaseType);
+        this.cloneAction = cloneAction;
+    }
 }

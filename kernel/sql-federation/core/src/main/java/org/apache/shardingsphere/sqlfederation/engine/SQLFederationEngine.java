@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -101,6 +103,8 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ResultSet resultSet;
     
+    private String processId;
+    
     public SQLFederationEngine(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereMetaData metaData, final ShardingSphereStatistics statistics,
                                final JDBCExecutor jdbcExecutor) {
         deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(currentDatabaseName).getRuleMetaData().getRules());
@@ -169,8 +173,8 @@ public final class SQLFederationEngine implements AutoCloseable {
         }
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         ShardingSphereDatabase database = queryContext.getUsedDatabase();
-        return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
-                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
+        return SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getSqlStatement().getDatabaseType(), selectStatementContext.getTablesContext().getSchemaNames(), database)
+                || SystemSchemaUtils.isDriverQuerySystemCatalog(sqlStatementContext.getSqlStatement().getDatabaseType(), selectStatementContext.getSqlStatement().getProjections().getProjections());
     }
     
     /**
@@ -180,17 +184,21 @@ public final class SQLFederationEngine implements AutoCloseable {
      * @param callback callback
      * @param federationContext federation context
      * @return result set
+     * @throws SQLException SQL exception
      * @throws SQLFederationUnsupportedSQLException SQL federation unsupported SQL exception
      */
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                  final SQLFederationContext federationContext) {
+                                  final SQLFederationContext federationContext) throws SQLException {
         queryContext = federationContext.getQueryContext();
+        processId = federationContext.getProcessId();
         logSQL(queryContext, federationContext.getMetaData().getProps());
         try {
+            processEngine.executeSQL(new ExecutionGroupContext<>(Collections.emptyList(),
+                    new ExecutionGroupReportContext(processId, currentDatabaseName, queryContext.getConnectionContext().getGrantee())), queryContext);
             SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
             CompilerContext compilerContext = sqlFederationRule.getCompilerContext();
             SQLFederationRelConverter converter = new SQLFederationRelConverter(compilerContext,
-                    getSchemaPath(sqlStatementContext), sqlStatementContext.getDatabaseType(), processor.getConvention());
+                    getSchemaPath(sqlStatementContext), sqlStatementContext.getSqlStatement().getDatabaseType(), processor.getConvention());
             schemaPlus = converter.getSchemaPlus();
             processor.prepare(prepareEngine, callback, currentDatabaseName, currentSchemaName, federationContext, compilerContext, schemaPlus);
             SQLFederationExecutionPlan executionPlan = compileQuery(converter, currentDatabaseName,
@@ -200,9 +208,9 @@ public final class SQLFederationEngine implements AutoCloseable {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            log.error("SQL Federation execute failed, sql {}, parameters {}", queryContext.getSql(), queryContext.getParameters(), ex);
+            close();
             throw new SQLFederationUnsupportedSQLException(queryContext.getSql(), ex);
-        } finally {
-            processEngine.completeSQLExecution(federationContext.getProcessId());
         }
     }
     
@@ -218,7 +226,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     }
     
     private List<String> getSchemaPath(final SQLStatementContext sqlStatementContext) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData();
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
         // TODO set default schema according to search path result
         if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
             return sqlStatementContext.getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
@@ -237,7 +245,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     private ExecutionPlanCacheKey buildCacheKey(final ShardingSphereMetaData metaData, final SQLStatementContext sqlStatementContext,
                                                 final String sql, final SQLStatementCompiler sqlStatementCompiler) {
-        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(sql, sqlStatementContext.getSqlStatement(), sqlStatementContext.getDatabaseType().getType(), sqlStatementCompiler);
+        ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(sql, sqlStatementContext.getSqlStatement(), sqlStatementCompiler);
         Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : tableSegments) {
             String originalDatabase = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalDatabase().getValue()).orElse(currentDatabaseName);

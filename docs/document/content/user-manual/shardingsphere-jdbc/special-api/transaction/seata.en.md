@@ -42,11 +42,6 @@ Introduce Maven dependencies and exclude the outdated Maven dependency of `org.a
 </project>
 ```
 
-Affected by Calcite, `commons-lang:commons-lang` and `org.apache.commons:commons-pool2` used by ShardingSphere JDBC have dependency conflicts with Seata Client.
-Users need to consider whether to resolve dependency conflicts based on actual scenarios. 
-If dependency conflicts are not resolved, 
-build tools such as Maven will randomly use a version of the conflicting dependency in the classpath.
-
 When using ShardingSphere's Seata integration module, 
 the database instance connected to ShardingSphere should implement both ShardingSphere's dialect parsing support and Seata AT mode's dialect parsing support.
 This type of database includes but is not limited to `mysql`, `gvenzl/oracle-free`, `gvenzl/oracle-xe`, `postgres`, 
@@ -130,7 +125,7 @@ services:
       ports:
          - "8091:8091"
    mysql:
-      image: mysql:9.1.0
+      image: mysql:9.4.0
       environment:
          MYSQL_ROOT_PASSWORD: example
       volumes:
@@ -229,7 +224,7 @@ add the Maven dependency of MySQL JDBC Driver.
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
-    <version>9.1.0</version>
+    <version>9.4.0</version>
 </dependency>
 ```
 

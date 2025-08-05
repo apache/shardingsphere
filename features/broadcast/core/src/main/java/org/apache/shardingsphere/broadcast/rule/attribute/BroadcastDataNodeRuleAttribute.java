@@ -75,4 +75,9 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
                 ? Optional.of(logicTable)
                 : Optional.empty();
     }
+    
+    @Override
+    public boolean isReplicaBasedDistribution() {
+        return true;
+    }
 }

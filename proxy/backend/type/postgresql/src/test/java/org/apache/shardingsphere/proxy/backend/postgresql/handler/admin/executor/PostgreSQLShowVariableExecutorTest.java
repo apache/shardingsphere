@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
 
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.junit.jupiter.api.Test;
@@ -37,10 +39,12 @@ import static org.mockito.Mockito.mock;
 
 class PostgreSQLShowVariableExecutorTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Test
     void assertExecuteShowAll() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement("ALL"));
+        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement(databaseType, "ALL"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(3));
@@ -67,7 +71,7 @@ class PostgreSQLShowVariableExecutorTest {
     @Test
     void assertExecuteShowOne() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement("client_encoding"));
+        PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new ShowStatement(databaseType, "client_encoding"));
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(1));

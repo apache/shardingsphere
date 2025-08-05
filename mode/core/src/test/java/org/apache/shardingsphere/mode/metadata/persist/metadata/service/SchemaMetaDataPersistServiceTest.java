@@ -20,13 +20,11 @@ package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.mode.metadata.persist.version.VersionPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
@@ -50,16 +48,14 @@ class SchemaMetaDataPersistServiceTest {
     private PersistRepository repository;
     
     @Mock
-    private TableMetaDataPersistService tableMetaDataPersistService;
+    private TableMetaDataPersistEnabledService tableMetaDataPersistService;
     
     @Mock
     private ViewMetaDataPersistService viewMetaDataPersistService;
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
-        persistService = new SchemaMetaDataPersistService(repository, mock(VersionPersistService.class));
-        Plugins.getMemberAccessor().set(SchemaMetaDataPersistService.class.getDeclaredField("tableMetaDataPersistService"), persistService, tableMetaDataPersistService);
-        Plugins.getMemberAccessor().set(SchemaMetaDataPersistService.class.getDeclaredField("viewMetaDataPersistService"), persistService, viewMetaDataPersistService);
+    void setUp() {
+        persistService = new SchemaMetaDataPersistService(repository, tableMetaDataPersistService, viewMetaDataPersistService);
     }
     
     @Test

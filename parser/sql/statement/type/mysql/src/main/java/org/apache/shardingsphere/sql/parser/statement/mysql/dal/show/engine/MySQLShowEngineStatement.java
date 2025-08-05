@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.engine;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show engine statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowEngineStatement extends DALStatement {
     
     private final String engineName;
+    
+    public MySQLShowEngineStatement(final DatabaseType databaseType, final String engineName) {
+        super(databaseType);
+        this.engineName = engineName;
+    }
 }

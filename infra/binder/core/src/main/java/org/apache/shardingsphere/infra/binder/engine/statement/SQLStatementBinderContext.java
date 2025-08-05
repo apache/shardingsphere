@@ -24,7 +24,6 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -45,8 +44,6 @@ public final class SQLStatementBinderContext {
     private final String currentDatabaseName;
     
     private final HintValueContext hintValueContext;
-    
-    private final DatabaseType databaseType;
     
     private final SQLStatement sqlStatement;
     

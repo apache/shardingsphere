@@ -18,18 +18,23 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Flashback table statement for Oracle.
  */
-@RequiredArgsConstructor
 @Getter
 public final class OracleFlashbackTableStatement extends DDLStatement {
     
     private final SimpleTableSegment table;
     
     private final SimpleTableSegment renameTable;
+    
+    public OracleFlashbackTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SimpleTableSegment renameTable) {
+        super(databaseType);
+        this.table = table;
+        this.renameTable = renameTable;
+    }
 }

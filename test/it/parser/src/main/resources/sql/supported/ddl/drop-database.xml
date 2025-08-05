@@ -21,4 +21,16 @@
     <sql-case id="drop_database" value="DROP DATABASE database1" db-types="PostgreSQL,openGauss,SQLServer" />
     <sql-case id="drop_database_without_database_name" value="DROP DATABASE" db-types="Oracle" />
     <sql-case id="drop_database_including_backups_noprompt" value="DROP DATABASE INCLUDING BACKUPS NOPROMPT;" db-types="Oracle" />
+    <sql-case id="drop_database_simple" value="DROP DATABASE test_db" db-types="Hive" />
+    <sql-case id="drop_database_if_exists" value="DROP DATABASE IF EXISTS test_db" db-types="Hive" />
+    <sql-case id="drop_schema_simple" value="DROP SCHEMA test_schema" db-types="Hive" />
+    <sql-case id="drop_schema_if_exists" value="DROP SCHEMA IF EXISTS test_schema" db-types="Hive" />
+    <sql-case id="drop_database_restrict" value="DROP DATABASE test_db RESTRICT" db-types="Hive" />
+    <sql-case id="drop_schema_restrict" value="DROP SCHEMA test_schema RESTRICT" db-types="Hive" />
+    <sql-case id="drop_database_cascade" value="DROP DATABASE test_db CASCADE" db-types="Hive" />
+    <sql-case id="drop_schema_cascade" value="DROP SCHEMA test_schema CASCADE" db-types="Hive" />
+    <sql-case id="drop_database_if_exists_restrict" value="DROP DATABASE IF EXISTS test_db RESTRICT" db-types="Hive" />
+    <sql-case id="drop_database_if_exists_cascade" value="DROP DATABASE IF EXISTS test_db CASCADE" db-types="Hive" />
+    <sql-case id="drop_schema_if_exists_restrict" value="DROP SCHEMA IF EXISTS test_schema RESTRICT" db-types="Hive" />
+    <sql-case id="drop_schema_if_exists_cascade" value="DROP SCHEMA IF EXISTS test_schema CASCADE" db-types="Hive" />
 </sql-cases>

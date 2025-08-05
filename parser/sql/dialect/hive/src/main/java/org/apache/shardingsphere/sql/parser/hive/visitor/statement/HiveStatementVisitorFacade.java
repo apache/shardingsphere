@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
@@ -38,7 +40,7 @@ public final class HiveStatementVisitorFacade implements SQLStatementVisitorFaca
     
     @Override
     public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
-        throw new UnsupportedOperationException("");
+        return HiveDDLStatementVisitor.class;
     }
     
     @Override
@@ -58,7 +60,7 @@ public final class HiveStatementVisitorFacade implements SQLStatementVisitorFaca
     
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
-        throw new UnsupportedOperationException("");
+        return HiveDALStatementVisitor.class;
     }
     
     @Override

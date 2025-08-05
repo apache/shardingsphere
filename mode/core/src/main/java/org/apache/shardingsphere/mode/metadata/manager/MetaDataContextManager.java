@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.manager;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.database.DatabaseMetaDataManager;
@@ -59,7 +60,7 @@ public class MetaDataContextManager {
     public MetaDataContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext, final PersistRepository repository) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        metaDataPersistFacade = new MetaDataPersistFacade(repository);
+        metaDataPersistFacade = new MetaDataPersistFacade(repository, metaDataContexts.getMetaData().getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED));
         resourceSwitchManager = new ResourceSwitchManager();
         statisticsManager = new StatisticsManager(metaDataContexts);
         storageUnitManager = new StorageUnitManager(metaDataContexts, computeNodeInstanceContext, resourceSwitchManager, metaDataPersistFacade);

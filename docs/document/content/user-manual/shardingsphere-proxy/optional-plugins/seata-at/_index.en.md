@@ -39,8 +39,8 @@ you can confirm all `compile` scope dependencies of Seata Client with the follow
 ```shell
 sdk install java 23-open
 sdk use java 23-open
-sdk install maven 3.9.9
-sdk use maven 3.9.9
+sdk install maven 3.9.11
+sdk use maven 3.9.11
 mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.3.0
 mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
 ```
@@ -101,7 +101,7 @@ Write the Docker Compose file to start Seata Server and Postgres Server.
 ```yaml
 services:
    postgres:
-      image: postgres:17.2-bookworm
+      image: postgres:17.5-bookworm
       environment:
          POSTGRES_PASSWORD: example
       volumes:
@@ -365,39 +365,8 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DELETE FROM t_order WHERE user_id=1");
         }
     }
 }
-```
-
-## Usage restrictions
-
-### ShardingSphere Proxy Native for GraalVM Native Image
-
-For ShardingSphere Proxy Native in GraalVM Native Image,
-Users always need to modify the ShardingSphere source code to add the Seata Client and Seata integrated Maven modules and compile them into GraalVM Native Image.
-ShardingSphere Proxy Native in GraalVM Native Image cannot recognize the additional JAR files.
-
-```xml
-<project>
-    <dependencies>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.seata</groupId>
-         <artifactId>seata-all</artifactId>
-         <version>2.2.0</version>
-         <exclusions>
-            <exclusion>
-               <groupId>org.antlr</groupId>
-               <artifactId>antlr4-runtime</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-    </dependencies>
-</project>
 ```

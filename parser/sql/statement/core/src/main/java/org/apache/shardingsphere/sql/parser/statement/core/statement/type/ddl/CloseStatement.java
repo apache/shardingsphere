@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 
 /**
  * Close statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CloseStatement extends DDLStatement {
     
@@ -34,12 +33,14 @@ public final class CloseStatement extends DDLStatement {
     
     private final boolean closeAll;
     
-    /**
-     * Get cursor name.
-     *
-     * @return cursor name
-     */
-    public Optional<CursorNameSegment> getCursorName() {
-        return Optional.ofNullable(cursorName);
+    public CloseStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final boolean closeAll) {
+        super(databaseType);
+        this.cursorName = cursorName;
+        this.closeAll = closeAll;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }

@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Reset parameter statement for PostgreSQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLResetParameterStatement extends DALStatement {
     
     private final String configurationParameter;
+    
+    public PostgreSQLResetParameterStatement(final DatabaseType databaseType, final String configurationParameter) {
+        super(databaseType);
+        this.configurationParameter = configurationParameter;
+    }
 }

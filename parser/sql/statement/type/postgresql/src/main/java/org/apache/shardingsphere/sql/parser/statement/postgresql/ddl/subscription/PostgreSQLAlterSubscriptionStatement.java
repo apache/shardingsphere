@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.subscription;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter subscription statement for PostgreSQL.
  */
 public final class PostgreSQLAlterSubscriptionStatement extends DDLStatement {
+    
+    public PostgreSQLAlterSubscriptionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

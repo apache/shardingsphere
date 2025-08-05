@@ -69,6 +69,6 @@ class SingleDropTableSupportedCheckerTest {
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
         when(dropSchemaStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        return new CommonSQLStatementContext(mock(), dropSchemaStatement);
+        return new CommonSQLStatementContext(dropSchemaStatement);
     }
 }

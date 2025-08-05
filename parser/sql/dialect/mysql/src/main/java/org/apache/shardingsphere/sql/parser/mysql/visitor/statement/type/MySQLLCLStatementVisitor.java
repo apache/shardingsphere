@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
@@ -38,9 +39,13 @@ import java.util.List;
  */
 public final class MySQLLCLStatementVisitor extends MySQLStatementVisitor implements LCLStatementVisitor {
     
+    public MySQLLCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
+        return new LockStatement(getDatabaseType(), null == ctx.tableLock() ? Collections.emptyList() : getLockTables(ctx.tableLock()));
     }
     
     private Collection<SimpleTableSegment> getLockTables(final List<TableLockContext> tableLockContexts) {
@@ -57,6 +62,6 @@ public final class MySQLLCLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitUnlock(final UnlockContext ctx) {
-        return new UnlockStatement();
+        return new UnlockStatement(getDatabaseType());
     }
 }

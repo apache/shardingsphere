@@ -80,7 +80,6 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         ContextManager contextManager = mockContextManager(database, rule);
         new DistSQLUpdateExecuteEngine(new SetDefaultSingleTableStorageUnitStatement("bar_ds"), "foo_db", contextManager).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        verify(metaDataManagerPersistService).removeRuleConfigurationItem(database, null);
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));
     }
     

@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 import java.util.Optional;
 
 /**
  * Rollback statement.
  */
-@RequiredArgsConstructor
 public final class RollbackStatement extends TCLStatement {
     
     private final String savepointName;
     
-    public RollbackStatement() {
-        this(null);
+    public RollbackStatement(final DatabaseType databaseType) {
+        this(databaseType, null);
+    }
+    
+    public RollbackStatement(final DatabaseType databaseType, final String savepointName) {
+        super(databaseType);
+        this.savepointName = savepointName;
     }
     
     /**

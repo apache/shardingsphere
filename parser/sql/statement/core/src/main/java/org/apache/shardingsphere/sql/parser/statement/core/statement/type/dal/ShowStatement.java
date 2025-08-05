@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * Show statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShowStatement extends DALStatement {
     
     private final String name;
+    
+    public ShowStatement(final DatabaseType databaseType, final String name) {
+        super(databaseType);
+        this.name = name;
+    }
 }

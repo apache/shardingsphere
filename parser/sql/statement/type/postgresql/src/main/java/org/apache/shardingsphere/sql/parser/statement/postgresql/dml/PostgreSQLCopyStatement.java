@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dml;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.PrepareStatementQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.UnsupportedDistributeSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.Collection;
@@ -33,7 +34,6 @@ import java.util.Optional;
 /**
  * Copy statement for PostgreSQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class PostgreSQLCopyStatement extends DMLStatement {
     
@@ -42,6 +42,14 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
     private final Collection<ColumnSegment> columns;
     
     private final PrepareStatementQuerySegment prepareStatementQuery;
+    
+    public PostgreSQLCopyStatement(final DatabaseType databaseType,
+                                   final SimpleTableSegment table, final Collection<ColumnSegment> columns, final PrepareStatementQuerySegment prepareStatementQuery) {
+        super(databaseType);
+        this.table = table;
+        this.columns = columns;
+        this.prepareStatementQuery = prepareStatementQuery;
+    }
     
     /**
      * Get table.
@@ -63,6 +71,7 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
+        return new SQLStatementAttributes(
+                new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

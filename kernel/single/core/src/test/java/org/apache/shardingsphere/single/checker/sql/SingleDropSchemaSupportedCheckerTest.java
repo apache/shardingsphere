@@ -79,6 +79,6 @@ class SingleDropSchemaSupportedCheckerTest {
         when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
         when(dropSchemaStatement.getSchemaNames()).thenReturn(Collections.singleton(new IdentifierValue(schemaName)));
         when(dropSchemaStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        return new CommonSQLStatementContext(mock(), dropSchemaStatement);
+        return new CommonSQLStatementContext(dropSchemaStatement);
     }
 }

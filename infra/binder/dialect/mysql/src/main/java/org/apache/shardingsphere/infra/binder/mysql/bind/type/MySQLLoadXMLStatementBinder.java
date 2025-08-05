@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.MySQLLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 /**
  * Load XML statement binder for MySQL.
@@ -40,7 +40,7 @@ public final class MySQLLoadXMLStatementBinder implements SQLStatementBinder<MyS
     }
     
     private MySQLLoadXMLStatement copy(final MySQLLoadXMLStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
-        MySQLLoadXMLStatement result = new MySQLLoadXMLStatement(boundTableSegment);
+        MySQLLoadXMLStatement result = new MySQLLoadXMLStatement(sqlStatement.getDatabaseType(), boundTableSegment);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

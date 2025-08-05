@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 
-import lombok.SneakyThrows;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.CalciteSchema;
+import org.apache.calcite.sql.SqlOperatorTable;
+import org.apache.calcite.sql.fun.SqlLibrary;
+import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -33,12 +35,14 @@ import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCom
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.io.IOException;
 import java.sql.Types;
@@ -79,8 +83,16 @@ class SQLStatementCompilerIT {
         CalciteSchema calciteSchema = CalciteSchema.createRootSchema(true);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
         calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", tables, Collections.emptyList()), databaseType));
-        sqlStatementCompiler = new SQLStatementCompiler(new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties())),
-                Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE), EnumerableConvention.INSTANCE);
+        sqlStatementCompiler = new SQLStatementCompiler(
+                new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties()), getOperatorTables()),
+                        Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE),
+                EnumerableConvention.INSTANCE);
+    }
+    
+    private Collection<SqlOperatorTable> getOperatorTables() {
+        SqlOperatorTable operatorTable =
+                SqlLibraryOperatorTableFactory.INSTANCE.getOperatorTable(Arrays.asList(SqlLibrary.STANDARD, SqlLibrary.MYSQL));
+        return Arrays.asList(new MySQLOperatorTable(), operatorTable);
     }
     
     private ShardingSphereTable createOrderFederationTableMetaData() {
@@ -234,14 +246,13 @@ class SQLStatementCompilerIT {
     void assertCompile(final TestCase testcase) {
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(testcase.getSql(), false);
         String actual = sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " ");
-        assertThat(actual, is(testcase.getAssertion().getExpectedResult()));
+        assertThat(actual, is(testcase.getAssertion().iterator().next().getExpectedResult()));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
-        @SneakyThrows(IOException.class)
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) throws IOException {
             return TestCasesLoader.getInstance().generate().stream().map(Arguments::of);
         }
     }

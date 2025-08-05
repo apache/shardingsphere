@@ -1986,3 +1986,147 @@ LAST_VALUE
 GRAPH
     : G R A P H
     ;
+
+NODES
+    : N O D E S
+    ;
+
+VALUE
+    : V A L U E
+    ;
+
+EXIST
+    : E X I S T
+    ;
+
+CHANGETABLE
+    : C H A N G E T A B L E
+    ;
+
+VERSION
+    : V E R S I O N
+    ;
+
+CHANGES
+    : C H A N G E S
+    ;
+
+MODEL
+    : M O D E L
+    ;
+
+AI_GENERATE_EMBEDDINGS
+    : A I UL_ G E N E R A T E UL_ E M B E D D I N G S
+    ;
+
+PARAMETERS
+    : P A R A M E T E R S
+    ;
+
+LAG
+    : L A G
+    ;
+
+LEAD
+    : L E A D
+    ;
+
+FREETEXTTABLE
+    : F R E E T E X T T A B L E
+    ;
+
+NTILE
+    : N T I L E
+    ;
+
+RANK
+    : R A N K
+    ;
+
+ROLLUP
+    : R O L L U P
+    ;
+
+PIVOT
+    : P I V O T
+    ;
+
+UNPIVOT
+    : U N P I V O T
+    ;
+
+PARSE
+    : P A R S E
+    ;
+
+TRY_PARSE
+    : T R Y UL_ P A R S E
+    ;
+
+PATINDEX
+    : P A T I N D E X
+    ;
+
+PERCENTILE_CONT
+    : P E R C E N T I L E UL_ C O N T
+    ;
+
+PERCENTILE_DISC
+    : P E R C E N T I L E UL_ D I S C
+    ;
+
+DENSE_RANK
+    : D E N S E UL_ R A N K
+    ;
+
+PERCENT_RANK
+    : P E R C E N T UL_ R A N K
+    ;
+
+CUME_DIST
+    : C U M E UL_ D I S T
+    ;
+
+FORCESEEK
+    : F O R C E S E E K
+    ;
+
+FORCESCAN
+    : F O R C E S C A N
+    ;
+
+NOEXPAND
+    : N O E X P A N D
+    ;
+
+SPATIAL_WINDOW_MAX_CELLS
+    : S P A T I A L UL_ W I N D O W UL_ M A X UL_ C E L L S
+    ;
+
+LOOP
+    : L O O P
+    ;
+
+REDUCE
+    : R E D U C E
+    ;
+
+REDISTRIBUTE
+    : R E D I S T R I B U T E
+    ;
+
+PRODUCT
+    : P R O D U C T
+    ;
+
+CONTAINED
+    : C O N T A I N E D
+    ;
+
+SYSTEM
+    : S Y S T E M
+    ;
+
+TABLESAMPLE
+    : T A B L E S A M P L E
+    ;

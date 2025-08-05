@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
@@ -25,4 +26,7 @@ import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHo
  */
 public final class ClickHouseDDLStatementVisitor extends ClickHouseStatementVisitor implements DDLStatementVisitor {
     
+    public ClickHouseDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

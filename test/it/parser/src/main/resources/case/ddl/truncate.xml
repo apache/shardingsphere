@@ -77,4 +77,56 @@
     <truncate sql-case-id="truncate_table_with_cascade">
         <table name="t_log" start-index="15" stop-index="19" />
     </truncate>
+
+    <truncate sql-case-id="truncate_tablename">
+        <table name="test_table" start-index="9" stop-index="18" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_with_db_tablename">
+        <table name="t_log" db-name="test_tb" start-index="9" stop-index="21" >
+            <owner name="test_tb" start-index="9" stop-index="15" />
+        </table>
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_tablename">
+        <table name="test_table" start-index="15" stop-index="24" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_with_table_db_tablename">
+        <table name="t_log" db-name="test_tb" start-index="15" stop-index="27" >
+            <owner name="test_tb" start-index="15" stop-index="21" />
+        </table>
+    </truncate>
+
+    <truncate sql-case-id="truncate_tablename_with_partition">
+        <table name="test_table" start-index="9" stop-index="18" />
+        <partition start-index="20" stop-index="42">
+            <partition-key name="dt" value="'2025-01-01'" />
+        </partition>
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_tablename_with_partition">
+        <table name="test_table" start-index="15" stop-index="24" />
+        <partition start-index="26" stop-index="48">
+            <partition-key name="dt" value="'2025-01-01'" />
+        </partition>
+    </truncate>
+
+    <truncate sql-case-id="truncate_db_tablename_with_partition">
+        <table name="test_table" db-name="test_tb" start-index="9" stop-index="26" >
+            <owner name="test_tb" start-index="9" stop-index="15" />
+        </table>
+        <partition start-index="23" stop-index="45">
+            <partition-key name="dt" value="'2025-01-01'" />
+        </partition>
+    </truncate>
+
+    <truncate sql-case-id="truncate_table_db_tablename_with_partition">
+        <table name="test_table" db-name="test_tb" start-index="15" stop-index="32" >
+            <owner name="test_tb" start-index="15" stop-index="21" />
+        </table>
+        <partition start-index="35" stop-index="57">
+            <partition-key name="dt" value="'2025-01-01'" />
+        </partition>
+    </truncate>
 </sql-parser-test-cases>

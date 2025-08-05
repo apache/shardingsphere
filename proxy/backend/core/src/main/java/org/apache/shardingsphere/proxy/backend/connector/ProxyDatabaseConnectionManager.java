@@ -334,16 +334,15 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                     if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                         each.rollback();
                     }
-                } catch (final SQLException ex) {
-                    result.add(ex);
+                } catch (final SQLException ignored) {
                 } finally {
                     try {
                         each.close();
                     } catch (final SQLException ex) {
                         if (!isClosed(each)) {
                             log.warn("Close connection {} failed.", each, ex);
+                            result.add(ex);
                         }
-                        result.add(ex);
                     }
                 }
             }

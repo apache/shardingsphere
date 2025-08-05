@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.publication;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter publication statement for PostgreSQL.
  */
 public final class PostgreSQLAlterPublicationStatement extends DDLStatement {
+    
+    public PostgreSQLAlterPublicationStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

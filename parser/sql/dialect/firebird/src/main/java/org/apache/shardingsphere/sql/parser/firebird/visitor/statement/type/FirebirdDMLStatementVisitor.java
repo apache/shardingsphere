@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AliasContext;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Dele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.EscapedTableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstSkipClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.HavingClauseContext;
@@ -48,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Sele
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetAssignmentsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SingleTableClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SkipValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.TableReferenceContext;
@@ -79,10 +83,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -95,6 +106,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -106,6 +119,10 @@ import java.util.stream.Collectors;
  * DML statement visitor for Firebird.
  */
 public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor implements DMLStatementVisitor {
+    
+    public FirebirdDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
@@ -121,7 +138,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement();
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
@@ -148,7 +165,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement();
+        UpdateStatement result = new UpdateStatement(getDatabaseType());
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
@@ -185,9 +202,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(column);
         ExpressionSegment value = (ExpressionSegment) visit(ctx.assignmentValue());
-        ColumnAssignmentSegment result = new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
-        result.getColumns().add(column);
-        return result;
+        return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
     @Override
@@ -201,7 +216,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement();
+        DeleteStatement result = new DeleteStatement(getDatabaseType());
         result.setTable((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -224,9 +239,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        // TODO :Unsupported for withClause.
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
         result.addParameterMarkers(getParameterMarkerSegments());
+        if (null != ctx.withClause()) {
+            result.setWith((WithSegment) visit(ctx.withClause()));
+        }
         return result;
     }
     
@@ -238,8 +255,11 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement();
+        SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        if (null != ctx.firstSkipClause()) {
+            result.setLimit((LimitSegment) visit(ctx.firstSkipClause()));
+        }
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
@@ -259,6 +279,45 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         if (null != ctx.havingClause()) {
             result.setHaving((HavingSegment) visit(ctx.havingClause()));
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFirstSkipClause(final FirstSkipClauseContext ctx) {
+        PaginationValueSegment rowCount = null;
+        PaginationValueSegment offset = null;
+        if (null != ctx.FIRST()) {
+            rowCount = (PaginationValueSegment) visit(ctx.firstValue());
+            if (null != ctx.SKIP_()) {
+                offset = (PaginationValueSegment) visit(ctx.skipValue());
+            }
+        } else if (null != ctx.SKIP_()) {
+            offset = (PaginationValueSegment) visit(ctx.skipValue());
+        }
+        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+    }
+    
+    @Override
+    public ASTNode visitFirstValue(final FirstValueContext ctx) {
+        // TODO Add expression support for firstSkipClause
+        if (null != ctx.numberLiterals()) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+        }
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        getParameterMarkerSegments().add(result);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSkipValue(final SkipValueContext ctx) {
+        // TODO Add expression support for firstSkipClause
+        if (null != ctx.numberLiterals()) {
+            return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
+        }
+        ParameterMarkerSegment result = new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+        getParameterMarkerSegments().add(result);
         return result;
     }
     
@@ -436,6 +495,14 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
             }
             return result;
         }
+        if (null != ctx.expr()) {
+            ExpressionSegment exprSegment = (ExpressionSegment) visit(ctx.expr());
+            FunctionTableSegment result = new FunctionTableSegment(exprSegment.getStartIndex(), exprSegment.getStopIndex(), exprSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
         return visit(ctx.tableReferences());
     }
     
@@ -493,12 +560,16 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.combineClause());
+        SelectStatement result = (SelectStatement) visit(ctx.combineClause());
+        if (null != ctx.withClause()) {
+            result.setWith((WithSegment) visit(ctx.withClause()));
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement();
+        MergeStatement result = new MergeStatement(getDatabaseType());
         result.setTarget((TableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         // add mergeWhenNotMatched and mergeWhenMatched part

@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
  * Show create database statement for MySQL.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MySQLShowCreateDatabaseStatement extends DALStatement {
     
     private final String databaseName;
+    
+    public MySQLShowCreateDatabaseStatement(final DatabaseType databaseType, final String databaseName) {
+        super(databaseType);
+        this.databaseName = databaseName;
+    }
 }

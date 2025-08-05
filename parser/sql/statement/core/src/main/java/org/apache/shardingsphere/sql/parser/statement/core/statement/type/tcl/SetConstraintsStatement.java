@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+
 /**
  * Set constraints statement.
  */
 public final class SetConstraintsStatement extends TCLStatement {
+    
+    public SetConstraintsStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

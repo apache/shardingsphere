@@ -38,11 +38,21 @@ class PostgreSQLTimeBinaryProtocolValueTest {
     private PostgreSQLPacketPayload payload;
     
     @Test
-    void assertNewInstance() {
+    void assertGetColumnLength() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
         assertThat(actual.getColumnLength(payload, null), is(8));
+    }
+    
+    @Test
+    void assertRead() {
+        PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
         when(payload.readInt8()).thenReturn(1L);
         assertThat(actual.read(payload, 8), is(1L));
+    }
+    
+    @Test
+    void assertWrite() {
+        PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         actual.write(payload, timestamp);
         verify(payload).writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(timestamp));

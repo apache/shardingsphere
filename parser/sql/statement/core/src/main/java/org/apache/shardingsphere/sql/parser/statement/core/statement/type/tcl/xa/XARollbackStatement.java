@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * XA rollback statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class XARollbackStatement extends XAStatement {
     
     private final String xid;
+    
+    public XARollbackStatement(final DatabaseType databaseType, final String xid) {
+        super(databaseType);
+        this.xid = xid;
+    }
 }

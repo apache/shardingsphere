@@ -42,7 +42,7 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
     }
     
     private AlterTableStatement copy(final AlterTableStatement sqlStatement, final SimpleTableSegment boundTable, final SimpleTableSegment boundRenameTable) {
-        AlterTableStatement result = new AlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(sqlStatement.getDatabaseType());
         result.setTable(boundTable);
         result.setRenameTable(boundRenameTable);
         // TODO bind column and reference table if kernel need use them
@@ -59,6 +59,7 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
         result.getRenameColumnDefinitions().addAll(sqlStatement.getRenameColumnDefinitions());
         result.getRenameIndexDefinitions().addAll(sqlStatement.getRenameIndexDefinitions());
         sqlStatement.getModifyCollectionRetrieval().ifPresent(result::setModifyCollectionRetrieval);
+        sqlStatement.getDropPrimaryKeyDefinition().ifPresent(result::setDropPrimaryKeyDefinition);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

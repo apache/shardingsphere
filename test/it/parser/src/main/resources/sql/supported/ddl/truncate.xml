@@ -33,4 +33,12 @@
     <sql-case id="truncate_table_with_drop_all_storage" value="TRUNCATE TABLE t_log DROP STORAGE" db-types="Oracle" />
     <sql-case id="truncate_table_with_reuse_all_storage" value="TRUNCATE TABLE t_log REUSE STORAGE" db-types="Oracle" />
     <sql-case id="truncate_table_with_cascade" value="TRUNCATE TABLE t_log CASCADE" db-types="Oracle" />
+    <sql-case id="truncate_tablename" value="TRUNCATE test_table" db-types="Hive" />
+    <sql-case id="truncate_with_db_tablename" value="TRUNCATE test_tb.t_log" db-types="Hive" />
+    <sql-case id="truncate_table_tablename" value="TRUNCATE TABLE test_table" db-types="Hive" />
+    <sql-case id="truncate_with_table_db_tablename" value="TRUNCATE TABLE test_tb.t_log" db-types="Hive" />
+    <sql-case id="truncate_tablename_with_partition" value="TRUNCATE test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_table_tablename_with_partition" value="TRUNCATE TABLE test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_db_tablename_with_partition" value="TRUNCATE test_tb.test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_table_db_tablename_with_partition" value="TRUNCATE TABLE test_tb.test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
 </sql-cases>

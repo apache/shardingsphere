@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService;
+import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,11 +51,11 @@ class DatabaseMetaDataPersistFacadeTest {
     private SchemaMetaDataPersistService schemaMetaDataService;
     
     @Mock
-    private TableMetaDataPersistService tableMetaDataService;
+    private TableMetaDataPersistService tableMetaDataService = mock(TableMetaDataPersistEnabledService.class);
     
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
-        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(mock(), mock());
+        databaseMetaDataFacade = new DatabaseMetaDataPersistFacade(mock(), mock(), true);
         setField("schema", schemaMetaDataService);
         setField("table", tableMetaDataService);
     }

@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.restore;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create restore point statement for Oracle.
  */
 public final class OracleCreateRestorePointStatement extends DDLStatement {
+    
+    public OracleCreateRestorePointStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

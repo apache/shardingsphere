@@ -83,5 +83,22 @@
     <drop-index sql-case-id="drop_index_with_online_force_invalidation">
         <index name="order_index" start-index="11" stop-index="21" />
     </drop-index>
+
+    <drop-index sql-case-id="drop_index_basic">
+        <index name="product_id" start-index="11" stop-index="20" />
+        <table name="orders" start-index="25" stop-index="30" />
+    </drop-index>
+
+    <drop-index sql-case-id="drop_index_with_if_exists">
+        <index name="customer_id" start-index="21" stop-index="31" />
+        <table name="customers" start-index="36" stop-index="44" />
+    </drop-index>
+    
+    <drop-index sql-case-id="drop_index_with_database">
+        <index name="product_id" start-index="11" stop-index="20" />
+        <table name="orders" start-index="25" stop-index="35">
+            <owner name="mydb" start-index="25" stop-index="28" />
+        </table>
+    </drop-index>
     
 </sql-parser-test-cases>

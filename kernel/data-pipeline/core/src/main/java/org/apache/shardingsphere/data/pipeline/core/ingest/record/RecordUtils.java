@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Record utility class.
@@ -38,7 +38,7 @@ public final class RecordUtils {
      * @param shardingColumns sharding columns
      * @return condition columns
      */
-    public static List<Column> extractConditionColumns(final DataRecord dataRecord, final Set<String> shardingColumns) {
+    public static List<Column> extractConditionColumns(final DataRecord dataRecord, final Collection<String> shardingColumns) {
         List<Column> result = new ArrayList<>(dataRecord.getColumns().size());
         for (Column each : dataRecord.getColumns()) {
             if (each.isUniqueKey() || shardingColumns.contains(each.getName())) {

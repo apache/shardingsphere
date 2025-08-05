@@ -123,7 +123,7 @@ public final class TCLBackendHandler implements ProxyBackendHandler {
     
     private SQLStatement getSQLStatementByCommit() {
         return connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && dialectDatabaseMetaData.getTransactionOption().isReturnRollbackStatementWhenCommitFailed()
-                ? new RollbackStatement()
+                ? new RollbackStatement(connectionSession.getProtocolType())
                 : tclStatement;
     }
     

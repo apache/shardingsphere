@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema;
 
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -27,11 +28,15 @@ import java.util.Optional;
  * Create schema statement.
  */
 @Setter
-public class CreateSchemaStatement extends DDLStatement {
+public final class CreateSchemaStatement extends DDLStatement {
     
     private IdentifierValue schemaName;
     
     private IdentifierValue username;
+    
+    public CreateSchemaStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
     
     /**
      * Get schema name.

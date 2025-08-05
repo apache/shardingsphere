@@ -46,7 +46,7 @@ public final class MySQLShowColumnsStatementBinder implements SQLStatementBinder
     }
     
     private MySQLShowColumnsStatement copy(final MySQLShowColumnsStatement sqlStatement, final SimpleTableSegment boundTable, final ShowFilterSegment boundFilter) {
-        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
+        MySQLShowColumnsStatement result = new MySQLShowColumnsStatement(sqlStatement.getDatabaseType(), boundTable, sqlStatement.getFromDatabase().orElse(null), boundFilter);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

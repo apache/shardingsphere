@@ -38,8 +38,8 @@ ShardingSphere Proxy 或 GraalVM Native Image 形态的 ShardingSphere Proxy Nat
 ```shell
 sdk install java 23-open
 sdk use java 23-open
-sdk install maven 3.9.9
-sdk use maven 3.9.9
+sdk install maven 3.9.11
+sdk use maven 3.9.11
 mvn dependency:get -Dartifact=org.apache.seata:seata-all:2.3.0
 mvn -f ~/.m2/repository/org/apache/seata/seata-all/2.3.0/seata-all-2.3.0.pom dependency:tree | grep -v ':provided' | grep -v ':runtime'
 ```
@@ -98,7 +98,7 @@ aopalliance:aopalliance:jar:1.0
 ```yaml
 services:
    postgres:
-      image: postgres:17.2-bookworm
+      image: postgres:17.5-bookworm
       environment:
          POSTGRES_PASSWORD: example
       volumes:
@@ -360,7 +360,7 @@ public class ExampleUtils {
              Statement statement = connection.createStatement()) {
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
-            statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DELETE FROM t_order WHERE user_id=1");
         }
     }
 }

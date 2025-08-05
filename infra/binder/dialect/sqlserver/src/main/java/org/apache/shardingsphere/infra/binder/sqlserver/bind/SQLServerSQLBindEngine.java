@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.engine.DialectSQLBindEngine;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.sqlserver.bind.type.SQLServerDenyUserStatementBinder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user.SQLServerDenyUserStatement;
 
 import java.util.Optional;
 

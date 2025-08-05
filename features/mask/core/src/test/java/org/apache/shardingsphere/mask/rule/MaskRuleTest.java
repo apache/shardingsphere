@@ -68,7 +68,7 @@ class MaskRuleTest {
     
     @Test
     void assertPartialUpdateWithToBeAddedTables() {
-        assertTrue(maskRule.partialUpdate(createPartialAddTablesMaskRuleConfiguration()));
+        maskRule.partialUpdate(createPartialAddTablesMaskRuleConfiguration());
         assertTrue(maskRule.findMaskTable("bar_tbl").isPresent());
     }
     
@@ -81,7 +81,7 @@ class MaskRuleTest {
     
     @Test
     void assertPartialUpdateWithToBeRemovedTables() {
-        assertTrue(maskRule.partialUpdate(createPartialRemoveTablesMaskRuleConfiguration()));
+        maskRule.partialUpdate(createPartialRemoveTablesMaskRuleConfiguration());
         assertFalse(maskRule.findMaskTable("foo_tbl").isPresent());
     }
     
@@ -92,7 +92,8 @@ class MaskRuleTest {
     
     @Test
     void assertPartialUpdateWithToBeRemovedAlgorithms() {
-        assertFalse(maskRule.partialUpdate(createPartialRemovedAlgorithmsMaskRuleConfiguration()));
+        maskRule.partialUpdate(createPartialRemovedAlgorithmsMaskRuleConfiguration());
+        assertFalse(maskRule.findMaskTable("foo_tbl").get().findAlgorithm("t_mask_foo_id_md5").isPresent());
     }
     
     private MaskRuleConfiguration createPartialRemovedAlgorithmsMaskRuleConfiguration() {

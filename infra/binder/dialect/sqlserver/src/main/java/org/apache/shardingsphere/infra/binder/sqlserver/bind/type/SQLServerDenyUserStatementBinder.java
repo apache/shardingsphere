@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.SQLServerDenyUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user.SQLServerDenyUserStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -49,7 +49,7 @@ public final class SQLServerDenyUserStatementBinder implements SQLStatementBinde
     }
     
     private SQLServerDenyUserStatement copy(final SQLServerDenyUserStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
-        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
+        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement(sqlStatement.getDatabaseType());
         result.setTable(boundTable);
         sqlStatement.getColumns().addAll(boundColumns);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);

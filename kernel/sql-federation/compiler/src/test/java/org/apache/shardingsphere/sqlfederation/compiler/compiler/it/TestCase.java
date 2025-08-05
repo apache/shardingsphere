@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * XML definition of test case.
@@ -34,7 +37,8 @@ public final class TestCase {
     private String sql;
     
     @JacksonXmlProperty(localName = "assertion")
-    private TestCaseAssertion assertion;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<TestCaseAssertion> assertion;
     
     @Override
     public String toString() {

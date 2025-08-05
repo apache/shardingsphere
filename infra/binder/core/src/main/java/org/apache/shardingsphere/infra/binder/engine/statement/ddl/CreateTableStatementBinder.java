@@ -52,7 +52,7 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
     
     private CreateTableStatement copy(final CreateTableStatement sqlStatement,
                                       final SimpleTableSegment boundTable, final SelectStatement boundSelectStatement, final Collection<ColumnDefinitionSegment> boundColumnDefinitions) {
-        CreateTableStatement result = new CreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(sqlStatement.getDatabaseType());
         result.setTable(boundTable);
         result.setSelectStatement(boundSelectStatement);
         result.getColumnDefinitions().addAll(boundColumnDefinitions);

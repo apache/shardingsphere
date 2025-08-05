@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 
 /**
  * Set auto commit statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class SetAutoCommitStatement extends TCLStatement {
     
     private final boolean autoCommit;
+    
+    public SetAutoCommitStatement(final DatabaseType databaseType, final boolean autoCommit) {
+        super(databaseType);
+        this.autoCommit = autoCommit;
+    }
 }

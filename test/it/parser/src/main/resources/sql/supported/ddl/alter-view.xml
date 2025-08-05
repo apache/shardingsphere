@@ -30,4 +30,8 @@
     <sql-case id="alter_view_add_constraint_primary_key1" value="ALTER VIEW time_view ADD (CONSTRAINT time_view_pk PRIMARY KEY (time_id) DISABLE NOVALIDATE)" db-types="Oracle" />
     <sql-case id="alter_view_add_constraint_primary_key2" value="ALTER VIEW time_view ADD (CONSTRAINT time_view_pk PRIMARY KEY (time_id, name) DISABLE NOVALIDATE)" db-types="Oracle" />
     <sql-case id="alter_view_modify_constraint_rely" value="ALTER VIEW time_view MODIFY CONSTRAINT time_view_pk RELY" db-types="Oracle" />
+    <sql-case id="alter_view_set_properties_basic" value="ALTER VIEW sales_summary SET TBLPROPERTIES ('refresh_interval' = 'daily', 'owner' = 'data_team')" db-types="Hive" />
+    <sql-case id="alter_view_as_select_basic" value="ALTER VIEW sales_summary AS SELECT order_id, amount FROM new_sales" db-types="Hive" />
+    <sql-case id="alter_view_set_properties_with_db" value="ALTER VIEW db1.sales_summary SET TBLPROPERTIES ('is_archived' = 'false')" db-types="Hive" />
+    <sql-case id="alter_view_as_select_with_db" value="ALTER VIEW db1.sales_summary AS SELECT id, total FROM db2.orders" db-types="Hive" />
 </sql-cases>

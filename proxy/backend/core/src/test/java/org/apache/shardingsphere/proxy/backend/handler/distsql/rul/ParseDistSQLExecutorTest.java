@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
-import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -72,9 +72,9 @@ class ParseDistSQLExecutorTest {
         DistSQLQueryBackendHandler handler = new DistSQLQueryBackendHandler(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
-        SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
         assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("SelectStatement"));
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(sqlStatement)));
     }
     
     @Test
@@ -84,8 +84,8 @@ class ParseDistSQLExecutorTest {
         DistSQLQueryBackendHandler handler = new DistSQLQueryBackendHandler(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
-        SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(sqlStatement)));
     }
     
     @Test

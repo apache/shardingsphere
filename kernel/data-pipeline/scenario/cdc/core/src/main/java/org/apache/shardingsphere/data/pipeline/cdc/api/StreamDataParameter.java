@@ -35,9 +35,9 @@ public final class StreamDataParameter {
     
     private final List<String> schemaTableNames;
     
-    private final boolean full;
+    private final boolean isFull;
     
-    private final Map<String, List<DataNode>> dataNodesMap;
+    private final Map<String, List<DataNode>> tableAndDataNodesMap;
     
-    private final boolean decodeWithTX;
+    private final boolean isDecodeWithTransaction;
 }

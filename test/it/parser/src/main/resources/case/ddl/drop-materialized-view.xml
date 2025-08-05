@@ -20,4 +20,6 @@
     <drop-materialized-view sql-case-id="drop_materialized_view" />
     <drop-materialized-view sql-case-id="drop_materialized_view_cascade" />
     <drop-materialized-view sql-case-id="drop_materialized_view_if_exists" />
+    <drop-materialized-view sql-case-id="drop_materialized_view_basic" />
+    <drop-materialized-view sql-case-id="drop_materialized_view_with_db" />
 </sql-parser-test-cases>

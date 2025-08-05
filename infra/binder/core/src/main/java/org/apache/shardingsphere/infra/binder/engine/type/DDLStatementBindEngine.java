@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.AlterViewStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CommentStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CreateViewStatementBinder;
@@ -28,11 +29,13 @@ import org.apache.shardingsphere.infra.binder.engine.statement.ddl.CursorStateme
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropIndexStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.DropViewStatementBinder;
+import org.apache.shardingsphere.infra.binder.engine.statement.ddl.PrepareStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.RenameTableStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.ddl.TruncateStatementBinder;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
@@ -40,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
@@ -92,6 +96,12 @@ public final class DDLStatementBindEngine {
         }
         if (statement instanceof TruncateStatement) {
             return new TruncateStatementBinder().bind((TruncateStatement) statement, binderContext);
+        }
+        if (statement instanceof CommentStatement) {
+            return new CommentStatementBinder().bind((CommentStatement) statement, binderContext);
+        }
+        if (statement instanceof PrepareStatement) {
+            return new PrepareStatementBinder().bind((PrepareStatement) statement, binderContext);
         }
         return statement;
     }

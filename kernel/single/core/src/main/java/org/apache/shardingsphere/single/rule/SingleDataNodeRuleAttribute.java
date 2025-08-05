@@ -63,4 +63,9 @@ public final class SingleDataNodeRuleAttribute implements DataNodeRuleAttribute 
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
         return Optional.empty();
     }
+    
+    @Override
+    public boolean isReplicaBasedDistribution() {
+        return false;
+    }
 }

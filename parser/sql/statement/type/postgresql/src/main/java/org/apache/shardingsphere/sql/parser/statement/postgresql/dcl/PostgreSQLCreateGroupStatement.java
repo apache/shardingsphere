@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.dcl;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 
 /**
  * Create group statement for PostgreSQL.
  */
 public final class PostgreSQLCreateGroupStatement extends DCLStatement {
+    
+    public PostgreSQLCreateGroupStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

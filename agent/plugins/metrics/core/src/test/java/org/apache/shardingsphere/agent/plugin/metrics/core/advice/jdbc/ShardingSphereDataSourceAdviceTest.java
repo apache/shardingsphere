@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,12 +63,12 @@ class ShardingSphereDataSourceAdviceTest {
         when(method.getName()).thenReturn("close");
         ShardingSphereDataSourceAdvice advice = new ShardingSphereDataSourceAdvice();
         advice.beforeMethod(fixture, method, new Object[]{}, "FIXTURE");
-        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(0));
+        assertTrue(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().isEmpty());
     }
     
     @Test
     void assertAfterMethod() {
-        assertThat(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().size(), is(0));
+        assertTrue(ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().isEmpty());
         when(AgentReflectionUtils.getFieldValue(fixture, "databaseName")).thenReturn(databaseName);
         TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         when(method.getName()).thenReturn("createContextManager");

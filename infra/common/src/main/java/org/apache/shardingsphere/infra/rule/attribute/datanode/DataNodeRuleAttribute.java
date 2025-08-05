@@ -76,4 +76,11 @@ public interface DataNodeRuleAttribute extends RuleAttribute {
      * @return actual table name
      */
     Optional<String> findActualTableByCatalog(String catalog, String logicTable);
+    
+    /**
+     * Whether replica based distribution.
+     *
+     * @return is replica based distribution or not
+     */
+    boolean isReplicaBasedDistribution();
 }

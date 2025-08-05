@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LockContext;
@@ -34,9 +35,13 @@ import java.util.stream.Collectors;
  */
 public final class OpenGaussLCLStatementVisitor extends OpenGaussStatementVisitor implements LCLStatementVisitor {
     
+    public OpenGaussLCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new LockStatement(null == ctx.relationExprList() ? Collections.emptyList() : getLockTables(ctx.relationExprList().relationExpr()));
+        return new LockStatement(getDatabaseType(), null == ctx.relationExprList() ? Collections.emptyList() : getLockTables(ctx.relationExprList().relationExpr()));
     }
     
     private Collection<SimpleTableSegment> getLockTables(final Collection<RelationExprContext> relationExprContexts) {

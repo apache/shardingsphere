@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.binder.context.statement.type.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -36,14 +35,11 @@ import java.util.Optional;
 @Getter
 public final class CreateProcedureStatementContext implements SQLStatementContext {
     
-    private final DatabaseType databaseType;
-    
     private final CreateProcedureStatement sqlStatement;
     
     private final TablesContext tablesContext;
     
-    public CreateProcedureStatementContext(final DatabaseType databaseType, final CreateProcedureStatement sqlStatement) {
-        this.databaseType = databaseType;
+    public CreateProcedureStatementContext(final CreateProcedureStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         Optional<RoutineBodySegment> routineBodySegment = sqlStatement.getRoutineBody();
         Collection<SimpleTableSegment> tables = routineBodySegment.map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);

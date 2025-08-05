@@ -72,7 +72,7 @@ mergeInsertClause
     ;
 
 withTableHint
-    : WITH? LP_ (tableHintLimited+) RP_
+    : WITH? LP_ (tableHintLimited | tableHintExtended) (COMMA_ (tableHintLimited | tableHintExtended))* RP_
     ;
 
 exec
@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
     ;
 
 duplicateSpecification
@@ -164,6 +164,10 @@ qualifiedShorthand
     : identifier DOT_ASTERISK_
     ;
 
+onFileGroupClause
+    : ON identifier
+    ;
+
 intoClause
     : INTO tableName
     ;
@@ -181,13 +185,56 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | LP_ tableReferences RP_
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    ;
+
+pivotTable
+    : pivotClause (AS? alias)?
+    ;
+
+pivotClause
+    : (tableName | subquery) PIVOT LP_ aggregationFunction FOR columnName IN LP_ pivotValueList RP_ RP_
+    | (tableName | subquery) UNPIVOT LP_ columnName FOR columnName IN LP_ pivotValueList RP_ RP_
+    | subquery AS? alias PIVOT LP_ aggregationFunction FOR columnName IN LP_ pivotValueList RP_ RP_
+    | subquery AS? alias UNPIVOT LP_ columnName FOR columnName IN LP_ pivotValueList RP_ RP_
+    ;
+
+pivotValueList
+    : pivotValue (COMMA_ pivotValue)*
+    ;
+
+pivotValue
+    : LBT_ expr RBT_ | expr
+    ;
+
+tableSampleClause
+    : TABLESAMPLE SYSTEM? LP_ numberLiterals (PERCENT | ROWS)? RP_ (REPEATABLE LP_ numberLiterals RP_)?
+    ;
+
+forSystemTimeClause
+    : FOR SYSTEM_TIME systemTimeClause
+    ;
+
+systemTimeClause
+    : AS OF dateTimeExpression
+    | FROM dateTimeExpression TO dateTimeExpression
+    | BETWEEN dateTimeExpression AND dateTimeExpression
+    | CONTAINED IN LP_ dateTimeExpression COMMA_ dateTimeExpression RP_
+    | ALL
+    ;
+
+dateTimeExpression
+    : literals | parameterMarker
     ;
 
 joinedTable
-    : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
-    | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    : NATURAL? ((INNER | CROSS)? joinHint? JOIN) tableFactor joinSpecification?
+    | NATURAL? (LEFT | RIGHT | FULL) OUTER? joinHint? JOIN tableFactor joinSpecification?
     | (CROSS | OUTER) APPLY tableFactor joinSpecification?
+    ;
+
+joinHint
+    : LOOP | HASH | MERGE | REMOTE | REDUCE | REPLICATE | REDISTRIBUTE (LP_ NUMBER_ RP_)?
     ;
 
 joinSpecification
@@ -199,7 +246,7 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)*
+    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
     ;
 
 havingClause

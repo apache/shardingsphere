@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -50,6 +51,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -82,8 +84,7 @@ public abstract class SQLBinderIT {
     private SQLStatement bindSQLStatement(final String databaseType, final String sql, final List<Object> parameters) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
-        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType)), "foo_db_1", hintValueContext)
-                .bind(TypedSPILoader.getService(DatabaseType.class, databaseType), sqlStatement, parameters).getSqlStatement();
+        return new SQLBindEngine(mockMetaData(TypedSPILoader.getService(DatabaseType.class, databaseType)), "foo_db_1", hintValueContext).bind(sqlStatement, parameters).getSqlStatement();
     }
     
     private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType) {
@@ -109,7 +110,8 @@ public abstract class SQLBinderIT {
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("merchant_id", Types.INTEGER, false, false, false, true, false, true),
                 new ShardingSphereColumn("remark", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)),
+                Collections.singletonList(new ShardingSphereIndex("idx_user_id", Collections.singletonList("user_id"), false)), Collections.emptyList()));
         result.add(new ShardingSphereTable("t_order_item", Arrays.asList(
                 new ShardingSphereColumn("item_id", Types.BIGINT, true, false, false, true, false, false),
                 new ShardingSphereColumn("order_id", Types.BIGINT, false, false, false, true, false, false),
@@ -172,8 +174,8 @@ public abstract class SQLBinderIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            SQLBinderITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLBinderITSettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            SQLBinderITSettings settings = context.getRequiredTestClass().getAnnotation(SQLBinderITSettings.class);
             Preconditions.checkNotNull(settings, "Annotation SQLBinderITSettings is required.");
             return getTestParameters(settings.value()).stream();
         }

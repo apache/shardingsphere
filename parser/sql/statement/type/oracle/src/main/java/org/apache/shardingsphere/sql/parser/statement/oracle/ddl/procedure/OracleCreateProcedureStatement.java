@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.procedure;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 
@@ -28,9 +28,12 @@ import java.util.List;
 /**
  * Create procedure statement for Oracle.
  */
-@RequiredArgsConstructor
 @Getter
 public final class OracleCreateProcedureStatement extends CreateProcedureStatement {
     
     private final List<CursorForLoopStatementSegment> cursorForLoopStatements = new ArrayList<>();
+    
+    public OracleCreateProcedureStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

@@ -216,7 +216,7 @@ The following components are provided under the Apache License. See project link
 The text of each license is the standard Apache 2.0 license.
 
     accessors-smart 2.4.9: https://www.minidev.net/, Apache 2.0
-    aggdesigner-algorithm 6.0: Apache 2.0
+    aggdesigner-algorithm 6.1: Apache 2.0
     apiguardian-api 1.1.2: https://github.com/apiguardian-team/apiguardian, Apache 2.0
     audience-annotations 0.12.0: https://github.com/apache/yetus, Apache 2.0
     avatica-core 1.26.0: https://calcite.apache.org/avatica, Apache 2.0
@@ -227,9 +227,8 @@ The text of each license is the standard Apache 2.0 license.
     commons-codec 1.16.0: https://github.com/apache/commons-codec, Apache 2.0
     commons-dbcp2 2.11.0: https://commons.apache.org/proper/commons-dbcp, Apache 2.0
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
-    commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
-    commons-lang 2.4: https://github.com/apache/commons-lang, Apache 2.0
-    commons-lang3 3.15.0: https://github.com/apache/commons-lang, Apache 2.0
+    commons-io 2.20.0: https://github.com/apache/commons-io, Apache 2.0
+    commons-lang3 3.18.0: https://github.com/apache/commons-lang, Apache 2.0
     commons-math3 3.6.1: https://commons.apache.org/proper/commons-math, Apache 2.0
     commons-pool2 2.12.0: https://commons.apache.org/proper/commons-pool, Apache 2.0
     commons-logging 1.2: https://github.com/apache/commons-logging, Apache 2.0
@@ -254,8 +253,6 @@ The text of each license is the standard Apache 2.0 license.
     gson 2.10.1: https://github.com/google/gson, Apache 2.0
     guava 33.4.6-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
-    httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
-    httpcore5 5.2.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     j2objc-annotations 1.3 https://github.com/google/j2objc/, Apache 2.0
     jackson-annotations 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-core 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
@@ -334,8 +331,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     janino 3.1.11: https://github.com/janino-compiler/janino, BSD-3-Clause
     opengauss-jdbc 3.1.0-og: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
     postgresql 42.7.5: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
-    protobuf-java 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
-    protobuf-java-util 3.21.12: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java 3.25.8: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
+    protobuf-java-util 3.25.8: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     stax2-api 4.2.1: https://github.com/FasterXML/stax2-api, BSD-2-Clause
     jts-io-common 1.19.0: https://github.com/locationtech/jts, EDL 1.0
     jts-core 1.19.0: https://github.com/locationtech/jts, EDL 1.0

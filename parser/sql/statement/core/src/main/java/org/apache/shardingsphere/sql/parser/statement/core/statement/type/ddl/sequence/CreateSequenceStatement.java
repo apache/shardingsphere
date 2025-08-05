@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Create sequence statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class CreateSequenceStatement extends DDLStatement {
     
     private final String sequenceName;
+    
+    public CreateSequenceStatement(final DatabaseType databaseType, final String sequenceName) {
+        super(databaseType);
+        this.sequenceName = sequenceName;
+    }
 }

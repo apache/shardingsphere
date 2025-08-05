@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Alter synonym statement.
  */
 public final class AlterSynonymStatement extends DDLStatement {
+    
+    public AlterSynonymStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

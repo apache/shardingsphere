@@ -72,7 +72,7 @@ public final class PushDownMetaDataRefreshEngine {
         Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
         String schemaName = SchemaRefreshUtils.getSchemaName(database, sqlStatementContext);
         DatabaseType databaseType = routeUnits.stream().map(each -> database.getResourceMetaData().getStorageUnits().get(each.getDataSourceMapper().getActualName()))
-                .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(sqlStatementContext::getDatabaseType);
+                .filter(Objects::nonNull).findFirst().map(StorageUnit::getStorageType).orElseGet(() -> sqlStatementContext.getSqlStatement().getDatabaseType());
         refresher.get().refresh(metaDataManagerPersistService, database, logicDataSourceNames.isEmpty() ? null : logicDataSourceNames.iterator().next(),
                 schemaName, databaseType, sqlStatementContext.getSqlStatement(), props);
     }
