@@ -41,11 +41,11 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
     }
     
     public boolean getAutocommit() {
-        return tpb.getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT) != null;
+        return null != tpb.getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT);
     }
     
     public boolean getReadOnly() {
-        return tpb.getValue(FirebirdTransactionParameterBufferType.READ) != null;
+        return null != tpb.getValue(FirebirdTransactionParameterBufferType.READ);
     }
     
     /**
@@ -54,7 +54,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
      * @return transaction isolation level
      */
     public TransactionIsolationLevel getIsolationLevel() {
-        if (tpb.getValue(FirebirdTransactionParameterBufferType.READ_COMMITTED) != null) {
+        if (null != tpb.getValue(FirebirdTransactionParameterBufferType.READ_COMMITTED)) {
             return TransactionIsolationLevel.READ_COMMITTED;
         }
         if (tpb.getValue(FirebirdTransactionParameterBufferType.CONCURRENCY)) {

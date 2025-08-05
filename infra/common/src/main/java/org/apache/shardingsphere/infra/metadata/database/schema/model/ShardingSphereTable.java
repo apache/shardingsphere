@@ -97,12 +97,14 @@ public final class ShardingSphereTable {
     }
     
     private Map<ShardingSphereIdentifier, ShardingSphereIndex> createIndexes(final Collection<ShardingSphereIndex> indexes) {
-        return indexes.stream().collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each, (a, b) -> b, () -> new LinkedHashMap<>(indexes.size(), 1F)));
+        return indexes.stream()
+                .collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(indexes.size(), 1F)));
     }
     
     private Map<ShardingSphereIdentifier, ShardingSphereConstraint> createConstraints(final Collection<ShardingSphereConstraint> constraints) {
         return constraints.stream()
-                .collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each, (a, b) -> b, () -> new LinkedHashMap<>(constraints.size(), 1F)));
+                .collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each, (oldValue, currentValue) -> currentValue,
+                        () -> new LinkedHashMap<>(constraints.size(), 1F)));
     }
     
     /**

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.TableChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.metadata.ViewChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.NamedRuleItemConfigurationChangedHandler;
+import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.RuleTypeConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.database.rule.type.UniqueRuleItemConfigurationChangedHandler;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearchCriteria;
@@ -59,7 +60,8 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
                 new StorageUnitChangedHandler(contextManager),
                 new StorageNodeChangedHandler(contextManager),
                 new NamedRuleItemConfigurationChangedHandler(contextManager),
-                new UniqueRuleItemConfigurationChangedHandler(contextManager));
+                new UniqueRuleItemConfigurationChangedHandler(contextManager),
+                new RuleTypeConfigurationChangedHandler(contextManager));
     }
     
     @Override
@@ -84,7 +86,13 @@ public final class DatabaseMetaDataChangedListener implements DataChangedEventLi
     
     private boolean isSubscribed(final DatabaseChangedHandler handler, final String databaseName, final DataChangedEvent event) {
         if (handler instanceof DatabaseLeafValueChangedHandler) {
-            return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
+            if (DataChangedEvent.Type.ADDED == event.getType() || DataChangedEvent.Type.UPDATED == event.getType()) {
+                return new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey());
+            } else {
+                return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1))
+                        && !new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isActiveVersionPath(event.getKey())
+                        && !new VersionNodePath(handler.getSubscribedNodePath(databaseName)).isVersionsPath(event.getKey());
+            }
         }
         if (handler instanceof DatabaseNodeValueChangedHandler) {
             return NodePathSearcher.isMatchedPath(event.getKey(), new NodePathSearchCriteria(handler.getSubscribedNodePath(databaseName), false, 1));

@@ -353,4 +353,10 @@
     <sql-case id="select_merge_join_hint" value="SELECT poh.PurchaseOrderID FROM Purchasing.PurchaseOrderHeader AS poh INNER MERGE JOIN Purchasing.PurchaseOrderDetail AS pod ON poh.PurchaseOrderID = pod.PurchaseOrderID;" db-types="SQLServer"/>
     <sql-case id="select_aggregation_function_over_clause" value="SELECT Name , MIN(Rate) OVER (PARTITION BY edh.DepartmentID) FROM HumanResources.EmployeePayHistory" db-types="SQLServer" />
     <sql-case id="select_on_clause" value="SELECT * INTO [dbo].[FactResellerSalesXL] ON FG2 FROM [dbo].[FactResellerSales];" db-types="SQLServer"/>
+    <sql-case id="select_language_identifier" value="SELECT counter_name, counter_value FROM sys.dm_external_script_execution_stats WHERE language = 'Python';" db-types="SQLServer"/>
+    <sql-case id="select_with_clustered_index" value="SELECT e.BusinessEntityID FROM Employee e WITH (INDEX = 1) INNER JOIN Person pp ON e.BusinessEntityID = pp.BusinessEntityID WHERE pp.LastName = 'Johnson';" db-types="SQLServer"/>
+    <sql-case id="select_catalog_identifier" value="SELECT catalog.name, catalog.catalog_id, catalog.database_id FROM sys.dm_fts_active_catalogs catalog WHERE catalog.database_id = DB_ID();" db-types="SQLServer"/>
+    <sql-case id="select_product_function" value="SELECT e.Name, PRODUCT(1 + edh.rateOfReturn) OVER (PARTITION BY e.DepartmentID ORDER BY edh.EffectiveDate) AS CompoundedReturn FROM HumanResources.Employee e JOIN HumanResources.EmployeePayHistory edh ON e.BusinessEntityID = edh.BusinessEntityID;" db-types="SQLServer"/>
+    <sql-case id="select_for_system_time" value="SELECT DepartmentNumber, DepartmentName FROM DEPARTMENT FOR SYSTEM_TIME AS OF '2014-01-01' WHERE ManagerID = 5;" db-types="SQLServer"/>
+    <sql-case id="select_from_tablesample" value="SELECT * FROM Sales.Customer TABLESAMPLE SYSTEM(10 PERCENT);" db-types="SQLServer"/>
 </sql-cases>

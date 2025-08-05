@@ -35,6 +35,15 @@ execute
     | truncateTable
     | msckStatement
     | alterTable
+    | createView
+    | dropView
+    | alterView
+    | createMaterializedView
+    | dropMaterializedView
+    | alterMaterializedView
+    | createIndex
+    | dropIndex
+    | alterIndex
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

@@ -2114,3 +2114,19 @@ REDUCE
 REDISTRIBUTE
     : R E D I S T R I B U T E
     ;
+
+PRODUCT
+    : P R O D U C T
+    ;
+
+CONTAINED
+    : C O N T A I N E D
+    ;
+
+SYSTEM
+    : S Y S T E M
+    ;
+
+TABLESAMPLE
+    : T A B L E S A M P L E
+    ;

@@ -63,7 +63,7 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        for (final FirebirdInfoPacketType type : infoItems) {
+        for (FirebirdInfoPacketType type : infoItems) {
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {

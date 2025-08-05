@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock;
 
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.mode.state.ShardingSphereState;
-import org.apache.shardingsphere.mode.manager.cluster.lock.exception.NotLockedClusterException;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.lock.exception.NotLockedClusterException;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

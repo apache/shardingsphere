@@ -31,26 +31,45 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableCon
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DataTypeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameWithDbContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MsckStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -61,6 +80,9 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AddColum
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ReplaceColumnsContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ReplaceColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameWithDbContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import java.util.Collections;
 
 /**
@@ -266,5 +288,113 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitTableConstraint(final TableConstraintContext ctx) {
         return new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+    }
+    
+    @Override
+    public ASTNode visitCreateView(final CreateViewContext ctx) {
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.viewNameWithDb()));
+        if (null != ctx.commentClause() && !ctx.commentClause().isEmpty()) {
+            result.setViewDefinition(ctx.commentClause(ctx.commentClause().size() - 1).string_().getText().replace("'", ""));
+        }
+        if (null != ctx.tblProperties()) {
+            result.setViewDefinition(getText(ctx.tblProperties()));
+        }
+        HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+        ASTNode selectNode = dmlVisitor.visit(ctx.select());
+        if (selectNode instanceof SelectStatement) {
+            result.setSelect((SelectStatement) selectNode);
+        }
+        result.setViewDefinition(getText(ctx));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitViewNameWithDb(final ViewNameWithDbContext ctx) {
+        if (1 == ctx.identifier().size()) {
+            return new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    new IdentifierValue(ctx.identifier(0).getText())));
+        } else {
+            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.identifier(1).getStart().getStartIndex(),
+                    ctx.identifier(1).getStop().getStopIndex(), new IdentifierValue(ctx.identifier(1).getText())));
+            result.setOwner(new org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment(
+                    ctx.identifier(0).getStart().getStartIndex(), ctx.identifier(0).getStop().getStopIndex(),
+                    new IdentifierValue(ctx.identifier(0).getText())));
+            return result;
+        }
+    }
+    
+    @Override
+    public ASTNode visitDropView(final DropViewContext ctx) {
+        DropViewStatement result = new DropViewStatement(getDatabaseType());
+        result.setIfExists(null != ctx.ifExists());
+        result.getViews().add((SimpleTableSegment) visit(ctx.viewNameWithDb()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterView(final AlterViewContext ctx) {
+        AlterViewStatement result = new AlterViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.alterViewCommonClause().viewNameWithDb()));
+        if (null != ctx.select()) {
+            HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
+            ASTNode selectNode = dmlVisitor.visit(ctx.select());
+            if (selectNode instanceof SelectStatement) {
+                result.setSelect((SelectStatement) selectNode);
+            }
+            result.setViewDefinition(getText(ctx.select()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
+        return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
+        return new DropMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
+        return new AlterMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
+        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
+        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                        new IdentifierValue(ctx.indexName().getText()))));
+        result.setTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        if (null != ctx.columnNamesCommonClause()) {
+            for (ColumnNameContext each : ctx.columnNamesCommonClause().columnNames().columnName()) {
+                result.getColumns().add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropIndex(final DropIndexContext ctx) {
+        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
+        result.setIfExists(null != ctx.ifExists());
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IdentifierValue(ctx.indexName().getText()));
+        result.getIndexes().add(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
+        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
+        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                new IdentifierValue(ctx.indexName().getText()));
+        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
+        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        return result;
     }
 }

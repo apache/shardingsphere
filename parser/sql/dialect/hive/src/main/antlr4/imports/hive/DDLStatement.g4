@@ -20,7 +20,7 @@ grammar DDLStatement;
 import BaseRule, DMLStatement;
 
 createDatabase
-    : CREATE REMOTE? (DATABASE | SCHEMA) ifNotExists? identifier (COMMENT string_)? (LOCATION string_)? (MANAGEDLOCATION string_)? (WITH DBPROPERTIES LP_ dbProperties RP_)?
+    : CREATE REMOTE? (DATABASE | SCHEMA) ifNotExists? identifier commentClause? storageLocation? (MANAGEDLOCATION string_)? (WITH DBPROPERTIES LP_ dbProperties RP_)?
     ;
 
 dropDatabase
@@ -36,7 +36,7 @@ use
     ;
 
 createTable
-    : createTableCommonClause createDefinitionClause? tableComment? partitionedBy? clusteredBy? skewedBy? rowFormat? storedAs? storageLocation? tblProperties? (AS select)?
+    : createTableCommonClause createDefinitionClause? commentClause? partitionedBy? clusteredBy? skewedBy? rowFormat? storedClause? storageLocation? tblProperties? (AS select)?
     | createTableCommonClause LIKE existingTableName storageLocation?
     ;
 
@@ -51,8 +51,8 @@ truncateTable
 alterTable
     : alterTableCommonClause RENAME TO tableName
     | alterTableCommonClause SET tblProperties
-    | alterTableCommonClause partitionSpec? SET SERDE string_ (WITH SERDEPROPERTIES LP_ propertyList RP_)?
-    | alterTableCommonClause partitionSpec? SET SERDEPROPERTIES LP_ propertyList RP_
+    | alterTableCommonClause partitionSpec? SET SERDE string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
+    | alterTableCommonClause partitionSpec? SET SERDEPROPERTIES propertyListCommonClause
     | alterTableCommonClause partitionSpec? UNSET SERDEPROPERTIES LP_ string_ RP_
     | alterTableCommonClause clusteredBy
     | alterTableCommonClause skewedBy
@@ -77,6 +77,43 @@ alterTable
     | alterTableCommonClause partitionSpec? changeColumn
     | alterTableCommonClause partitionSpec? addColumns
     | alterTableCommonClause partitionSpec? replaceColumns
+    ;
+
+createView
+    : CREATE VIEW ifNotExists? viewNameWithDb (LP_ columnName commentClause? (COMMA_ columnName commentClause?)* RP_)? commentClause? tblProperties? AS select
+    ;
+
+dropView
+    : DROP VIEW ifExists? viewNameWithDb
+    ;
+
+alterView
+    : alterViewCommonClause SET tblProperties
+    | alterViewCommonClause AS select
+    ;
+
+createMaterializedView
+    : CREATE MATERIALIZED VIEW ifNotExists? viewNameWithDb materializedViewOptions? AS select
+    ;
+
+dropMaterializedView
+    : DROP MATERIALIZED VIEW viewNameWithDb
+    ;
+
+alterMaterializedView
+    : ALTER MATERIALIZED VIEW viewNameWithDb (ENABLE | DISABLE) REWRITE
+    ;
+
+createIndex
+    : CREATE INDEX indexName ON TABLE tableNameWithDb columnNamesCommonClause AS indexType createIndexOptions?
+    ;
+
+dropIndex
+    : DROP INDEX ifExists? indexName ON tableNameWithDb
+    ;
+
+alterIndex
+    : ALTER INDEX indexName ON tableNameWithDb partitionSpec? REBUILD
     ;
 
 alterDatabaseSpecification_
@@ -110,11 +147,19 @@ alterTableCommonClause
     : ALTER TABLE tableName
     ;
 
+alterViewCommonClause
+    : ALTER VIEW viewNameWithDb
+    ;
+
 createTableSpecification
     : TEMPORARY? EXTERNAL?
     ;
 
 tableNameWithDb
+    : (identifier DOT_)? identifier
+    ;
+
+viewNameWithDb
     : (identifier DOT_)? identifier
     ;
 
@@ -127,7 +172,7 @@ createDefinitionClause
     ;
 
 columnDefinition
-    : columnName dataTypeClause columnConstraintSpecification* (COMMENT string_)?
+    : columnName dataTypeClause columnConstraintSpecification* commentClause?
     ;
 
 columnName
@@ -172,7 +217,7 @@ structType
     ;
 
 structField
-    : identifier COLON_ dataTypeClause (COMMENT string_)?
+    : identifier COLON_ dataTypeClause commentClause?
     ;
 
 unionType
@@ -232,13 +277,13 @@ tableName
     ;
 
 tableConstraintOption
-    : PRIMARY KEY LP_ columnNames RP_ constraintAttributes?
-    | UNIQUE LP_ columnNames RP_ constraintAttributes?
-    | CONSTRAINT identifier FOREIGN KEY LP_ columnNames RP_ REFERENCES tableName LP_ columnNames RP_ constraintAttributes?
+    : PRIMARY KEY columnNamesCommonClause constraintAttributes?
+    | UNIQUE columnNamesCommonClause constraintAttributes?
+    | CONSTRAINT identifier FOREIGN KEY columnNamesCommonClause REFERENCES tableName columnNamesCommonClause constraintAttributes?
     | CONSTRAINT identifier CHECK LP_ expr RP_ constraintAttributes?
     ;
 
-tableComment
+commentClause
     : COMMENT string_
     ;
 
@@ -247,11 +292,11 @@ partitionedBy
     ;
 
 partitionColumn
-    : columnName dataTypeClause (COMMENT string_)?
+    : columnName dataTypeClause commentClause?
     ;
 
 clusteredBy
-    : CLUSTERED BY LP_ columnNames RP_ (SORTED BY LP_ sortedByItem (COMMA_ sortedByItem)* RP_)? INTO NUMBER_ BUCKETS
+    : CLUSTERED BY columnNamesCommonClause (SORTED BY LP_ sortedByItem (COMMA_ sortedByItem)* RP_)? INTO NUMBER_ BUCKETS
     ;
 
 sortedByItem
@@ -259,7 +304,7 @@ sortedByItem
     ;
 
 skewedBy
-    : SKEWED BY LP_ columnNames RP_ ON LP_ skewedValueList RP_ (STORED AS DIRECTORIES)?
+    : SKEWED BY columnNamesCommonClause ON LP_ skewedValueList RP_ (STORED AS DIRECTORIES)?
     ;
 
 skewedValueList
@@ -277,7 +322,7 @@ rowFormat
 
 rowFormatType
     : DELIMITED rowFormatDelimited
-    | SERDE string_ (WITH SERDEPROPERTIES LP_ propertyList RP_)?
+    | SERDE string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
     ;
 
 rowFormatDelimited
@@ -288,9 +333,9 @@ rowFormatDelimited
       (NULL DEFINED AS string_)?
     ;
 
-storedAs
+storedClause
     : STORED AS fileFormat
-    | STORED BY string_ (WITH SERDEPROPERTIES LP_ propertyList RP_)?
+    | STORED BY string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
     ;
 
 fileFormat
@@ -317,7 +362,7 @@ skewedLocationPair
     ;
 
 tblProperties
-    : TBLPROPERTIES LP_ propertyList RP_
+    : TBLPROPERTIES propertyListCommonClause
     ;
 
 propertyList
@@ -334,13 +379,13 @@ addConstraint
 
 changeColumn
     : CHANGE COLUMN constraintName constraintName dataTypeClause CONSTRAINT constraintName
-    | CHANGE COLUMN? columnName columnName dataTypeClause (COMMENT string_)? (FIRST | AFTER columnName)? (CASCADE | RESTRICT)?
+    | CHANGE COLUMN? columnName columnName dataTypeClause commentClause? (FIRST | AFTER columnName)? (CASCADE | RESTRICT)?
     ;
 
 alterTableConstrintClause
-    : addConstraint PRIMARY KEY LP_ columnNames RP_ DISABLE NOVALIDATE
-    | addConstraint FOREIGN KEY LP_ columnNames RP_ REFERENCES tableName LP_ columnNames RP_ DISABLE NOVALIDATE RELY
-    | addConstraint UNIQUE LP_ columnNames RP_ DISABLE NOVALIDATE
+    : addConstraint PRIMARY KEY columnNamesCommonClause DISABLE NOVALIDATE
+    | addConstraint FOREIGN KEY columnNamesCommonClause REFERENCES tableName columnNamesCommonClause DISABLE NOVALIDATE RELY
+    | addConstraint UNIQUE columnNamesCommonClause DISABLE NOVALIDATE
     | changeColumn NOT NULL ENABLE
     | changeColumn DEFAULT string_ ENABLE
     | changeColumn CHECK LP_ expr RP_ ENABLE
@@ -379,4 +424,55 @@ addColumns
 
 replaceColumns
     : REPLACE COLUMNS LP_ columnDefinition (COMMA_ columnDefinition)* RP_ (CASCADE | RESTRICT)?
+    ;
+
+materializedViewOptions
+    : materializedViewOption*
+    ;
+
+materializedViewOption
+    : DISABLE REWRITE
+    | commentClause
+    | PARTITIONED ON columnNamesCommonClause
+    | clusteredOrDistrbutedClause
+    | rowFormat
+    | storedClause
+    | storageLocation
+    | tblProperties
+    ;
+
+clusteredOrDistrbutedClause
+    : CLUSTERED ON columnNamesCommonClause
+    | DISTRIBUTED ON columnNamesCommonClause SORTED ON columnNamesCommonClause
+    ;
+
+createIndexOptions
+    : createIndexOption*
+    ;
+
+createIndexOption
+    : WITH DEFERRED REBUILD
+    | IDXPROPERTIES propertyListCommonClause
+    | IN TABLE indexTableName
+    | rowFormat? storedClause
+    | storedClause
+    | storageLocation
+    | tblProperties
+    | commentClause
+    ;
+
+indexType
+    : string_
+    ;
+
+indexTableName
+    : tableNameWithDb
+    ;
+
+columnNamesCommonClause
+    : LP_ columnNames RP_
+    ;
+
+propertyListCommonClause
+    : LP_ propertyList RP_
     ;

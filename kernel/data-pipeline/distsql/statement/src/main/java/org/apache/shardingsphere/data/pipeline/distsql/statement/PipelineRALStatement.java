@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.ral.FeaturedRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.FeaturedRALStatement;
 
 /**
  * Pipeline RAL statement.

@@ -88,7 +88,7 @@ public final class PrestoMetaDataLoader implements DialectMetaDataLoader {
                     + "WHERE TABLE_CATALOG = ?\n"
                     + "ORDER BY ORDINAL_POSITION";
         }
-        String collect = tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(","));
+        String tableNames = tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(","));
         return String.format("SELECT TABLE_CATALOG,\n"
                 + "       TABLE_NAME,\n"
                 + "       COLUMN_NAME,\n"
@@ -98,7 +98,7 @@ public final class PrestoMetaDataLoader implements DialectMetaDataLoader {
                 + "FROM INFORMATION_SCHEMA.COLUMNS\n"
                 + "WHERE TABLE_CATALOG = ?\n"
                 + "  AND UPPER(TABLE_NAME) IN (%s)\n"
-                + "ORDER BY ORDINAL_POSITION", collect);
+                + "ORDER BY ORDINAL_POSITION", tableNames);
     }
     
     private ColumnMetaData loadColumnMetaData(final ResultSet resultSet) throws SQLException {

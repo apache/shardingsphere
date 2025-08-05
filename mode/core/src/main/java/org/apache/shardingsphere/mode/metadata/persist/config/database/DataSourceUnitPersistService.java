@@ -57,7 +57,8 @@ public final class DataSourceUnitPersistService {
      */
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
         Collection<String> childrenKeys = repository.getChildrenKeys(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, null)));
-        return childrenKeys.stream().collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (a, b) -> b, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
+        return childrenKeys.stream()
+                .collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
     }
     
     /**

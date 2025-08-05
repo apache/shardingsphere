@@ -35,17 +35,6 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
         <artifactId>hive-service</artifactId>
         <version>4.0.1</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-mapreduce-client-core</artifactId>
-        <version>3.3.6</version>
-        <exclusions>
-            <exclusion>
-                <groupId>*</groupId>
-                <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
 </dependencies>
 ```
 
@@ -79,17 +68,6 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
             <exclusion>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-mapreduce-client-core</artifactId>
-        <version>3.3.6</version>
-        <exclusions>
-            <exclusion>
-                <groupId>*</groupId>
-                <artifactId>*</artifactId>
             </exclusion>
         </exclusions>
     </dependency>
@@ -147,8 +125,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 ### 在业务项目创建 ShardingSphere 数据源
@@ -209,9 +185,11 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE user_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
         }
     }
 }
@@ -275,8 +253,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
@@ -333,6 +309,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
@@ -435,35 +412,6 @@ ShardingSphere 仅针对 HiveServer2 `4.0.1` 进行集成测试。
 嵌入式 HiveServer2 不再被 Hive 社区认为是用户友好的，用户不应该尝试通过 ShardingSphere 的配置文件启动 嵌入式 HiveServer2。
 用户总应该通过 HiveServer2 的 Docker Image `apache/hive:4.0.1` 启动 HiveServer2。
 参考 https://issues.apache.org/jira/browse/HIVE-28418 。
-
-### Hadoop 限制
-
-用户仅可使用 Hadoop `3.3.6` 来作为 HiveServer2 JDBC Driver `4.0.1` 的底层 Hadoop 依赖。
-HiveServer2 JDBC Driver `4.0.1` 不支持 Hadoop `3.4.1`， 参考 https://github.com/apache/hive/pull/5500 。
-
-对于 HiveServer2 JDBC Driver `org.apache.hive:hive-jdbc:4.0.1` 或 `classifier` 为 `standalone` 的 `org.apache.hive:hive-jdbc:4.0.1`，
-实际上并不额外依赖 `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`。
-
-但 `org.apache.shardingsphere:shardingsphere-infra-database-hive` 的
-`org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader` 会使用 `org.apache.hadoop.hive.conf.HiveConf`，
-这进一步使用了 `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6` 的 `org.apache.hadoop.mapred.JobConf` 类。
-
-ShardingSphere 仅需要使用 `org.apache.hadoop.mapred.JobConf` 类，
-因此排除 `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6` 的所有额外依赖是合理行为。
-
-```xml
-<dependency>
-    <groupId>org.apache.hadoop</groupId>
-    <artifactId>hadoop-mapreduce-client-core</artifactId>
-    <version>3.3.6</version>
-    <exclusions>
-        <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-```
 
 ### SQL 限制
 

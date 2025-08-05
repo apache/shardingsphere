@@ -36,17 +36,6 @@ The possible Maven dependencies are as follows.
         <artifactId>hive-service</artifactId>
         <version>4.0.1</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-mapreduce-client-core</artifactId>
-        <version>3.3.6</version>
-        <exclusions>
-            <exclusion>
-                <groupId>*</groupId>
-                <artifactId>*</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
 </dependencies>
 ```
 
@@ -81,17 +70,6 @@ The following is an example of a possible configuration,
             <exclusion>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-mapreduce-client-core</artifactId>
-        <version>3.3.6</version>
-        <exclusions>
-            <exclusion>
-                <groupId>*</groupId>
-                <artifactId>*</artifactId>
             </exclusion>
         </exclusions>
     </dependency>
@@ -279,8 +257,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 After the business project introduces the dependencies involved in the `prerequisites`,
@@ -338,6 +314,7 @@ public class ExampleUtils {
         try (HikariDataSource dataSource = new HikariDataSource(config);
              Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
@@ -398,8 +375,6 @@ CREATE TABLE IF NOT EXISTS t_order
     status     string,
     PRIMARY KEY (order_id) disable novalidate
 ) STORED BY ICEBERG STORED AS ORC TBLPROPERTIES ('format-version' = '2');
-
-TRUNCATE TABLE t_order;
 ```
 
 At this point,
@@ -414,9 +389,11 @@ public class ExampleUtils {
     void test(HikariDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.execute("TRUNCATE TABLE t_order");
             statement.execute("INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (1, 1, 1, 'INSERT_TEST')");
             statement.executeQuery("SELECT * FROM t_order");
             statement.execute("DELETE FROM t_order WHERE order_id=1");
+            statement.execute("DROP TABLE IF EXISTS t_order");
         }
     }
 }
@@ -441,35 +418,6 @@ Embedded HiveServer2 is no longer considered user-friendly by the Hive community
 and users should not try to start embedded HiveServer2 through ShardingSphere's configuration file.
 Users should always start HiveServer2 through HiveServer2's Docker Image `apache/hive:4.0.1`.
 Reference https://issues.apache.org/jira/browse/HIVE-28418 .
-
-### Hadoop Limitations
-
-Users can only use Hadoop `3.3.6` as the underlying Hadoop dependency of HiveServer2 JDBC Driver `4.0.1`.
-HiveServer2 JDBC Driver `4.0.1` does not support Hadoop `3.4.1`. Reference https://github.com/apache/hive/pull/5500 .
-
-For HiveServer2 JDBC Driver `org.apache.hive:hive-jdbc:4.0.1` or `org.apache.hive:hive-jdbc:4.0.1` with `classifier` as `standalone`,
-there is actually no additional dependency on `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`.
-
-But `org.apache.shardingsphere:shardingsphere-infra-database-hive`'s
-`org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader` uses `org.apache.hadoop.hive.conf.HiveConf`,
-which further uses `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`'s `org.apache.hadoop.mapred.JobConf` class.
-
-ShardingSphere only needs to use the `org.apache.hadoop.mapred.JobConf` class,
-so it is reasonable to exclude all additional dependencies of `org.apache.hadoop:hadoop-mapreduce-client-core:3.3.6`.
-
-```xml
-<dependency>
-    <groupId>org.apache.hadoop</groupId>
-    <artifactId>hadoop-mapreduce-client-core</artifactId>
-    <version>3.3.6</version>
-    <exclusions>
-        <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-```
 
 ### SQL Limitations
 

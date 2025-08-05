@@ -11256,4 +11256,201 @@
             </simple-table>
         </from>
     </select>
+
+    <select sql-case-id="select_language_identifier">
+        <from>
+            <simple-table name="dm_external_script_execution_stats" start-index="40" stop-index="77">
+                <owner name="sys" start-index="40" stop-index="42"/>
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="33">
+            <column-projection name="counter_name" start-index="7" stop-index="18"/>
+            <column-projection name="counter_value" start-index="21" stop-index="33"/>
+        </projections>
+        <where start-index="79" stop-index="103">
+            <expr>
+                <binary-operation-expression text="language = 'Python'" start-index="85" stop-index="103">
+                    <left>
+                        <column name="language" start-index="85" stop-index="92"/>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="Python" start-index="96" stop-index="103"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_clustered_index">
+        <projections start-index="7" stop-index="24">
+            <column-projection name="BusinessEntityID" start-index="7" stop-index="24">
+                <owner name="e" start-index="7" stop-index="7"/>
+            </column-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="Employee" alias="e" start-index="31" stop-index="40">
+                        <with-table-hint start-index="42" stop-index="40">
+                            <table-hint-limited value="INDEX = 1" start-index="48" stop-index="57" />
+                        </with-table-hint>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="Person" alias="pp" start-index="70" stop-index="78" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="83" stop-index="122">
+                        <left>
+                            <column name="BusinessEntityID" start-index="83" stop-index="100">
+                                <owner name="e" start-index="83" stop-index="83" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="BusinessEntityID" start-index="104" stop-index="122">
+                                <owner name="pp" start-index="104" stop-index="105" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <where start-index="124" stop-index="152">
+            <expr>
+                <binary-operation-expression text="pp.LastName = 'Johnson'" start-index="130" stop-index="152">
+                    <left>
+                        <column name="LastName" start-index="130" stop-index="140">
+                            <owner name="pp" start-index="130" stop-index="131" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="Johnson" start-index="144" stop-index="152"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_catalog_identifier">
+        <projections start-index="7" stop-index="59">
+            <column-projection name="name" start-index="7" stop-index="18">
+                <owner name="catalog" start-index="7" stop-index="13"/>
+            </column-projection>
+            <column-projection name="catalog_id" start-index="21" stop-index="38">
+                <owner name="catalog" start-index="21" stop-index="27"/>
+            </column-projection>
+            <column-projection name="database_id" start-index="41" stop-index="59">
+                <owner name="catalog" start-index="41" stop-index="47"/>
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="dm_fts_active_catalogs" start-index="66" stop-index="99" alias="catalog">
+                <owner name="sys" start-index="66" stop-index="68"/>
+            </simple-table>
+        </from>
+        <where start-index="101" stop-index="135">
+            <expr>
+                <binary-operation-expression start-index="107" stop-index="135">
+                    <left>
+                        <column name="database_id" start-index="107" stop-index="125">
+                            <owner name="catalog" start-index="107" stop-index="113"/>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <function start-index="129" stop-index="135" text="DB_ID()" function-name="DB_ID"/>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_product_function">
+        <projections start-index="7" stop-index="125">
+            <column-projection name="Name" start-index="7" stop-index="12">
+                <owner name="e" start-index="7" stop-index="7"/>
+            </column-projection>
+            <aggregation-projection type="PRODUCT" expression="PRODUCT(1 + edh.rateOfReturn) OVER (PARTITION BY e.DepartmentID ORDER BY edh.EffectiveDate)" alias="CompoundedReturn" start-index="15" stop-index="105">
+                <parameter>
+                    <binary-operation-expression start-index="21" stop-index="42">
+                        <left>
+                            <literal-expression value="1" start-index="21" stop-index="21" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <column name="rateOfReturn" start-index="23" stop-index="42">
+                                <owner name="edh" start-index="23" stop-index="25"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <join-table join-type="INNER">
+                <left>
+                    <simple-table name="Employee" alias="e" start-index="132" stop-index="156">
+                        <owner name="HumanResources" start-index="132" stop-index="145"/>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="EmployeePayHistory" alias="edh" start-index="163" stop-index="199">
+                        <owner name="HumanResources" start-index="163" stop-index="176"/>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="204" stop-index="244">
+                        <left>
+                            <column name="BusinessEntityID" start-index="204" stop-index="221">
+                                <owner name="e" start-index="204" stop-index="204"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="BusinessEntityID" start-index="225" stop-index="244">
+                                <owner name="edh" start-index="225" stop-index="227"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_for_system_time">
+        <projections start-index="7" stop-index="38">
+            <column-projection name="DepartmentNumber" start-index="7" stop-index="22" />
+            <column-projection name="DepartmentName" start-index="25" stop-index="38" />
+        </projections>
+        <from>
+            <simple-table name="DEPARTMENT" start-index="45" stop-index="54" />
+        </from>
+        <where start-index="91" stop-index="109">
+            <expr>
+                <binary-operation-expression text="ManagerID = 5" start-index="97" stop-index="109">
+                    <left>
+                        <column name="ManagerID" start-index="97" stop-index="105" />
+                    </left>
+                    <right>
+                        <literal-expression start-index="109" stop-index="109" value="5" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_from_tablesample">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="Customer" start-index="14" stop-index="27">
+                <owner name="Sales" start-index="14" stop-index="18" />
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.distsql.parser.core.utility;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.ParseSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.PreviewSQLContext;
-import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
-import org.apache.shardingsphere.distsql.statement.rul.sql.PreviewStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 

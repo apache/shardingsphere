@@ -6,7 +6,6 @@
     {"excludeClasses": "com.**"},
     {"includeClasses": "com.oracle.svm.core.**"},
     {"includeClasses": "com.sun.management.**"},
-    {"includeClasses": "com.sun.security.auth.**"},
     {"excludeClasses": "ch.qos.logback.**"},
     {"excludeClasses": "groovy.**"},
     {"excludeClasses": "io.**"},
