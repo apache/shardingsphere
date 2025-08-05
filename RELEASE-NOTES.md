@@ -41,6 +41,7 @@
 1. SQL Parser: Support Doris CREATE MATERIALIZED VIEW - [#31499](https://github.com/apache/shardingsphere/pull/31499)
 1. SQL Parser: Enhance combineType in Oracle to support EXCEPT ALL and INTERSECT ALL - [#35099](https://github.com/apache/shardingsphere/pull/35099)
 1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35137](https://github.com/apache/shardingsphere/pull/35137), [#35441](https://github.com/apache/shardingsphere/pull/35441)
+1. SQL Parser: Support parsing MySQL stored procedure syntax - [#35503](https://github.com/apache/shardingsphere/pull/35503/files)
 1. SQL Parser: Support Oracle SQL parsing V1 keywords as identifiers - [#35373](https://github.com/apache/shardingsphere/pull/35373)
 1. SQL Parser: Support Oracle in literal sql parsing - [#35384](https://github.com/apache/shardingsphere/pull/35384)
 1. SQL Parser: Add MySQL interval expression sql parsing - [#35468](https://github.com/apache/shardingsphere/pull/35468)
