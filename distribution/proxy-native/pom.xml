@@ -469,7 +469,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-
+                
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-sharding-distsql-handler</artifactId>
@@ -488,7 +488,7 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-
+                
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-broadcast-distsql-handler</artifactId>
@@ -519,14 +519,14 @@
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-
+                
                 <dependency>
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-database-time-service</artifactId>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
                 </dependency>
-
+                
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
