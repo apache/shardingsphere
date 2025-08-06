@@ -32,6 +32,31 @@
         <jboss-logging.version>3.2.1.Final</jboss-logging.version>
     </properties>
     
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.narayana.jta</groupId>
+                <artifactId>jta</artifactId>
+                <version>${narayana.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.narayana.jts</groupId>
+                <artifactId>narayana-jts-integration</artifactId>
+                <version>${narayana.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss</groupId>
+                <artifactId>jboss-transaction-spi</artifactId>
+                <version>${jboss-transaction-spi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss-logging.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -42,22 +67,18 @@
         <dependency>
             <groupId>org.jboss.narayana.jta</groupId>
             <artifactId>jta</artifactId>
-            <version>${narayana.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jts</groupId>
             <artifactId>narayana-jts-integration</artifactId>
-            <version>${narayana.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jboss-transaction-spi</artifactId>
-            <version>${jboss-transaction-spi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>${jboss-logging.version}</version>
         </dependency>
     </dependencies>
 </project>
