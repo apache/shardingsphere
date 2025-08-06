@@ -53,12 +53,7 @@
 
         <jpa.version>1.0.0.Final</jpa.version>
         <hibernate.version>5.4.24.Final</hibernate.version>
-        <narayana.version>5.9.1.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         
-        <seata.version>1.6.1</seata.version>
-
         <junit.version>5.11.2</junit.version>
         <hamcrest.version>3.0</hamcrest.version>
         
@@ -252,32 +247,6 @@
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis-spring-boot.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.jboss.narayana.jta</groupId>
-                <artifactId>jta</artifactId>
-                <version>${narayana.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.narayana.jts</groupId>
-                <artifactId>narayana-jts-integration</artifactId>
-                <version>${narayana.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss</groupId>
-                <artifactId>jboss-transaction-spi</artifactId>
-                <version>${jboss-transaction-spi.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.logging</groupId>
-                <artifactId>jboss-logging</artifactId>
-                <version>${jboss-logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.seata</groupId>
-                <artifactId>seata-all</artifactId>
-                <version>${seata.version}</version>
             </dependency>
 
             <dependency>

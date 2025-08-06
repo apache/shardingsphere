@@ -99,9 +99,6 @@
         <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
         <atomikos.version>6.0.0</atomikos.version>
-        <narayana.version>5.12.7.Final</narayana.version>
-        <jboss-transaction-spi.version>7.6.1.Final</jboss-transaction-spi.version>
-        <jboss-logging.version>3.2.1.Final</jboss-logging.version>
         
         <netty.version>4.1.121.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
