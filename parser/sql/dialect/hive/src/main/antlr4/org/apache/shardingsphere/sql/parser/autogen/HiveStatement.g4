@@ -46,6 +46,7 @@ execute
     | alterIndex
     | createMacro
     | dropMacro
+    | createFunction
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;
