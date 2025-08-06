@@ -26,6 +26,10 @@
     <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <atomikos.version>6.0.0</atomikos.version>
+    </properties>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
