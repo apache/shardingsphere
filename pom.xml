@@ -98,8 +98,6 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
-        <atomikos.version>6.0.0</atomikos.version>
-        
         <netty.version>4.1.121.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
         
