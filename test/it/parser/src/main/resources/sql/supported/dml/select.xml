@@ -359,4 +359,5 @@
     <sql-case id="select_product_function" value="SELECT e.Name, PRODUCT(1 + edh.rateOfReturn) OVER (PARTITION BY e.DepartmentID ORDER BY edh.EffectiveDate) AS CompoundedReturn FROM HumanResources.Employee e JOIN HumanResources.EmployeePayHistory edh ON e.BusinessEntityID = edh.BusinessEntityID;" db-types="SQLServer"/>
     <sql-case id="select_for_system_time" value="SELECT DepartmentNumber, DepartmentName FROM DEPARTMENT FOR SYSTEM_TIME AS OF '2014-01-01' WHERE ManagerID = 5;" db-types="SQLServer"/>
     <sql-case id="select_from_tablesample" value="SELECT * FROM Sales.Customer TABLESAMPLE SYSTEM(10 PERCENT);" db-types="SQLServer"/>
+    <sql-case id="select_option_clause" value="SELECT ProductID, OrderQty FROM Sales.SalesOrderDetail WHERE UnitPrice &lt; 5.00 GROUP BY ProductID, OrderQty OPTION (HASH GROUP, LABEL = N'label1');" db-types="SQLServer"/>
 </sql-cases>
