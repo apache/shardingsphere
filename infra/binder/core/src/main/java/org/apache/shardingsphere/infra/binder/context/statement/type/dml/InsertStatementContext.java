@@ -17,181 +17,50 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.engine.GeneratedKeyContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Insert SQL statement context.
  */
 public final class InsertStatementContext implements SQLStatementContext, ParameterAware, WhereContextAvailable {
     
-    private final ShardingSphereMetaData metaData;
-    
     @Getter
-    private final InsertStatement sqlStatement;
+    private final InsertStatementBaseContext baseContext;
     
-    @Getter
-    private final TablesContext tablesContext;
-    
-    private final String currentDatabaseName;
-    
-    private final Map<String, Integer> insertColumnNamesAndIndexes;
-    
-    private final List<List<ExpressionSegment>> valueExpressions;
-    
-    @Getter
-    private final List<String> columnNames;
-    
-    @Getter
-    private List<InsertValueContext> insertValueContexts;
-    
-    @Getter
-    private InsertSelectContext insertSelectContext;
-    
-    @Getter
-    private OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext;
-    
-    private GeneratedKeyContext generatedKeyContext;
+    private InsertStatementBindingContext bindingContext;
     
     public InsertStatementContext(final InsertStatement sqlStatement, final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        this.metaData = metaData;
-        this.sqlStatement = sqlStatement;
-        this.currentDatabaseName = currentDatabaseName;
-        valueExpressions = getAllValueExpressions(sqlStatement);
-        AtomicInteger parametersOffset = new AtomicInteger(0);
-        insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(params, parametersOffset, metaData, currentDatabaseName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-        List<String> insertColumnNames = getInsertColumnNames();
-        ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
-        columnNames = containsInsertColumns()
-                ? insertColumnNames
-                : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
-        insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
+        baseContext = new InsertStatementBaseContext(sqlStatement, params, metaData, currentDatabaseName);
+        bindingContext = new InsertStatementBindingContext(baseContext, params, metaData, currentDatabaseName);
     }
     
-    private Map<String, Integer> createInsertColumnNamesAndIndexes(final List<String> insertColumnNames) {
-        if (containsInsertColumns()) {
-            Map<String, Integer> result = new CaseInsensitiveMap<>(insertColumnNames.size(), 1F);
-            int index = 0;
-            for (String each : insertColumnNames) {
-                result.put(each, index++);
-            }
-            return result;
-        }
-        return Collections.emptyMap();
+    public InsertStatementContext(final InsertStatementBaseContext baseContext, final ShardingSphereMetaData metaData, final List<Object> params, final String currentDatabaseName) {
+        this.baseContext = baseContext;
+        bindingContext = new InsertStatementBindingContext(baseContext, params, metaData, currentDatabaseName);
     }
     
-    private List<InsertValueContext> getInsertValueContexts(final List<Object> params, final AtomicInteger paramsOffset, final List<List<ExpressionSegment>> valueExpressions) {
-        List<InsertValueContext> result = new LinkedList<>();
-        for (Collection<ExpressionSegment> each : valueExpressions) {
-            InsertValueContext insertValueContext = new InsertValueContext(each, params, paramsOffset.get());
-            result.add(insertValueContext);
-            paramsOffset.addAndGet(insertValueContext.getParameterCount());
-        }
-        return result;
-    }
-    
-    private Optional<InsertSelectContext> getInsertSelectContext(final List<Object> params, final AtomicInteger paramsOffset,
-                                                                 final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        if (!sqlStatement.getInsertSelect().isPresent()) {
-            return Optional.empty();
-        }
-        SubquerySegment insertSelectSegment = sqlStatement.getInsertSelect().get();
-        SelectStatementContext selectStatementContext = new SelectStatementContext(insertSelectSegment.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
-        selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
-        setCombineSelectSubqueryType(selectStatementContext);
-        setProjectionSelectSubqueryType(selectStatementContext);
-        InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, params, paramsOffset.get());
-        paramsOffset.addAndGet(insertSelectContext.getSelectStatementContext().getSqlStatement().getParameterCount());
-        return Optional.of(insertSelectContext);
-    }
-    
-    private void setCombineSelectSubqueryType(final SelectStatementContext selectStatementContext) {
-        if (selectStatementContext.getSqlStatement().getCombine().isPresent()) {
-            CombineSegment combineSegment = selectStatementContext.getSqlStatement().getCombine().get();
-            Optional.ofNullable(selectStatementContext.getSubqueryContexts().get(combineSegment.getLeft().getStartIndex()))
-                    .ifPresent(optional -> optional.setSubqueryType(SubqueryType.INSERT_SELECT));
-            Optional.ofNullable(selectStatementContext.getSubqueryContexts().get(combineSegment.getRight().getStartIndex()))
-                    .ifPresent(optional -> optional.setSubqueryType(SubqueryType.INSERT_SELECT));
-        }
-    }
-    
-    private void setProjectionSelectSubqueryType(final SelectStatementContext selectStatementContext) {
-        for (Entry<Integer, SelectStatementContext> entry : selectStatementContext.getSubqueryContexts().entrySet()) {
-            if (entry.getKey() >= selectStatementContext.getProjectionsContext().getStartIndex() && entry.getKey() <= selectStatementContext.getProjectionsContext().getStopIndex()) {
-                entry.getValue().setSubqueryType(SubqueryType.INSERT_SELECT);
-            }
-        }
-    }
-    
-    private Optional<OnDuplicateUpdateContext> getOnDuplicateKeyUpdateValueContext(final List<Object> params, final AtomicInteger parametersOffset) {
-        Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = sqlStatement.getOnDuplicateKeyColumns();
-        if (!onDuplicateKeyColumnsSegment.isPresent()) {
-            return Optional.empty();
-        }
-        Collection<ColumnAssignmentSegment> onDuplicateKeyColumns = onDuplicateKeyColumnsSegment.get().getColumns();
-        OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(onDuplicateKeyColumns, params, parametersOffset.get());
-        parametersOffset.addAndGet(onDuplicateUpdateContext.getParameterCount());
-        return Optional.of(onDuplicateUpdateContext);
-    }
-    
-    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromInsert(sqlStatement);
-        return tableExtractor.getRewriteTables();
-    }
-    
-    private ShardingSphereSchema getSchema(final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        String databaseName = tablesContext.getDatabaseName().orElse(currentDatabaseName);
-        ShardingSpherePreconditions.checkNotNull(databaseName, NoDatabaseSelectedException::new);
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        String defaultSchema = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDefaultSchemaName(databaseName);
-        return tablesContext.getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchema));
+    public InsertStatementContext(final InsertStatementBaseContext baseContext, final InsertStatementBindingContext bindingContext) {
+        this.baseContext = baseContext;
+        this.bindingContext = bindingContext;
     }
     
     /**
@@ -200,7 +69,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      * @return column names for descending order
      */
     public Iterator<String> getDescendingColumnNames() {
-        return new LinkedList<>(columnNames).descendingIterator();
+        return baseContext.getDescendingColumnNames();
     }
     
     /**
@@ -209,14 +78,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      * @return grouped parameters
      */
     public List<List<Object>> getGroupedParameters() {
-        List<List<Object>> result = new LinkedList<>();
-        for (InsertValueContext each : insertValueContexts) {
-            result.add(each.getParameters());
-        }
-        if (null != insertSelectContext && !insertSelectContext.getParameters().isEmpty()) {
-            result.add(insertSelectContext.getParameters());
-        }
-        return result;
+        return bindingContext.getGroupedParameters();
     }
     
     /**
@@ -224,9 +86,8 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      *
      * @return on duplicate key update parameters
      */
-    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public List<Object> getOnDuplicateKeyUpdateParameters() {
-        return null == onDuplicateKeyUpdateValueContext ? new ArrayList<>() : onDuplicateKeyUpdateValueContext.getParameters();
+        return bindingContext.getOnDuplicateKeyUpdateParameters();
     }
     
     /**
@@ -235,7 +96,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      * @return generated key context
      */
     public Optional<GeneratedKeyContext> getGeneratedKeyContext() {
-        return Optional.ofNullable(generatedKeyContext);
+        return bindingContext.getGeneratedKeyContext();
     }
     
     /**
@@ -244,8 +105,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      * @return contains insert columns or not
      */
     public boolean containsInsertColumns() {
-        InsertStatement insertStatement = sqlStatement;
-        return !insertStatement.getColumns().isEmpty() || insertStatement.getSetAssignment().isPresent();
+        return baseContext.containsInsertColumns();
     }
     
     /**
@@ -254,8 +114,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      * @return value list count
      */
     public int getValueListCount() {
-        InsertStatement insertStatement = sqlStatement;
-        return insertStatement.getSetAssignment().isPresent() ? 1 : insertStatement.getValues().size();
+        return baseContext.getValueListCount();
     }
     
     /**
@@ -264,69 +123,72 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
      * @return column names collection
      */
     public List<String> getInsertColumnNames() {
-        return sqlStatement.getSetAssignment().map(this::getColumnNamesForSetAssignment).orElseGet(() -> getColumnNamesForInsertColumns(sqlStatement.getColumns()));
+        return baseContext.getInsertColumnNames();
     }
     
-    private List<String> getColumnNamesForSetAssignment(final SetAssignmentSegment setAssignment) {
-        List<String> result = new LinkedList<>();
-        for (ColumnAssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getColumns().get(0).getIdentifier().getValue().toLowerCase());
-        }
-        return result;
+    @Override
+    public InsertStatement getSqlStatement() {
+        return baseContext.getSqlStatement();
     }
     
-    private List<String> getColumnNamesForInsertColumns(final Collection<ColumnSegment> columns) {
-        List<String> result = new LinkedList<>();
-        for (ColumnSegment each : columns) {
-            result.add(each.getIdentifier().getValue().toLowerCase());
-        }
-        return result;
-    }
-    
-    private List<List<ExpressionSegment>> getAllValueExpressions(final InsertStatement insertStatement) {
-        Optional<SetAssignmentSegment> setAssignment = insertStatement.getSetAssignment();
-        return setAssignment
-                .map(optional -> Collections.singletonList(getAllValueExpressionsFromSetAssignment(optional))).orElseGet(() -> getAllValueExpressionsFromValues(insertStatement.getValues()));
-    }
-    
-    private List<ExpressionSegment> getAllValueExpressionsFromSetAssignment(final SetAssignmentSegment setAssignment) {
-        List<ExpressionSegment> result = new ArrayList<>(setAssignment.getAssignments().size());
-        for (ColumnAssignmentSegment each : setAssignment.getAssignments()) {
-            result.add(each.getValue());
-        }
-        return result;
-    }
-    
-    private List<List<ExpressionSegment>> getAllValueExpressionsFromValues(final Collection<InsertValuesSegment> values) {
-        List<List<ExpressionSegment>> result = new ArrayList<>(values.size());
-        for (InsertValuesSegment each : values) {
-            result.add(each.getValues());
-        }
-        return result;
+    @Override
+    public TablesContext getTablesContext() {
+        return baseContext.getTablesContext();
     }
     
     @Override
     public void setUpParameters(final List<Object> params) {
-        AtomicInteger parametersOffset = new AtomicInteger(0);
-        insertValueContexts = getInsertValueContexts(params, parametersOffset, valueExpressions);
-        insertSelectContext = getInsertSelectContext(params, parametersOffset, metaData, currentDatabaseName).orElse(null);
-        onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
-        ShardingSphereSchema schema = getSchema(metaData, currentDatabaseName);
-        generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNamesAndIndexes, insertValueContexts, params).orElse(null);
+        bindingContext = new InsertStatementBindingContext(baseContext, params, baseContext.getMetaData(), baseContext.getCurrentDatabaseName());
     }
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
-        return null == insertSelectContext ? Collections.emptyList() : insertSelectContext.getSelectStatementContext().getWhereSegments();
+        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
-        return null == insertSelectContext ? Collections.emptyList() : insertSelectContext.getSelectStatementContext().getColumnSegments();
+        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getColumnSegments();
     }
     
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
-        return null == insertSelectContext ? Collections.emptyList() : insertSelectContext.getSelectStatementContext().getJoinConditions();
+        return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getJoinConditions();
+    }
+    
+    /**
+     * Get insert select context.
+     *
+     * @return insert select context
+     */
+    public InsertSelectContext getInsertSelectContext() {
+        return bindingContext.getInsertSelectContext();
+    }
+    
+    /**
+     * Get insert value contexts.
+     *
+     * @return insert value contexts
+     */
+    public List<InsertValueContext> getInsertValueContexts() {
+        return bindingContext.getInsertValueContexts();
+    }
+    
+    /**
+     * Get column names.
+     *
+     * @return column names
+     */
+    public List<String> getColumnNames() {
+        return baseContext.getColumnNames();
+    }
+    
+    /**
+     * Get on duplicate key update value context.
+     *
+     * @return on duplicate key update value context
+     */
+    public OnDuplicateUpdateContext getOnDuplicateKeyUpdateValueContext() {
+        return bindingContext.getOnDuplicateKeyUpdateValueContext();
     }
 }

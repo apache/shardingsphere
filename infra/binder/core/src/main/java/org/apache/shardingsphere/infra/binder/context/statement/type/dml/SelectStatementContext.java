@@ -17,67 +17,26 @@
 
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.engine.OrderByContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.engine.PaginationContextEngine;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine.ProjectionsContextEngine;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.SubqueryExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.WhereExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.TextOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -89,118 +48,19 @@ import java.util.Optional;
 @Setter
 public final class SelectStatementContext implements SQLStatementContext, WhereContextAvailable, ParameterAware {
     
-    private final SelectStatement sqlStatement;
+    private final SelectStatementBaseContext baseContext;
     
-    private final TablesContext tablesContext;
+    private SelectStatementBindingContext bindingContext;
     
-    private final ProjectionsContext projectionsContext;
-    
-    private final GroupByContext groupByContext;
-    
-    private final OrderByContext orderByContext;
-    
-    private final Map<Integer, SelectStatementContext> subqueryContexts;
-    
-    private final Collection<WhereSegment> whereSegments;
-    
-    private final Collection<ColumnSegment> columnSegments;
-    
-    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
-    
-    private final boolean containsEnhancedTable;
-    
-    private SubqueryType subqueryType;
-    
-    private boolean needAggregateRewrite;
-    
-    private PaginationContext paginationContext;
-    
-    public SelectStatementContext(final SelectStatement sqlStatement,
-                                  final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
-        this.sqlStatement = sqlStatement;
-        whereSegments = createWhereSegments(sqlStatement);
-        columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
-        Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
-        ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
-        subqueryContexts = createSubqueryContexts(params, metaData, currentDatabaseName, tableSegments);
-        tablesContext = new TablesContext(tableSegments, subqueryContexts);
-        groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
-        orderByContext = new OrderByContextEngine(sqlStatement.getDatabaseType()).createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(sqlStatement.getDatabaseType()).createProjectionsContext(sqlStatement.getProjections(), groupByContext, orderByContext);
-        DialectPaginationOption paginationOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getPaginationOption();
-        paginationContext = new PaginationContextEngine(paginationOption).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
-        containsEnhancedTable = isContainsEnhancedTable(metaData, tablesContext.getDatabaseNames(), currentDatabaseName);
+    public SelectStatementContext(final SelectStatement sqlStatement, final List<Object> params, final ShardingSphereMetaData metaData,
+                                  final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
+        baseContext = new SelectStatementBaseContext(sqlStatement, params, metaData, currentDatabaseName, inheritedTables);
+        bindingContext = new SelectStatementBindingContext(params, baseContext);
     }
     
-    private Collection<WhereSegment> createWhereSegments(final SelectStatement selectStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        selectStatement.getWhere().ifPresent(result::add);
-        result.addAll(WhereExtractor.extractSubqueryWhereSegments(selectStatement));
-        result.addAll(WhereExtractor.extractJoinWhereSegments(selectStatement));
-        return result;
-    }
-    
-    private Collection<TableSegment> getAllTableSegments(final Collection<TableSegment> inheritedTables) {
-        TableExtractor tableExtractor = new TableExtractor();
-        appendInheritedSimpleTables(inheritedTables, tableExtractor);
-        tableExtractor.extractTablesFromSelect(sqlStatement);
-        Collection<TableSegment> result = new LinkedList<>(tableExtractor.getRewriteTables());
-        for (TableSegment each : tableExtractor.getTableContext()) {
-            if (each instanceof SubqueryTableSegment) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private void appendInheritedSimpleTables(final Collection<TableSegment> inheritedTables, final TableExtractor tableExtractor) {
-        for (TableSegment each : inheritedTables) {
-            if (each instanceof SimpleTableSegment) {
-                tableExtractor.getTableContext().add(each);
-            }
-        }
-    }
-    
-    private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final Collection<String> databaseNames, final String currentDatabaseName) {
-        for (String each : databaseNames) {
-            if (isContainsEnhancedTable(metaData, each, getTablesContext().getTableNames())) {
-                return true;
-            }
-        }
-        return null != currentDatabaseName && isContainsEnhancedTable(metaData, currentDatabaseName, getTablesContext().getTableNames());
-    }
-    
-    private boolean isContainsEnhancedTable(final ShardingSphereMetaData metaData, final String databaseName, final Collection<String> tableNames) {
-        for (TableMapperRuleAttribute each : getTableMapperRuleAttributes(metaData, databaseName)) {
-            for (String tableName : tableNames) {
-                if (each.getEnhancedTableNames().contains(tableName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    private Collection<TableMapperRuleAttribute> getTableMapperRuleAttributes(final ShardingSphereMetaData metaData, final String databaseName) {
-        if (null == databaseName) {
-            ShardingSpherePreconditions.checkMustEmpty(tablesContext.getSimpleTables(), NoDatabaseSelectedException::new);
-            return Collections.emptyList();
-        }
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
-        return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
-    }
-    
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final List<Object> params, final ShardingSphereMetaData metaData,
-                                                                        final String currentDatabaseName, final Collection<TableSegment> tableSegments) {
-        Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(sqlStatement, false);
-        Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
-        for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(each.getSelect(), params, metaData, currentDatabaseName, tableSegments);
-            each.getSelect().getSubqueryType().ifPresent(subqueryContext::setSubqueryType);
-            result.put(each.getStartIndex(), subqueryContext);
-        }
-        return result;
+    public SelectStatementContext(final SelectStatementBaseContext baseContext, final List<Object> params) {
+        this.baseContext = baseContext;
+        bindingContext = new SelectStatementBindingContext(params, baseContext);
     }
     
     /**
@@ -209,7 +69,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains join query or not
      */
     public boolean isContainsJoinQuery() {
-        return sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof JoinTableSegment;
+        return baseContext.isContainsJoinQuery();
     }
     
     /**
@@ -218,7 +78,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains subquery or not
      */
     public boolean isContainsSubquery() {
-        return !subqueryContexts.isEmpty();
+        return baseContext.isContainsSubquery();
     }
     
     /**
@@ -227,7 +87,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains having or not
      */
     public boolean isContainsHaving() {
-        return sqlStatement.getHaving().isPresent();
+        return baseContext.isContainsHaving();
     }
     
     /**
@@ -236,7 +96,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains combine or not
      */
     public boolean isContainsCombine() {
-        return sqlStatement.getCombine().isPresent();
+        return baseContext.isContainsCombine();
     }
     
     /**
@@ -245,25 +105,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains dollar parameter marker or not
      */
     public boolean isContainsDollarParameterMarker() {
-        for (Projection each : projectionsContext.getProjections()) {
-            if (each instanceof ParameterMarkerProjection && ParameterMarkerType.DOLLAR == ((ParameterMarkerProjection) each).getParameterMarkerType()) {
-                return true;
-            }
-        }
-        for (ParameterMarkerExpressionSegment each : getParameterMarkerExpressions()) {
-            if (ParameterMarkerType.DOLLAR == each.getParameterMarkerType()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private Collection<ParameterMarkerExpressionSegment> getParameterMarkerExpressions() {
-        Collection<ExpressionSegment> expressions = new LinkedList<>();
-        for (WhereSegment each : whereSegments) {
-            expressions.add(each.getExpr());
-        }
-        return ExpressionExtractor.getParameterMarkerExpressions(expressions);
+        return baseContext.isContainsDollarParameterMarker();
     }
     
     /**
@@ -272,19 +114,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether contains partial distinct aggregation
      */
     public boolean isContainsPartialDistinctAggregation() {
-        Collection<Projection> aggregationProjections = getAggregationProjections(projectionsContext.getProjections());
-        Collection<AggregationDistinctProjection> aggregationDistinctProjections = projectionsContext.getAggregationDistinctProjections();
-        return aggregationProjections.size() > 1 && !aggregationDistinctProjections.isEmpty() && aggregationProjections.size() != aggregationDistinctProjections.size();
-    }
-    
-    private Collection<Projection> getAggregationProjections(final Collection<Projection> projections) {
-        Collection<Projection> result = new LinkedList<>();
-        for (Projection each : projections) {
-            if (each instanceof AggregationProjection) {
-                result.add(each);
-            }
-        }
-        return result;
+        return baseContext.isContainsPartialDistinctAggregation();
     }
     
     /**
@@ -293,74 +123,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @param columnLabelIndexMap map for column label and index
      */
     public void setIndexes(final Map<String, Integer> columnLabelIndexMap) {
-        setIndexForAggregationProjection(columnLabelIndexMap);
-        setIndexForOrderItem(columnLabelIndexMap, orderByContext.getItems());
-        setIndexForOrderItem(columnLabelIndexMap, groupByContext.getItems());
-    }
-    
-    private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
-        for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
-            String columnLabel = SQLUtils.getExactlyValue(each.getAlias().map(IdentifierValue::getValue).orElse(each.getColumnName()));
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
-            each.setIndex(columnLabelIndexMap.get(columnLabel));
-            for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                String derivedColumnLabel = SQLUtils.getExactlyValue(derived.getAlias().map(IdentifierValue::getValue).orElse(each.getColumnName()));
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
-                derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
-            }
-        }
-    }
-    
-    private void setIndexForOrderItem(final Map<String, Integer> columnLabelIndexMap, final Collection<OrderByItem> orderByItems) {
-        for (OrderByItem each : orderByItems) {
-            if (each.getSegment() instanceof IndexOrderByItemSegment) {
-                each.setIndex(((IndexOrderByItemSegment) each.getSegment()).getColumnIndex());
-                continue;
-            }
-            if (each.getSegment() instanceof ColumnOrderByItemSegment && ((ColumnOrderByItemSegment) each.getSegment()).getColumn().getOwner().isPresent()) {
-                Optional<Integer> itemIndex = projectionsContext.findProjectionIndex(((ColumnOrderByItemSegment) each.getSegment()).getText());
-                if (itemIndex.isPresent()) {
-                    each.setIndex(itemIndex.get());
-                    continue;
-                }
-            }
-            String columnLabel = getAlias(each.getSegment()).orElseGet(() -> getOrderItemText((TextOrderByItemSegment) each.getSegment()));
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
-            if (columnLabelIndexMap.containsKey(columnLabel)) {
-                each.setIndex(columnLabelIndexMap.get(columnLabel));
-            }
-        }
-    }
-    
-    private Optional<String> getAlias(final OrderByItemSegment orderByItem) {
-        if (projectionsContext.isUnqualifiedShorthandProjection()) {
-            return Optional.empty();
-        }
-        String rawName = SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
-        for (Projection each : projectionsContext.getProjections()) {
-            Optional<String> result = each.getAlias().map(IdentifierValue::getValue);
-            if (SQLUtils.getExactlyExpression(rawName).equalsIgnoreCase(SQLUtils.getExactlyExpression(SQLUtils.getExactlyValue(each.getExpression())))) {
-                return result;
-            }
-            if (rawName.equalsIgnoreCase(result.orElse(null))) {
-                return Optional.of(rawName);
-            }
-            if (isSameColumnName(each, rawName)) {
-                return result;
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private boolean isSameColumnName(final Projection projection, final String name) {
-        return projection instanceof ColumnProjection && name.equalsIgnoreCase(((ColumnProjection) projection).getName().getValue());
-    }
-    
-    private String getOrderItemText(final TextOrderByItemSegment orderByItemSegment) {
-        if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-            return SQLUtils.getExactlyValue(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue());
-        }
-        return SQLUtils.getExactlyValue(((ExpressionOrderByItemSegment) orderByItemSegment).getExpression());
+        baseContext.setIndexes(columnLabelIndexMap);
     }
     
     /**
@@ -369,7 +132,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return group by and order by sequence is same or not
      */
     public boolean isSameGroupByAndOrderByItems() {
-        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
+        return baseContext.isSameGroupByAndOrderByItems();
     }
     
     /**
@@ -379,18 +142,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return column bound info
      */
     public Optional<ColumnSegmentBoundInfo> findColumnBoundInfo(final int columnIndex) {
-        List<Projection> expandProjections = projectionsContext.getExpandProjections();
-        if (expandProjections.size() < columnIndex) {
-            return Optional.empty();
-        }
-        Projection projection = expandProjections.get(columnIndex - 1);
-        if (projection instanceof ColumnProjection) {
-            return Optional.of(((ColumnProjection) projection).getColumnBoundInfo());
-        }
-        if (projection instanceof SubqueryProjection && ((SubqueryProjection) projection).getProjection() instanceof ColumnProjection) {
-            return Optional.of(((ColumnProjection) ((SubqueryProjection) projection).getProjection()).getColumnBoundInfo());
-        }
-        return Optional.empty();
+        return baseContext.findColumnBoundInfo(columnIndex);
     }
     
     /**
@@ -399,7 +151,7 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return whether sql statement contains table subquery segment or not
      */
     public boolean containsTableSubquery() {
-        return sqlStatement.getFrom().isPresent() && sqlStatement.getFrom().get() instanceof SubqueryTableSegment || sqlStatement.getWith().isPresent();
+        return baseContext.containsTableSubquery();
     }
     
     /**
@@ -408,27 +160,126 @@ public final class SelectStatementContext implements SQLStatementContext, WhereC
      * @return contains derived projections or not
      */
     public boolean containsDerivedProjections() {
-        return containsEnhancedTable && !projectionsContext.getExpandProjections().isEmpty();
+        return baseContext.containsDerivedProjections();
     }
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
-        return whereSegments;
+        return baseContext.getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
-        return columnSegments;
+        return baseContext.getColumnSegments();
     }
     
     @Override
     public Collection<BinaryOperationExpression> getJoinConditions() {
-        return joinConditions;
+        return baseContext.getJoinConditions();
+    }
+    
+    @Override
+    public SelectStatement getSqlStatement() {
+        return baseContext.getSqlStatement();
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return baseContext.getTablesContext();
+    }
+    
+    /**
+     * Set subquery type.
+     *
+     * @param subqueryType subquery type
+     */
+    public void setSubqueryType(final SubqueryType subqueryType) {
+        baseContext.setSubqueryType(subqueryType);
+    }
+    
+    /**
+     * Get subquery type.
+     *
+     * @return subquery type
+     */
+    public SubqueryType getSubqueryType() {
+        return baseContext.getSubqueryType();
+    }
+    
+    /**
+     * Get subquery contexts.
+     *
+     * @return subquery contexts
+     */
+    public Map<Integer, SelectStatementContext> getSubqueryContexts() {
+        return baseContext.getSubqueryContexts();
+    }
+    
+    /**
+     * Get projections context.
+     *
+     * @return projections context
+     */
+    public ProjectionsContext getProjectionsContext() {
+        return baseContext.getProjectionsContext();
+    }
+    
+    /**
+     * Get group by context.
+     *
+     * @return group by context
+     */
+    public GroupByContext getGroupByContext() {
+        return baseContext.getGroupByContext();
+    }
+    
+    /**
+     * Get order by context.
+     *
+     * @return order by context
+     */
+    public OrderByContext getOrderByContext() {
+        return baseContext.getOrderByContext();
+    }
+    
+    /**
+     * Set need aggregate rewrite.
+     *
+     * @param needAggregateRewrite need aggregate rewrite
+     */
+    public void setNeedAggregateRewrite(final boolean needAggregateRewrite) {
+        baseContext.setNeedAggregateRewrite(needAggregateRewrite);
+    }
+    
+    /**
+     * Judge whether need aggregate rewrite or not.
+     *
+     * @return whether need aggregate rewrite or not
+     */
+    public boolean isNeedAggregateRewrite() {
+        return baseContext.isNeedAggregateRewrite();
+    }
+    
+    /**
+     * Judge whether contains enhanced table or not.
+     *
+     * @return whether contains enhanced table or not
+     */
+    public boolean isContainsEnhancedTable() {
+        return baseContext.isContainsEnhancedTable();
+    }
+    
+    /**
+     * Get pagination context.
+     *
+     * @return pagination context
+     */
+    public PaginationContext getPaginationContext() {
+        return bindingContext.getPaginationContext();
     }
     
     @Override
     public void setUpParameters(final List<Object> params) {
-        DialectPaginationOption paginationOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getPaginationOption();
-        paginationContext = new PaginationContextEngine(paginationOption).createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
+        bindingContext = new SelectStatementBindingContext(params, baseContext);
     }
 }
