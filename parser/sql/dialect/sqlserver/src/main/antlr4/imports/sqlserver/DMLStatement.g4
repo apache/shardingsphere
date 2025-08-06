@@ -290,7 +290,7 @@ outputWithColumn
     ;
 
 outputWithAaterisk
-    : (INSERTED | DELETED) DOT_ASTERISK_
+    : ((INSERTED | DELETED) DOT_ASTERISK_ | expr) (COMMA_ ((INSERTED | DELETED) DOT_ASTERISK_ | expr))*
     ;
 
 outputTableName
