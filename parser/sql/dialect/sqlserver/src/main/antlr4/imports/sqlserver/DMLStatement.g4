@@ -185,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? columnNames? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
