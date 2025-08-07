@@ -51,6 +51,7 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
         // TODO implement other request types handle
         switch (type) {
             case RECORDS:
+                // TODO handle actual update count
                 processRecords(payload);
                 return;
             default:
