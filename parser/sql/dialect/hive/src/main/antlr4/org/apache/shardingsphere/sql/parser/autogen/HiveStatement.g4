@@ -47,6 +47,7 @@ execute
     | createMacro
     | dropMacro
     | createFunction
+    | dropFunction
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;
