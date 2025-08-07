@@ -105,10 +105,6 @@ public final class OpenGaussLogicalReplication {
         if (majorVersion < 3) {
             return logicalStreamBuilder.start();
         }
-        return logicalStreamBuilder
-                .withSlotOption("parallel-decode-num", 10)
-                .withSlotOption("decode-style", "j")
-                .withSlotOption("sending-batch", 0)
-                .start();
+        return logicalStreamBuilder.withSlotOption("parallel-decode-num", 10).withSlotOption("decode-style", "j").withSlotOption("sending-batch", 0).start();
     }
 }

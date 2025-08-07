@@ -66,7 +66,7 @@ class SQLServerConnectionPropertiesParserTest {
                     Arguments.of("portAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=foo_ds", "127.0.0.1", 9999, "foo_ds", null),
                     Arguments.of("portAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=foo_ds", "127.0.0.1", 9999, "foo_ds", null),
                     Arguments.of("defaultPortAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
-                    Arguments.of("defaultPortWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1;DatabaseName=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
+                    Arguments.of("defaultPortWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1;database=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
                     Arguments.of("databaseNameContainDotAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=foo_0.0.0", "127.0.0.1", 9999, "foo_0.0.0", null),
                     Arguments.of("databaseNameContainDotAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=foo_0.0.0", "127.0.0.1", 9999, "foo_0.0.0", null));
         }
