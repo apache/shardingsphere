@@ -258,7 +258,7 @@ subquery
     ;
 
 withTempTable
-    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ AS alias
+    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ (AS alias)?
     ;
 
 withClause
