@@ -36,16 +36,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FirebirdAcceptPacketTest {
-
+    
     @Test
     void assertAcceptPacket() {
-        List<FirebirdProtocol> list = new ArrayList<>();
         ByteBuf byteBuf1 = Unpooled.buffer();
         byteBuf1.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
         byteBuf1.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
         byteBuf1.writeInt(0);
         byteBuf1.writeInt(5);
         byteBuf1.writeInt(1);
+        List<FirebirdProtocol> list = new ArrayList<>();
         list.add(new FirebirdProtocol(byteBuf1));
         ByteBuf byteBuf2 = Unpooled.buffer();
         byteBuf2.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
@@ -61,13 +61,13 @@ class FirebirdAcceptPacketTest {
     
     @Test
     void assertWriteWithAcceptDataPacket() {
-        List<FirebirdProtocol> list = new ArrayList<>();
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
         byteBuf.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
         byteBuf.writeInt(0);
         byteBuf.writeInt(5);
         byteBuf.writeInt(1);
+        List<FirebirdProtocol> list = new ArrayList<>();
         list.add(new FirebirdProtocol(byteBuf));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
         packet.setAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");

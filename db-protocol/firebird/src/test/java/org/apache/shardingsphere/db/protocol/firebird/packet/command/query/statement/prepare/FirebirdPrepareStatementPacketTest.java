@@ -56,7 +56,7 @@ class FirebirdPrepareStatementPacketTest {
     }
     
     @Test
-    void  assertIsValidStatementHandleWhenInvalid() {
+    void assertIsValidStatementHandleWhenInvalid() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(0);
         payload.writeInt4(1);
