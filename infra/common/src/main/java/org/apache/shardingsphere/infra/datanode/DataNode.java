@@ -26,8 +26,8 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 
 import java.util.List;
 
@@ -59,12 +59,8 @@ public final class DataNode {
     public DataNode(final String dataNode) {
         // TODO remove duplicated splitting?
         boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
-        if (!isIncludeInstance && !isValidDataNode(dataNode, 2)) {
-            throw new InvalidDataNodeFormatException(dataNode);
-        }
-        if (isIncludeInstance && !isValidDataNode(dataNode, 3)) {
-            throw new InvalidDataNodeFormatException(dataNode);
-        }
+        ShardingSpherePreconditions.checkState(isIncludeInstance || isValidDataNode(dataNode, 2), () -> new InvalidDataNodeFormatException(dataNode));
+        ShardingSpherePreconditions.checkState(!isIncludeInstance || isValidDataNode(dataNode, 3), () -> new InvalidDataNodeFormatException(dataNode));
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
         tableName = segments.get(isIncludeInstance ? 2 : 1);

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
 import org.apache.groovy.util.Maps;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;

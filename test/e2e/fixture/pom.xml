@@ -96,6 +96,24 @@
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-mysql</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-data-pipeline-feature-sharding</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-encrypt-core</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -134,28 +152,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.jboss.narayana.jta</groupId>
-            <artifactId>jta</artifactId>
-            <version>${narayana.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.narayana.jts</groupId>
-            <artifactId>narayana-jts-integration</artifactId>
-            <version>${narayana.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss</groupId>
-            <artifactId>jboss-transaction-spi</artifactId>
-            <version>${jboss-transaction-spi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>${jboss-logging.version}</version>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     

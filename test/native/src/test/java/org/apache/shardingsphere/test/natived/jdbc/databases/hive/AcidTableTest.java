@@ -62,6 +62,8 @@ class AcidTableTest {
     
     private String jdbcUrlPrefix;
     
+    private TestShardingService testShardingService;
+    
     @BeforeEach
     void beforeEach() {
         assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
@@ -81,8 +83,19 @@ class AcidTableTest {
     void assertShardingInLocalTransactions() throws SQLException {
         jdbcUrlPrefix = "jdbc:hive2://localhost:" + container.getMappedPort(10000) + "/";
         logicDataSource = createDataSource();
-        TestShardingService testShardingService = new TestShardingService(logicDataSource);
+        testShardingService = new TestShardingService(logicDataSource);
+        initEnvironment();
         testShardingService.processSuccessInHive();
+        testShardingService.cleanEnvironment();
+    }
+    
+    private void initEnvironment() throws SQLException {
+        testShardingService.getOrderRepository().createAcidTableInHiveServer2();
+        testShardingService.getOrderItemRepository().createAcidTableInHiveServer2();
+        testShardingService.getAddressRepository().createAcidTableInHiveServer2();
+        testShardingService.getOrderRepository().truncateTable();
+        testShardingService.getOrderItemRepository().truncateTable();
+        testShardingService.getAddressRepository().truncateTable();
     }
     
     private DataSource createDataSource() throws SQLException {
@@ -108,8 +121,7 @@ class AcidTableTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table`,
-     *  `truncate table` and `drop table` statements yet,
+     * TODO `shardingsphere-parser-sql-hive` module does not support `set` statements yet,
      *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
      * Hive does not support `AUTO_INCREMENT`,
      * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.
@@ -124,30 +136,6 @@ class AcidTableTest {
             statement.execute("set metastore.compactor.initiator.on=true");
             statement.execute("set metastore.compactor.cleaner.on=true");
             statement.execute("set metastore.compactor.worker.threads=1");
-            statement.execute("create table IF NOT EXISTS t_order (\n"
-                    + "    order_id   BIGINT NOT NULL,\n"
-                    + "    order_type INT,\n"
-                    + "    user_id    INT    NOT NULL,\n"
-                    + "    address_id BIGINT NOT NULL,\n"
-                    + "    status     VARCHAR(50),\n"
-                    + "    PRIMARY KEY (order_id) disable novalidate\n"
-                    + ") CLUSTERED BY (order_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true')");
-            statement.execute("create table IF NOT EXISTS t_order_item (\n"
-                    + "    order_item_id BIGINT NOT NULL,\n"
-                    + "    order_id      BIGINT NOT NULL,\n"
-                    + "    user_id       INT    NOT NULL,\n"
-                    + "    phone         VARCHAR(50),\n"
-                    + "    status        VARCHAR(50),\n"
-                    + "    PRIMARY KEY (order_item_id) disable novalidate\n"
-                    + ") CLUSTERED BY (order_item_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true')");
-            statement.execute("create table IF NOT EXISTS t_address (\n"
-                    + "    address_id   BIGINT       NOT NULL,\n"
-                    + "    address_name VARCHAR(100) NOT NULL,\n"
-                    + "    PRIMARY KEY (address_id) disable novalidate\n"
-                    + ") CLUSTERED BY (address_id) INTO 2 BUCKETS STORED AS ORC TBLPROPERTIES ('transactional' = 'true')");
-            statement.execute("TRUNCATE TABLE t_order");
-            statement.execute("TRUNCATE TABLE t_order_item");
-            statement.execute("TRUNCATE TABLE t_address");
         } catch (final SQLException exception) {
             throw new RuntimeException(exception);
         }

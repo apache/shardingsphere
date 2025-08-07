@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator;
 
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.authentication.Authenticator;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.stream.Stream;
 
@@ -50,7 +51,7 @@ class MySQLAuthenticatorTypeTest {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("default", "", "mysql_native_password"),
                     Arguments.of("error", "error", "mysql_native_password"),

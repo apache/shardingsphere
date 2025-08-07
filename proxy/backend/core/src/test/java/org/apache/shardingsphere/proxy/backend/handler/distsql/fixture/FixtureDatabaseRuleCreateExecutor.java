@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;

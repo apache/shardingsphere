@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;

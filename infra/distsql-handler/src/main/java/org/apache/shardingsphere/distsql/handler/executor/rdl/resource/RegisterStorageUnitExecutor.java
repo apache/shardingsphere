@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.converter.DataSourceSegmentsConverter;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

@@ -96,4 +96,14 @@
     <sql-case id="create_view_select_to_number_to_char" value="CREATE VIEW time_view AS SELECT time_id, TO_NUMBER(TO_CHAR(time_id, 'ddd')) AS day_in_year FROM times" db-types="Oracle" />
     <sql-case id="create_view_select_subquery_with_union_all" value="CREATE VIEW view_with_unionall AS (SELECT c.rowid crid, c.cust_id, 2 umarker FROM customers c WHERE c.cust_last_name = 'Smith' UNION ALL SELECT c.rowid crid, c.cust_id, 3 umarker FROM customers c WHERE c.cust_last_name = 'Jones')" db-types="Oracle" />
     <sql-case id="create_view_select_sys_XMLGen" value="CREATE OR REPLACE VIEW employee_view OF XMLType WITH OBJECT ID (XMLCast(XMLQuery('/Emp/@empno' PASSING OBJECT_VALUE RETURNING CONTENT) AS BINARY_DOUBLE)) AS SELECT sys_XMLGen(emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date),XMLFormat('EMP')) FROM employees e WHERE salary &gt; 15000;" db-types="Oracle" />
+    <sql-case id="create_view_hive" value="CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page') COMMENT 'Referrers to The Onion website' AS SELECT DISTINCT referrer_url FROM page_view WHERE page_url='http://www.theonion.com';" db-types="Hive" />
+    <sql-case id="create_view_basic" value="CREATE VIEW sales_summary AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_if_not_exists" value="CREATE VIEW IF NOT EXISTS sales_summary AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_column_def" value="CREATE VIEW sales_summary (order_id COMMENT 'ID', total COMMENT 'total') AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_comment" value="CREATE VIEW sales_summary COMMENT 'view' AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_tblproperties" value="CREATE VIEW sales_summary TBLPROPERTIES ('creator' = 'data_team', 'version' = '1.0') AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_order_by" value="CREATE VIEW top_sales AS SELECT order_id, total FROM sales ORDER BY total DESC" db-types="Hive" />
+    <sql-case id="create_view_with_limit" value="CREATE VIEW recent_orders AS SELECT order_id, order_date FROM sales LIMIT 100" db-types="Hive" />
+    <sql-case id="create_view_with_db_name" value="CREATE VIEW db1.sales_summary AS SELECT order_id, total FROM db2.sales" db-types="Hive" />
+    <sql-case id="create_view_with_cte" value="CREATE VIEW user_orders AS WITH user_cte AS (SELECT id, name FROM users) SELECT u.name, o.order_id FROM user_cte u JOIN orders o ON u.id = o.user_id" db-types="Hive" />
 </sql-cases>

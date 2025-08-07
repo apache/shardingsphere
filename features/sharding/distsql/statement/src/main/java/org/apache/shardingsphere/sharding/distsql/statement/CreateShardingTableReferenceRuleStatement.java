@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.CreateRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.segment.table.TableReferenceRuleSegment;
 
 import java.util.Collection;

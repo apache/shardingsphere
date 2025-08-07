@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;

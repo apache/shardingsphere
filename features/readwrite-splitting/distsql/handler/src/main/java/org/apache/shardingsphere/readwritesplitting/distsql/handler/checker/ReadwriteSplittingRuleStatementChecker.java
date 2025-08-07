@@ -221,7 +221,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
     private static void checkLoadBalancers(final Collection<ReadwriteSplittingRuleSegment> segments) {
         for (ReadwriteSplittingRuleSegment each : segments) {
             AlgorithmSegment loadBalancer = each.getLoadBalancer();
-            if (loadBalancer != null) {
+            if (null != loadBalancer) {
                 TypedSPILoader.checkService(LoadBalanceAlgorithm.class, loadBalancer.getName(), loadBalancer.getProps());
                 checkProperties(each);
             }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.AlterRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.statement.AlterReadwriteSplittingRuleStatement;

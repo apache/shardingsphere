@@ -91,7 +91,7 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
         int compress = protocol.getMaxType() & COMPRESS;
         payload.writeInt4(type | compress);
         
-        if (acceptDataPacket != null) {
+        if (null != acceptDataPacket) {
             acceptDataPacket.write(payload);
         }
     }

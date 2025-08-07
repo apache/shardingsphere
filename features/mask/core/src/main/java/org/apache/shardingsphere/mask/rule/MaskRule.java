@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mask.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
@@ -34,7 +32,6 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -87,37 +84,30 @@ public final class MaskRule implements DatabaseRule, PartialRuleUpdateSupported<
     
     @Override
     public boolean partialUpdate(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
+        handleAddedMaskAlgorithm(toBeUpdatedRuleConfig);
+        handleRemovedMaskAlgorithm(toBeUpdatedRuleConfig);
         Collection<String> toBeUpdatedTablesNames = toBeUpdatedRuleConfig.getTables().stream().map(MaskTableRuleConfiguration::getName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
-        Collection<String> toBeAddedTableNames = toBeUpdatedTablesNames.stream().filter(each -> !tables.containsKey(each)).collect(Collectors.toList());
-        if (!toBeAddedTableNames.isEmpty()) {
-            toBeAddedTableNames.forEach(each -> addTableRule(each, toBeUpdatedRuleConfig));
-            attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
-            return true;
-        }
         Collection<String> toBeRemovedTableNames = tables.keySet().stream().filter(each -> !toBeUpdatedTablesNames.contains(each)).collect(Collectors.toList());
         if (!toBeRemovedTableNames.isEmpty()) {
             toBeRemovedTableNames.forEach(tables::remove);
-            attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
-            // TODO check and remove unused INLINE mask algorithms
-            return true;
         }
-        // TODO Process update table
-        // TODO Process CRUD mask algorithms
+        for (MaskTableRuleConfiguration maskTableRuleConfiguration : toBeUpdatedRuleConfig.getTables()) {
+            tables.put(maskTableRuleConfiguration.getName(), new MaskTable(maskTableRuleConfiguration, maskAlgorithms));
+            attributes.set(new RuleAttributes(new MaskTableMapperRuleAttribute(tables.keySet())));
+        }
         return false;
     }
     
-    private void addTableRule(final String tableName, final MaskRuleConfiguration toBeUpdatedRuleConfig) {
-        MaskTableRuleConfiguration tableRuleConfig = getTableRuleConfiguration(tableName, toBeUpdatedRuleConfig);
-        for (Entry<String, AlgorithmConfiguration> entry : toBeUpdatedRuleConfig.getMaskAlgorithms().entrySet()) {
-            maskAlgorithms.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps()));
-        }
-        tables.put(tableName, new MaskTable(tableRuleConfig, maskAlgorithms));
+    private void handleAddedMaskAlgorithm(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
+        toBeUpdatedRuleConfig.getMaskAlgorithms().entrySet().stream()
+                .filter(entry -> !maskAlgorithms.containsKey(entry.getKey()))
+                .forEach(entry -> maskAlgorithms.computeIfAbsent(entry.getKey(), key -> TypedSPILoader.getService(MaskAlgorithm.class, entry.getValue().getType(), entry.getValue().getProps())));
     }
     
-    private MaskTableRuleConfiguration getTableRuleConfiguration(final String tableName, final MaskRuleConfiguration toBeUpdatedRuleConfig) {
-        Optional<MaskTableRuleConfiguration> result = toBeUpdatedRuleConfig.getTables().stream().filter(table -> table.getName().equals(tableName)).findFirst();
-        Preconditions.checkState(result.isPresent());
-        return result.get();
+    private void handleRemovedMaskAlgorithm(final MaskRuleConfiguration toBeUpdatedRuleConfig) {
+        maskAlgorithms.entrySet().stream()
+                .filter(entry -> !toBeUpdatedRuleConfig.getMaskAlgorithms().containsKey(entry.getKey()))
+                .forEach(entry -> maskAlgorithms.remove(entry.getKey()));
     }
     
     @Override

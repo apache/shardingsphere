@@ -38,6 +38,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -78,7 +79,6 @@ class AnalyzeTableStatementBinderTest {
         hintValueContext.setSkipMetadataValidate(true);
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
         AnalyzeTableStatement actual = new AnalyzeTableStatementBinder().bind(original, binderContext);
-        Collection<SimpleTableSegment> actualTables = actual.getTables();
-        assertThat(actualTables.size(), is(0));
+        assertTrue(actual.getTables().isEmpty());
     }
 }

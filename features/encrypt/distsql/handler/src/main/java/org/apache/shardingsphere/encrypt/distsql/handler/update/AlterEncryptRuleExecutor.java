@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleAlterExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 
 /**
  * Storage unit definition processor for broadcast rule.

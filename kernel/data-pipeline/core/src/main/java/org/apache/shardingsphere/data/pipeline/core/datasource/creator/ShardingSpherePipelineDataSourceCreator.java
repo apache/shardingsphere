@@ -19,14 +19,15 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.yaml.PipelineYamlRuleConfigurationReviser;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
@@ -34,14 +35,12 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistReposito
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -54,7 +53,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(YamlEngine.marshal(dataSourceConfig), YamlRootConfiguration.class);
         removeAuthorityRuleConfiguration(yamlRootConfig);
         updateConfigurationProperties(yamlRootConfig);
-        updateShardingRuleConfiguration(yamlRootConfig);
+        reviseYamlRuleConfiguration(yamlRootConfig);
         yamlRootConfig.setMode(createStandaloneModeConfiguration());
         return createShardingSphereDataSource(yamlRootConfig);
     }
@@ -77,32 +76,9 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         yamlRootConfig.setProps(newProps);
     }
     
-    private void updateShardingRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
-        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = yamlRootConfig.getRules().stream()
-                .filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast);
-        if (yamlShardingRuleConfig.isPresent()) {
-            enableRangeQueryForInline(yamlShardingRuleConfig.get());
-            removeAuditStrategy(yamlShardingRuleConfig.get());
-        }
-    }
-    
-    private void enableRangeQueryForInline(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
-        for (YamlAlgorithmConfiguration each : yamlShardingRuleConfig.getShardingAlgorithms().values()) {
-            if ("INLINE".equalsIgnoreCase(each.getType())) {
-                each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
-            }
-        }
-    }
-    
-    private void removeAuditStrategy(final YamlShardingRuleConfiguration yamlShardingRuleConfig) {
-        yamlShardingRuleConfig.setDefaultAuditStrategy(null);
-        yamlShardingRuleConfig.setAuditors(null);
-        if (null != yamlShardingRuleConfig.getTables()) {
-            yamlShardingRuleConfig.getTables().forEach((key, value) -> value.setAuditStrategy(null));
-        }
-        if (null != yamlShardingRuleConfig.getAutoTables()) {
-            yamlShardingRuleConfig.getAutoTables().forEach((key, value) -> value.setAuditStrategy(null));
-        }
+    @SuppressWarnings("unchecked")
+    private void reviseYamlRuleConfiguration(final YamlRootConfiguration yamlRootConfig) {
+        OrderedSPILoader.getServices(PipelineYamlRuleConfigurationReviser.class, yamlRootConfig.getRules()).forEach((key, value) -> value.revise(key));
     }
     
     private YamlModeConfiguration createStandaloneModeConfiguration() {

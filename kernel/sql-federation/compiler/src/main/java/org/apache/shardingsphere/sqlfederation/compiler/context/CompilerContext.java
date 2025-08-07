@@ -21,7 +21,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.jdbc.CalciteSchema;
+import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+
+import java.util.Collection;
 
 /**
  * Compiler context.
@@ -35,4 +38,6 @@ public final class CompilerContext {
     private final CalciteSchema calciteSchema;
     
     private final CalciteConnectionConfig connectionConfig;
+    
+    private final Collection<SqlOperatorTable> operatorTables;
 }

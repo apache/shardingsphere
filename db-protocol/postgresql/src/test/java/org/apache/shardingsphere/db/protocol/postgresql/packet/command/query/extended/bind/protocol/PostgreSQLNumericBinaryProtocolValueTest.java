@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -71,7 +72,7 @@ class PostgreSQLNumericBinaryProtocolValueTest {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(Arguments.of(new BigDecimal("0"), new byte[]{0, 0, -1, -1, 0, 0, 0, 0}),
                     Arguments.of(new BigDecimal("0.00"), new byte[]{0, 0, -1, -1, 0, 0, 0, 2}),
                     Arguments.of(new BigDecimal("0.0001"), new byte[]{0, 1, -1, -1, 0, 0, 0, 4, 0, 1}),

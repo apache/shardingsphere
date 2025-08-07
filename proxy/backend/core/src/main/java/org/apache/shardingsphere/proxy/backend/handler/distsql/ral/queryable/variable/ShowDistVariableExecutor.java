@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorConnectionContextAware;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

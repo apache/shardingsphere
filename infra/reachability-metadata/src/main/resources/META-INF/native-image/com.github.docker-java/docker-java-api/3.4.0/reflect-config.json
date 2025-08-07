@@ -1,66 +1,6 @@
 [
 {
   "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Bind;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Capability;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Device;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.ExposedPort;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Link;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.LxcConf;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.PortBinding;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Ports$Binding;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Ulimit;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.Volume;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.VolumeBind;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.VolumeRW;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lcom.github.dockerjava.api.model.VolumesFrom;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Ljava.lang.String;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
-  "name":"[Lorg.testcontainers.shaded.com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;"
-},
-{
-  "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
   "name":"com.github.dockerjava.api.command.CreateContainerCmd",
   "queryAllDeclaredMethods":true
 },
@@ -103,9 +43,7 @@
 {
   "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
   "name":"com.github.dockerjava.api.command.HealthStateLog",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true
+  "queryAllDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
@@ -127,17 +65,12 @@
 {
   "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
   "name":"com.github.dockerjava.api.command.InspectContainerResponse$Mount",
-  "allDeclaredFields":true,
-  "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
+  "queryAllDeclaredMethods":true
 },
 {
   "condition":{"typeReachable":"com.github.dockerjava.api.DockerClientDelegate"},
   "name":"com.github.dockerjava.api.command.InspectContainerResponse$Node",
-  "allDeclaredFields":true,
   "queryAllDeclaredMethods":true,
-  "queryAllDeclaredConstructors":true,
   "queryAllPublicConstructors":true
 },
 {
@@ -679,5 +612,25 @@
   "allDeclaredFields":true,
   "allDeclaredMethods": true,
   "allDeclaredConstructors":true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network$Ipam",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network$Ipam$Config",
+  "allDeclaredMethods": true
+},
+{
+  "condition":{"typeReachable":"com.github.dockerjava.api.model.Network"},
+  "name":"com.github.dockerjava.api.model.Network$ContainerNetworkConfig",
+  "allDeclaredMethods": true
 }
 ]

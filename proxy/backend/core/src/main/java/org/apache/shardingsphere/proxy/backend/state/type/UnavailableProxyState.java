@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.state.type;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.ImportMetaDataStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.distsql.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

@@ -28,12 +28,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
 import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.rule.DatabaseRuleNodePath;
 import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
@@ -229,7 +231,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
         ActiveVersionChecker activeVersionChecker = new ActiveVersionChecker(metaDataPersistFacade.getRepository());
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath());
+            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath(), Type.UPDATED);
             if (databaseRuleNodePath.isPresent() && activeVersionChecker.checkSame(new VersionNodePath(databaseRuleNodePath.get()), each.getActiveVersion())) {
                 metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
             }
@@ -253,7 +255,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     private void removeRuleItem(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
         for (MetaDataVersion each : metaDataVersions) {
-            ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath())
+            ruleItemChangedNodePathBuilder.build(databaseName, NodePathGenerator.toPath(each.getNodePath()), Type.DELETED)
                     .ifPresent(optional -> metaDataContextManager.getDatabaseRuleItemManager().drop(optional));
         }
     }

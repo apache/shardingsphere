@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.single.distsql.statement.rql;
 
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowTablesStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
 import java.util.Optional;

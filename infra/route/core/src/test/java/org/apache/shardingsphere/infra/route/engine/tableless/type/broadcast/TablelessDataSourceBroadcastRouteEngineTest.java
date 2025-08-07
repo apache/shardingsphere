@@ -30,6 +30,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,9 +43,9 @@ class TablelessDataSourceBroadcastRouteEngineTest {
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());
         assertThat(routeUnits.get(0).getDataSourceMapper().getLogicName(), is("foo_ds_1"));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("foo_ds_1"));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(0).getTableMappers().isEmpty());
         assertThat(routeUnits.get(1).getDataSourceMapper().getLogicName(), is("foo_ds_2"));
         assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("foo_ds_2"));
-        assertThat(routeUnits.get(1).getTableMappers().size(), is(0));
+        assertTrue(routeUnits.get(1).getTableMappers().isEmpty());
     }
 }

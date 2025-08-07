@@ -72,7 +72,7 @@ mergeInsertClause
     ;
 
 withTableHint
-    : WITH? LP_ (tableHintLimited+) RP_
+    : WITH? LP_ (tableHintLimited | tableHintExtended) (COMMA_ (tableHintLimited | tableHintExtended))* RP_
     ;
 
 exec
@@ -106,7 +106,7 @@ delete
     ;
 
 optionHint
-    : OPTION queryHint
+    : OPTION LP_ queryHint (COMMA_ queryHint)* RP_
     ;
 
 singleTableClause
@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause? optionHint?
     ;
 
 duplicateSpecification
@@ -164,6 +164,10 @@ qualifiedShorthand
     : identifier DOT_ASTERISK_
     ;
 
+onFileGroupClause
+    : ON identifier
+    ;
+
 intoClause
     : INTO tableName
     ;
@@ -181,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? (AS? alias)? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? columnNames? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -203,10 +207,34 @@ pivotValue
     : LBT_ expr RBT_ | expr
     ;
 
+tableSampleClause
+    : TABLESAMPLE SYSTEM? LP_ numberLiterals (PERCENT | ROWS)? RP_ (REPEATABLE LP_ numberLiterals RP_)?
+    ;
+
+forSystemTimeClause
+    : FOR SYSTEM_TIME systemTimeClause
+    ;
+
+systemTimeClause
+    : AS OF dateTimeExpression
+    | FROM dateTimeExpression TO dateTimeExpression
+    | BETWEEN dateTimeExpression AND dateTimeExpression
+    | CONTAINED IN LP_ dateTimeExpression COMMA_ dateTimeExpression RP_
+    | ALL
+    ;
+
+dateTimeExpression
+    : literals | parameterMarker
+    ;
+
 joinedTable
-    : NATURAL? ((INNER | CROSS)? JOIN) tableFactor joinSpecification?
-    | NATURAL? (LEFT | RIGHT | FULL) OUTER? JOIN tableFactor joinSpecification?
+    : NATURAL? ((INNER | CROSS)? joinHint? JOIN) tableFactor joinSpecification?
+    | NATURAL? (LEFT | RIGHT | FULL) OUTER? joinHint? JOIN tableFactor joinSpecification?
     | (CROSS | OUTER) APPLY tableFactor joinSpecification?
+    ;
+
+joinHint
+    : LOOP | HASH | MERGE | REMOTE | REDUCE | REPLICATE | REDISTRIBUTE (LP_ NUMBER_ RP_)?
     ;
 
 joinSpecification
@@ -262,7 +290,7 @@ outputWithColumn
     ;
 
 outputWithAaterisk
-    : (INSERTED | DELETED) DOT_ASTERISK_
+    : ((INSERTED | DELETED) DOT_ASTERISK_ | expr) (COMMA_ ((INSERTED | DELETED) DOT_ASTERISK_ | expr))*
     ;
 
 outputTableName
@@ -286,7 +314,7 @@ queryHint
     | MAXDOP INT_NUM_
     | MAXRECURSION INT_NUM_
     | NO_PERFORMANCE_SPOOL
-    | LP_ OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_ RP_
+    | OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
     | QUERYTRACEON INT_NUM_
@@ -294,6 +322,7 @@ queryHint
     | ROBUST PLAN
     | USE HINT LP_ useHitName* RP_
     | USE PLAN NCHAR_TEXT
+    | LABEL EQ_ stringLiterals
     ;
 
 useHitName
