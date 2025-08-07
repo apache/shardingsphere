@@ -58,7 +58,7 @@ class FirebirdSQLInfoReturnPacketTest {
     }
     
     @Test
-    void assertUnknownTypeThrowsException() {
+    void assertParseSQLInfoWithUnknownType() {
         FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE));
         assertThrows(FirebirdProtocolException.class, () -> packet.write(new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8)));
     }

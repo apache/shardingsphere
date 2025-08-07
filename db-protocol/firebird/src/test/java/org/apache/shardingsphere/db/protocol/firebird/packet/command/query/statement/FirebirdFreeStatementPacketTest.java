@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class FirebirdFreeStatementPacketTest {
     
     @Test
-    void assertParse() {
+    void assertFreeStatementPacket() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(0);
         payload.writeInt4(5);
@@ -41,7 +41,7 @@ class FirebirdFreeStatementPacketTest {
     }
     
     @Test
-    void assertLength() {
+    void assertGetLength() {
         assertThat(FirebirdFreeStatementPacket.getLength(), is(12));
     }
 }

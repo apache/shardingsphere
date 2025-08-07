@@ -83,7 +83,7 @@ class FirebirdDatabaseInfoReturnPacketTest {
     }
     
     @Test
-    void assertUnknownTypeThrowsException() {
+    void assertParseDatabaseInfoWithUnknownType() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.DB_ID));
         assertThrows(FirebirdProtocolException.class, () -> packet.write(new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8)));
     }

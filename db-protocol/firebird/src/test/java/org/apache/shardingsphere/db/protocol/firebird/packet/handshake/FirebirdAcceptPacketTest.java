@@ -36,31 +36,39 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FirebirdAcceptPacketTest {
-    
-    private FirebirdProtocol createProtocol(final int weight) {
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
-        buf.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
-        buf.writeInt(0);
-        buf.writeInt(5);
-        buf.writeInt(weight);
-        return new FirebirdProtocol(buf);
-    }
-    
+
     @Test
-    void assertSelectHighestWeightProtocol() {
+    void assertAcceptPacket() {
         List<FirebirdProtocol> list = new ArrayList<>();
-        list.add(createProtocol(1));
-        list.add(createProtocol(2));
+        ByteBuf byteBuf1 = Unpooled.buffer();
+        byteBuf1.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
+        byteBuf1.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        byteBuf1.writeInt(0);
+        byteBuf1.writeInt(5);
+        byteBuf1.writeInt(1);
+        list.add(new FirebirdProtocol(byteBuf1));
+        ByteBuf byteBuf2 = Unpooled.buffer();
+        byteBuf2.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
+        byteBuf2.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        byteBuf2.writeInt(0);
+        byteBuf2.writeInt(5);
+        byteBuf2.writeInt(2);
+        list.add(new FirebirdProtocol(byteBuf2));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
         assertEquals(FirebirdCommandPacketType.ACCEPT, packet.getOpCode());
         assertThat(packet.getProtocol().getWeight(), is(2));
     }
     
     @Test
-    void assertWriteWithAcceptData() {
+    void assertWriteWithAcceptDataPacket() {
         List<FirebirdProtocol> list = new ArrayList<>();
-        list.add(createProtocol(1));
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
+        byteBuf.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        byteBuf.writeInt(0);
+        byteBuf.writeInt(5);
+        byteBuf.writeInt(1);
+        list.add(new FirebirdProtocol(byteBuf));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
         packet.setAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);

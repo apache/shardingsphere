@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class FirebirdExecuteStatementPacketTest {
     
     @Test
-    void assertParse() {
+    void assertExecuteStatementPacket() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(FirebirdCommandPacketType.EXECUTE.getValue());
         payload.writeInt4(1);
@@ -64,7 +64,7 @@ class FirebirdExecuteStatementPacketTest {
     }
     
     @Test
-    void assertParseStoredProcedure() {
+    void assertExecuteStatementPacketForStoredProcedure() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(FirebirdCommandPacketType.EXECUTE2.getValue());
         payload.writeInt4(1);
@@ -107,7 +107,7 @@ class FirebirdExecuteStatementPacketTest {
     }
     
     @Test
-    void assertLength() {
+    void assertGetLength() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(FirebirdCommandPacketType.EXECUTE.getValue());
         payload.writeInt4(1);

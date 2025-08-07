@@ -27,7 +27,7 @@ class FirebirdProtocolDefaultVersionProviderTest {
     private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
     
     @Test
-    void assertGetDatabaseTypeReturnsFirebird() {
+    void assertGetDatabaseType() {
         assertThat(provider.getDatabaseType(), is("Firebird"));
     }
 }

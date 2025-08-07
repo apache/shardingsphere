@@ -31,31 +31,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FirebirdAttachPacketTest {
     
-    private ByteBuf createDPB() {
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeByte(1);
-        buf.writeByte(FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode());
-        buf.writeByte(4);
-        buf.writeBytes("UTF8".getBytes(StandardCharsets.UTF_8));
-        buf.writeByte(FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA.getCode());
-        buf.writeByte(2);
-        buf.writeBytes("ad".getBytes(StandardCharsets.UTF_8));
-        buf.writeByte(FirebirdDatabaseParameterBufferType.USER_NAME.getCode());
-        buf.writeByte(4);
-        buf.writeBytes("user".getBytes(StandardCharsets.UTF_8));
-        buf.writeByte(FirebirdDatabaseParameterBufferType.PASSWORD_ENC.getCode());
-        buf.writeByte(6);
-        buf.writeBytes("passwd".getBytes(StandardCharsets.UTF_8));
-        return buf;
-    }
-    
     @Test
-    void assertParseAttachPacket() {
+    void assertAttachPacket() {
         ByteBuf buf = Unpooled.buffer();
         FirebirdPacketPayload payload = new FirebirdPacketPayload(buf, StandardCharsets.UTF_8);
         payload.writeInt4(100);
         payload.writeString("db");
-        payload.writeBuffer(createDPB());
+        ByteBuf dpb = Unpooled.buffer();
+        dpb.writeByte(1);
+        dpb.writeByte(FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode());
+        dpb.writeByte(4);
+        dpb.writeBytes("UTF8".getBytes(StandardCharsets.UTF_8));
+        dpb.writeByte(FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA.getCode());
+        dpb.writeByte(2);
+        dpb.writeBytes("ad".getBytes(StandardCharsets.UTF_8));
+        dpb.writeByte(FirebirdDatabaseParameterBufferType.USER_NAME.getCode());
+        dpb.writeByte(4);
+        dpb.writeBytes("user".getBytes(StandardCharsets.UTF_8));
+        dpb.writeByte(FirebirdDatabaseParameterBufferType.PASSWORD_ENC.getCode());
+        dpb.writeByte(6);
+        dpb.writeBytes("passwd".getBytes(StandardCharsets.UTF_8));
+        payload.writeBuffer(dpb);
         buf.readerIndex(0);
         FirebirdAttachPacket packet = new FirebirdAttachPacket(new FirebirdPacketPayload(buf, StandardCharsets.UTF_8));
         assertEquals(100, packet.getId());

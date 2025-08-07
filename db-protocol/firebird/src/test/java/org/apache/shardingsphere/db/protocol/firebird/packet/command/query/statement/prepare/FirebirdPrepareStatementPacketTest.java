@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FirebirdPrepareStatementPacketTest {
     
     @Test
-    void assertParse() {
+    void assertPrepareStatementPacket() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(0);
         payload.writeInt4(1);
@@ -56,7 +56,7 @@ class FirebirdPrepareStatementPacketTest {
     }
     
     @Test
-    void assertIsInvalidStatementHandle() {
+    void  assertIsValidStatementHandleWhenInvalid() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(0);
         payload.writeInt4(1);
@@ -71,7 +71,7 @@ class FirebirdPrepareStatementPacketTest {
     }
     
     @Test
-    void assertLength() {
+    void assertGetLength() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         payload.writeInt4(0);
         payload.writeInt4(1);

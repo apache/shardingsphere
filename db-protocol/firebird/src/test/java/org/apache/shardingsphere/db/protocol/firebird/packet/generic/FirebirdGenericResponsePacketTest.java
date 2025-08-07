@@ -38,14 +38,14 @@ import static org.mockito.Mockito.verify;
 class FirebirdGenericResponsePacketTest {
     
     @Test
-    void assertHandleAndId() {
+    void assertGetHandleAndId() {
         FirebirdGenericResponsePacket packet = FirebirdGenericResponsePacket.getPacket().setHandle(1).setId(2);
         assertThat(packet.getHandle(), is(1));
         assertThat(packet.getId(), is(2L));
     }
     
     @Test
-    void assertErrorStatusVector() {
+    void assertGetErrorStatusVector() {
         SQLException ex = new SQLException("foo", "42000", ISCConstants.isc_random + 1);
         FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setErrorStatusVector(ex);
         assertThat(packet.getErrorCode(), is(ex.getErrorCode()));
