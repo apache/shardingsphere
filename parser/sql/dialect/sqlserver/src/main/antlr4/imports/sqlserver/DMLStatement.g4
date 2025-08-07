@@ -102,7 +102,7 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? optionHint?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) withTableHint? outputClause? whereClause? optionHint?
     ;
 
 optionHint
