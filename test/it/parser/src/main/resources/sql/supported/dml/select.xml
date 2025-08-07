@@ -361,4 +361,5 @@
     <sql-case id="select_from_tablesample" value="SELECT * FROM Sales.Customer TABLESAMPLE SYSTEM(10 PERCENT);" db-types="SQLServer"/>
     <sql-case id="select_option_clause" value="SELECT ProductID, OrderQty FROM Sales.SalesOrderDetail WHERE UnitPrice &lt; 5.00 GROUP BY ProductID, OrderQty OPTION (HASH GROUP, LABEL = N'label1');" db-types="SQLServer"/>
     <sql-case id="select_from_value_function" value="SELECT a, b FROM (VALUES (1, 2), (3, 4)) AS MyTable(a, b);" db-types="SQLServer"/>
+    <sql-case id="select_collation_identifier" value="SELECT DATABASEPROPERTYEX('AdventureWorks2022', 'Collation') AS Collation, DATABASEPROPERTYEX('AdventureWorks2022', 'Edition') AS Edition;" db-types="SQLServer"/>
 </sql-cases>
