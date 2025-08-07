@@ -11516,4 +11516,33 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_collation_identifier">
+        <projections start-index="7" stop-index="136">
+            <expression-projection alias="Collation" text="DATABASEPROPERTYEX('AdventureWorks2022', 'Collation')" start-index="7" stop-index="72">
+                <expr>
+                    <function function-name="DATABASEPROPERTYEX" text="DATABASEPROPERTYEX('AdventureWorks2022', 'Collation')" start-index="7" stop-index="59">
+                        <parameter>
+                            <literal-expression value="AdventureWorks2022" start-index="26" stop-index="45"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Collation" start-index="48" stop-index="58"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="Edition" text="DATABASEPROPERTYEX('AdventureWorks2022', 'Edition')" start-index="75" stop-index="136">
+                <expr>
+                    <function function-name="DATABASEPROPERTYEX" text="DATABASEPROPERTYEX('AdventureWorks2022', 'Edition')" start-index="75" stop-index="125">
+                        <parameter>
+                            <literal-expression value="AdventureWorks2022" start-index="94" stop-index="113"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="Edition" start-index="116" stop-index="124"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
