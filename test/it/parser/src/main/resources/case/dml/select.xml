@@ -11483,4 +11483,37 @@
         </group-by>
         <option-hint start-index="107" stop-index="132" text="OPTION (HASH GROUP, LABEL = N'label1')" />
     </select>
+
+    <select sql-case-id="select_from_value_function">
+        <projections start-index="7" stop-index="10">
+            <column-projection name="a" start-index="7" stop-index="7" />
+            <column-projection name="b" start-index="10" stop-index="10" />
+        </projections>
+        <from>
+            <function-table table-alias="MyTable" start-index="18" stop-index="89">
+                <function start-index="19" stop-index="65" text="VALUES (1, 2), (3, 4)" function-name="VALUES">
+                    <parameter>
+                        <list-expression start-index="27" stop-index="31">
+                            <items>
+                                <literal-expression value="1" start-index="27" stop-index="27" />
+                            </items>
+                            <items>
+                                <literal-expression value="2" start-index="30" stop-index="30" />
+                            </items>
+                        </list-expression>
+                    </parameter>
+                    <parameter>
+                        <list-expression start-index="35" stop-index="39">
+                            <items>
+                                <literal-expression value="3" start-index="35" stop-index="35" />
+                            </items>
+                            <items>
+                                <literal-expression value="4" start-index="38" stop-index="38" />
+                            </items>
+                        </list-expression>
+                    </parameter>
+                </function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
