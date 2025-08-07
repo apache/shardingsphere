@@ -503,17 +503,22 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDmlTableClause(final DmlTableClauseContext ctx) {
+        SimpleTableSegment result;
         if (null != ctx.AT_() && null != ctx.dbLink()) {
-            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().name().getText())));
+            result = new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().name().getText())));
             if (null != ctx.tableName().owner()) {
                 result.setOwner(
                         new OwnerSegment(ctx.tableName().owner().start.getStartIndex(), ctx.tableName().owner().stop.getStopIndex(), (IdentifierValue) visit(ctx.tableName().owner().identifier())));
             }
             result.setAt(new IdentifierValue(ctx.AT_().getText()));
             result.setDbLink(new IdentifierValue(ctx.dbLink().identifier(0).getText()));
-            return result;
+        } else {
+            result = (SimpleTableSegment) visit(ctx.tableName());
         }
-        return visit(ctx.tableName());
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
+        }
+        return result;
     }
     
     @Override
