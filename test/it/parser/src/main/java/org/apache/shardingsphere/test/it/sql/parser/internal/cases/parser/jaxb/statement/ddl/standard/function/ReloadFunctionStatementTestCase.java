@@ -19,5 +19,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+/**
+ * Reload function statement test case.
+ */
 public final class ReloadFunctionStatementTestCase extends SQLParserTestCase {
 }
