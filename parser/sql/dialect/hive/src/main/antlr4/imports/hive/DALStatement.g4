@@ -15,40 +15,23 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+grammar DALStatement;
 
-import Comments, DMLStatement, DDLStatement, DALStatement;
+import BaseRule;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | loadStatement
-    | createDatabase
-    | dropDatabase
-    | alterDatabase
-    | use
-    | createTable
-    | dropTable
-    | truncateTable
-    | msckStatement
-    | alterTable
-    | createView
-    | dropView
-    | alterView
-    | createMaterializedView
-    | dropMaterializedView
-    | alterMaterializedView
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | createMacro
-    | dropMacro
-    | createFunction
-    | dropFunction
-    | show
-    ) (SEMI_ EOF? | EOF)
-    | EOF
+show
+    : showDatabases
+    | showConnectors
+    ;
+
+showDatabases
+    : SHOW (DATABASES|SCHEMAS) showLike?
+    ;
+
+showLike
+    : LIKE stringLiterals
+    ;
+
+showConnectors
+    : SHOW CONNECTORS
     ;

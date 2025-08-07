@@ -360,7 +360,7 @@
                         </left>
                         <operator>=</operator>
                         <right>
-                            <literal-expression value="t_order" start-delimiter="'" end-delimiter="'" start-index="52" stop-index="60" />
+                            <literal-expression value="t_order" start-index="49" stop-index="57" />
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -869,4 +869,26 @@
     <show sql-case-id="show_search_path" name="search_path" />
     <show sql-case-id="show_errors" />
     <show sql-case-id="show_parameter_smtp_out_server" />
+
+    <show-databases sql-case-id="show_databases_basic" />
+
+    <show-databases sql-case-id="show_schemas_basic" />
+
+    <show-databases sql-case-id="show_databases_with_like_wildcard">
+        <filter start-index="15" stop-index="25">
+            <like pattern="emp*" start-delimiter="'" end-delimiter="'" start-index="20" stop-index="25" />
+        </filter>
+    </show-databases>
+
+    <show-databases sql-case-id="show_schemas_with_like_sql_wildcard">
+        <filter start-index="13" stop-index="29">
+            <like pattern="emplo_ees" start-delimiter="'" end-delimiter="'" start-index="18" stop-index="29" />
+        </filter>
+    </show-databases>
+
+    <show-databases sql-case-id="show_databases_with_like_exact_match">
+        <filter start-index="15" stop-index="31">
+            <like pattern="employees" start-delimiter="'" end-delimiter="'" start-index="20" stop-index="31" />
+        </filter>
+    </show-databases>
 </sql-parser-test-cases>
