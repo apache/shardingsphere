@@ -363,4 +363,5 @@
     <sql-case id="select_from_value_function" value="SELECT a, b FROM (VALUES (1, 2), (3, 4)) AS MyTable(a, b);" db-types="SQLServer"/>
     <sql-case id="select_collation_identifier" value="SELECT DATABASEPROPERTYEX('AdventureWorks2022', 'Collation') AS Collation, DATABASEPROPERTYEX('AdventureWorks2022', 'Edition') AS Edition;" db-types="SQLServer"/>
     <sql-case id="select_with_temptable_no_alias" value="SELECT * FROM OPENXML(@idoc, '/ROOT/Customer', 1) WITH (CustomerID VARCHAR(10),ContactName VARCHAR(20));" db-types="SQLServer"/>
+    <sql-case id="select_vector_search_function" value="SELECT r.* FROM VECTOR_SEARCH(TABLE = dbo.sessions AS s, COLUMN = embedding, SIMILAR_TO = @qv, METRIC = 'cosine', TOP_N = 10) AS r;" db-types="SQLServer"/>
 </sql-cases>
