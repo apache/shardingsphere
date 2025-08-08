@@ -151,6 +151,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Try
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateStatisticsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
@@ -1457,6 +1458,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputTableName()) {
             if (null != ctx.outputTableName().tableName()) {
                 result.setTable((SimpleTableSegment) visit(ctx.outputTableName().tableName()));
+            } else if (null != ctx.outputTableName().variableName()) {
+                VariableNameContext variableNameCtx = ctx.outputTableName().variableName();
+                SimpleTableSegment tableSegment =
+                        new SimpleTableSegment(new TableNameSegment(variableNameCtx.start.getStartIndex(), variableNameCtx.stop.getStopIndex(), new IdentifierValue(variableNameCtx.getText())));
+                result.setTable(tableSegment);
             }
             if (null != ctx.columnNames()) {
                 ColumnNamesContext columnNames = ctx.columnNames();
