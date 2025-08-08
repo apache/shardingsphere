@@ -39,10 +39,10 @@ public final class DCLStatementBindEngine {
     public DCLStatement bind(final DCLStatement statement, final SQLStatementBinderContext binderContext) {
         if (statement instanceof RevokeStatement) {
             return new RevokeStatementBinder().bind((RevokeStatement) statement, binderContext);
+        }
         if (statement instanceof GrantStatement) {
             return new GrantStatementBinder().bind((GrantStatement) statement, binderContext);
         }
-            return statement;
-        }
+        return statement;
     }
 }
