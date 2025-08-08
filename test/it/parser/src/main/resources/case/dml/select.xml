@@ -11545,4 +11545,25 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_temptable_no_alias">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="98">
+            <function-table start-index="14" stop-index="98">
+                <table-function function-name="OPENXML" text="OPENXML(@idoc, '/ROOT/Customer', 1)">
+                    <parameter>
+                        <literal-expression value="@idoc" start-index="22" stop-index="26" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="/ROOT/Customer" start-index="29" stop-index="44" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="1" start-index="47" stop-index="47" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
