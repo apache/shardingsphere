@@ -93,8 +93,7 @@ public final class OpenGaussLogicalReplication {
      * @return replication stream
      * @throws SQLException SQL exception
      */
-    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName,
-                                                       final int majorVersion) throws SQLException {
+    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName, final int majorVersion) throws SQLException {
         ChainedLogicalStreamBuilder logicalStreamBuilder = connection.getReplicationAPI()
                 .replicationStream()
                 .logical()
@@ -105,10 +104,6 @@ public final class OpenGaussLogicalReplication {
         if (majorVersion < 3) {
             return logicalStreamBuilder.start();
         }
-        return logicalStreamBuilder
-                .withSlotOption("parallel-decode-num", 10)
-                .withSlotOption("decode-style", "j")
-                .withSlotOption("sending-batch", 0)
-                .start();
+        return logicalStreamBuilder.withSlotOption("parallel-decode-num", 10).withSlotOption("decode-style", "j").withSlotOption("sending-batch", 0).start();
     }
 }

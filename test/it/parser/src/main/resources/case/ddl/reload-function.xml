@@ -17,12 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
-    <drop-function sql-case-id="drop_temporary_function_basic" />
-    <drop-function sql-case-id="drop_temporary_function_with_if_exists" />
-    <drop-function sql-case-id="drop_function_basic" />
-    <drop-function sql-case-id="drop_function_with_if_exists" />
+    <reload-function sql-case-id="reload_functions" />
+    <reload-function sql-case-id="reload_function" />
 </sql-parser-test-cases>

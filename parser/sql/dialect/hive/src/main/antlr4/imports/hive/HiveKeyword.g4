@@ -863,6 +863,10 @@ FUNCTION
     : F U N C T I O N
     ;
 
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
 GENERAL
     : G E N E R A L
     ;

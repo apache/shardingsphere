@@ -48,6 +48,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterInd
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateMacroContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropMacroContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DropFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ReloadFunctionContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -60,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.ReloadFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
@@ -76,6 +79,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.macro.CreateMacroStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.macro.DropMacroStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
@@ -417,5 +421,15 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         return new CreateFunctionStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropFunction(final DropFunctionContext ctx) {
+        return new DropFunctionStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitReloadFunction(final ReloadFunctionContext ctx) {
+        return new ReloadFunctionStatement(getDatabaseType());
     }
 }

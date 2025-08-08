@@ -129,6 +129,15 @@ createFunction
     | CREATE FUNCTION functionName AS className createFunctionOptions?
     ;
 
+dropFunction
+    : DROP TEMPORARY FUNCTION ifExists? functionName
+    | DROP FUNCTION ifExists? functionName
+    ;
+
+reloadFunction
+    : RELOAD (FUNCTIONS | FUNCTION)
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier

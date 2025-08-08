@@ -16,13 +16,9 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
-    <drop-function sql-case-id="drop_temporary_function_basic" />
-    <drop-function sql-case-id="drop_temporary_function_with_if_exists" />
-    <drop-function sql-case-id="drop_function_basic" />
-    <drop-function sql-case-id="drop_function_with_if_exists" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="revoke_user_without_hostname" value="REVOKE SELECT, UPDATE on t_order from user_dev" db-types="Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="revoke_crud_on_table" value="REVOKE INSERT, SELECT, UPDATE, DELETE ON t_order FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_select_on_table_for_sqlserver" value="REVOKE SELECT ON t_order FROM user1" db-types="SQLServer" />
+    <sql-case id="revoke_select_to_users" value="REVOKE SELECT (order_id) ON t_order FROM user1, user2" db-types="SQLServer" />
+</sql-cases>

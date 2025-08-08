@@ -102,7 +102,7 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? optionHint?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) withTableHint? outputClause? whereClause? optionHint?
     ;
 
 optionHint
@@ -185,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? columnNames? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -258,7 +258,7 @@ subquery
     ;
 
 withTempTable
-    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ AS alias
+    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ (AS alias)?
     ;
 
 withClause
@@ -290,7 +290,7 @@ outputWithColumn
     ;
 
 outputWithAaterisk
-    : (INSERTED | DELETED) DOT_ASTERISK_
+    : ((INSERTED | DELETED) DOT_ASTERISK_ | expr) (COMMA_ ((INSERTED | DELETED) DOT_ASTERISK_ | expr))*
     ;
 
 outputTableName

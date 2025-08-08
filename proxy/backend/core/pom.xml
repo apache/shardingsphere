@@ -127,11 +127,6 @@
             <artifactId>shardingsphere-schedule-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>compile</scope>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

@@ -16,13 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <drop-function sql-case-id="drop_function" />
-    <drop-function sql-case-id="drop_functions" />
-    <drop-function sql-case-id="drop_function_without_argument_list" />
-    <drop-function sql-case-id="drop_function_with_schema" />
-    <drop-function sql-case-id="drop_temporary_function_basic" />
-    <drop-function sql-case-id="drop_temporary_function_with_if_exists" />
-    <drop-function sql-case-id="drop_function_basic" />
-    <drop-function sql-case-id="drop_function_with_if_exists" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="reload_functions" value="RELOAD FUNCTIONS;" db-types="Hive" />
+    <sql-case id="reload_function" value="RELOAD FUNCTION;" db-types="Hive" />
+</sql-cases>
