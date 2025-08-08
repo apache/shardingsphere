@@ -255,6 +255,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VectorSearchFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VectorSearchParametersContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RollupCubeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingSetsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExpressionListContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1343,10 +1348,80 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
+        if (!ctx.groupByItem().isEmpty()) {
+            for (GroupByItemContext each : ctx.groupByItem()) {
+                items.addAll(generateOrderByItemsFromGroupByItem(each));
+            }
+        } else if (!ctx.orderByItem().isEmpty()) {
+            for (OrderByItemContext each : ctx.orderByItem()) {
+                items.add((OrderByItemSegment) visit(each));
+            }
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.expr()) {
+            OrderByItemSegment item = (OrderByItemSegment) extractValueFromGroupByItemExpression(ctx.expr());
+            result.add(item);
+        } else if (null != ctx.rollupCubeClause()) {
+            result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(ctx.rollupCubeClause()));
+        } else {
+            result.addAll(generateOrderByItemSegmentsFromGroupingSetsClause(ctx.groupingSetsClause()));
+        }
+        return result;
+    }
+    
+    private ASTNode extractValueFromGroupByItemExpression(final ExprContext ctx) {
+        ASTNode expression = visit(ctx);
+        if (expression instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) expression;
+            return new ColumnOrderByItemSegment(column, OrderDirection.ASC, null);
+        }
+        if (expression instanceof LiteralExpressionSegment) {
+            LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
+            return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
+                    SQLUtils.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, null);
+        }
+        return new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null, (ExpressionSegment) expression);
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromRollupCubeClause(final RollupCubeClauseContext ctx) {
+        return new LinkedList<>(generateOrderByItemSegmentsFromGroupingExprList(ctx.groupingExprList()));
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromGroupingSetsClause(final GroupingSetsClauseContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.rollupCubeClause()) {
+            for (RollupCubeClauseContext each : ctx.rollupCubeClause()) {
+                result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(each));
+            }
+        }
+        if (null != ctx.groupingExprList()) {
+            for (GroupingExprListContext each : ctx.groupingExprList()) {
+                result.addAll(generateOrderByItemSegmentsFromGroupingExprList(each));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromGroupingExprList(final GroupingExprListContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        for (ExpressionListContext each : ctx.expressionList()) {
+            result.addAll(generateOrderByItemSegmentsFromExpressionList(each));
+        }
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromExpressionList(final ExpressionListContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.add((OrderByItemSegment) extractValueFromGroupByItemExpression(each));
+            }
+        }
+        return result;
     }
     
     /**
