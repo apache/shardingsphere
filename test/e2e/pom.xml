@@ -39,4 +39,12 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
