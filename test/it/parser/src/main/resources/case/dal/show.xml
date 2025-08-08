@@ -893,4 +893,9 @@
     </show-databases>
 
     <show sql-case-id="show_connectors" />
+
+    <show sql-case-id="show_tables_basic" />
+    <show sql-case-id="show_tables_in_database" />
+    <show sql-case-id="show_tables_with_wildcard" />
+    <show sql-case-id="show_tables_in_db_with_wildcard" />
 </sql-parser-test-cases>

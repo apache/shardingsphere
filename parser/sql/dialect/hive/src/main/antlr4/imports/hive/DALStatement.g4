@@ -22,6 +22,7 @@ import BaseRule;
 show
     : showDatabases
     | showConnectors
+    | showTables
     ;
 
 showDatabases
@@ -34,4 +35,8 @@ showLike
 
 showConnectors
     : SHOW CONNECTORS
+    ;
+
+showTables
+    : SHOW TABLES (IN databaseName)? stringLiterals?
     ;

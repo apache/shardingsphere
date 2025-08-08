@@ -152,4 +152,8 @@
     <sql-case id="show_schemas_with_like_sql_wildcard" value="SHOW SCHEMAS LIKE 'emplo_ees';" db-types="Hive" />
     <sql-case id="show_databases_with_like_exact_match" value="SHOW DATABASES LIKE 'employees';" db-types="Hive" />
     <sql-case id="show_connectors" value="SHOW CONNECTORS;" db-types="Hive" />
+    <sql-case id="show_tables_basic" value="SHOW TABLES;" db-types="Hive" />
+    <sql-case id="show_tables_in_database" value="SHOW TABLES IN sales_db;" db-types="Hive" />
+    <sql-case id="show_tables_with_wildcard" value="SHOW TABLES 'order_*';" db-types="Hive" />
+    <sql-case id="show_tables_in_db_with_wildcard" value="SHOW TABLES IN sales_db 'order_*';" db-types="Hive" />
 </sql-cases>
