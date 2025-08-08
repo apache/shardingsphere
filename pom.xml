@@ -145,7 +145,6 @@
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <testcontainers.version>1.21.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.2</graal-sdk.version>
