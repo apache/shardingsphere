@@ -11566,4 +11566,35 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_vector_search_function">
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="r" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <from start-index="18" stop-index="122">
+            <function-table table-alias="r" start-index="18" stop-index="122">
+                <table-function function-name="VECTOR_SEARCH" text="VECTOR_SEARCH(TABLE = dbo.sessions AS s, COLUMN = embedding, SIMILAR_TO = @qv, METRIC = 'cosine', TOP_N = 10)" start-index="18" stop-index="116">
+                    <parameter>
+                        <simple-table name="sessions" start-index="32" stop-index="43">
+                            <owner name="dbo" start-index="32" stop-index="34" />
+                        </simple-table>
+                    </parameter>
+                    <parameter>
+                        <column name="embedding" start-index="59" stop-index="67" />
+                    </parameter>
+                    <parameter>
+                        <parameter-marker value="@qv" start-index="82" stop-index="84" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="cosine" start-index="95" stop-index="102" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="10" start-index="112" stop-index="113" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
