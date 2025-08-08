@@ -18,31 +18,21 @@
 package org.apache.shardingsphere.sql.parser.statement.hive.dal.show;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
-import java.util.Optional;
-
 /**
- * Show database statement for Hive.
+ * Show connectors statement for Hive.
  */
-public final class HiveShowDatabasesStatement extends DALStatement {
+public final class HiveShowConnectorsStatement extends DALStatement {
     
-    private final ShowFilterSegment filter;
-    
-    public HiveShowDatabasesStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
+    public HiveShowConnectorsStatement(final DatabaseType databaseType) {
         super(databaseType);
-        this.filter = filter;
-    }
-    
-    public Optional<ShowFilterSegment> getFilter() {
-        return Optional.ofNullable(filter);
     }
     
     @Override
     public SQLStatementAttributes getAttributes() {
         return new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
-}
+} 

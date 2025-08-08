@@ -151,5 +151,5 @@
     <sql-case id="show_databases_with_like_wildcard" value="SHOW DATABASES LIKE 'emp*';" db-types="Hive" />
     <sql-case id="show_schemas_with_like_sql_wildcard" value="SHOW SCHEMAS LIKE 'emplo_ees';" db-types="Hive" />
     <sql-case id="show_databases_with_like_exact_match" value="SHOW DATABASES LIKE 'employees';" db-types="Hive" />
-
+    <sql-case id="show_connectors" value="SHOW CONNECTORS;" db-types="Hive" />
 </sql-cases>

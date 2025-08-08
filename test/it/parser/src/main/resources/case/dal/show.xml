@@ -891,4 +891,6 @@
             <like pattern="employees" start-delimiter="'" end-delimiter="'" start-index="20" stop-index="31" />
         </filter>
     </show-databases>
+
+    <show sql-case-id="show_connectors" />
 </sql-parser-test-cases>
