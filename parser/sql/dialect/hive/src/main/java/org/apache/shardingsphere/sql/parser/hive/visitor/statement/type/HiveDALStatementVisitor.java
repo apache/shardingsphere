@@ -69,7 +69,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowConnectors(final ShowConnectorsContext ctx) {
         return new HiveShowConnectorsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         return new HiveShowTablesStatement(getDatabaseType());

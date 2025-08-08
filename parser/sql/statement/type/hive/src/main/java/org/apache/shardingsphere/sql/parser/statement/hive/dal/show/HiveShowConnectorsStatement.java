@@ -35,4 +35,4 @@ public final class HiveShowConnectorsStatement extends DALStatement {
     public SQLStatementAttributes getAttributes() {
         return new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
-} 
+}

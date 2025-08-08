@@ -26,13 +26,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  * Show tables statement for Hive.
  */
 public final class HiveShowTablesStatement extends DALStatement {
-
-    public HiveShowTablesStatement(final DatabaseType databaseType){
+    
+    public HiveShowTablesStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
-
+    
     @Override
-    public SQLStatementAttributes getAttributes(){
+    public SQLStatementAttributes getAttributes() {
         return new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
 }
