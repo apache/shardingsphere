@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.optimizer.sqlnode.converter;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
@@ -47,7 +48,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class SQLNodeConverterEngineIT {
+public abstract class SQLNodeConverterEngineIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
@@ -70,14 +71,9 @@ class SQLNodeConverterEngineIT {
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
-        String expected;
-        try {
-            expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
-        } catch (final IllegalStateException ignore) {
-            return;
-        }
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         String actual = SQLNodeConverterEngine.convert(parseSQLStatement(databaseType, sql)).toSqlString(SQLDialectFactory.getSQLDialect(databaseType)).getSql().replace("\n", " ").replace("\r", "");
+        String expected = SQL_NODE_CONVERTER_TEST_CASES.get(sqlCaseId, sqlCaseType, databaseType).getExpectedSQL();
         assertThat(actual, is(expected));
     }
     
@@ -89,13 +85,15 @@ class SQLNodeConverterEngineIT {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-            return getTestParameters("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer").stream();
+            SQLNodeConverterEngineITSettings settings = context.getRequiredTestClass().getAnnotation(SQLNodeConverterEngineITSettings.class);
+            Preconditions.checkNotNull(settings, "Annotation SQLBinderITSettings is required.");
+            return getTestParameters(settings.value()).stream();
         }
         
         private Collection<Arguments> getTestParameters(final String... databaseTypes) {
             Collection<Arguments> result = new LinkedList<>();
             for (InternalSQLParserTestParameter each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
-                if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
+                if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each) && null != SQL_NODE_CONVERTER_TEST_CASES.get(each.getSqlCaseId(), each.getSqlCaseType(), each.getDatabaseType())) {
                     result.add(Arguments.of(each.getSqlCaseId(), each.getSqlCaseType(), "H2".equals(each.getDatabaseType()) ? "MySQL" : each.getDatabaseType()));
                 }
             }
