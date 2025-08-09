@@ -11597,4 +11597,21 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_grouping_sets">
+        <projections start-index="7" stop-index="47">
+            <column-projection name="Country" start-index="7" stop-index="13" />
+            <column-projection name="Region" start-index="16" stop-index="21" />
+            <aggregation-projection type="SUM" expression="SUM(Sales)" alias="TotalSales" start-index="24" stop-index="33" />
+        </projections>
+        <from>
+            <simple-table name="Sales" start-index="54" stop-index="58" />
+        </from>
+        <group-by>
+            <column-item name="Country" start-index="93" stop-index="99"/>
+            <column-item name="Region" start-index="102" stop-index="107"/>
+            <column-item name="Country" start-index="117" stop-index="123"/>
+            <column-item name="Region" start-index="126" stop-index="131"/>
+        </group-by>
+    </select>
 </sql-parser-test-cases>
