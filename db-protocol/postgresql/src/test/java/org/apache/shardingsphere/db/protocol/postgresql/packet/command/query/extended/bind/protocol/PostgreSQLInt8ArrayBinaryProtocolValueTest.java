@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
+import io.netty.buffer.Unpooled;
 
 import java.nio.charset.StandardCharsets;
 
@@ -52,6 +53,19 @@ class PostgreSQLInt8ArrayBinaryProtocolValueTest {
     
     @Test
     void assertWrite() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> new PostgreSQLInt8ArrayBinaryProtocolValue().write(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), "val"));
+        Object[] input = new Object[]{11L, 12L};
+        ByteBuf byteBuf = Unpooled.buffer();
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        new PostgreSQLInt8ArrayBinaryProtocolValue().write(payload, input);
+        byteBuf.readerIndex(0);
+        assertThat(byteBuf.readInt(), is(1));
+        assertThat(byteBuf.readInt(), is(0));
+        assertThat(byteBuf.readInt(), is(20));
+        assertThat(byteBuf.readInt(), is(2));
+        assertThat(byteBuf.readInt(), is(1));
+        assertThat(byteBuf.readInt(), is(8));
+        assertThat(byteBuf.readLong(), is(11L));
+        assertThat(byteBuf.readInt(), is(8));
+        assertThat(byteBuf.readLong(), is(12L));
     }
 }
