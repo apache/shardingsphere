@@ -63,11 +63,6 @@
             <artifactId>HikariCP</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-        </dependency>
     </dependencies>
     
     <build>
