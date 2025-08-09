@@ -98,11 +98,6 @@
             <groupId>io.prometheus.jmx</groupId>
             <artifactId>collector</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
     </dependencies>
     
     <build>
