@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement;
 
+import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdAllocateStatementPacketTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertAllocateStatementPacket() {
+        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        payload.writeInt4(0);
+        payload.writeInt4(1);
+        payload.getByteBuf().readerIndex(0);
+        FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8));
+        assertThat(packet.getDatabaseId(), is(1));
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(FirebirdAllocateStatementPacket.getLength(), is(8));
     }
 }

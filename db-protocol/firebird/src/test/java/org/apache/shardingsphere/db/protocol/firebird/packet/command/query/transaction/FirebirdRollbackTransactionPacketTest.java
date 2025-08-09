@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdRollbackTransactionPacketTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertReadTransactionId() {
+        ByteBuf buf = Unpooled.buffer();
+        buf.writeZero(4);
+        buf.writeInt(456);
+        FirebirdRollbackTransactionPacket packet = new FirebirdRollbackTransactionPacket(new FirebirdPacketPayload(buf, StandardCharsets.UTF_8));
+        assertThat(packet.getTransactionId(), is(456));
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(FirebirdRollbackTransactionPacket.getLength(), is(8));
     }
 }

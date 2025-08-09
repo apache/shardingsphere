@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdCommandPacketTypeTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertValueOf() {
+        assertThat(FirebirdCommandPacketType.valueOf(FirebirdCommandPacketType.CONNECT.getValue()), is(FirebirdCommandPacketType.CONNECT));
+    }
+    
+    @Test
+    void assertValueOfWithIllegalArgument() {
+        assertThrows(NullPointerException.class, () -> FirebirdCommandPacketType.valueOf(-1));
     }
 }
