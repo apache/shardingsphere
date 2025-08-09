@@ -49,7 +49,7 @@ conditionalInsertElsePart
 
 insertIntoClause
     : INTO dmlTableExprClause
-    | INTO dmlTableExprClause alias? columnNames?
+    | INTO dmlTableExprClause columnNames?
     ;
 
 insertValuesClause
@@ -62,13 +62,12 @@ returningClause
 
 dmlTableExprClause
     : dmlTableClause | dmlSubqueryClause | tableCollectionExpr
+    | (dmlTableClause | dmlSubqueryClause | tableCollectionExpr) alias
     ;
 
 dmlTableClause
     : tableName (partitionExtClause | AT_ dbLink)?
-    | tableName (partitionExtClause | AT_ dbLink)? AS? alias
     | (viewName | materializedViewName) (AT_ dbLink)?
-    | (viewName | materializedViewName) (AT_ dbLink)? AS? alias
     ;
 
 partitionExtClause
