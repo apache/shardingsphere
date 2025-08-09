@@ -146,4 +146,14 @@
     <sql-case id="show_search_path" value="SHOW search_path;" db-types="PostgreSQL,openGauss" />
     <sql-case id="show_errors" value="SHOW ERRORS;" db-types="Oracle"/>
     <sql-case id="show_parameter_smtp_out_server" value="SHOW PARAMETER SMTP_OUT_SERVER" db-types="Oracle"/>
+    <sql-case id="show_databases_basic" value="SHOW DATABASES;" db-types="Hive" />
+    <sql-case id="show_schemas_basic" value="SHOW SCHEMAS;" db-types="Hive" />
+    <sql-case id="show_databases_with_like_wildcard" value="SHOW DATABASES LIKE 'emp*';" db-types="Hive" />
+    <sql-case id="show_schemas_with_like_sql_wildcard" value="SHOW SCHEMAS LIKE 'emplo_ees';" db-types="Hive" />
+    <sql-case id="show_databases_with_like_exact_match" value="SHOW DATABASES LIKE 'employees';" db-types="Hive" />
+    <sql-case id="show_connectors" value="SHOW CONNECTORS;" db-types="Hive" />
+    <sql-case id="show_tables_basic" value="SHOW TABLES;" db-types="Hive" />
+    <sql-case id="show_tables_in_database" value="SHOW TABLES IN sales_db;" db-types="Hive" />
+    <sql-case id="show_tables_with_wildcard" value="SHOW TABLES 'order_*';" db-types="Hive" />
+    <sql-case id="show_tables_in_db_with_wildcard" value="SHOW TABLES IN sales_db 'order_*';" db-types="Hive" />
 </sql-cases>

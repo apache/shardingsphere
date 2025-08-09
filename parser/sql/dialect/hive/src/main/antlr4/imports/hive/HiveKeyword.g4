@@ -3365,3 +3365,7 @@ MACRO
 JAR
     : J A R
     ;
+
+CONNECTORS
+    : C O N N E C T O R S
+    ;
