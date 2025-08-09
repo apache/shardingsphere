@@ -29,14 +29,14 @@ showDatabases
     : SHOW (DATABASES|SCHEMAS) showLike?
     ;
 
-showLike
-    : LIKE stringLiterals
-    ;
-
 showConnectors
     : SHOW CONNECTORS
     ;
 
 showTables
     : SHOW TABLES (IN databaseName)? stringLiterals?
+    ;
+
+showLike
+    : LIKE stringLiterals
     ;
