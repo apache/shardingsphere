@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.loader.strategy.impl;
 import com.google.common.base.Strings;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import lombok.extern.slf4j.Slf4j;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.env.EnvironmentContext;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 /**
  * Test parameter load strategy with GitHub.
  */
-@Slf4j
 public final class GitHubTestParameterLoadStrategy implements TestParameterLoadStrategy {
     
     private static final String TOKEN_KEY = "it.github.token";
@@ -104,19 +103,15 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
         return URI.create(String.join("/", "https://api.github.com/repos", casesOwner, casesRepo, "contents", casesDirectory));
     }
     
+    @SneakyThrows(IOException.class)
     private String loadContent(final URI casesURI) {
-        try {
-            URLConnection urlConnection = casesURI.toURL().openConnection();
-            String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
-            if (!Strings.isNullOrEmpty(githubToken)) {
-                urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
-                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-            }
-        } catch (final IOException ex) {
-            log.warn("Load failed, reason is: ", ex);
-            return "";
+        URLConnection urlConnection = casesURI.toURL().openConnection();
+        String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
+        if (!Strings.isNullOrEmpty(githubToken)) {
+            urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         }
     }
 }

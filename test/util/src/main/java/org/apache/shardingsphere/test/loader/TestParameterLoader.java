@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.test.loader;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.env.EnvironmentContext;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
@@ -46,7 +44,6 @@ import java.util.stream.Stream;
  * Test parameter loader.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class TestParameterLoader {
     
     private static final String TOKEN_KEY = "it.github.token";
@@ -94,19 +91,15 @@ public final class TestParameterLoader {
         });
     }
     
+    @SneakyThrows(IOException.class)
     private List<String> loadContent(final URI uri) {
-        try {
-            URLConnection urlConnection = uri.toURL().openConnection();
-            String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
-            if (!Strings.isNullOrEmpty(githubToken)) {
-                urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
-                return reader.lines().collect(Collectors.toList());
-            }
-        } catch (final IOException ex) {
-            log.warn("Load failed, reason is: ", ex);
-            return Lists.newArrayList();
+        URLConnection urlConnection = uri.toURL().openConnection();
+        String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
+        if (!Strings.isNullOrEmpty(githubToken)) {
+            urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+            return reader.lines().collect(Collectors.toList());
         }
     }
 }

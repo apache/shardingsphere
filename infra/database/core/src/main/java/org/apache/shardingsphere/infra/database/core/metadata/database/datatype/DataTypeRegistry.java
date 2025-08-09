@@ -63,7 +63,7 @@ public final class DataTypeRegistry {
     /**
      * Get data type.
      *
-     * @param databaseType database type 
+     * @param databaseType database type
      * @param dataTypeName data type name
      * @return data type
      */
