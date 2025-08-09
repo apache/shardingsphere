@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_group_by_with_sum" value="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_sum_where" value="SELECT p.prod_subcategory, SUM(s.amount_sold) AS sum_amount FROM sales s, products p WHERE s.prod_id = p.prod_id GROUP BY p.prod_subcategory" db-types="Oracle" />
+    <sql-case id="select_group_by_with_count" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_max" value="SELECT MAX(order_id) AS max_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_min" value="SELECT MIN(order_id) AS min_order_id, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_avg" value="SELECT AVG(order_id) AS orders_avg, user_id FROM t_order GROUP BY user_id ORDER BY user_id" />
+    <sql-case id="select_group_by_with_column_avg" value="SELECT p.prod_subcategory, AVG(s.amount_sold) AS avg_sales FROM  sales s, products p WHERE s.prod_id = p.prod_id GROUP BY p.prod_subcategory" db-types="Oracle" />
+    <sql-case id="select_group_by_with_order_by_desc" value="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY orders_sum DESC" />
+    <sql-case id="select_group_by_without_grouped_column" value="SELECT count(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? GROUP BY o.user_id" />
+    <sql-case id="select_group_by_with_limit" value="SELECT user_id FROM t_order GROUP BY user_id ORDER BY user_id LIMIT ?" db-types="H2,MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_group_by_with_order_by_and_limit" value="SELECT user_id, SUM(order_id) AS orders_sum FROM t_order GROUP BY user_id ORDER BY SUM(order_id) LIMIT ?" db-types="H2,MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_with_item_alias_match_order_by_and_group_by_items" value="SELECT o.user_id uid FROM t_order o GROUP BY o.user_id ORDER BY o.user_id" db-types="H2,MySQL,SQLServer,PostgreSQL,openGauss" />
+    <sql-case id="select_group_by_with_date_function" value="SELECT date_format(creation_date,  '%y-%m-%d') as creation_date, count(*) as c_number FROM `t_order_item` WHERE order_id in (?, ?) GROUP BY date_format(creation_date, '%y-%m-%d')" db-types="MySQL" />
+    <sql-case id="select_group_by_with_keyword_alias" value="SELECT SUM(order_id) AS orders_sum, user_id as `key` FROM t_order GROUP BY `key`" db-types="MySQL" />
+    <sql-case id="select_group_by_with_count_without_column_name" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY 2 ORDER BY 2" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss" />
+    <sql-case id="select_group_by_with_having" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id HAVING orders_count > 0" />
+    <sql-case id="select_group_by_with_having_count" value="SELECT COUNT(order_id), user_id FROM t_order GROUP BY user_id HAVING COUNT(order_id) > 0" />
+    <sql-case id="select_group_by_with_having_and_window" value="SELECT COUNT(order_id) AS orders_count, user_id FROM t_order GROUP BY user_id HAVING orders_count > 0 WINDOW w AS (PARTITION BY user_id)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_group_by_cube" value="SELECT DECODE(GROUPING(department_name), 1, 'All Departments', department_name) AS department_name, DECODE(GROUPING(job_id), 1, 'All Jobs', job_id) AS job_id, COUNT(*) &quot;Total Empl&quot;, AVG(salary) * 12 &quot;Average Sal&quot; FROM employees e, departments d WHERE d.department_id = e.department_id GROUP BY CUBE (department_name, job_id) ORDER BY department_name, job_id" db-types="Oracle" />
+    <sql-case id="select_group_by_grouping_sets" value="SELECT channel_desc, calendar_month_desc, co.country_id, TO_CHAR(SUM(amount_sold) , '9,999,999,999') SALES$ FROM sales, customers, times, channels, countries co WHERE sales.time_id=times.time_id GROUP BY GROUPING SETS((channel_desc,calendar_month_desc,co.country_id), (channel_desc,co.country_id), (calendar_month_desc,co.country_id))" db-types="Oracle" />
+    <sql-case id="select_group_by_with_having_with_order_by" value="SELECT department_id, MIN(salary), MAX(salary) FROM employees GROUP BY department_id HAVING MIN(salary) &lt; 5000 ORDER BY department_id" db-types="Oracle" />
+    <sql-case id="select_group_by_with_having_with_subquery" value="SELECT department_id, manager_id FROM employees GROUP BY department_id, manager_id HAVING (department_id, manager_id) IN (SELECT department_id, manager_id FROM employees x WHERE x.department_id = employees.department_id) ORDER BY department_id" db-types="Oracle" />
+    <sql-case id="select_with_case_when_then_in_group_by_item_and_order_by_item" value="SELECT order_id FROM t_order GROUP BY CASE WHEN order_id > 0 AND order_id &lt;= 10 THEN '(0,10]' WHEN order_id > 10 THEN '(10,+∞)' ELSE '' END ORDER BY CASE WHEN order_id > 0 AND order_id &lt;= 10 THEN '(0,10]' WHEN order_id > 10 THEN '(10,+∞)' ELSE '' END" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Oracle" />
+    <sql-case id="select_with_event_group_by_with_having_order_by" value="SELECT c.name, Count(*)  AS [Count-Per-Column-Repeated-Name] FROM sys.syscolumns  AS c JOIN sys.sysobjects  AS o ON o.id = c.id WHERE o.type = 'V' AND c.name like '%event%' GROUP BY c.name HAVING Count(*) >= 3 ORDER BY c.name" db-types="SQLServer" />
+    <sql-case id="select_with_datepart_group_by_with_order_by" value="SELECT DATEPART(yyyy,OrderDate) AS N'Year', SUM(TotalDue) AS N'Total Order Amount' FROM Sales.SalesOrderHeader GROUP BY DATEPART(yyyy,OrderDate) ORDER BY DATEPART(yyyy,OrderDate)" db-types="SQLServer"/>
+    <sql-case id="select_with_datepart_group_by_with_having_order_by" value="SELECT DATEPART(yyyy,OrderDate) AS N'Year', SUM(TotalDue) AS N'Total Order Amount' FROM Sales.SalesOrderHeader GROUP BY DATEPART(yyyy,OrderDate) HAVING DATEPART(yyyy,OrderDate) &gt;= N'2003' ORDER BY DATEPART(yyyy,OrderDate)" db-types="SQLServer"/>
+    <sql-case id="select_from_input_table" value="SELECT count(*) FROM input GROUP BY PartitionId, clusterid, tumblingwindow;" db-types="SQLServer"/>
+    <sql-case id="select_group_by_top_column_value" value="SELECT TOP 10 hash_unique_bigint_id FROM dbo.TelemetryDS WHERE Timestamp BETWEEN @StartTime AND @EndTime GROUP BY hash_unique_bigint_id ORDER BY MAX(max_elapsed_time_microsec) DESC" db-types="SQLServer" />
+    <sql-case id="select_group_by_count_with_tumblingwindow_function" value="SELECT count(*) FROM input GROUP BY clusterid,tumblingwindow(minutes, 5)" db-types="SQLServer" />
+</sql-cases>
