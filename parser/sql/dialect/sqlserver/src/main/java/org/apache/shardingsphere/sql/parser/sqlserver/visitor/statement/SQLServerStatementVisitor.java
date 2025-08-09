@@ -253,6 +253,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VectorSearchFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VectorSearchParametersContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -767,7 +769,36 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.currentUserFunction()) {
             return visit(ctx.currentUserFunction());
         }
+        if (null != ctx.vectorSearchFunction()) {
+            return visit(ctx.vectorSearchFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitVectorSearchFunction(final VectorSearchFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VECTOR_SEARCH().getText(), getOriginalText(ctx));
+        VectorSearchParametersContext params = ctx.vectorSearchParameters();
+        if (null != params.vectorSearchTable()) {
+            String tableText = params.vectorSearchTable().getText();
+            result.getParameters().add(new LiteralExpressionSegment(params.vectorSearchTable().getStart().getStartIndex(), params.vectorSearchTable().getStop().getStopIndex(), tableText));
+        }
+        if (null != params.columnName()) {
+            String columnText = params.columnName().getText();
+            result.getParameters().add(new LiteralExpressionSegment(params.columnName().getStart().getStartIndex(), params.columnName().getStop().getStopIndex(), columnText));
+        }
+        if (null != params.expr() && !params.expr().isEmpty()) {
+            result.getParameters().add((ExpressionSegment) visit(params.expr(0)));
+        }
+        if (null != params.vectorSearchMetric() && null != params.vectorSearchMetric().stringLiterals()) {
+            String metricText = params.vectorSearchMetric().stringLiterals().getText();
+            result.getParameters().add(new LiteralExpressionSegment(params.vectorSearchMetric().stringLiterals().getStart().getStartIndex(),
+                    params.vectorSearchMetric().stringLiterals().getStop().getStopIndex(), metricText));
+        }
+        if (null != params.expr() && params.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(params.expr(1)));
+        }
+        return result;
     }
     
     @Override
