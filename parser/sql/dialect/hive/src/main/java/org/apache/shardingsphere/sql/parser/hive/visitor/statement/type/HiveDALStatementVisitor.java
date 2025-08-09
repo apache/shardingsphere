@@ -35,6 +35,9 @@ import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConn
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTablesStatement;
 
+/**
+ * DAL statement visitor for Hive.
+ */
 public final class HiveDALStatementVisitor extends HiveStatementVisitor implements DALStatementVisitor {
     
     public HiveDALStatementVisitor(final DatabaseType databaseType) {
