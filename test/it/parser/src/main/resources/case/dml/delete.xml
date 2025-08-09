@@ -823,4 +823,17 @@
             </expr>
         </where>
     </delete>
+
+    <delete sql-case-id="delete_from_clause">
+        <table name="ProductProductPhoto" start-index="7" stop-index="36">
+            <owner name="Production" start-index="7" stop-index="16" />
+        </table>
+        <output start-index="38" stop-index="102">
+            <output-columns start-index="45" stop-index="85">
+                <column-projection name="ProductID" start-index="45" stop-index="61" />
+                <column-projection name="ProductPhotoID" start-index="64" stop-index="85" />
+            </output-columns>
+            <output-table name="@MyTableVar" start-index="92" stop-index="102" />
+        </output>
+    </delete>
 </sql-parser-test-cases>

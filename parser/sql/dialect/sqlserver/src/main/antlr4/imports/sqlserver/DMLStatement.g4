@@ -102,7 +102,7 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) withTableHint? outputClause? whereClause? optionHint?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) withTableHint? outputClause? fromClause? whereClause? optionHint?
     ;
 
 optionHint
@@ -294,7 +294,7 @@ outputWithAaterisk
     ;
 
 outputTableName
-    : tableName
+    : tableName | variableName
     ;
 
 queryHint
