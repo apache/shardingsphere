@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.hive.dal.HiveUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
 /**
  * DAL statement visitor for Hive.
@@ -37,6 +37,6 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         String database = null == ctx.DEFAULT() ? new IdentifierValue(ctx.identifier().getText()).getValue() : "default";
-        return new HiveUseStatement(getDatabaseType(), database);
+        return new MySQLUseStatement(getDatabaseType(), database);
     }
 }
