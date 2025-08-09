@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
@@ -40,7 +39,6 @@ import java.util.Properties;
  * Global configuration manager.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class GlobalConfigurationManager {
     
     private final MetaDataContexts metaDataContexts;

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.postgresql.checker;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.infra.database.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.database.core.exception.CheckDatabaseEnvironmentFailedException;
@@ -36,7 +35,6 @@ import java.util.Collections;
 /**
  * Database environment checker for PostgreSQL.
  */
-@Slf4j
 public final class PostgreSQLDatabasePrivilegeChecker implements DialectDatabasePrivilegeChecker {
     
     private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
@@ -56,7 +54,6 @@ public final class PostgreSQLDatabasePrivilegeChecker implements DialectDatabase
                 ShardingSpherePreconditions.checkState(resultSet.next(), () -> new MissingRequiredUserException(username));
                 String isSuperRole = resultSet.getString("rolsuper");
                 String isReplicationRole = resultSet.getString("rolreplication");
-                log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
                 ShardingSpherePreconditions.checkState("t".equalsIgnoreCase(isSuperRole) || "t".equalsIgnoreCase(isReplicationRole),
                         () -> new MissingRequiredPrivilegeException(Collections.singleton("REPLICATION")));
             }
