@@ -384,7 +384,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
         InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
-            result.setTable((SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause()));
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
+            if (null != ctx.dmlTableExprClause().alias()) {
+                simpleTableSegment.setAlias((AliasSegment) visit(ctx.dmlTableExprClause().alias()));
+            }
+            result.setTable(simpleTableSegment);
         } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             result.setInsertSelect((SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause()));
         } else {
@@ -503,22 +507,17 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDmlTableClause(final DmlTableClauseContext ctx) {
-        SimpleTableSegment result;
         if (null != ctx.AT_() && null != ctx.dbLink()) {
-            result = new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().name().getText())));
+            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().name().getText())));
             if (null != ctx.tableName().owner()) {
                 result.setOwner(
                         new OwnerSegment(ctx.tableName().owner().start.getStartIndex(), ctx.tableName().owner().stop.getStopIndex(), (IdentifierValue) visit(ctx.tableName().owner().identifier())));
             }
             result.setAt(new IdentifierValue(ctx.AT_().getText()));
             result.setDbLink(new IdentifierValue(ctx.dbLink().identifier(0).getText()));
-        } else {
-            result = (SimpleTableSegment) visit(ctx.tableName());
+            return result;
         }
-        if (null != ctx.alias()) {
-            result.setAlias((AliasSegment) visit(ctx.alias()));
-        }
-        return result;
+        return visit(ctx.tableName());
     }
     
     @Override
