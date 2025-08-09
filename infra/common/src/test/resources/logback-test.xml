@@ -19,17 +19,16 @@
 <configuration>
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="org.apache.shardingsphere.test.e2e.data.pipeline.logger.PipelineLoggerFilter" />
         <encoder>
             <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer" level="WARN" />
-    <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
-    <logger name="com.github.dockerjava" level="WARN" />
-    <logger name="org.apache.zookeeper.ZooKeeper" level="OFF" />
-    <logger name="org.apache.zookeeper.ClientCnxn" level="OFF" />
-    <root level="INFO">
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <root>
+        <level value="warn" />
         <appender-ref ref="console" />
     </root>
-</configuration>
+</configuration> 

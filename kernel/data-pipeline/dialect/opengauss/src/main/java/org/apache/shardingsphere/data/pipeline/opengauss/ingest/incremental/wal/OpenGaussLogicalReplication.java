@@ -93,8 +93,7 @@ public final class OpenGaussLogicalReplication {
      * @return replication stream
      * @throws SQLException SQL exception
      */
-    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName,
-                                                       final int majorVersion) throws SQLException {
+    public PGReplicationStream createReplicationStream(final PgConnection connection, final BaseLogSequenceNumber startPosition, final String slotName, final int majorVersion) throws SQLException {
         ChainedLogicalStreamBuilder logicalStreamBuilder = connection.getReplicationAPI()
                 .replicationStream()
                 .logical()

@@ -52,7 +52,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageConta
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;

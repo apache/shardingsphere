@@ -127,6 +127,8 @@ public enum SQLVisitorRule {
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
     
+    RELOAD_FUNCTION("ReloadFunction", SQLStatementType.DDL),
+    
     DROP_GROUP("DropGroup", SQLStatementType.DDL),
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),

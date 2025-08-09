@@ -145,7 +145,6 @@
         <hamcrest.version>3.0</hamcrest.version>
         <mockito.version>4.11.0</mockito.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <testcontainers.version>1.21.3</testcontainers.version>
         <commons-csv.version>1.9.0</commons-csv.version>
         
         <graal-sdk.version>24.1.2</graal-sdk.version>
@@ -440,6 +439,12 @@
                 <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+                <scope>runtime</scope>
+            </dependency>
             
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -582,13 +587,6 @@
             </dependency>
             
             <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-                <scope>test</scope>
-            </dependency>
-            
-            <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
                 <version>${bytebuddy.version}</version>
@@ -677,11 +675,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.cedarsoftware</groupId>

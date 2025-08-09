@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,19 +16,7 @@
   ~ limitations under the License.
   -->
 
-<configuration>
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer" level="WARN" />
-    <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
-    <logger name="org.testcontainers" level="INFO" />
-    <logger name="com.github.dockerjava" level="WARN" />
-    <root>
-        <level value="INFO" />
-        <appender-ref ref="console" />
-    </root>
-</configuration> 
+<sql-parser-test-cases>
+    <reload-function sql-case-id="reload_functions" />
+    <reload-function sql-case-id="reload_function" />
+</sql-parser-test-cases>
