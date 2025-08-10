@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
@@ -51,7 +50,6 @@ import java.sql.SQLException;
  * Command executor factory for Firebird.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class FirebirdCommandExecutorFactory {
     
     /**

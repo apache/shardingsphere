@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.validate.DistSQLDataSourcePoolPropertiesValidator;
@@ -53,7 +52,6 @@ import java.util.stream.Collectors;
  * Alter storage unit executor.
  */
 @Setter
-@Slf4j
 public final class AlterStorageUnitExecutor implements DistSQLUpdateExecutor<AlterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private final DistSQLDataSourcePoolPropertiesValidator validateHandler = new DistSQLDataSourcePoolPropertiesValidator();

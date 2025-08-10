@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Binary protocol value for bool for PostgreSQL.
  */
-@Slf4j
 public final class PostgreSQLBoolBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
