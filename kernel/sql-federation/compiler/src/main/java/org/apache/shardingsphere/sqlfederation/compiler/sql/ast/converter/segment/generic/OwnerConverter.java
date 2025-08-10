@@ -43,9 +43,8 @@ public final class OwnerConverter {
         }
         if (segment.getOwner().isPresent()) {
             result.addAll(convert(segment.getOwner().get()));
-        } else {
-            result.add(segment.getIdentifier().getValue());
         }
+        result.add(segment.getIdentifier().getValue());
         return result;
     }
 }
