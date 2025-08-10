@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowData
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 
-
 /**
  * DAL statement visitor for Hive.
  */
