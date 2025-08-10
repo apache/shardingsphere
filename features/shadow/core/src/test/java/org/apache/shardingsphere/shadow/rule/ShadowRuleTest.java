@@ -22,8 +22,8 @@ import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
-import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.infra.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -64,7 +64,7 @@ class ShadowRuleTest {
     }
     
     private Map<String, ShadowTableConfiguration> createTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
+        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>(2, 1F);
         result.put("foo_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds_0"), createShadowAlgorithmNames("foo_tbl")));
         result.put("bar_tbl", new ShadowTableConfiguration(Collections.singleton("foo_ds_1"), createShadowAlgorithmNames("bar_tbl")));
         return result;
@@ -83,7 +83,7 @@ class ShadowRuleTest {
     }
     
     private Map<String, AlgorithmConfiguration> createShadowAlgorithms() {
-        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(4, 1F);
         result.put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()))));
         result.put("foo-id-insert-regex-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
                 PropertiesBuilder.build(new Property("column", "foo_id"), new Property("operation", "insert"), new Property("regex", "[1]"))));

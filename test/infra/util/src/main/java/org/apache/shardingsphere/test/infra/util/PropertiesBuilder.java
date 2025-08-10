@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.infra.props;
+package org.apache.shardingsphere.test.infra.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

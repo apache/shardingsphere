@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml;
 
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
-import org.apache.shardingsphere.test.infra.file.ConfigurationFileUtils;
+import org.apache.shardingsphere.test.infra.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
 

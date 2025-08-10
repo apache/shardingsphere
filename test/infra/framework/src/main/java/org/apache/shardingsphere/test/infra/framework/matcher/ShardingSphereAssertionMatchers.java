@@ -15,50 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.infra.matcher;
+package org.apache.shardingsphere.test.infra.framework.matcher;
 
 import com.cedarsoftware.util.DeepEquals;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.mockito.ArgumentMatcher;
-import org.mockito.internal.progress.ThreadSafeMockingProgress;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 
 /**
- * ShardingSphere argument verify matchers.
+ * ShardingSphere assertion matchers.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereArgumentVerifyMatchers {
+public final class ShardingSphereAssertionMatchers {
     
     /**
-     * Deep equals.
+     * Deep equal.
      *
-     * @param obj to be verified object
-     * @param <T> type of to be verified object
-     * @return null
+     * @param operand operand
+     * @param <T> type of operand
+     * @return matcher
      */
-    public static <T> T deepEq(final T obj) {
-        reportMatcher(new DeepEqualsMatcher(obj));
-        return obj;
-    }
-    
-    private static void reportMatcher(final ArgumentMatcher<?> matcher) {
-        ThreadSafeMockingProgress.mockingProgress().getArgumentMatcherStorage().reportMatcher(matcher);
+    public static <T> Matcher<T> deepEqual(final T operand) {
+        return new DeepEqualMatcher<>(operand);
     }
     
     @RequiredArgsConstructor
-    private static class DeepEqualsMatcher implements ArgumentMatcher<Object> {
+    private static class DeepEqualMatcher<T> extends BaseMatcher<T> {
         
-        private final Object wanted;
+        private final T expectedValue;
         
         @Override
-        public boolean matches(final Object actual) {
-            return DeepEquals.deepEquals(wanted, actual);
+        public boolean matches(final Object arg) {
+            return DeepEquals.deepEquals(arg, expectedValue);
         }
         
         @Override
-        public String toString() {
-            return "deepEq(" + wanted + ")";
+        public void describeTo(final Description description) {
+            description.appendValue(expectedValue);
         }
     }
 }

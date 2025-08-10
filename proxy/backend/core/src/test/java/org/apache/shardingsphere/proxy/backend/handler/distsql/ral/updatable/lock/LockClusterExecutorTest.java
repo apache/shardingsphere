@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.exception.LockedClusterException;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.infra.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -43,6 +43,7 @@ class LockClusterExecutorTest {
     
     private final LockClusterExecutor executor = new LockClusterExecutor();
     
+    @SuppressWarnings("resource")
     @Test
     void assertExecuteUpdateWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -50,6 +51,7 @@ class LockClusterExecutorTest {
         assertThrows(LockedClusterException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertExecuteUpdateWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
@@ -57,6 +59,7 @@ class LockClusterExecutorTest {
         assertThrows(ServiceProviderNotFoundException.class, () -> executor.executeUpdate(new LockClusterStatement(new AlgorithmSegment("FOO", new Properties()), null), contextManager));
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertExecuteUpdateWithUsingTimeout() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);

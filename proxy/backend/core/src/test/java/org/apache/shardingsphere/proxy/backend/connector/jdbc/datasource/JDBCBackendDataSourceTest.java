@@ -33,8 +33,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.fixture.CallTimeRecordDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.test.infra.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -152,7 +152,7 @@ class JDBCBackendDataSourceTest {
         @Override
         public List<Connection> call() throws SQLException {
             try (MockedStatic<ProxyContext> proxyContext = mockStatic(ProxyContext.class, RETURNS_DEEP_STUBS)) {
-                ContextManager contextManager = JDBCBackendDataSourceTest.this.mockContextManager();
+                ContextManager contextManager = mockContextManager();
                 proxyContext.when(() -> ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
                 return jdbcBackendDataSource.getConnections("schema", datasourceName, connectionSize, connectionMode);
             }
