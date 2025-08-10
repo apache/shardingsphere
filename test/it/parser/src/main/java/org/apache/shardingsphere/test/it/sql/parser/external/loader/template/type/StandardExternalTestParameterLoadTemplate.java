@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ty
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.SQLLineComment;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Standard external test parameter load template.
  */
-public final class StandardExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
+public final class StandardExternalTestParameterLoadTemplate implements ExternalTestParameterLoadTemplate {
     
     @Override
     public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,

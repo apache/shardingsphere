@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -63,5 +63,5 @@ public @interface ExternalCaseSettings {
      *
      * @return test parameter load template
      */
-    Class<? extends TestParameterLoadTemplate> template();
+    Class<? extends ExternalTestParameterLoadTemplate> template();
 }

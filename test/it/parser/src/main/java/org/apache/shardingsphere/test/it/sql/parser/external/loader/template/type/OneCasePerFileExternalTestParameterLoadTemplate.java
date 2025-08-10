@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * One case per file external test parameter load template.
  */
-public final class OneCasePerFileExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
+public final class OneCasePerFileExternalTestParameterLoadTemplate implements ExternalTestParameterLoadTemplate {
     
     @Override
     public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent, final List<String> resultFileContent,
