@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.infra.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +63,7 @@ import static org.mockito.Mockito.withSettings;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingSphereMetaDataTest {
     
+    @SuppressWarnings("resource")
     @Test
     void assertAddDatabase() {
         GlobalRule globalRule = mock(GlobalRule.class);
@@ -94,6 +95,7 @@ class ShardingSphereMetaDataTest {
         verify(globalRule).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED);
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertContainsDatabase() {
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);
@@ -104,12 +106,14 @@ class ShardingSphereMetaDataTest {
         assertTrue(metaData.containsDatabase("foo_db"));
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertNotContainsDatabase() {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData();
         assertFalse(metaData.containsDatabase("foo_db"));
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertGetDatabase() {
         ShardingSphereRule globalRule = mock(ShardingSphereRule.class);

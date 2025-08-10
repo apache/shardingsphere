@@ -49,10 +49,10 @@ import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesSt
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
-import org.apache.shardingsphere.test.infra.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.mock.StaticMockSettings;
-import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.infra.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

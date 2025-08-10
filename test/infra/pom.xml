@@ -28,7 +28,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>fixture</module>
+        <module>framework</module>
         <module>util</module>
+        <module>fixture</module>
     </modules>
 </project>

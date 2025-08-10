@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sqltranslator.yaml;
 
 import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.infra.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 class SQLTranslatorRuleConfigurationYamlIT extends YamlRuleConfigurationIT {

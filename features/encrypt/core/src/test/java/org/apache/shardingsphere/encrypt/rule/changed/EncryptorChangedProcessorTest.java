@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.infra.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,6 +45,7 @@ class EncryptorChangedProcessorTest {
     private final RuleItemConfigurationChangedProcessor<EncryptRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
             RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("encrypt", "encryptors"));
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Test
     void assertFindRuleConfigurationWhenAbsent() {
         assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new EncryptRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>())));
