@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.metadata.persist.config.database;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.node.path.version.MetaDataVersion;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
-import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
+import org.apache.shardingsphere.test.infra.fixture.rule.MockedRuleConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

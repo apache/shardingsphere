@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAudi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

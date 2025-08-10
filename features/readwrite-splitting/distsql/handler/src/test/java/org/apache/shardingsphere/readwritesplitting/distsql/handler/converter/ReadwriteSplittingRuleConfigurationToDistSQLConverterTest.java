@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

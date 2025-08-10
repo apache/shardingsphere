@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.expr.interval;
 
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

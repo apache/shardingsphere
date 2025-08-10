@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.fixture.connector.MockedConnectionPropertiesParser
+org.apache.shardingsphere.test.infra.fixture.connector.MockedConnectionPropertiesParser
