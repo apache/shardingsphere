@@ -129,13 +129,6 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>compile</scope>
@@ -169,6 +162,10 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
         </dependency>
     </dependencies>
 </project>

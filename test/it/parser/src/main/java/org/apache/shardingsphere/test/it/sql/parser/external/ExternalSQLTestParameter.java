@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader;
+package org.apache.shardingsphere.test.it.sql.parser.external;
 
-import java.util.Collection;
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Test parameter load template.
+ * External SQL parser test parameter.
  */
-public interface TestParameterLoadTemplate {
+@RequiredArgsConstructor
+@Getter
+public final class ExternalSQLTestParameter {
     
-    /**
-     * Load test parameters.
-     *
-     * @param sqlCaseFileName SQL case file name
-     * @param sqlCaseFileContent SQL case file content
-     * @param resultFileContent result file content
-     * @param databaseType database type
-     * @param reportType report type
-     * @return loaded test parameters
-     */
-    Collection<ExternalSQLTestParameter> load(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
+    private final String sqlCaseId;
+    
+    private final String databaseType;
+    
+    private final String sql;
+    
+    private final String reportType;
 }

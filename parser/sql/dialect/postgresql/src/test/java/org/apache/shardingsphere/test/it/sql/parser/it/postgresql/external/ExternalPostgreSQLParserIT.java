@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.it.postgresql.external;
 
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalCaseSettings;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.StandardExternalTestParameterLoadTemplate;
-import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalCaseSettings;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type.StandardExternalTestParameterLoadTemplate;
 
 @ExternalCaseSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL,
         template = StandardExternalTestParameterLoadTemplate.class)

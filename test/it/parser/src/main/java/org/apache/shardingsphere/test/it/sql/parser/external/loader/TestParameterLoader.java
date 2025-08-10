@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.test.env.EnvironmentContext;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
-import org.apache.shardingsphere.test.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.external.env.EnvironmentContext;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
