@@ -78,4 +78,18 @@ public final class VersionNodePath {
     private Pattern createActiveVersionPathPattern() {
         return Pattern.compile(getActiveVersionPath() + "$", Pattern.CASE_INSENSITIVE);
     }
+    
+    /**
+     * Judge whether to versions path.
+     *
+     * @param path to be judged path
+     * @return is versions path or not
+     */
+    public boolean isVersionsPath(final String path) {
+        return createVersionsPathPattern().matcher(path).find();
+    }
+    
+    private Pattern createVersionsPathPattern() {
+        return Pattern.compile(getVersionsPath(), Pattern.CASE_INSENSITIVE);
+    }
 }

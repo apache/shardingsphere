@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.db.protocol.firebird.constant.protocol;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdProtocolVersionTest {
     
     @Test
     void assertValueOf() {
-        assertEquals(FirebirdProtocolVersion.PROTOCOL_VERSION10, FirebirdProtocolVersion.valueOf(10));
-        assertEquals(FirebirdProtocolVersion.PROTOCOL_VERSION19, FirebirdProtocolVersion.valueOf(0x8000 | 19));
+        assertThat(FirebirdProtocolVersion.valueOf(10), is(FirebirdProtocolVersion.PROTOCOL_VERSION10));
+        assertThat(FirebirdProtocolVersion.valueOf(0x8000 | 19), is(FirebirdProtocolVersion.PROTOCOL_VERSION19));
         assertThrows(NullPointerException.class, () -> FirebirdProtocolVersion.valueOf(999));
     }
 }

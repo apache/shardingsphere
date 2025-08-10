@@ -89,11 +89,6 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
         }
     }
     
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
-        
-    }
-    
     /**
      * Get length of packet.
      *
@@ -104,5 +99,9 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
         int length = 8;
         length += payload.getBufferLength(length);
         return length + 8;
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
 }

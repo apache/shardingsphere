@@ -43,6 +43,6 @@ class TablelessDataSourceUnicastRouteEngineTest {
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertTrue(aggregatedDataSources.contains(routeUnit.getDataSourceMapper().getLogicName()));
         assertTrue(aggregatedDataSources.contains(routeUnit.getDataSourceMapper().getActualName()));
-        assertThat(routeUnit.getTableMappers().size(), is(0));
+        assertTrue(routeUnit.getTableMappers().isEmpty());
     }
 }

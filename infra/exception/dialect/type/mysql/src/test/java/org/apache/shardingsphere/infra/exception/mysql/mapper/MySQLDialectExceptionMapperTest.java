@@ -19,22 +19,22 @@ package org.apache.shardingsphere.infra.exception.mysql.mapper;
 
 import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.connection.TooManyConnectionsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.data.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;
@@ -45,6 +45,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.SQLException;
 import java.util.stream.Stream;
@@ -66,7 +67,7 @@ class MySQLDialectExceptionMapperTest {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(Arguments.of(UnknownDatabaseException.class, MySQLVendorError.ER_NO_DB_ERROR),
                     Arguments.of(NoDatabaseSelectedException.class, MySQLVendorError.ER_NO_DB_ERROR),
                     Arguments.of(DatabaseCreateExistsException.class, MySQLVendorError.ER_DB_CREATE_EXISTS_ERROR),

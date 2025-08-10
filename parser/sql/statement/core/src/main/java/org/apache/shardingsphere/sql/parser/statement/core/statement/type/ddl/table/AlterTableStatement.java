@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyCollectionRetrievalSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.RenameColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ReplaceColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
@@ -94,6 +95,8 @@ public final class AlterTableStatement extends DDLStatement {
     private final Collection<RenameColumnSegment> renameColumnDefinitions = new LinkedList<>();
     
     private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
+    
+    private final Collection<ReplaceColumnDefinitionSegment> replaceColumnDefinitions = new LinkedList<>();
     
     public AlterTableStatement(final DatabaseType databaseType) {
         super(databaseType);
@@ -174,6 +177,11 @@ public final class AlterTableStatement extends DDLStatement {
         }
         for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
             each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
+        }
+        for (ReplaceColumnDefinitionSegment each : replaceColumnDefinitions) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
         }
         return result;
     }

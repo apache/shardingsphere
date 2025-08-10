@@ -69,8 +69,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;

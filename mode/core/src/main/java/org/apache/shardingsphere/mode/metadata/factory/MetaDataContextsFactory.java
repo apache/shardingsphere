@@ -188,13 +188,13 @@ public final class MetaDataContextsFactory {
     private Map<StorageNode, DataSource> getStorageNodes(final Map<StorageNode, DataSource> currentStorageNodes, final SwitchingResource switchingResource) {
         return currentStorageNodes.entrySet().stream()
                 .filter(entry -> null == switchingResource || !switchingResource.getStaleDataSources().containsKey(entry.getKey()))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (a, b) -> b, () -> new LinkedHashMap<>(currentStorageNodes.size(), 1F)));
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(currentStorageNodes.size(), 1F)));
     }
     
     private Map<String, StorageUnit> getStorageUnits(final Map<String, StorageUnit> currentStorageUnits, final SwitchingResource switchingResource) {
         return currentStorageUnits.entrySet().stream()
                 .filter(entry -> null == switchingResource || !switchingResource.getStaleStorageUnitNames().contains(entry.getKey()))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (a, b) -> b, () -> new LinkedHashMap<>(currentStorageUnits.size(), 1F)));
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(currentStorageUnits.size(), 1F)));
     }
     
     private DatabaseConfiguration getDatabaseConfiguration(final ResourceMetaData currentResourceMetaData,

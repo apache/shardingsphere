@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+@SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
 class ZookeeperTest {
     
@@ -84,7 +86,14 @@ class ZookeeperTest {
         testShardingService.getOrderRepository().createTableIfNotExistsInMySQL();
         testShardingService.getOrderItemRepository().createTableIfNotExistsInMySQL();
         testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
-        Awaitility.await().pollDelay(Duration.ofSeconds(5L)).until(() -> true);
+        Awaitility.await().atMost(Duration.ofMinutes(2L)).ignoreExceptions().until(() -> {
+            try (Connection connection = logicDataSource.getConnection()) {
+                connection.createStatement().execute("select * from t_order");
+                connection.createStatement().execute("select * from t_order_item");
+                connection.createStatement().execute("select * from t_address");
+            }
+            return true;
+        });
         testShardingService.getOrderRepository().truncateTable();
         testShardingService.getOrderItemRepository().truncateTable();
         testShardingService.getAddressRepository().truncateTable();

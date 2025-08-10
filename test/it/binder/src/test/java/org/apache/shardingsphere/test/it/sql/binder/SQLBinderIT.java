@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.test.it.sql.binder.cases.binder.registry.SQLBinderTestCasesRegistry;
-import org.apache.shardingsphere.test.it.sql.binder.cases.sql.registry.SQLBinderCasesRegistry;
+import org.apache.shardingsphere.test.it.sql.binder.cases.registry.binder.SQLBinderTestCasesRegistry;
+import org.apache.shardingsphere.test.it.sql.binder.cases.registry.sql.SQLBinderCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
@@ -51,6 +51,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -173,8 +174,8 @@ public abstract class SQLBinderIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            SQLBinderITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLBinderITSettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            SQLBinderITSettings settings = context.getRequiredTestClass().getAnnotation(SQLBinderITSettings.class);
             Preconditions.checkNotNull(settings, "Annotation SQLBinderITSettings is required.");
             return getTestParameters(settings.value()).stream();
         }

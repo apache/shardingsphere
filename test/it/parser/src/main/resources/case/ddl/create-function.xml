@@ -31,4 +31,13 @@
     <create-function sql-case-id="create_function_with_loop" />
     <create-function sql-case-id="create_function_with_aggregate_using_function" />
     <create-function sql-case-id="create_function_with_simple_arithmetic" />
+    <create-function sql-case-id="create_temporary_function_basic" />
+    <create-function sql-case-id="create_function_basic" />
+    <create-function sql-case-id="create_function_with_db" />
+    <create-function sql-case-id="create_function_with_single_jar" />
+    <create-function sql-case-id="create_function_with_single_file" />
+    <create-function sql-case-id="create_function_with_single_archive" />
+    <create-function sql-case-id="create_function_with_two_resources" />
+    <create-function sql-case-id="create_function_with_three_resource_types" />
+    <create-function sql-case-id="create_function_with_three_resource_types_and_db" />
 </sql-parser-test-cases>

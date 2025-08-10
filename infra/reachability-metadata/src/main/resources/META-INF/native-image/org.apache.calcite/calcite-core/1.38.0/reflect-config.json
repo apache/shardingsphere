@@ -420,19 +420,11 @@
   "name":"org.apache.calcite.plan.RelOptNode"
 },
 {
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
-  "name":"org.apache.calcite.plan.RelOptNode"
-},
-{
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider"},
   "name":"org.apache.calcite.rel"
 },
 {
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider"},
-  "name":"org.apache.calcite.rel.RelNode"
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
   "name":"org.apache.calcite.rel.RelNode"
 },
 {
@@ -830,17 +822,9 @@
   "name":"org.apache.calcite.rel.metadata.CyclicMetadataException"
 },
 {
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
-  "name":"org.apache.calcite.rel.metadata.CyclicMetadataException"
-},
-{
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider"},
   "name":"org.apache.calcite.rel.metadata.DelegatingMetadataRel",
   "allDeclaredMethods": true
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
-  "name":"org.apache.calcite.rel.metadata.DelegatingMetadataRel"
 },
 {
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider"},
@@ -864,17 +848,9 @@
   "allDeclaredMethods": true
 },
 {
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
-  "name":"org.apache.calcite.rel.metadata.MetadataHandler"
-},
-{
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider"},
   "name":"org.apache.calcite.rel.metadata.NullSentinel",
   "allDeclaredFields":true
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
-  "name":"org.apache.calcite.rel.metadata.NullSentinel"
 },
 {
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.RelMdAllPredicates"},
@@ -1017,10 +993,6 @@
 },
 {
   "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider"},
-  "name":"org.apache.calcite.rel.metadata.janino.DescriptiveCacheKey"
-},
-{
-  "condition":{"typeReachable":"org.apache.calcite.rel.metadata.JaninoRelMetadataProvider$$Lambda/0x00007fcecc36c500"},
   "name":"org.apache.calcite.rel.metadata.janino.DescriptiveCacheKey"
 },
 {

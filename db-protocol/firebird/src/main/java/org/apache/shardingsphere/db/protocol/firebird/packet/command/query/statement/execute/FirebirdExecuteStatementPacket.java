@@ -28,10 +28,8 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.state
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.BlrConstants;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Firebird execute statement packet.
@@ -60,8 +58,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     private long cursorFlags;
     
     private long maxBlobSize;
-    
-    private final FirebirdPacketPayload payload;
     
     public FirebirdExecuteStatementPacket(final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
@@ -106,9 +102,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }
-        
-        this.payload = payload;
-        
     }
     
     private List<FirebirdBinaryColumnType> parseBLR(final ByteBuf blrBuffer) {
@@ -149,18 +142,6 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             default:
                 return 0;
         }
-    }
-    
-    /**
-     * Read parameter values from packet.
-     *
-     * @param paramTypes parameter type of values
-     * @param longDataIndexes indexes of long data
-     * @return parameter values
-     * @throws SQLException SQL exception
-     */
-    public List<Object> readParameters(final List<FirebirdBinaryColumnType> paramTypes, final Set<Integer> longDataIndexes) throws SQLException {
-        return parameterValues;
     }
     
     /**

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
+import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

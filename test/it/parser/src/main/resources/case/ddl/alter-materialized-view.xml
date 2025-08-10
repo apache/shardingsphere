@@ -26,4 +26,8 @@
     <alter-materialized-view sql-case-id="alter_materialized_view_refresh_enable_query_rewrite" />
     <alter-materialized-view sql-case-id="alter_materialized_view_refresh_with_primary_key" />
     <alter-materialized-view sql-case-id="alter_materialized_view_compile" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_enable_rewrite_basic" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_disable_rewrite_basic" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_enable_rewrite_with_db" />
+    <alter-materialized-view sql-case-id="alter_materialized_view_disable_rewrite_with_db" />
 </sql-parser-test-cases>

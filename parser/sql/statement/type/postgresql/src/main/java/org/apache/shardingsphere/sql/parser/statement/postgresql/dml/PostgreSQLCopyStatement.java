@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.prepare.P
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.UnsupportedDistributeSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 import java.util.Collection;
@@ -70,6 +71,7 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
+        return new SQLStatementAttributes(
+                new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

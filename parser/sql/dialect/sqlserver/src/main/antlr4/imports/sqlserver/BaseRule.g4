@@ -121,7 +121,7 @@ unreservedWord
     | ELASTIC_POOL | SERVICE_OBJECTIVE | DATABASE_NAME | ALLOW_CONNECTIONS | GEO | NAMED | DATEFIRST | BACKUP_STORAGE_REDUNDANCY | FORCE_FAILOVER_ALLOW_DATA_LOSS | SECONDARY | FAILOVER | DEFAULT_FULLTEXT_LANGUAGE
     | DEFAULT_LANGUAGE | INLINE | NESTED_TRIGGERS | TRANSFORM_NOISE_WORDS | TWO_DIGIT_YEAR_CUTOFF | PERSISTENT_LOG_BUFFER | DIRECTORY_NAME | DATEFORMAT | DELAYED_DURABILITY | TRANSFER | SCHEMA | PASSWORD | AUTHORIZATION
     | MEMBER | SEARCH | TEXT | SECOND | PRECISION | VIEWS | PROVIDER | COLUMNS | SUBSTRING | RETURNS | SIZE | CONTAINS | MONTH | INPUT | YEAR
-    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT
+    | TIMESTAMP | TRIM | USER | RIGHT | JSON | SID | OPENQUERY | ACTION | TARGET | HOUR | MINUTE | TABLE | NODES | VALUE | EXIST | CHANGETABLE | VERSION | CHANGES | MODEL | AI_GENERATE_EMBEDDINGS | PARAMETERS | USE | FREETEXTTABLE | NCHAR | LEFT | RANK | ROLLUP | PIVOT | UNPIVOT | PARSE | TRY_PARSE | HIERARCHYID | PATINDEX | POSITION | FORCESEEK | FORCESCAN | NOEXPAND | SPATIAL_WINDOW_MAX_CELLS | LANGUAGE | CATALOG | PRODUCT | SYSTEM | TABLESAMPLE | LABEL | VALUES | COLLATION | VECTOR_SEARCH | COLUMN | SIMILAR_TO | METRIC | TOP_N
     ;
 
 databaseName
@@ -132,8 +132,12 @@ schemaName
     : identifier
     ;
 
+linkedServerName
+    : identifier
+    ;
+
 functionName
-    : (owner DOT_)? name
+    : ((databaseName DOT_)? (owner DOT_))? name
     ;
 
 procedureName
@@ -154,6 +158,7 @@ sequenceName
 
 tableName
     : ((databaseName DOT_)? (owner? DOT_))? name
+    | ((linkedServerName DOT_ databaseName DOT_)? (owner DOT_))? name
     ;
 
 queueName
@@ -228,6 +233,7 @@ expr
     | expr distinctFrom expr
     | notOperator expr
     | LP_ expr RP_
+    | expr AT TIME ZONE expr
     ;
 
 andOperator
@@ -288,6 +294,7 @@ simpleExpr
     | variableName
     | xmlMethodCall
     | simpleExpr OR_ simpleExpr
+    | simpleExpr COLLATE identifier
     | (PLUS_ | MINUS_ | TILDE_ | NOT_ | BINARY | DOLLAR_) simpleExpr
     | CURRENT OF GLOBAL? expr
     | ROW? LP_ expr (COMMA_ expr)* RP_
@@ -304,11 +311,11 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG
+    : MAX | MIN | SUM | COUNT | AVG | STRING_AGG | PRODUCT
     ;
 
 distinct
@@ -318,7 +325,27 @@ distinct
 specialFunction
     : conversionFunction | charFunction | openJsonFunction | jsonFunction | openRowSetFunction 
     | windowFunction | approxFunction | openDatasourceFunction | rowNumberFunction | graphFunction 
-    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction
+    | trimFunction | changeTableFunction | aiFunction | freetextTableFunction | currentUserFunction | vectorSearchFunction
+    ;
+
+vectorSearchFunction
+    : VECTOR_SEARCH LP_ vectorSearchParameters RP_
+    ;
+
+vectorSearchParameters
+    : TABLE EQ_ vectorSearchTable (COMMA_ COLUMN EQ_ columnName)? (COMMA_ SIMILAR_TO EQ_ expr)? (COMMA_ METRIC EQ_ vectorSearchMetric)? (COMMA_ TOP_N EQ_ expr)?
+    ;
+
+vectorSearchTable
+    : tableName (AS alias)?
+    ;
+
+vectorSearchMetric
+    : stringLiterals
+    ;
+
+currentUserFunction
+    : CURRENT_USER (LP_ RP_)?
     ;
 
 freetextTableFunction
@@ -388,6 +415,16 @@ approxFunction
 conversionFunction
     : castFunction
     | convertFunction
+    | parseFunction
+    | tryParseFunction
+    ;
+
+parseFunction
+    : PARSE LP_ expr AS dataType (USING expr)? RP_
+    ;
+
+tryParseFunction
+    : TRY_PARSE LP_ expr AS dataType (USING expr)? RP_
     ;
 
 castFunction
@@ -444,7 +481,7 @@ openQueryFunction
     ;
 
 rowSetFunction
-    : openRowSetFunction | openQueryFunction
+    : openRowSetFunction | openQueryFunction | openDatasourceFunction
     ;
 
 regularFunction
@@ -452,7 +489,8 @@ regularFunction
     ;
 
 regularFunctionName
-    : (owner DOT_)? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    : ((databaseName DOT_)? (owner DOT_))? identifier | IF | LOCALTIME | LOCALTIMESTAMP | INTERVAL
+    | dataTypeName COLON_ COLON_ identifier
     ;
 
 caseExpression
@@ -505,6 +543,9 @@ convertExpr
 
 windowFunction
     : funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? overClause
+    | funcName = (PERCENTILE_CONT | PERCENTILE_DISC) LP_ expr (COMMA_ expr)* RP_ WITHIN GROUP LP_ orderByClause RP_ overClause?
+    | funcName = NTILE LP_ expr RP_ overClause
+    | funcName = (RANK | DENSE_RANK | PERCENT_RANK | CUME_DIST) LP_ RP_ overClause
     | lagLeadFunction
     ;
 
@@ -680,6 +721,20 @@ tableHintLimited
     | TABLOCKX
     | UPDLOCK
     | XLOCK
+    ;
+
+tableHintExtended
+    : NOEXPAND
+    | INDEX LP_ indexValue (COMMA_ indexValue)* RP_
+    | INDEX EQ_ LP_ indexValue RP_
+    | INDEX EQ_ indexValue
+    | FORCESEEK (LP_ indexValue (LP_ columnName (COMMA_ columnName)* RP_)? RP_)?
+    | FORCESCAN
+    | SPATIAL_WINDOW_MAX_CELLS EQ_ NUMBER_
+    ;
+
+indexValue
+    : indexName | NUMBER_
     ;
 
 matchExpression

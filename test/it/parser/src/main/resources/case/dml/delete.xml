@@ -803,4 +803,24 @@
             </projections>
         </returning>
     </delete>
+
+    <delete sql-case-id="delete_with_table_hint">
+        <table name="DatabaseLog" start-index="14" stop-index="28">
+            <owner name="dbo" start-index="14" stop-index="16" />
+        </table>
+        <output start-index="46" stop-index="61" />
+        <where start-index="63" stop-index="85">
+            <expr>
+                <binary-operation-expression start-index="69" stop-index="85">
+                    <left>
+                        <column name="DatabaseLogID" start-index="69" stop-index="81" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="7" start-index="85" stop-index="85" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
 </sql-parser-test-cases>

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  */
 public abstract class DistSQLStatement extends SQLStatement {
     
-    public DistSQLStatement() {
+    protected DistSQLStatement() {
         super(null);
     }
 }

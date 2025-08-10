@@ -23,14 +23,15 @@ import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatab
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -62,7 +63,7 @@ class MySQLConnectionPropertiesParserTest {
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("simple", "jdbc:mysql://127.0.0.1/foo_ds", "127.0.0.1", 3306, "foo_ds", null, new Properties()),
                     Arguments.of("complex", "jdbc:mysql:loadbalance://127.0.0.1:9999,127.0.0.2:9999/foo_ds?useSSL=false", "127.0.0.1", 9999, "foo_ds", null,

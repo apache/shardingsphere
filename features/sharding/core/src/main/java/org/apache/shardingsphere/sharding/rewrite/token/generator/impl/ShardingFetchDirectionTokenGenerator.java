@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
@@ -35,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Fe
  */
 @HighFrequencyInvocation
 @Setter
-public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ConnectionContextAware {
+public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<CursorHeldSQLStatementContext>, ConnectionContextAware {
     
     private ConnectionContext connectionContext;
     
@@ -45,7 +46,7 @@ public final class ShardingFetchDirectionTokenGenerator implements OptionalSQLTo
     }
     
     @Override
-    public SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public SQLToken generateSQLToken(final CursorHeldSQLStatementContext sqlStatementContext) {
         FetchStatement fetchStatement = (FetchStatement) sqlStatementContext.getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);

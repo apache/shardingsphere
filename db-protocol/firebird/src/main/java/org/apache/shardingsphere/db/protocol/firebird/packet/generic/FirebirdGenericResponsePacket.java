@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -30,7 +29,6 @@ import java.sql.SQLException;
  * Generic response data packet for Firebird.
  */
 @Getter
-@NoArgsConstructor
 public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     
     private int handle;
@@ -40,6 +38,15 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     private FirebirdPacket data;
     
     private FirebirdStatusVector statusVector;
+    
+    /**
+     * Get generic response packet.
+     *
+     * @return generic response packet
+     */
+    public static FirebirdGenericResponsePacket getPacket() {
+        return new FirebirdGenericResponsePacket();
+    }
     
     /**
      * Set handle value.
@@ -85,32 +92,6 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         return this;
     }
     
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
-        payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
-        payload.writeInt4(handle);
-        payload.writeInt8(id);
-        if (data != null) {
-            payload.getByteBuf().writeZero(4);
-            int index = payload.getByteBuf().readableBytes();
-            data.write(payload);
-            int length = payload.getByteBuf().readableBytes() - index;
-            payload.getByteBuf().setInt(index - 4, length);
-            payload.getByteBuf().writeBytes(new byte[(4 - length) & 3]);
-        } else {
-            payload.writeBuffer(new byte[0]);
-        }
-        if (statusVector != null) {
-            statusVector.write(payload);
-        } else {
-            payload.getByteBuf().writeZero(4);
-        }
-    }
-    
-    public static FirebirdGenericResponsePacket getPacket() {
-        return new FirebirdGenericResponsePacket();
-    }
-    
     /**
      * Extract error code from status vector.
      *
@@ -127,5 +108,27 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      */
     public String getErrorMessage() {
         return statusVector == null ? "" : statusVector.getErrorMessage();
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
+        payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
+        payload.writeInt4(handle);
+        payload.writeInt8(id);
+        if (null != data) {
+            payload.getByteBuf().writeZero(4);
+            int index = payload.getByteBuf().readableBytes();
+            data.write(payload);
+            int length = payload.getByteBuf().readableBytes() - index;
+            payload.getByteBuf().setInt(index - 4, length);
+            payload.getByteBuf().writeBytes(new byte[(4 - length) & 3]);
+        } else {
+            payload.writeInt4(0);
+        }
+        if (null != statusVector) {
+            statusVector.write(payload);
+        } else {
+            payload.getByteBuf().writeZero(4);
+        }
     }
 }

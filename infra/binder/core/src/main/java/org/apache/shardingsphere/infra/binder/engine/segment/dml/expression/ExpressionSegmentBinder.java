@@ -76,7 +76,10 @@ public final class ExpressionSegmentBinder {
             return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, binderContext, tableBinderContexts);
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
+            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
+            newOuterTableBinderContexts.putAll(tableBinderContexts);
+            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, binderContext, newOuterTableBinderContexts);
         }
         if (segment instanceof SubqueryExpressionSegment) {
             Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
@@ -88,7 +91,7 @@ public final class ExpressionSegmentBinder {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof NotExpression) {
-            return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, binderContext, tableBinderContexts);
+            return NotExpressionBinder.bind((NotExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ColumnSegment) {
             return ColumnSegmentBinder.bind((ColumnSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);

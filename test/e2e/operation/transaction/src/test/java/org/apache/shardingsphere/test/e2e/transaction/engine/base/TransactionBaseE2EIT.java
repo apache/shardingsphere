@@ -37,13 +37,14 @@ import org.apache.shardingsphere.test.e2e.transaction.framework.container.compos
 import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 import org.apache.shardingsphere.test.e2e.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -275,7 +276,7 @@ public abstract class TransactionBaseE2EIT {
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
         if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
+            DockerStorageContainer storageContainer = (DockerStorageContainer) ((DockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(),
                     containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
@@ -330,8 +331,8 @@ public abstract class TransactionBaseE2EIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            TransactionE2ESettings settings = extensionContext.getRequiredTestClass().getAnnotation(TransactionE2ESettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            TransactionE2ESettings settings = context.getRequiredTestClass().getAnnotation(TransactionE2ESettings.class);
             Preconditions.checkNotNull(settings, "Annotation TransactionE2ESettings is required.");
             return getTransactionTestParameters(settings.value()).stream().map(Arguments::of);
         }
@@ -339,11 +340,8 @@ public abstract class TransactionBaseE2EIT {
         private Collection<TransactionTestParameter> getTransactionTestParameters(final Class<? extends TransactionBaseE2EIT> testCaseClass) {
             TransactionTestCaseRegistry currentTestCaseInfo = ENV.getTransactionTestCaseRegistryMap().get(testCaseClass.getName());
             Collection<TransactionTestParameter> result = new LinkedList<>();
-            if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
+            if (TransactionE2EEnvTypeEnum.NONE != ENV.getItEnvType()) {
                 result.addAll(getTestParameters(currentTestCaseInfo));
-            }
-            if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
-                result.addAll(getTestParameters(currentTestCaseInfo, ENV.getMysqlVersions()));
             }
             // TODO zhangcheng make sure the test cases should not empty
             if (result.isEmpty()) {

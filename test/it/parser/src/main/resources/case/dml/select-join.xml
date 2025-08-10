@@ -2053,7 +2053,11 @@
                                             </function>
                                         </parameter>
                                         <parameter>
-                                            <function function-name="CHAR" text="CHAR(10)" start-index="383" stop-index="390"/>
+                                            <function function-name="CHAR" text="CHAR(10)" start-index="383" stop-index="390">
+                                                <parameter>
+                                                    <literal-expression value="10" start-index="388" stop-index="389" />
+                                                </parameter>
+                                            </function>
                                         </parameter>
                                         <parameter>
                                             <literal-expression value=" " start-index="393" stop-index="395"/>
@@ -2061,7 +2065,11 @@
                                     </function>
                                 </parameter>
                                 <parameter>
-                                    <function function-name="CHAR" text="CHAR(13)" start-index="399" stop-index="406"/>
+                                    <function function-name="CHAR" text="CHAR(13)" start-index="399" stop-index="406">
+                                        <parameter>
+                                            <literal-expression value="13" start-index="404" stop-index="405" />
+                                        </parameter>
+                                    </function>
                                 </parameter>
                                 <parameter>
                                     <literal-expression value=" " start-index="409" stop-index="411"/>

@@ -55,6 +55,8 @@ public enum SQLVisitorRule {
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
     
+    MSCK("MsckStatement", SQLStatementType.DDL),
+    
     ALTER_TYPE("AlterType", SQLStatementType.DDL),
     
     ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
@@ -124,6 +126,8 @@ public enum SQLVisitorRule {
     DROP_CAST("DropCast", SQLStatementType.DDL),
     
     DROP_FUNCTION("DropFunction", SQLStatementType.DDL),
+    
+    RELOAD_FUNCTION("ReloadFunction", SQLStatementType.DDL),
     
     DROP_GROUP("DropGroup", SQLStatementType.DDL),
     
@@ -666,6 +670,10 @@ public enum SQLVisitorRule {
     CREATE_GROUP("CreateGroup", SQLStatementType.DCL),
     
     CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL),
+    
+    CREATE_MACRO("CreateMacro", SQLStatementType.DDL),
+    
+    DROP_MACRO("DropMacro", SQLStatementType.DDL),
     
     CREATE_MATERIALIZED_VIEW_LOG("CreateMaterializedViewLog", SQLStatementType.DDL),
     

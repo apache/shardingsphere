@@ -4363,4 +4363,56 @@
             </projections>
         </select>
     </insert>
+
+    <insert sql-case-id="insert_into_four_level_naming">
+        <table name="Department" start-index="25" stop-index="68">
+            <owner name="HumanResources" start-index="44" stop-index="57">
+                <owner name="AdventureWorks2022" start-index="25" stop-index="42">
+                    <owner name="MyLinkServer" start-index="12" stop-index="23" />
+                </owner>
+            </owner>
+        </table>
+        <columns start-index="70" stop-index="86">
+            <column name="Name" start-index="71" stop-index="74" />
+            <column name="GroupName" start-index="77" stop-index="85" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Public Relations" start-index="96" stop-index="114" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Executive General and Administration" start-index="117" stop-index="155" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_with_opendatasource_function">
+        <rowset-function text="OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department" function-name="OPENDATASOURCE" start-index="12" stop-index="137">
+            <parameter>
+                <literal-expression value="SQLNCLI" start-index="27" stop-index="35"/>
+            </parameter>
+            <parameter>
+                <literal-expression value="Data Source= &lt;server_name&gt;; Integrated Security=SSPI" start-index="38" stop-index="91"/>
+            </parameter>
+            <parameter>
+                <literal-expression value="AdventureWorks2022.HumanResources.Department" start-index="94" stop-index="137"/>
+            </parameter>
+        </rowset-function>
+        <columns start-index="139" stop-index="155">
+            <column name="Name" start-index="140" stop-index="143"/>
+            <column name="GroupName" start-index="146" stop-index="154"/>
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="Standards and Methods" start-index="165" stop-index="188"/>
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Quality Assurance" start-index="191" stop-index="209"/>
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

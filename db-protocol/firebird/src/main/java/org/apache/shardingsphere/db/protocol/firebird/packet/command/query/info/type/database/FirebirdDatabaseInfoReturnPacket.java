@@ -32,8 +32,8 @@ import java.util.List;
 /**
  * Database info return data packet for Firebird.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     private static final int SQL_DIALECT = 3;
@@ -63,7 +63,7 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        for (final FirebirdInfoPacketType type : infoItems) {
+        for (FirebirdInfoPacketType type : infoItems) {
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {

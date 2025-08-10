@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ResourceQueryStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ResourceQueryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;

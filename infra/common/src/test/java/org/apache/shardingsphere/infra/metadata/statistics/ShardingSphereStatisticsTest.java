@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -39,7 +38,7 @@ class ShardingSphereStatisticsTest {
         ShardingSphereStatistics statistics = new ShardingSphereStatistics();
         DatabaseStatistics databaseStatistics = new DatabaseStatistics();
         statistics.putDatabaseStatistics(TEST_DATABASE_NAME, databaseStatistics);
-        assertEquals(statistics.getDatabaseStatistics(TEST_DATABASE_NAME), databaseStatistics);
+        assertThat(databaseStatistics, is(statistics.getDatabaseStatistics(TEST_DATABASE_NAME)));
         assertNull(statistics.getDatabaseStatistics(NON_EXISTENT_DATABASE_NAME));
     }
     
@@ -63,7 +62,7 @@ class ShardingSphereStatisticsTest {
         shardingSphereStatistics.putDatabaseStatistics(TEST_DATABASE_NAME, databaseStatistics);
         assertTrue(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME));
         shardingSphereStatistics.dropDatabaseStatistics(TEST_DATABASE_NAME);
-        assertThat(shardingSphereStatistics.getDatabaseStatisticsMap().size(), is(0));
+        assertTrue(shardingSphereStatistics.getDatabaseStatisticsMap().isEmpty());
         assertFalse(shardingSphereStatistics.containsDatabaseStatistics(TEST_DATABASE_NAME));
     }
     
