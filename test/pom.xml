@@ -37,12 +37,20 @@
     </modules>
     
     <properties>
+        <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         <testcontainers.version>1.21.3</testcontainers.version>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-bom</artifactId>
+                <version>${glassfish-jaxb.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
@@ -52,19 +60,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
-    <dependencies>
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-        </dependency>
-    </dependencies>
 </project>

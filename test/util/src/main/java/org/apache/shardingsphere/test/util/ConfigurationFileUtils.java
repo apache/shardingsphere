@@ -53,6 +53,6 @@ public final class ConfigurationFileUtils {
     @SneakyThrows({IOException.class, URISyntaxException.class})
     public static String readFileAndIgnoreComments(final String fileName) {
         return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI()))
-                .stream().filter(each -> !"".equals(each) && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+                .stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
