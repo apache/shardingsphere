@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.presto;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalCaseSettings;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type.PrestoExternalTestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.dialect.PrestoExternalTestParameterLoadTemplate;
 
 @ExternalCaseSettings(value = "Presto", caseURL = ExternalPrestoParserIT.CASE_URL, resultURL = "", template = PrestoExternalTestParameterLoadTemplate.class)
 class ExternalPrestoParserIT extends ExternalSQLParserIT {
