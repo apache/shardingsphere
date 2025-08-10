@@ -19,7 +19,7 @@ databaseName: sharding_db
 
 dataSources:
   ds_0:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
     url: jdbc:mock://127.0.0.1/demo_ds_0
     username: root
     password:
@@ -29,7 +29,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 1
   ds_1:
-    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
     url: jdbc:mock://127.0.0.1/demo_ds_1
     username: root
     password:

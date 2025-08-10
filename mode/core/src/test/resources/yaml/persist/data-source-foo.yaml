@@ -18,8 +18,8 @@
 foo_ds:
   password: root
   closed: false
-  dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  driverClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDriver
+  dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
+  driverClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDriver
   connectionInitSqls:
 # No spaces after conversion
   - set names utf8mb4;
