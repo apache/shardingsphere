@@ -19,8 +19,8 @@ package org.apache.shardingsphere.timeservice.type.database;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.TimestampService;
 import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
 import org.junit.jupiter.api.BeforeEach;
