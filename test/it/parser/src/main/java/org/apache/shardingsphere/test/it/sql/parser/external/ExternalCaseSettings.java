@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.loader;
+package org.apache.shardingsphere.test.it.sql.parser.external;
 
-import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

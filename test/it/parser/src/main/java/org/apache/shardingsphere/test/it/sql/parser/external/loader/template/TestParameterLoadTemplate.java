@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.strategy;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader.template;
 
-import org.apache.shardingsphere.test.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
 
-import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * Test parameter load strategy.
+ * Test parameter load template.
  */
-public interface TestParameterLoadStrategy {
+public interface TestParameterLoadTemplate {
     
     /**
-     * Load SQL case file summaries.
+     * Load test parameters.
      *
-     * @param uri URL to be loaded
-     * @return loaded SQL file summaries
+     * @param sqlCaseFileName SQL case file name
+     * @param sqlCaseFileContent SQL case file content
+     * @param resultFileContent result file content
+     * @param databaseType database type
+     * @param reportType report type
+     * @return loaded test parameters
      */
-    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
+    Collection<ExternalSQLTestParameter> load(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
 }

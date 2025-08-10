@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader;
+
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.strategy.impl;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.impl;
 
 import com.google.common.base.Strings;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.env.EnvironmentContext;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
-import org.apache.shardingsphere.test.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.it.sql.parser.external.env.EnvironmentContext;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
 
 import java.io.BufferedReader;
 import java.io.IOException;

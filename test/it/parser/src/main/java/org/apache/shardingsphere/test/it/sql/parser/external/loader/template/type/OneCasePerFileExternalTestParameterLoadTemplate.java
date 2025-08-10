@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type;
 
-import org.apache.shardingsphere.test.loader.ExternalSQLTestParameter;
-import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +39,8 @@ public final class OneCasePerFileExternalTestParameterLoadTemplate implements Te
     }
     
     private void removePrefixedComments(final List<String> sqlCaseFileContent) {
-        for (Iterator<String> iterator = sqlCaseFileContent.iterator(); iterator.hasNext();) {
+        Iterator<String> iterator = sqlCaseFileContent.iterator();
+        while (iterator.hasNext()) {
             if (!iterator.next().startsWith("--")) {
                 return;
             }

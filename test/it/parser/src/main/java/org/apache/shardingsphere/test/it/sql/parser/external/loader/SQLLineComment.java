@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.loader.summary;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * File summary.
+ * SQL line comment.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FileSummary {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLLineComment {
     
-    private final String fileName;
+    private static final Collection<String> COMMENT_PREFIXES = Arrays.asList("#", "/", "--", ":", "\\");
     
-    private final String accessURI;
+    /**
+     * Judge whether SQL line is comment.
+     *
+     * @param line SQL line
+     * @return SQL line is comment or not
+     */
+    public static boolean isComment(final String line) {
+        return COMMENT_PREFIXES.stream().anyMatch(line::startsWith);
+    }
+    
 }
