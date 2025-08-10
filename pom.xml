@@ -95,7 +95,6 @@
         <bytebuddy.version>1.15.4</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
-        <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         
         <netty.version>4.1.121.Final</netty.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
@@ -306,13 +305,6 @@
                 <groupId>jakarta.platform</groupId>
                 <artifactId>jakarta.jakartaee-bom</artifactId>
                 <version>${jakarta.jakartaee-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-bom</artifactId>
-                <version>${glassfish-jaxb.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
