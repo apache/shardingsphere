@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.SQLLineComment;

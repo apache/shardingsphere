@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalCaseSettings;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type.MySQLExternalTestParameterLoadTemplate;
 
 @ExternalCaseSettings(value = "MySQL", caseURL = ExternalMySQLParserIT.CASE_URL, resultURL = ExternalMySQLParserIT.RESULT_URL, template = MySQLExternalTestParameterLoadTemplate.class)
 class ExternalMySQLParserIT extends ExternalSQLParserIT {
