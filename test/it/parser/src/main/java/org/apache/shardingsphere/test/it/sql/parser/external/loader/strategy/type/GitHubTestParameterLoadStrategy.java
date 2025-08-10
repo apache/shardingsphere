@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.impl;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.type;
 
 import com.google.common.base.Strings;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.it.sql.parser.external.env.EnvironmentContext;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.external.env.ExternalEnvironmentContext;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ExternalTestParameterLoadStrategy;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
 
 import java.io.BufferedReader;
@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Test parameter load strategy with GitHub.
+ * GitHub test parameter load strategy.
  */
-public final class GitHubTestParameterLoadStrategy implements TestParameterLoadStrategy {
+public final class GitHubTestParameterLoadStrategy implements ExternalTestParameterLoadStrategy {
     
     private static final String TOKEN_KEY = "it.github.token";
     
@@ -106,7 +106,7 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
     @SneakyThrows(IOException.class)
     private String loadContent(final URI casesURI) {
         URLConnection urlConnection = casesURI.toURL().openConnection();
-        String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
+        String githubToken = ExternalEnvironmentContext.getInstance().getValue(TOKEN_KEY);
         if (!Strings.isNullOrEmpty(githubToken)) {
             urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
         }

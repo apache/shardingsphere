@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Test parameter load template.
+ * External test parameter load template.
  */
-public interface TestParameterLoadTemplate {
+public interface ExternalTestParameterLoadTemplate {
     
     /**
      * Load test parameters.

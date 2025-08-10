@@ -23,10 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.external.env.EnvironmentContext;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.external.env.ExternalEnvironmentContext;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ExternalTestParameterLoadStrategy;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,16 +43,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Test parameter loader.
+ * External test parameter loader.
  */
 @RequiredArgsConstructor
-public final class TestParameterLoader {
+public final class ExternalTestParameterLoader {
     
     private static final String TOKEN_KEY = "it.github.token";
     
-    private final TestParameterLoadStrategy loadStrategy;
+    private final ExternalTestParameterLoadStrategy loadStrategy;
     
-    private final TestParameterLoadTemplate loadTemplate;
+    private final ExternalTestParameterLoadTemplate loadTemplate;
     
     /**
      * Load test parameters.
@@ -96,7 +96,7 @@ public final class TestParameterLoader {
     @SneakyThrows(IOException.class)
     private List<String> loadContent(final URI uri) {
         URLConnection urlConnection = uri.toURL().openConnection();
-        String githubToken = EnvironmentContext.getInstance().getValue(TOKEN_KEY);
+        String githubToken = ExternalEnvironmentContext.getInstance().getValue(TOKEN_KEY);
         if (!Strings.isNullOrEmpty(githubToken)) {
             urlConnection.setRequestProperty("Authorization", "Bearer " + githubToken);
         }

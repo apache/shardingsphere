@@ -23,9 +23,9 @@ import java.net.URI;
 import java.util.Collection;
 
 /**
- * Test parameter load strategy.
+ * External test parameter load strategy.
  */
-public interface TestParameterLoadStrategy {
+public interface ExternalTestParameterLoadStrategy {
     
     /**
      * Load SQL case file summaries.

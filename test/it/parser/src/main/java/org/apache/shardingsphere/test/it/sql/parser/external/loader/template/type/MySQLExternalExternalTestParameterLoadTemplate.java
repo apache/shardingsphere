@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ty
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.SQLLineComment;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * External test parameter load template for MySQL.
  */
-public final class MySQLExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
+public final class MySQLExternalExternalTestParameterLoadTemplate implements ExternalTestParameterLoadTemplate {
     
     private static final int DELIMITER_COMMAND_LENGTH = "DELIMITER".length();
     

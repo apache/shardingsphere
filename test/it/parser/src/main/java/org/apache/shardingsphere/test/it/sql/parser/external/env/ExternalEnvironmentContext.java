@@ -24,15 +24,15 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * environment context.
+ * External environment context.
  */
-public final class EnvironmentContext {
+public final class ExternalEnvironmentContext {
     
-    private static final EnvironmentContext INSTANCE = new EnvironmentContext();
+    private static final ExternalEnvironmentContext INSTANCE = new ExternalEnvironmentContext();
     
     private final Properties props;
     
-    private EnvironmentContext() {
+    private ExternalEnvironmentContext() {
         props = loadProperties();
     }
     
@@ -41,7 +41,7 @@ public final class EnvironmentContext {
      *
      * @return got instance
      */
-    public static EnvironmentContext getInstance() {
+    public static ExternalEnvironmentContext getInstance() {
         return INSTANCE;
     }
     
@@ -58,7 +58,7 @@ public final class EnvironmentContext {
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/external-env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {

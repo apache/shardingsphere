@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.type;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.TestParameterLoadTemplate;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * External test parameter load template for Presto.
  */
-public final class PrestoExternalTestParameterLoadTemplate implements TestParameterLoadTemplate {
+public final class PrestoExternalTestParameterLoadTemplate implements ExternalTestParameterLoadTemplate {
     
     private static final String REGEX = "\\$\\{mutableTables.hive.datatype}";
     
