@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

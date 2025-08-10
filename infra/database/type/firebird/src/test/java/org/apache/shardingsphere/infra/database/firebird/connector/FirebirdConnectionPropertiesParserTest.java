@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropert
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;

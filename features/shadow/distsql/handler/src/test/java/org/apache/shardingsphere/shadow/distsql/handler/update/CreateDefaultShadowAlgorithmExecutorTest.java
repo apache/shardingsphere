@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundExce
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.CreateDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

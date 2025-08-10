@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
-import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.statement.AlterShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

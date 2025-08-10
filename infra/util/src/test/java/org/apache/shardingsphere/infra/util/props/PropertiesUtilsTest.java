@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
