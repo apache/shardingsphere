@@ -28,9 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>fixture</module>
-        <module>util</module>
-        
+        <module>infra</module>
         <module>it</module>
         <module>e2e</module>
         <module>native</module>

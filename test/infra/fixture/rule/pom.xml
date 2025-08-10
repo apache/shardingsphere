@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-fixture</artifactId>
+        <artifactId>shardingsphere-test-infra-fixture</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-fixture-infra</artifactId>
+    <artifactId>shardingsphere-test-infra-fixture-rule</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
