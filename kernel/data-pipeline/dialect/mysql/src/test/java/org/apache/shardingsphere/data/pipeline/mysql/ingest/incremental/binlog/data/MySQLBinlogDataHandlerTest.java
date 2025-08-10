@@ -21,8 +21,8 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColum
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.binary.MySQLBinlogBinaryStringHandler;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.unsigned.MySQLBinlogUnsignedNumberHandlerEngine;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string.MySQLBinaryString;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

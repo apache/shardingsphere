@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.co
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
+import org.apache.shardingsphere.test.infra.file.ConfigurationFileUtils;
 
 import java.sql.Connection;
 import java.sql.SQLException;

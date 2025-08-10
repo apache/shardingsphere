@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.Yam
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper.YamlTransmissionJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.file.ConfigurationFileUtils;
+import org.apache.shardingsphere.test.infra.file.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

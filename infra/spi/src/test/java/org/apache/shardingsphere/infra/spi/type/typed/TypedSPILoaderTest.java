@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.spi.type.typed;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.TypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
-import org.apache.shardingsphere.test.props.PropertiesBuilder;
-import org.apache.shardingsphere.test.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.props.PropertiesBuilder;
+import org.apache.shardingsphere.test.infra.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;

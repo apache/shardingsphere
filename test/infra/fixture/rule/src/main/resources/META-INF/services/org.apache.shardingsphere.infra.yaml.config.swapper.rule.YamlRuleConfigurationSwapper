@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.fixture.infra.yaml.global.MockedYamlGlobalRuleConfigurationSwapper
-org.apache.shardingsphere.test.fixture.infra.yaml.MockedYamlRuleConfigurationSwapper
+org.apache.shardingsphere.test.infra.fixture.yaml.global.MockedYamlGlobalRuleConfigurationSwapper
+org.apache.shardingsphere.test.infra.fixture.yaml.MockedYamlRuleConfigurationSwapper

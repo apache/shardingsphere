@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService;
 import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
