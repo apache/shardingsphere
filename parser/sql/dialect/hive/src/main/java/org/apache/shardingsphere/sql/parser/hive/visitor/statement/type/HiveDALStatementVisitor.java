@@ -23,11 +23,13 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatem
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLikeContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConnectorsContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConnectorsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 
@@ -62,5 +64,10 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
         return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
+    }
+
+    @Override
+    public ASTNode visitShowConnectors(final ShowConnectorsContext ctx) {
+        return new HiveShowConnectorsStatement(getDatabaseType());
     }
 }
