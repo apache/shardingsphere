@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.expr.groovy;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
