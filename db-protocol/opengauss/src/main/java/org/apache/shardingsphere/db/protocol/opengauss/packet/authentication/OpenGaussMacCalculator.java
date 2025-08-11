@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.string.HexStringUtil;
+import org.apache.shardingsphere.infra.util.string.HexStringUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -59,7 +59,7 @@ public final class OpenGaussMacCalculator {
     public static String requestServerMac(final String password, final OpenGaussAuthenticationHexData authHexData, final int serverIteration) {
         byte[] serverKey = getMacResult(generateSecretKey(password, authHexData.getSalt(), serverIteration), MacType.SERVER.data.getBytes(StandardCharsets.UTF_8));
         byte[] result = getMacResult(serverKey, toHexBytes(authHexData.getNonce()));
-        return HexStringUtil.toHexString(result);
+        return HexStringUtils.toHexString(result);
     }
     
     /**

@@ -64,7 +64,7 @@ public final class ProxyTestingServer {
      * @param logicDataBaseNameList List of logical database names created by Proxy.
      */
     public void close(final List<String> logicDataBaseNameList) {
-        ResourceUtil.closeProxyDataSource(logicDataBaseNameList);
+        ResourceUtils.closeProxyDataSource(logicDataBaseNameList);
         completableFuture.cancel(false);
         Awaitility.await().atMost(1L, TimeUnit.MINUTES).until(completableFuture::isDone);
     }

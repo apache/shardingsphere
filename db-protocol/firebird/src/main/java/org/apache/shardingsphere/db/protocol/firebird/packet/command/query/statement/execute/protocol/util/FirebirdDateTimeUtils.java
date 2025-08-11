@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public final class FirebirdDateTimeUtil {
+public final class FirebirdDateTimeUtils {
     
     static final int NANOSECONDS_PER_FRACTION = 100 * 1000;
     
@@ -54,7 +54,7 @@ public final class FirebirdDateTimeUtil {
     
     private int fractions;
     
-    public FirebirdDateTimeUtil(final LocalDateTime localDateTime) {
+    public FirebirdDateTimeUtils(final LocalDateTime localDateTime) {
         year = localDateTime.getYear();
         month = localDateTime.getMonthValue();
         day = localDateTime.getDayOfMonth();
@@ -64,7 +64,7 @@ public final class FirebirdDateTimeUtil {
         fractions = (localDateTime.getNano() / NANOSECONDS_PER_FRACTION) % FRACTIONS_PER_SECOND;
     }
     
-    public FirebirdDateTimeUtil() {
+    public FirebirdDateTimeUtils() {
         year = 0;
         month = 1;
         day = 1;
@@ -100,7 +100,7 @@ public final class FirebirdDateTimeUtil {
      * @return encoded date as integer
      */
     public static int getEncodedDate(final LocalDateTime localDateTime) {
-        return new FirebirdDateTimeUtil(localDateTime).getEncodedDate();
+        return new FirebirdDateTimeUtils(localDateTime).getEncodedDate();
     }
     
     private int convertDate(final int c, final int ya, final int cpMonth) {
@@ -116,7 +116,7 @@ public final class FirebirdDateTimeUtil {
      * @param encodedDate encoded date as integer
      * @return this instance with updated date fields
      */
-    public FirebirdDateTimeUtil setDate(final int encodedDate) {
+    public FirebirdDateTimeUtils setDate(final int encodedDate) {
         int sqldate = encodedDate - 1721119 + 2400001;
         int century = (4 * sqldate - 1) / 146097;
         sqldate = 4 * sqldate - 1 - 146097 * century;
@@ -150,7 +150,7 @@ public final class FirebirdDateTimeUtil {
      * @param encodedTime encoded time as integer
      * @return this instance with updated time fields
      */
-    public FirebirdDateTimeUtil setTime(final int encodedTime) {
+    public FirebirdDateTimeUtils setTime(final int encodedTime) {
         int fractionsInDay = encodedTime;
         hour = fractionsInDay / FRACTIONS_PER_HOUR;
         fractionsInDay -= hour * FRACTIONS_PER_HOUR;
@@ -177,7 +177,7 @@ public final class FirebirdDateTimeUtil {
      * @return timestamp representation of the encoded date
      */
     public static Timestamp getDate(final int encodedDate) {
-        return new FirebirdDateTimeUtil().setDate(encodedDate).asTimestamp();
+        return new FirebirdDateTimeUtils().setDate(encodedDate).asTimestamp();
     }
     
     /**
@@ -187,7 +187,7 @@ public final class FirebirdDateTimeUtil {
      * @return timestamp representation of the encoded time
      */
     public static Timestamp getTime(final int encodedTime) {
-        return new FirebirdDateTimeUtil().setTime(encodedTime).asTimestamp();
+        return new FirebirdDateTimeUtils().setTime(encodedTime).asTimestamp();
     }
     
     /**
@@ -198,7 +198,7 @@ public final class FirebirdDateTimeUtil {
      * @return timestamp representation of the encoded date and time
      */
     public static Timestamp getDateTime(final int encodedDate, final int encodedTime) {
-        return new FirebirdDateTimeUtil().setDate(encodedDate).setTime(encodedTime).asTimestamp();
+        return new FirebirdDateTimeUtils().setDate(encodedDate).setTime(encodedTime).asTimestamp();
     }
     
     /**
@@ -211,6 +211,6 @@ public final class FirebirdDateTimeUtil {
      */
     public static Timestamp getDateTimeWithOffset(final int encodedDate, final int encodedTime, final int offset) {
         // TODO add time zone support
-        return new FirebirdDateTimeUtil().setDate(encodedDate).setTime(encodedTime).asTimestamp();
+        return new FirebirdDateTimeUtils().setDate(encodedDate).setTime(encodedTime).asTimestamp();
     }
 }
