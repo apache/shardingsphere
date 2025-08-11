@@ -21,9 +21,15 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowDatabasesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 
 /**
  * DAL statement visitor for Hive.
@@ -38,5 +44,23 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitUse(final UseContext ctx) {
         String database = null == ctx.DEFAULT() ? new IdentifierValue(ctx.identifier().getText()).getValue() : "default";
         return new MySQLUseStatement(getDatabaseType(), database);
+    }
+
+    @Override
+    public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
+        ShowFilterSegment filter = null;
+        if (null != ctx.showLike()) {
+            filter = new ShowFilterSegment(ctx.showLike().getStart().getStartIndex(), ctx.showLike().getStop().getStopIndex());
+            filter.setLike((ShowLikeSegment) visit(ctx.showLike()));
+        }
+        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), filter);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+
+    @Override
+    public ASTNode visitShowLike(final ShowLikeContext ctx) {
+        StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
+        return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
     }
 }
