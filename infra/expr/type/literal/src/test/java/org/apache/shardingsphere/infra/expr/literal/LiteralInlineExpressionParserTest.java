@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.expr.literal;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -79,10 +79,10 @@ class LiteralInlineExpressionParserTest {
     
     @Test
     void assertEvaluateWithArgumentsExpression() {
-        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("${1+2}").evaluateWithArgs(new LinkedHashMap<>()));
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("${1+2}").evaluateWithArgs(Collections.emptyMap()));
     }
     
     private InlineExpressionParser getInlineExpressionParser(final String expression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
+        return TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(new Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
     }
 }

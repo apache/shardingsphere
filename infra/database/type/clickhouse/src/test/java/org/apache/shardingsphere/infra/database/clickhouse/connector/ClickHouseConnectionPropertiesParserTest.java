@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -66,7 +67,7 @@ class ClickHouseConnectionPropertiesParserTest {
             return Stream.of(
                     Arguments.of("simple", "jdbc:ch://127.0.0.1/foo_ds", "127.0.0.1", 8123, "foo_ds", null, new Properties()),
                     Arguments.of("complex", "jdbc:clickhouse:http://127.0.0.1:9999/foo_ds?continueBatchOnError=true", "127.0.0.1", 9999, "foo_ds", null,
-                            PropertiesBuilder.build(new PropertiesBuilder.Property("continueBatchOnError", "true"))));
+                            PropertiesBuilder.build(new Property("continueBatchOnError", "true"))));
         }
     }
 }

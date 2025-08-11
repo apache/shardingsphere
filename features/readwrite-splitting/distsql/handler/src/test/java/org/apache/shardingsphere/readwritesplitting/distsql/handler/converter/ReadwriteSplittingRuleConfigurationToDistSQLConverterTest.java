@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleCo
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,6 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
         ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig1 = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "bar_ds", "ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1"), "not_existed");
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceGroupConfig0, dataSourceGroupConfig1),
-                Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new PropertiesBuilder.Property("read_weight", "2:1")))));
+                Collections.singletonMap("test", new AlgorithmConfiguration("random", PropertiesBuilder.build(new Property("read_weight", "2:1")))));
     }
 }

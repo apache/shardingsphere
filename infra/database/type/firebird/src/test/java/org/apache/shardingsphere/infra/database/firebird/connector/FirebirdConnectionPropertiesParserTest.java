@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -70,16 +71,16 @@ class FirebirdConnectionPropertiesParserTest {
                     Arguments.of("simple_second", "jdbc:firebird://localhost:32783//var/lib/firebird/data/demo_ds_2.fdb",
                             "localhost", 32783, "/var/lib/firebird/data/demo_ds_2.fdb", null, new Properties()),
                     Arguments.of("simple_third", "jdbc:firebirdsql://localhost/database?socket_buffer_size=32767", "localhost", 3050, "database", null, PropertiesBuilder.build(
-                            new PropertiesBuilder.Property("socketBufferSize", "32767"))),
+                            new Property("socketBufferSize", "32767"))),
                     Arguments.of("complex",
                             "jdbc:firebirdsql://localhost/database?socket_buffer_size=32767"
                                     + "&TRANSACTION_REPEATABLE_READ=concurrency,write,no_wait&columnLabelForName&soTimeout=1000&nonStandard2=value2",
                             "localhost", 3050, "database", null, PropertiesBuilder.build(
-                                    new PropertiesBuilder.Property("socketBufferSize", "32767"),
-                                    new PropertiesBuilder.Property("TRANSACTION_REPEATABLE_READ", "concurrency,write,no_wait"),
-                                    new PropertiesBuilder.Property("columnLabelForName", ""),
-                                    new PropertiesBuilder.Property("soTimeout", "1000"),
-                                    new PropertiesBuilder.Property("nonStandard2", "value2"))));
+                                    new Property("socketBufferSize", "32767"),
+                                    new Property("TRANSACTION_REPEATABLE_READ", "concurrency,write,no_wait"),
+                                    new Property("columnLabelForName", ""),
+                                    new Property("soTimeout", "1000"),
+                                    new Property("nonStandard2", "value2"))));
         }
     }
 }

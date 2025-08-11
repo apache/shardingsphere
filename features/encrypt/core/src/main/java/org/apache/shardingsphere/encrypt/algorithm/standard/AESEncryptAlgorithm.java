@@ -66,7 +66,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public AlgorithmConfiguration toConfiguration() {
         return new AlgorithmConfiguration(getType(),
-                PropertiesBuilder.build(new Property(AES_KEY, this.props.getProperty(AES_KEY)), new Property(DIGEST_ALGORITHM_NAME, StringUtils.upperCase(props.getProperty(DIGEST_ALGORITHM_NAME)))));
+                PropertiesBuilder.build(new Property(AES_KEY, props.getProperty(AES_KEY)), new Property(DIGEST_ALGORITHM_NAME, StringUtils.upperCase(props.getProperty(DIGEST_ALGORITHM_NAME)))));
     }
     
     @Override
