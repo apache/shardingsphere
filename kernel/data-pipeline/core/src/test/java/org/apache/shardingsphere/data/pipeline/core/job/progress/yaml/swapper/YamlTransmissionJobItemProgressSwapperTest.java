@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlTransmissionJobItemProgress;
+import org.apache.shardingsphere.infra.util.file.ConfigurationFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.infra.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
