@@ -29,7 +29,6 @@
     
     <modules>
         <module>framework</module>
-        <module>util</module>
         <module>fixture</module>
     </modules>
 </project>
