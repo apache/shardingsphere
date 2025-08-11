@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_with_performance_schema_global_status" value="SELECT 1 AS STATUS FROM performance_schema.global_status WHERE VARIABLE_NAME= 'MAX_EXECUTION_TIME_SET_FAILED' AND CONVERT(VARIABLE_VALUE, UNSIGNED) > @time_set_failed" db-types="MySQL" />
+    <sql-case id="select_udf_function_mysqltest1_f1" value="select mysqltest1.f1()" db-types="MySQL" />
+    <sql-case id="select_case_when_with_mul_condition" value="select case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_sub_condition" value="select case 1-0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_add_condition" value="select case 1+0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_case_when_with_div_condition" value="select case 1/0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
+    <sql-case id="select_with_expression" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="MySQL, H2, SQL92, SQLServer" />
+    <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_encode_function" value="SELECT ENCODE(test_datetype_col::bytea,'escape') FROM test_bytea" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
+    <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL" />
+    <sql-case id="select_with_rlike" value="SELECT * FROM t_order_item t WHERE t.status RLIKE ? AND t.item_id IN (?, ?)" db-types="MySQL" />
+    <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
+    <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_and" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_and_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id OR t_order.status = 'failed' AND ? = t_order.order_id" />
+    <sql-case id="select_where_with_expr_with_and_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? &amp;&amp; ? = t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_not" value="SELECT * FROM t_order WHERE NOT (? = t_order.order_id)" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_not_sign" value="SELECT * FROM t_order WHERE ! ( ? = t_order.order_id)" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_is" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS FALSE" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_is_not" value="SELECT * FROM t_order WHERE ? = t_order.order_id IS NOT FALSE" db-types="MySQL" />
+    <sql-case id="select_where_with_boolean_primary_with_is" value="SELECT * FROM t_order WHERE t_order.status IS NULL" db-types="MySQL" />
+    <sql-case id="select_where_with_boolean_primary_with_is_not" value="SELECT * FROM t_order WHERE t_order.status IS NOT NULL" db-types="MySQL" />
+    <sql-case id="select_where_with_boolean_primary_with_null_safe" value="SELECT * FROM t_order WHERE t_order.status &lt;=&gt; t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_boolean_primary_with_comparison_predicate" value="SELECT * FROM t_order WHERE t_order.status &gt;= t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_boolean_primary_with_comparison_subquery" value="SELECT * FROM t_order WHERE t_order.status &gt; ALL (SELECt status FROM t_order_item WHERE status &gt; ?)" db-types="MySQL" />
+    <sql-case id="select_where_with_predicate_with_in_subquery" value="SELECT * FROM t_order WHERE t_order.order_id NOT IN (SELECT order_id FROM t_order_item WHERE status &gt; ?)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_where_with_predicate_with_in_expr" value="SELECT * FROM t_order WHERE t_order.order_id IN (?, ?, ?)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_where_with_predicate_with_between" value="SELECT * FROM t_order WHERE t_order.order_id BETWEEN ? AND ?" db-types="MySQL" />
+    <sql-case id="select_where_with_predicate_with_sounds_like" value="SELECT * FROM t_order WHERE t_order.order_id SOUNDS LIKE '1%'" db-types="MySQL" />
+    <sql-case id="select_where_with_predicate_with_like" value="SELECT * FROM t_order WHERE t_order.order_id NOT LIKE '1%' ESCAPE '$'" db-types="MySQL" />
+    <sql-case id="select_where_with_predicate_with_not_like" value="SELECT * FROM t_order WHERE t_order.status NOT LIKE '1%'" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_where_with_predicate_with_regexp" value="SELECT * FROM t_order WHERE t_order.order_id NOT REGEXP '[123]'" db-types="MySQL" />
+    <sql-case id="select_where_with_predicate_with_rlike" value="SELECT * FROM t_order WHERE t_order.order_id NOT RLIKE '[123]'" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_vertical_bar" value="SELECT * FROM t_order WHERE t_order.order_id | ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_ampersand" value="SELECT * FROM t_order WHERE t_order.order_id &amp; ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_signed_left_shift" value="SELECT * FROM t_order WHERE t_order.order_id &lt;&lt; ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_signed_right_shift" value="SELECT * FROM t_order WHERE t_order.order_id &gt;&gt; ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_plus" value="SELECT * FROM t_order WHERE t_order.order_id + ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_minus" value="SELECT * FROM t_order WHERE t_order.order_id - ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_asterisk" value="SELECT * FROM t_order WHERE t_order.order_id * ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_slash" value="SELECT * FROM t_order WHERE t_order.order_id / ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_div" value="SELECT * FROM t_order WHERE t_order.order_id DIV ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_mod" value="SELECT * FROM t_order WHERE t_order.order_id MOD ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_mod_sign" value="SELECT * FROM t_order WHERE t_order.order_id % ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_caret" value="SELECT * FROM t_order WHERE t_order.order_id ^ ?" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_plus_interval" value="SELECT * FROM t_order WHERE t_order.order_id + INTERVAL 1 SECOND" db-types="MySQL" />
+    <sql-case id="select_where_with_bit_expr_with_minus_interval" value="SELECT * FROM t_order WHERE t_order.order_id - INTERVAL 1 SECOND" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_literals" value="SELECT * FROM t_order WHERE ? &lt; order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_column" value="SELECT * FROM t_order WHERE t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_function_call" value="SELECT * FROM t_order WHERE now() &lt; order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_collate" value="SELECT * FROM t_order WHERE order_id collate utf8mb4_0900_ai_ci" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_variable" value="SELECT * FROM t_order WHERE @@max_connections &lt; order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_plus" value="SELECT * FROM t_order WHERE ? + t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_minus" value="SELECT * FROM t_order WHERE ? - t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_tilde" value="SELECT * FROM t_order WHERE ~t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_not" value="SELECT * FROM t_order WHERE !t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_binary" value="SELECT * FROM t_order WHERE BINARY t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_binary_value" value="SELECT * FROM t_order WHERE t_order.order_id = BINARY ?" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_row" value="SELECT * FROM t_order WHERE ROW(?, now()) = (order_id, status)" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_subquery" value="SELECT * FROM t_order WHERE (SELECT order_id FROM t_order_item WHERE status &gt; ?)" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_exists_subquery" value="SELECT * FROM t_order WHERE EXISTS (SELECT order_id FROM t_order_item WHERE status &gt; ? )" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_odbc_escape_syntax" value="SELECT * FROM t_order WHERE {ts ?}" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&quot;$[1]&quot;" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_member_of" value="SELECT * FROM t_order WHERE order_id member of(&quot;[1,2,3]&quot;)" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_unquote_extract_sign" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; &quot;$[1]&quot;" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_contains" value="SELECT * FROM t_order WHERE JSON_CONTAINS(order_msg -> '$[*].code', 'x', '$') " db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_json_contains_and_limit" value="SELECT id, order_info->'$.id' FROM t_order where json_contains(order_info, ?, '$.id') limit ?, ?" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_match" value="SELECT * FROM t_order WHERE MATCH (order_id) AGAINST (? IN NATURAL LANGUAGE MODE)" db-types="MySQL" />
+    <sql-case id="select_where_with_simple_expr_with_case" value="SELECT * FROM t_order WHERE CASE WHEN order_id &gt; ? THEN ? ELSE ? END" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_not_with_order_by" value="SELECT last_name, job_id, salary, department_id FROM employees WHERE NOT (job_id = 'PU_CLERK' AND department_id = 30) ORDER BY last_name" db-types="Oracle" />
+    <sql-case id="select_where_with_subquery" value="SELECT last_name, department_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE last_name = 'Lorentz') ORDER BY last_name, department_id" db-types="Oracle" />
+    <sql-case id="select_where_with_expr_with_not_in" value="SELECT * FROM employees WHERE department_id NOT IN (SELECT department_id FROM departments WHERE location_id = 1700) ORDER BY last_name" db-types="Oracle" />
+    <sql-case id="select_projections_with_expr" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_projections_with_only_expr" value="SELECT CASE order_id WHEN 1 THEN '11' ELSE '00' END FROM t_order" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_with_amp" value="select 1 &amp; 1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_vertical_bar" value="select 1 | 1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_abs_function" value="SELECT ABS(1) FROM t_order WHERE ABS(1) &gt; 1 GROUP BY ABS(1) ORDER BY ABS(1)" db-types="MySQL,Oracle" />
+    <sql-case id="select_with_insert_function" value="SELECT INSERT(phone, 4, 3, '***') AS 'phone' FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_repeat_function" value="SELECT REPEAT('MySQL', 3) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_regular_function" value="SELECT A(1) FROM t_order WHERE A(1) = 1 GROUP BY A(order_id) ORDER BY A(order_id)" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="select_with_regular_function_for_sql92" value="SELECT A(1) FROM t_order WHERE A(1) = 1" db-types="MySQL,Oracle,SQLServer,H2,SQL92" />
+    <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
+    <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL" />
+    <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
+    <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_between_expression" value="SELECT item_id BETWEEN 1 AND order_id, status FROM t_order_item;" db-types="MySQL" />
+    <sql-case id="select_dbms_logmnr_mine_value_regular_function" value="SELECT DBMS_LOGMNR.MINE_VALUE(UNDO_VALUE, 'HR.EMPLOYEES.SALARY') FROM V$LOGMNR_CONTENTS;" db-types="Oracle" />
+    <sql-case id="select_interval_day_to_second_expression" value="SELECT (SYSTIMESTAMP - order_date) DAY(9) TO SECOND FROM orders" db-types="Oracle" />
+    <sql-case id="select_feature_function" value="SELECT FEATURE_VALUE(nmf_sh_sample, 3 USING *) FROM nmf_sh_sample_apply_prepared" db-types="Oracle" />
+    <sql-case id="select_cluster_function" value="SELECT CLUSTER_PROBABILITY(km_sh_clus_sample, 2 USING *) FROM mining_data_apply_v" db-types="Oracle" />
+    <sql-case id="select_with_multiset_except_expression" value="SELECT customer_id, cust_address_ntab MULTISET EXCEPT DISTINCT cust_address2_ntab multiset_except FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_with_multiset_intersect_expression" value="SELECT customer_id, cust_address_ntab MULTISET INTERSECT DISTINCT cust_address2_ntab multiset_intersect FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_with_multiset_union_expression" value="SELECT customer_id, cust_address_ntab MULTISET UNION cust_address2_ntab multiset_union FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_collect_expression" value="SELECT CAST(COLLECT(warehouse_name ORDER BY warehouse_name) AS warehouse_name_t) &quot;Warehouses&quot; FROM warehouses;" db-types="Oracle" />
+    <sql-case id="select_expr_dot_expr" value="SELECT DBURIType('/HR/DEPARTMENTS').getXML() FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_arrow_symbol_in_function" value="SELECT DECODE(DBMS_COMPRESSION.GET_COMPRESSION_TYPE(ownname => 'HR'), 'No Compression') compression_type FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_prediction_probability_function" value="SELECT PREDICTION_PROBABILITY(dt_sh_clas_sample, 1 USING *) cust_card_prob FROM mining_data_apply_v WHERE cust_id = 101488;" db-types="Oracle" />
+    <sql-case id="select_prediction_set_function" value="SELECT PREDICTION_SET(dt_sh_clas_sample COST MODEL USING *) pset FROM mining_data_apply_v WHERE cust_id = 100011" db-types="Oracle" />
+    <sql-case id="select_cursor_function" value="SELECT CURSOR(SELECT salary, commission_pct FROM employees e WHERE e.department_id = d.department_id) FROM departments d;" db-types="Oracle" />
+    <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
+    <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
+    <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
+    <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
+    <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_ts_rewrite_function" value="SELECT ts_rewrite('a &amp; b'::tsquery, 'a'::tsquery, 'c'::tsquery);" db-types="openGauss" />
+    <sql-case id="select_int_2_function" value="select int2(25.3);" db-types="openGauss" />
+    <sql-case id="select_elem_contained_by_range_function" value="SELECT elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss" />
+    <sql-case id="select_int8range" value="SELECT int8range(5,15) * int8range(10,20) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_int4range" value="SELECT int4range(2,4) &lt;@ int4range(1,7) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_lower_inf_function" value="SELECT lower_inf('(,)'::daterange) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_tsquery" value="SELECT 'super:*'::tsquery;" db-types="openGauss" />
+    <sql-case id="select_abbrev_function" value="SELECT abbrev(cidr '10.1.0.0/16') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_set_masklen_function" value="SELECT set_masklen('192.168.1.0/24'::cidr, 16) AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
+    <sql-case id="select_with_case_when_from_sys" value="SELECT FileName = df.name, current_file_size_MB = df.size*1.0/128, max_size = CASE df.max_size WHEN 0 THEN 'Autogrowth is off.' WHEN -1 THEN 'Autogrowth is on.' ELSE 'Log file grows to a maximum size of 2 TB.' END, growth_value = CASE WHEN df.growth = 0 THEN df.growth WHEN df.growth > 0 AND df.is_percent_growth = 0 THEN df.growth*1.0/128.0 WHEN df.growth > 0 AND df.is_percent_growth = 1 THEN df.growth END, growth_increment_unit = CASE WHEN df.growth = 0 THEN 'Size is fixed.' WHEN df.growth > 0 AND df.is_percent_growth = 0  THEN 'Growth value is MB.' WHEN df.growth > 0 AND df.is_percent_growth = 1  THEN 'Growth value is a percentage.' END FROM tempdb.sys.database_files AS df" db-types="SQLServer"/>
+</sql-cases>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.exception.ResourceNameLengthExceededException;
 import org.junit.jupiter.api.Test;
 
