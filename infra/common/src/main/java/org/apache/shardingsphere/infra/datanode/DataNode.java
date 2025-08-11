@@ -135,7 +135,7 @@ public final class DataNode {
     
     /**
      * Validates the data node format based on its structure.
-     * 
+     *
      * @param dataNode the data node string to validate
      * @throws InvalidDataNodeFormatException if the format is invalid
      */
