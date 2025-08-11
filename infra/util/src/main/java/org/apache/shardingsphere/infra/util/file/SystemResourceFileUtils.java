@@ -24,22 +24,34 @@ import lombok.SneakyThrows;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Configuration file utility class.
+ * System resource file utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfigurationFileUtils {
+public final class SystemResourceFileUtils {
     
     /**
-     * Read file content.
+     * Get path from system resource.
+     *
+     * @param fileName file name
+     * @return path
+     */
+    @SneakyThrows(URISyntaxException.class)
+    public static Path getPath(final String fileName) {
+        return Paths.get(ClassLoader.getSystemResource(fileName).toURI());
+    }
+    
+    /**
+     * Read file from system resource.
      *
      * @param fileName file name
      * @return file content
      */
-    @SneakyThrows({IOException.class, URISyntaxException.class})
+    @SneakyThrows(IOException.class)
     public static String readFile(final String fileName) {
-        return String.join(System.lineSeparator(), Files.readAllLines(Paths.get(ClassLoader.getSystemResource(fileName).toURI())));
+        return String.join(System.lineSeparator(), Files.readAllLines(getPath(fileName)));
     }
 }
