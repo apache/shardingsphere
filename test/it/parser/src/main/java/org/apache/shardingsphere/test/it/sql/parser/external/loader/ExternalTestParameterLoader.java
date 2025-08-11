@@ -63,7 +63,6 @@ public final class ExternalTestParameterLoader {
      * @param reportType report type
      * @return loaded test parameters
      */
-    @SneakyThrows
     public Stream<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
         return load(sqlCaseURI, resultURI, databaseType, reportType, null);
     }
@@ -78,7 +77,6 @@ public final class ExternalTestParameterLoader {
      * @param caseRegex case regex
      * @return loaded test parameters
      */
-    @SneakyThrows
     public Stream<ExternalSQLTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType, final String caseRegex) {
         Collection<FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
         Collection<FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI);
