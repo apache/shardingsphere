@@ -11640,4 +11640,16 @@
             <simple-table name="OldTable" start-index="54" stop-index="61"/>
         </from>
     </select>
+
+    <select sql-case-id="select_group_by_with_distributed_agg">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="CustomerKey" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="FactInternetSales" start-index="24" stop-index="40" />
+        </from>
+        <group-by start-index="41" stop-index="86">
+            <column-item name="CustomerKey" start-index="51" stop-index="61" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>

@@ -246,7 +246,7 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY (groupByItem (COMMA_ groupByItem)* | orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?)
+    : GROUP BY (groupByItem (COMMA_ groupByItem)* | orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?) (WITH LP_ DISTRIBUTED_AGG RP_)?
     ;
 
 groupByItem
