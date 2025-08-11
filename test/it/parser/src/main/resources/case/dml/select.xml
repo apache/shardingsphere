@@ -11614,4 +11614,30 @@
             <column-item name="Region" start-index="126" stop-index="131"/>
         </group-by>
     </select>
+
+    <select sql-case-id="select_identity_function">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="IDENTITY(int,1,1)" alias="ID_Num" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="IDENTITY" start-index="7" stop-index="23" text="IDENTITY(int,1,1)">
+                        <parameter>
+                            <column name="int" start-index="16" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="20" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="22" stop-index="22" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <into start-index="37" stop-index="49">
+            <simple-table name="NewTable" start-index="40" stop-index="47"/>
+        </into>
+        <from start-index="50" stop-index="63">
+            <simple-table name="OldTable" start-index="54" stop-index="61"/>
+        </from>
+    </select>
 </sql-parser-test-cases>
