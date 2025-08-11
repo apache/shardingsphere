@@ -24,14 +24,18 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.UseConte
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConnectorsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConnectorsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 
 /**
  * DAL statement visitor for Hive.
@@ -69,5 +73,24 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitShowConnectors(final ShowConnectorsContext ctx) {
         return new HiveShowConnectorsStatement(getDatabaseType());
+    }
+
+    @Override
+    public ASTNode visitShowTables(final ShowTablesContext ctx) {
+        FromDatabaseSegment fromDatabase = null;
+        if (null != ctx.databaseName()) {
+            DatabaseSegment databaseSegment = (DatabaseSegment) visit(ctx.databaseName());
+            fromDatabase = new FromDatabaseSegment(ctx.databaseName().getStart().getStartIndex(), databaseSegment);
+        }
+        ShowFilterSegment filter = null;
+        if (null != ctx.stringLiterals()) {
+            StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
+            ShowLikeSegment likeSegment = new ShowLikeSegment(ctx.stringLiterals().getStart().getStartIndex(), ctx.stringLiterals().getStop().getStopIndex(), literalValue.getValue());
+            filter = new ShowFilterSegment(ctx.stringLiterals().getStart().getStartIndex(), ctx.stringLiterals().getStop().getStopIndex());
+            filter.setLike(likeSegment);
+        }
+        MySQLShowTablesStatement result = new MySQLShowTablesStatement(getDatabaseType(), fromDatabase, filter, false);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
 }
