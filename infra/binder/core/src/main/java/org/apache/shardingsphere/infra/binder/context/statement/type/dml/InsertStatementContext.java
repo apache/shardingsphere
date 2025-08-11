@@ -49,7 +49,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
     private InsertStatementBindingContext bindingContext;
     
     public InsertStatementContext(final InsertStatement sqlStatement, final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
-        baseContext = new InsertStatementBaseContext(sqlStatement, params, metaData, currentDatabaseName);
+        baseContext = new InsertStatementBaseContext(sqlStatement, metaData, currentDatabaseName);
         bindingContext = new InsertStatementBindingContext(baseContext, params, metaData, currentDatabaseName);
     }
     
