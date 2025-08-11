@@ -365,4 +365,5 @@
     <sql-case id="select_with_temptable_no_alias" value="SELECT * FROM OPENXML(@idoc, '/ROOT/Customer', 1) WITH (CustomerID VARCHAR(10),ContactName VARCHAR(20));" db-types="SQLServer"/>
     <sql-case id="select_vector_search_function" value="SELECT r.* FROM VECTOR_SEARCH(TABLE = dbo.sessions AS s, COLUMN = embedding, SIMILAR_TO = @qv, METRIC = 'cosine', TOP_N = 10) AS r;" db-types="SQLServer"/>
     <sql-case id="select_grouping_sets" value="SELECT Country, Region, SUM(Sales) AS TotalSales FROM Sales GROUP BY GROUPING SETS ( ROLLUP (Country, Region), CUBE (Country, Region));" db-types="SQLServer"/>
+    <sql-case id="select_identity_function" value="SELECT IDENTITY(int,1,1) AS ID_Num INTO NewTable FROM OldTable;" db-types="SQLServer"/>
 </sql-cases>
