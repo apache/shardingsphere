@@ -2154,3 +2154,15 @@ METRIC
 TOP_N
     : T O P UL_ N
     ;
+
+CUBE
+    : C U B E
+    ;
+
+GROUPING
+    : G R O U P I N G
+    ;
+
+SETS
+    : S E T S
+    ;
