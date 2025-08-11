@@ -65,7 +65,6 @@ public final class ClassBasedShardingAlgorithmFactory {
                 ClassBasedShardingAlgorithmFactory.class.getClassLoader(),
                 ClassLoader.getSystemClassLoader()
         };
-        
         for (ClassLoader each : classLoaders) {
             if (null != each) {
                 try {
