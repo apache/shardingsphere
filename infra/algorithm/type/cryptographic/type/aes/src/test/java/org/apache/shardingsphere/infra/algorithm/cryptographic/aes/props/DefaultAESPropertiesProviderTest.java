@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitial
 import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,7 +38,7 @@ class DefaultAESPropertiesProviderTest {
     @Test
     void assertCreateNewInstanceWithAESKey() {
         CryptographicPropertiesProvider provider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT",
-                PropertiesBuilder.build(new PropertiesBuilder.Property("aes-key-value", "test"), new PropertiesBuilder.Property("digest-algorithm-name", "SHA-1")));
+                PropertiesBuilder.build(new Property("aes-key-value", "test"), new Property("digest-algorithm-name", "SHA-1")));
         assertThat(provider.getSecretKey().length, is(16));
         assertThat(provider.getMode(), is(""));
         assertThat(provider.getPadding(), is(""));

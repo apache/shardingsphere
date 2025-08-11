@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleCo
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -79,7 +80,7 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
     }
     
     private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
-        return new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new PropertiesBuilder.Property("algorithm-expression", algorithmExpression)));
+        return new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", algorithmExpression)));
     }
     
     private AlgorithmConfiguration createKeyGeneratorConfiguration() {

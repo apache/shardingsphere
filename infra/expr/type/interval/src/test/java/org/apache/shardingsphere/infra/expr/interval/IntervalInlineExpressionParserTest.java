@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.expr.interval;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -109,6 +110,6 @@ class IntervalInlineExpressionParserTest {
     }
     
     private InlineExpressionParser getInlineExpressionParser(final String expression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
+        return TypedSPILoader.getService(InlineExpressionParser.class, "INTERVAL", PropertiesBuilder.build(new Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
     }
 }

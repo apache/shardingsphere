@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.expr.espresso;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.condition.EnabledOnJre;
@@ -126,6 +127,6 @@ class EspressoInlineExpressionParserTest {
     }
     
     private InlineExpressionParser getInlineExpressionParser(final String expression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
+        return TypedSPILoader.getService(InlineExpressionParser.class, "ESPRESSO", PropertiesBuilder.build(new Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
     }
 }
