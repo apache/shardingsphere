@@ -181,12 +181,12 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         return new IdentifierValue(ctx.getText());
     }
-
+    
     @Override
     public final ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
         return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
-
+    
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(),

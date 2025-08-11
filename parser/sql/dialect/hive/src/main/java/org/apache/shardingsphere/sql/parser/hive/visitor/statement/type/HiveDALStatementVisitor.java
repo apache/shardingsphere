@@ -41,17 +41,17 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQL
  * DAL statement visitor for Hive.
  */
 public final class HiveDALStatementVisitor extends HiveStatementVisitor implements DALStatementVisitor {
-
+    
     public HiveDALStatementVisitor(final DatabaseType databaseType) {
         super(databaseType);
     }
-
+    
     @Override
     public ASTNode visitUse(final UseContext ctx) {
         String database = null == ctx.DEFAULT() ? new IdentifierValue(ctx.identifier().getText()).getValue() : "default";
         return new MySQLUseStatement(getDatabaseType(), database);
     }
-
+    
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
         ShowFilterSegment filter = null;
@@ -63,18 +63,18 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowLike(final ShowLikeContext ctx) {
         StringLiteralValue literalValue = (StringLiteralValue) visit(ctx.stringLiterals());
         return new ShowLikeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), literalValue.getValue());
     }
-
+    
     @Override
     public ASTNode visitShowConnectors(final ShowConnectorsContext ctx) {
         return new HiveShowConnectorsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowTables(final ShowTablesContext ctx) {
         FromDatabaseSegment fromDatabase = null;
