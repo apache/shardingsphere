@@ -128,12 +128,11 @@ class GroovyInlineExpressionParserTest {
     @SneakyThrows({ExecutionException.class, InterruptedException.class})
     void assertEvaluateForThreadSafety() {
         int threadCount = 10;
-        try (ExecutorService executorService = Executors.newFixedThreadPool(threadCount)) {
-            for (Future<?> future : IntStream.range(0, threadCount).mapToObj(i -> executorService.submit(this::createInlineExpressionParseTask)).collect(Collectors.toList())) {
-                future.get();
-            }
-            executorService.shutdown();
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        for (Future<?> future : IntStream.range(0, threadCount).mapToObj(i -> executorService.submit(this::createInlineExpressionParseTask)).collect(Collectors.toList())) {
+            future.get();
         }
+        executorService.shutdown();
     }
     
     private void createInlineExpressionParseTask() {
