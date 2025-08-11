@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +53,7 @@ class ShadowTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
     }
     
     @Test

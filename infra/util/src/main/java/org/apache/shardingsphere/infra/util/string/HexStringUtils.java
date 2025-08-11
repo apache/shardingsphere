@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Hex string utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HexStringUtil {
+public final class HexStringUtils {
     
     /**
      * Convert byte array to hex string.

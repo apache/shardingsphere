@@ -22,12 +22,12 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class HexStringUtilTest {
+class HexStringUtilsTest {
     
     @Test
     void assertToHexString() {
-        assertThat(HexStringUtil.toHexString(new byte[]{(byte) 1}), is("01"));
-        assertThat(HexStringUtil.toHexString(new byte[]{(byte) 100}), is("64"));
-        assertThat(HexStringUtil.toHexString(new byte[]{(byte) 255, (byte) 256}), is("ff00"));
+        assertThat(HexStringUtils.toHexString(new byte[]{(byte) 1}), is("01"));
+        assertThat(HexStringUtils.toHexString(new byte[]{(byte) 100}), is("64"));
+        assertThat(HexStringUtils.toHexString(new byte[]{(byte) 255, (byte) 256}), is("ff00"));
     }
 }

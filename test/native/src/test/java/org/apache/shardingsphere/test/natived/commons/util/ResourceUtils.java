@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @see org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource#close()
  */
-public class ResourceUtil {
+public class ResourceUtils {
     
     /**
      * Close JDBC dataSource.
@@ -48,7 +48,7 @@ public class ResourceUtil {
     public static void closeJdbcDataSource(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
-            contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtil::close);
+            contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtils::close);
             contextManager.close();
         }
     }
@@ -64,7 +64,7 @@ public class ResourceUtil {
     public static void closeJdbcDataSource(final DataSource dataSource, final String logicDataBaseName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             ContextManager contextManager = connection.unwrap(ShardingSphereConnection.class).getContextManager();
-            contextManager.getStorageUnits(logicDataBaseName).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtil::close);
+            contextManager.getStorageUnits(logicDataBaseName).values().stream().map(StorageUnit::getDataSource).forEach(ResourceUtils::close);
             contextManager.close();
         }
     }
@@ -80,7 +80,7 @@ public class ResourceUtil {
                 .values()
                 .stream()
                 .map(StorageUnit::getDataSource)
-                .forEach(ResourceUtil::close));
+                .forEach(ResourceUtils::close));
         contextManager.close();
     }
     

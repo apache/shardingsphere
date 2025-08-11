@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.etcd.jetcd.test.EtcdClusterExtension;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +69,7 @@ class EtcdTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         System.clearProperty(systemPropKeyPrefix + "server-lists");
     }
     

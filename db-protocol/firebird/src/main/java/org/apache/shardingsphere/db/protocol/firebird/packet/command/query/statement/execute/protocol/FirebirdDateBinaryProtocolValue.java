@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtil;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.sql.Timestamp;
@@ -31,13 +31,13 @@ public final class FirebirdDateBinaryProtocolValue implements FirebirdBinaryProt
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        return FirebirdDateTimeUtil.getDate(payload.readInt4());
+        return FirebirdDateTimeUtils.getDate(payload.readInt4());
     }
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
         LocalDateTime localDateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
-        payload.writeInt4(FirebirdDateTimeUtil.getEncodedDate(localDateTime));
+        payload.writeInt4(FirebirdDateTimeUtils.getEncodedDate(localDateTime));
     }
     
     @Override
