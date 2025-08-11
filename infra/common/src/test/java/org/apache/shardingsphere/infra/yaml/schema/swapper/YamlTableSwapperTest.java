@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.util.file.ConfigurationFileUtils;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.junit.jupiter.api.Test;
@@ -44,20 +44,20 @@ class YamlTableSwapperTest {
     void assertSwapToYamlConfiguration() {
         ShardingSphereTable table = createShardingSphereTable();
         YamlShardingSphereTable actual = swapper.swapToYamlConfiguration(table);
-        YamlShardingSphereTable expected = YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class);
+        YamlShardingSphereTable expected = YamlEngine.unmarshal(SystemResourceFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class);
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObject() {
-        ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class));
+        ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(SystemResourceFileUtils.readFile(YAML_FILE), YamlShardingSphereTable.class));
         ShardingSphereTable expected = createShardingSphereTable();
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObjectWithEmptySchema() {
-        ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(EMPTY_YAML_FILE), YamlShardingSphereTable.class));
+        ShardingSphereTable actual = swapper.swapToObject(YamlEngine.unmarshal(SystemResourceFileUtils.readFile(EMPTY_YAML_FILE), YamlShardingSphereTable.class));
         ShardingSphereTable expected = new ShardingSphereTable("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE);
         assertThat(actual, deepEqual(expected));
     }
