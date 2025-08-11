@@ -21,8 +21,8 @@ import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTaskAckCallback;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 

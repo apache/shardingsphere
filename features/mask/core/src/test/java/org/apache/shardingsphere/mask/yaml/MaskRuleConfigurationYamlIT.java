@@ -19,14 +19,14 @@ package org.apache.shardingsphere.mask.yaml;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.YamlMaskRuleConfiguration;
 import org.apache.shardingsphere.mask.yaml.config.rule.YamlMaskTableRuleConfiguration;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import java.util.Arrays;

@@ -45,6 +45,8 @@ import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSpher
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -56,8 +58,6 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfig
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.infra.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
