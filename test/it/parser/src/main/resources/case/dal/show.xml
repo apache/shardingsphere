@@ -869,4 +869,51 @@
     <show sql-case-id="show_search_path" name="search_path" />
     <show sql-case-id="show_errors" />
     <show sql-case-id="show_parameter_smtp_out_server" />
+
+    <show-databases sql-case-id="show_databases_basic" />
+
+    <show-databases sql-case-id="show_schemas_basic" />
+
+    <show-databases sql-case-id="show_databases_with_like_wildcard">
+        <filter start-index="15" stop-index="25">
+            <like pattern="emp*" start-delimiter="'" end-delimiter="'" start-index="15" stop-index="25" />
+        </filter>
+    </show-databases>
+
+    <show-databases sql-case-id="show_schemas_with_like_sql_wildcard">
+        <filter start-index="13" stop-index="28">
+            <like pattern="emplo_ees" start-delimiter="'" end-delimiter="'" start-index="13" stop-index="28" />
+        </filter>
+    </show-databases>
+
+    <show-databases sql-case-id="show_databases_with_like_exact_match">
+        <filter start-index="15" stop-index="30">
+            <like pattern="employees" start-delimiter="'" end-delimiter="'" start-index="15" stop-index="30" />
+        </filter>
+    </show-databases>
+
+    <show sql-case-id="show_connectors" />
+
+    <show-tables sql-case-id="show_tables_basic" />
+
+    <show-tables sql-case-id="show_tables_in_database">
+        <from start-index="15" stop-index="22">
+            <database name="sales_db" start-index="15" stop-index="22" />
+        </from>
+    </show-tables>
+
+    <show-tables sql-case-id="show_tables_with_wildcard">
+        <filter start-index="12" stop-index="20">
+            <like pattern="order_*" start-delimiter="'" end-delimiter="'" start-index="12" stop-index="20" />
+        </filter>
+    </show-tables>
+
+    <show-tables sql-case-id="show_tables_in_db_with_wildcard">
+        <from start-index="15" stop-index="22">
+            <database name="sales_db" start-index="15" stop-index="22" />
+        </from>
+        <filter start-index="24" stop-index="32">
+            <like pattern="order_*" start-delimiter="'" end-delimiter="'" start-index="24" stop-index="32" />
+        </filter>
+    </show-tables>
 </sql-parser-test-cases>

@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNam
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -72,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -178,6 +180,11 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         return new IdentifierValue(ctx.getText());
+    }
+    
+    @Override
+    public final ASTNode visitDatabaseName(final DatabaseNameContext ctx) {
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override

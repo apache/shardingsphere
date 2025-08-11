@@ -20,39 +20,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-dialect</artifactId>
+        <artifactId>shardingsphere-parser-sql-statement-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-parser-sql-hive</artifactId>
+    <artifactId>shardingsphere-parser-sql-statement-hive</artifactId>
     <name>${project.artifactId}</name>
-    
-    <properties>
-        <dialect.parser>hive</dialect.parser>
-    </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-hive</artifactId>
+            <artifactId>shardingsphere-parser-sql-statement-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-statement-mysql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-infra-util</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-statement-hive</artifactId>
-            <version>5.5.3-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
