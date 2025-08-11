@@ -64,8 +64,24 @@ class StandardJdbcUrlParserTest {
                     Arguments.arguments("MySQL_with_replication", "jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/foo_ds?useUnicode=true", "master-ip", 3306, "foo_ds",
                             PropertiesBuilder.build(new Property("useUnicode", Boolean.TRUE.toString()))),
                     Arguments.arguments("PostgreSQL_v4", "jdbc:postgresql://127.0.0.1:5432/foo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared", "127.0.0.1", 5432, "foo_ds",
-                            PropertiesBuilder.build(new Property("prepareThreshold", "1"), new Property("preferQueryMode", "extendedForPrepared"))));
-            
+                            PropertiesBuilder.build(new Property("prepareThreshold", "1"), new Property("preferQueryMode", "extendedForPrepared"))),
+                    Arguments.arguments("testcontainers_MySQL", "jdbc:tc:mysql:5.7.34:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_Postgres", "jdbc:tc:postgresql:9.6.8:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_PostGIS", "jdbc:tc:postgis:9.6-2.5:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_TimescaleDB", "jdbc:tc:timescaledb:2.1.0-pg13:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_Trino", "jdbc:tc:trino:352://localhost/memory/default", "localhost", -1, "memory/default", new Properties()),
+                    Arguments.arguments("testcontainers_CockroachDB", "jdbc:tc:cockroach:v21.2.3:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_TiDB", "jdbc:tc:tidb:v6.1.0:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_INITSCRIPT_CLASSPATH", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITSCRIPT=somepath/init_mysql.sql", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_INITSCRIPT", "somepath/init_mysql.sql"))),
+                    Arguments.arguments("testcontainers_INITSCRIPT", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITSCRIPT=file:src/main/resources/init_mysql.sql", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_INITSCRIPT", "file:src/main/resources/init_mysql.sql"))),
+                    Arguments.arguments("testcontainers_INITFUNCTION", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_INITFUNCTION", "org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction"))),
+                    Arguments.arguments("testcontainers_DAEMON", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_DAEMON=true", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_DAEMON", Boolean.TRUE.toString()))),
+                    Arguments.arguments("testcontainers_TMPFS", "jdbc:tc:postgresql:9.6.8:///demo_ds?TC_TMPFS=/testtmpfs:rw", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_TMPFS", "/testtmpfs:rw"))));
         }
     }
 }
