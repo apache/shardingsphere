@@ -30,7 +30,7 @@ class FirebirdConnectionProtocolVersionTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdConnectionProtocolVersion.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(CONNECTION_ID);
     }
     
     @Test
@@ -43,7 +43,7 @@ class FirebirdConnectionProtocolVersionTest {
     @Test
     void assertUnregisterConnection() {
         FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(CONNECTION_ID, FirebirdProtocolVersion.PROTOCOL_VERSION18);
-        FirebirdConnectionProtocolVersion.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(CONNECTION_ID);
         assertNull(FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(CONNECTION_ID));
     }
 }
