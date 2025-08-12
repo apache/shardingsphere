@@ -28,19 +28,26 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTabl
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowViewsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowMaterializedViewsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowPartitionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTablesExtendedContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTblpropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConnectorsStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowMaterializedViewsStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowPartitionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowViewsStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTablesExtendedStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTblpropertiesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 
 /**
@@ -113,5 +120,20 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitShowPartitions(final ShowPartitionsContext ctx) {
         return new HiveShowPartitionsStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowTablesExtended(final ShowTablesExtendedContext ctx) {
+        return new HiveShowTablesExtendedStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowTblproperties(final ShowTblpropertiesContext ctx) {
+        return new HiveShowTblpropertiesStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
+        return new MySQLShowCreateTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
 }

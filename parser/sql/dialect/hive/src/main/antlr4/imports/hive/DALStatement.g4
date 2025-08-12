@@ -26,6 +26,9 @@ show
     | showViews
     | showMaterializedViews
     | showPartitions
+    | showTablesExtended
+    | showTblproperties
+    | showCreateTable
     ;
 
 showDatabases
@@ -50,6 +53,19 @@ showMaterializedViews
 
 showPartitions
     : SHOW PARTITIONS tableName partitionSpec? whereClause? orderByClause? limitClause?
+    ;
+
+showTablesExtended
+    : SHOW TABLE EXTENDED showFrom? showLike partitionSpec?
+    ;
+
+showTblproperties
+    : SHOW TBLPROPERTIES tableName
+    | SHOW TBLPROPERTIES tableName LP_ string_ RP_
+    ;
+
+showCreateTable
+    : SHOW CREATE TABLE (tableName | viewName)
     ;
 
 showFrom

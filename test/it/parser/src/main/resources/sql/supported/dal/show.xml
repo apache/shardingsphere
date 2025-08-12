@@ -175,4 +175,16 @@
     <sql-case id="show_partitions_with_order_by" value="SHOW PARTITIONS user_activity ORDER BY day DESC;" db-types="Hive" />
     <sql-case id="show_partitions_with_limit" value="SHOW PARTITIONS transactions LIMIT 50;" db-types="Hive" />
     <sql-case id="show_partitions_all_options" value="SHOW PARTITIONS retail.sales PARTITION(region='north') WHERE quarter=4 AND revenue > 50000 ORDER BY revenue DESC LIMIT 20;" db-types="Hive" />
+    <sql-case id="show_table_extended_basic" value="SHOW TABLE EXTENDED LIKE 'order_*';" db-types="Hive" />
+    <sql-case id="show_table_extended_in_database" value="SHOW TABLE EXTENDED IN sales_db LIKE 'order_*';" db-types="Hive" />
+    <sql-case id="show_table_extended_from_database" value="SHOW TABLE EXTENDED FROM inventory_db LIKE 'product_*';" db-types="Hive" />
+    <sql-case id="show_table_extended_with_partition" value="SHOW TABLE EXTENDED LIKE 'user_logs' PARTITION(dt='2023-10-01');" db-types="Hive" />
+    <sql-case id="show_table_extended_all_options_in" value="SHOW TABLE EXTENDED IN analytics_db LIKE 'daily_metrics' PARTITION(region='asia');" db-types="Hive" />
+    <sql-case id="show_table_extended_all_options_from" value="SHOW TABLE EXTENDED FROM analytics_db LIKE 'daily_metrics' PARTITION(region='asia');" db-types="Hive" />
+    <sql-case id="show_tblproperties_basic" value="SHOW TBLPROPERTIES orders;" db-types="Hive" />
+    <sql-case id="show_tblproperties_with_key" value="SHOW TBLPROPERTIES products('owner');" db-types="Hive" />
+    <sql-case id="show_create_table_basic" value="SHOW CREATE TABLE orders;" db-types="Hive" />
+    <sql-case id="show_create_table_with_db" value="SHOW CREATE TABLE sales_db.orders;" db-types="Hive" />
+    <sql-case id="show_create_table_view" value="SHOW CREATE TABLE user_view;" db-types="Hive" />
+    <sql-case id="show_create_view_with_db" value="SHOW CREATE TABLE analytics_db.user_view;" db-types="Hive" />
 </sql-cases>
