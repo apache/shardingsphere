@@ -309,7 +309,7 @@ Possible configuration examples are as follows,
       </dependency>
        <dependency>
           <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
           <version>${shardingsphere.version}</version>
       </dependency>
        <dependency>
@@ -352,3 +352,7 @@ without it being registered as reachable. Add it to the resource metadata to sol
   com.mysql.cj.conf.ConnectionUrl.getConnectionUrlInstance(ConnectionUrl.java:291)
   com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:186)
 ```
+
+10. Due to the use of `janino-compiler/janino` by `apache/calcite`, 
+    ShardingSphere's `SQL Federation` feature is unavailable in the GraalVM Native Image.
+    This also prevents ShardingSphere Proxy Native from integrating with OpenGauss.

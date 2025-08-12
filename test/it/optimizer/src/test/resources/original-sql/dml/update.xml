@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="update_without_alias" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" />
+    <sql-case id="update_with_alias" value="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2,openGauss,Oracle" />
+    <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" />
+    <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL" />
+    <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL" />
+    <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
+    <sql-case id="update_with_or" value="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?" parameters="1000, 0, 10" />
+    <sql-case id="update_with_set_calculation" value="UPDATE t_order SET status = status - ? WHERE order_id = ? AND user_id = ?" />
+    <sql-case id="update_with_where_calculation" value="UPDATE t_order SET status = ? WHERE order_id = order_id - ? AND user_id = ?" />
+    <sql-case id="update_with_column_equal_column" value="update t_order set order_id = order_id, status = 'init' where order_id = order_id AND order_id = ?" db-types="MySQL" />
+    <sql-case id="update_with_case_when" value="update stock_freeze_detail set row_status=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end,
+    update_user=case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end, update_time=case WHEN (id=?) THEN ? end where  tenant_id = ?" db-types="MySQL,Oracle" />
+    <sql-case id="update_with_order_by_row_count" value="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ? ORDER BY order_id LIMIT ?" db-types="MySQL" />
+    <sql-case id="update_with_number" value="UPDATE t_order SET order_id = ? WHERE user_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="update_with_with_clause" value="WITH cte (order_id, user_id, status) AS (SELECT order_id, user_id, status FROM t_order) UPDATE t_order SET status = ? FROM t_order AS t JOIN cte AS c ON t.order_id = c.order_id WHERE c.order_id = ?" db-types="SQLServer" />
+    <sql-case id="update_with_from_clause" value="UPDATE t_order SET status = ? FROM t_order AS t JOIN t_order_item AS i ON t.order_id = i.order_id WHERE i.order_id = ?" db-types="PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="update_with_top" value="UPDATE TOP(10) t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
+    <sql-case id="update_with_top_percent" value="UPDATE TOP(10) PERCENT t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
+    <sql-case id="update_with_query_hint" value="UPDATE t_order SET status = ? WHERE order_id = ?" db-types="SQLServer" />
+    <sql-case id="update_with_set_null" value="UPDATE employees SET commission_pct = NULL WHERE job_id = 'SH_CLERK'" db-types="Oracle" />
+    <sql-case id="update_with_set_subquery" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100')" db-types="Oracle" />
+    <sql-case id="update_with_multiple_set" value="UPDATE employees SET job_id = 'SA_MAN', salary = 1000, department_id = 120 WHERE last_name = 'Douglas Grant'" db-types="Oracle" />
+    <sql-case id="update_with_set_value" value="UPDATE people_demo1 p SET VALUE(p) = (SELECT VALUE(q) FROM people_demo2 q WHERE p.department_id = q.department_id) WHERE p.department_id = 10" db-types="Oracle" />
+    <sql-case id="update_with_multi_columns" value="UPDATE employees a SET department_id = (SELECT department_id FROM departments WHERE location_id = '2100'), (salary, commission_pct) = (SELECT 1.1*AVG(salary), 1.5*AVG(commission_pct) FROM employees b WHERE a.department_id = b.department_id)" db-types="Oracle" />
+    <sql-case id="update_with_force_index" value="UPDATE t_order FORCE INDEX (PRIMARY) SET status = ? WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="update_with_subquery_using_interval" value="UPDATE employees a SET salary = (SELECT salary FROM employees AS OF TIMESTAMP (SYSTIMESTAMP - INTERVAL '2' MINUTE) WHERE last_name = 'Chung') WHERE last_name = 'Chung'" db-types="Oracle" />
+    <sql-case id="update_with_translate_function" value="UPDATE translate_tab SET char_col = TRANSLATE (nchar_col USING CHAR_CS);" db-types="Oracle"/>
+    <sql-case id="update_with_dot_column_name" value="UPDATE employees SET salary =.salary + 10  WHERE employee_id BETWEEN 1 and 10; " db-types="Oracle" />
+    <sql-case id="update_with_set_value_clause" value="UPDATE ot1 SET VALUE(ot1.x) = t1(20) WHERE VALUE(ot1.x) = t1(10);" db-types="Oracle" />
+    <sql-case id="update_with_open_row_set_function" value="UPDATE T SET XmlCol = ( SELECT * FROM OPENROWSET(BULK 'C:\SampleFolder\SampleData3.txt', SINGLE_BLOB) AS x) WHERE IntCol = 1" db-types="SQLServer"/>
+    <sql-case id="update_with_point_type" value="UPDATE dbo.Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
+    <sql-case id="update_with_table_hint" value="UPDATE Production.Product WITH (TABLOCK) SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE 'BK-%'" db-types="SQLServer"/>
+    <sql-case id="update_with_option_hint" value="UPDATE Production.Product SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE @Product OPTION (OPTIMIZE FOR (@Product = 'BK-%'))" db-types="SQLServer"/>
+    <sql-case id="update_sales_table_with_subquery" value="UPDATE YearlyTotalSales SET YearlySalesAmount=(SELECT SUM(SalesAmount) FROM FactInternetSales WHERE OrderDateKey >=20040000 AND OrderDateKey &lt; 20050000) WHERE Year=2004" db-types="SQLServer"/>
+    <sql-case id="update_with_inner_join_and_database_table_column" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB  FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
+    <sql-case id="update_with_open_query_function" value="UPDATE OPENQUERY (MyLinkedServer, 'SELECT GroupName FROM HumanResources.Department WHERE DepartmentID = 4') SET GroupName = 'Sales and Marketing'" db-types="SQLServer"/>
+    <sql-case id="update_with_open_datasource_function" value="UPDATE OPENDATASOURCE('SQLNCLI', 'Data Source=&lt;server name&gt;;Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department SET GroupName = 'Sales and Marketing' WHERE DepartmentID = 4" db-types="SQLServer"/>
+    <sql-case id="update_with_write_function_and_output_clause" value="UPDATE Production.Document SET DocumentSummary .WRITE (N'features',28,10) OUTPUT deleted.DocumentSummary, inserted.DocumentSummary INTO @MyTableVar WHERE Title = N'Front Reflector Bracket Installation'" db-types="SQLServer"/>
+    <sql-case id="update_with_open_rowset_function_and_subquery" value="UPDATE Production.ProductPhoto SET ThumbNailPhoto = ( SELECT *  FROM OPENROWSET(BULK 'c:Tires.jpg', SINGLE_BLOB) AS x ) WHERE ProductPhotoID = 1" db-types="SQLServer"/>
+    <sql-case id="update_with_filestream" value="UPDATE Archive.dbo.Records SET [Chart] = CAST('Xray 1' as VARBINARY(max)) WHERE [SerialNumber] = 2" db-types="SQLServer"/>
+    <sql-case id="update_production_product_with_like" value="UPDATE Production.Product SET Color = N'Metallic Red' WHERE Name LIKE N'Road-250%' AND Color = N'Red'" db-types="SQLServer"/>
+    <sql-case id="update_with_current_of" value="UPDATE HumanResources.EmployeePayHistory SET PayFrequency = 2 WHERE CURRENT OF complex_cursor" db-types="SQLServer"/>
+    <sql-case id="update_with_plus_eq_symbol" value="UPDATE Production.Product SET ListPrice += @NewPrice WHERE Color = N'Red'" db-types="SQLServer"/>
+    <sql-case id="update_scrapreason_with_between_and" value="UPDATE Production.ScrapReason SET Name += ' - tool malfunction' WHERE ScrapReasonID BETWEEN 10 and 12" db-types="SQLServer"/>
+    <sql-case id="update_sr_with_join_subquery" value="UPDATE sr SET sr.Name += ' - tool malfunction' FROM Production.ScrapReason AS sr JOIN Production.WorkOrder AS wo ON sr.ScrapReasonID = wo.ScrapReasonID AND wo.ScrappedQty &gt; 300" db-types="SQLServer"/>
+    <sql-case id="update_with_nchar" value="UPDATE HumanResources.Employee SET JobTitle = N'Executive' WHERE NationalIDNumber = 123456789" db-types="SQLServer" />
+    <sql-case id="update_with_inner_join" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
+    <sql-case id="update_with_current_of_abc" value="UPDATE dbo.Table1 SET c2 = c2 + d2 FROM dbo.Table2 WHERE CURRENT OF abc" db-types="SQLServer"/>
+    <sql-case id="update_with_location_setXY" value="UPDATE Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
+    <sql-case id="update_returning_expressions" value="UPDATE t_order SET status = status - ? WHERE order_id = ? AND user_id = ? RETURNING status" db-types="Firebird" />
+    <sql-case id="update_with_option_label_hint" value="UPDATE DimProduct SET ProductSubcategoryKey = 2 WHERE ProductKey = 313 OPTION (LABEL = N'label1');" db-types="SQLServer"/>
+</sql-cases>

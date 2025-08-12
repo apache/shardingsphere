@@ -71,6 +71,11 @@
 1. SQL Parser: Support Hive ALTER INDEX statement parse - [#36167](https://github.com/apache/shardingsphere/pull/36167)
 1. SQL Parser: Support Hive CREATE MACRO statement parse - [#36181](https://github.com/apache/shardingsphere/pull/36181)
 1. SQL Parser: Support Hive DROP MACRO statement parse - [#36187](https://github.com/apache/shardingsphere/pull/36187)
+1. SQL Parser: Support Hive CREATE FUNCTION statement parse - [#36193](https://github.com/apache/shardingsphere/pull/36193)
+1. SQL Parser: Support Hive DROP FUNCTION statement parse - [#36196](https://github.com/apache/shardingsphere/pull/36196)
+1. SQL Parser: Support Hive RELOAD FUNCTION statement parse - [#36200](https://github.com/apache/shardingsphere/pull/36200)
+1. SQL Parser: Support Hive SHOW DATABASES & SHOW CONNECTORS & SHOW TABLES statement parse - [#36221](https://github.com/apache/shardingsphere/pull/36221)
+1. SQL Parser: Support Hive SHOW VIEWS & SHOW MATERIALIZED VIEWS & SHOW PARTITIONS statement parse - [#36263](https://github.com/apache/shardingsphere/pull/36263)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
 1. SQL Parser: Support SQL Server CHANGETABLE function parse - [#35920](https://github.com/apache/shardingsphere/pull/35920)
 1. SQL Parser: Support SQL Server AI_GENERATE_EMBEDDINGS function parse - [#35922](https://github.com/apache/shardingsphere/pull/35922)
@@ -115,6 +120,7 @@
 1. SQL Binder: Support Comment statement SQL bind - [#36012](https://github.com/apache/shardingsphere/pull/36012)
 1. SQL Binder: Support Prepare statement SQL bind - [#36064](https://github.com/apache/shardingsphere/pull/36064)
 1. SQL Binder: Support Flush statement SQL bind - [#36036](https://github.com/apache/shardingsphere/pull/36036)
+1. SQL Binder: Support Revoke statement SQL bind - [#36124](https://github.com/apache/shardingsphere/pull/36124)
 1. SQL Binder: Add alter table metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
 1. SQL Router: Add check for select with union all routing to multi data sources - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
@@ -124,6 +130,7 @@
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
+1. SQL Parser: Support table alias in insert statement in Oracle - [#36202](https://github.com/apache/shardingsphere/pull/36202)
 
 ### Bug Fixes
 

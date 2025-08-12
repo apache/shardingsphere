@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTes
 import org.apache.shardingsphere.test.e2e.transaction.engine.command.CommonSQLCommand;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

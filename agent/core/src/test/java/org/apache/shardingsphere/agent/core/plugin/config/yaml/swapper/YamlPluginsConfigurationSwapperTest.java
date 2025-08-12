@@ -123,7 +123,7 @@ class YamlPluginsConfigurationSwapperTest {
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.put("key", "value");
+        result.setProperty("key", "value");
         return result;
     }
     

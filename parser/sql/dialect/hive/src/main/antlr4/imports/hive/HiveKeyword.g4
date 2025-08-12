@@ -863,6 +863,10 @@ FUNCTION
     : F U N C T I O N
     ;
 
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
 GENERAL
     : G E N E R A L
     ;
@@ -2943,6 +2947,10 @@ VIEW
     : V I E W
     ;
 
+VIEWS
+    : V I E W S
+    ;
+
 VIRTUAL
     : V I R T U A L
     ;
@@ -3356,4 +3364,12 @@ DISTRIBUTED
 
 MACRO
     : M A C R O
+    ;
+
+JAR
+    : J A R
+    ;
+
+CONNECTORS
+    : C O N N E C T O R S
     ;

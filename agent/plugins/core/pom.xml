@@ -37,11 +37,6 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-        </dependency>
     </dependencies>
     
     <build>

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.util.yaml;
 
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
-import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
 
@@ -57,14 +57,14 @@ class YamlEngineTest {
     
     @Test
     void assertUnmarshalWithYamlBytes() throws IOException {
-        String yamlContent = ConfigurationFileUtils.readFile("yaml/shortcuts-fixture.yaml");
+        String yamlContent = SystemResourceFileUtils.readFile("yaml/shortcuts-fixture.yaml");
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test
     void assertUnmarshalWithEmptyYamlBytes() throws IOException {
-        String yamlContent = ConfigurationFileUtils.readFile("yaml/empty-config.yaml");
+        String yamlContent = SystemResourceFileUtils.readFile("yaml/empty-config.yaml");
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.getBytes(), YamlShortcutsConfigurationFixture.class);
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
@@ -104,7 +104,7 @@ class YamlEngineTest {
     
     @Test
     void assertUnmarshalInvalidYaml() {
-        String yamlContent = ConfigurationFileUtils.readFile("yaml/accepted-class.yaml");
+        String yamlContent = SystemResourceFileUtils.readFile("yaml/accepted-class.yaml");
         assertThrows(ComposerException.class, () -> YamlEngine.unmarshal(yamlContent, Object.class));
     }
     

@@ -102,7 +102,7 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? optionHint?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) withTableHint? outputClause? whereClause? optionHint?
     ;
 
 optionHint
@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause? optionHint?
     ;
 
 duplicateSpecification
@@ -185,7 +185,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? columnNames? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -246,7 +246,27 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
+    : GROUP BY (groupByItem (COMMA_ groupByItem)* | orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?) (WITH LP_ DISTRIBUTED_AGG RP_)?
+    ;
+
+groupByItem
+    : rollupCubeClause | groupingSetsClause | expr
+    ;
+
+rollupCubeClause
+    : (ROLLUP | CUBE) LP_ groupingExprList RP_
+    ;
+
+groupingSetsClause
+    : GROUPING SETS LP_ (rollupCubeClause | groupingExprList) (COMMA_ (rollupCubeClause | groupingExprList))* RP_
+    ;
+
+groupingExprList
+    : expressionList (COMMA_ expressionList)*
+    ;
+
+expressionList
+    : expr (COMMA_ expr)* | LP_ expr? (COMMA_ expr?)* RP_
     ;
 
 havingClause
@@ -258,7 +278,7 @@ subquery
     ;
 
 withTempTable
-    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ AS alias
+    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ (AS alias)?
     ;
 
 withClause
@@ -290,7 +310,7 @@ outputWithColumn
     ;
 
 outputWithAaterisk
-    : (INSERTED | DELETED) DOT_ASTERISK_
+    : ((INSERTED | DELETED) DOT_ASTERISK_ | expr) (COMMA_ ((INSERTED | DELETED) DOT_ASTERISK_ | expr))*
     ;
 
 outputTableName

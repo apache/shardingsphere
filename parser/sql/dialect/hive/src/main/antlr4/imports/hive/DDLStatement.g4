@@ -124,6 +124,20 @@ dropMacro
     : DROP TEMPORARY MACRO ifExists? macroName
     ;
 
+createFunction
+    : CREATE TEMPORARY FUNCTION functionName AS className
+    | CREATE FUNCTION functionName AS className createFunctionOptions?
+    ;
+
+dropFunction
+    : DROP TEMPORARY FUNCTION ifExists? functionName
+    | DROP FUNCTION ifExists? functionName
+    ;
+
+reloadFunction
+    : RELOAD (FUNCTIONS | FUNCTION)
+    ;
+
 alterDatabaseSpecification_
     : SET DBPROPERTIES LP_ dbProperties RP_
     | SET OWNER (USER | ROLE) identifier
@@ -491,4 +505,26 @@ macroParameterList
 
 macroParameter
     : columnName dataTypeClause
+    ;
+
+className
+    : string_
+    ;
+
+resourcePath
+    : string_
+    ;
+
+resourceClause
+    : JAR resourcePath
+    | FILE resourcePath
+    | ARCHIVE resourcePath
+    ;
+
+createFunctionOption
+    : (COMMA_ resourceClause)*
+    ;
+
+createFunctionOptions
+    : USING resourceClause createFunctionOption
     ;

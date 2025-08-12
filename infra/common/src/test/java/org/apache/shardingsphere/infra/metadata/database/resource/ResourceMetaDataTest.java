@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

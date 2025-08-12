@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.natived.commons.entity.OrderItem;
 import org.apache.shardingsphere.test.natived.commons.repository.AddressRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderItemRepository;
 import org.apache.shardingsphere.test.natived.commons.repository.OrderRepository;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +38,9 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShadowTest {
     
@@ -53,7 +54,7 @@ class ShadowTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
     }
     
     @Test
@@ -83,7 +84,7 @@ class ShadowTest {
     
     private void processSuccess() throws SQLException {
         final Collection<Long> orderIds = insertData();
-        assertThat(selectAll(), equalTo(Arrays.asList(
+        assertThat(selectAll(), is(Arrays.asList(
                 new Order(1L, 0, 2, 2L, "INSERT_TEST"),
                 new Order(2L, 0, 4, 4L, "INSERT_TEST"),
                 new Order(3L, 0, 6, 6L, "INSERT_TEST"),
@@ -94,7 +95,7 @@ class ShadowTest {
                 new Order(3L, 1, 5, 5L, "INSERT_TEST"),
                 new Order(4L, 1, 7, 7L, "INSERT_TEST"),
                 new Order(5L, 1, 9, 9L, "INSERT_TEST"))));
-        assertThat(orderItemRepository.selectAll(), equalTo(Arrays.asList(
+        assertThat(orderItemRepository.selectAll(), is(Arrays.asList(
                 new OrderItem(1L, 1L, 1, "13800000001", "INSERT_TEST"),
                 new OrderItem(2L, 1L, 2, "13800000001", "INSERT_TEST"),
                 new OrderItem(3L, 2L, 3, "13800000001", "INSERT_TEST"),
@@ -106,11 +107,11 @@ class ShadowTest {
                 new OrderItem(9L, 5L, 9, "13800000001", "INSERT_TEST"),
                 new OrderItem(10L, 5L, 10, "13800000001", "INSERT_TEST"))));
         assertThat(addressRepository.selectAll(),
-                equalTo(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
+                is(LongStream.range(1L, 11L).mapToObj(each -> new Address(each, "address_test_" + each)).collect(Collectors.toList())));
         deleteData(orderIds);
-        assertThat(selectAll(), equalTo(Collections.singletonList(new Order(1L, 0, 2, 2L, "INSERT_TEST"))));
-        assertThat(orderItemRepository.selectAll(), equalTo(Collections.emptyList()));
-        assertThat(addressRepository.selectAll(), equalTo(Collections.emptyList()));
+        assertThat(selectAll(), is(Collections.singletonList(new Order(1L, 0, 2, 2L, "INSERT_TEST"))));
+        assertTrue(orderItemRepository.selectAll().isEmpty());
+        assertTrue(addressRepository.selectAll().isEmpty());
     }
     
     private Collection<Long> insertData() throws SQLException {

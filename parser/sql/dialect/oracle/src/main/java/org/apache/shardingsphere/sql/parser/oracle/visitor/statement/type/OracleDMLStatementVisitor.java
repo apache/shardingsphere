@@ -384,7 +384,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
         InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.dmlTableExprClause().dmlTableClause()) {
-            result.setTable((SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause()));
+            SimpleTableSegment simpleTableSegment = (SimpleTableSegment) visit(ctx.dmlTableExprClause().dmlTableClause());
+            if (null != ctx.dmlTableExprClause().alias()) {
+                simpleTableSegment.setAlias((AliasSegment) visit(ctx.dmlTableExprClause().alias()));
+            }
+            result.setTable(simpleTableSegment);
         } else if (null != ctx.dmlTableExprClause().dmlSubqueryClause()) {
             result.setInsertSelect((SubquerySegment) visit(ctx.dmlTableExprClause().dmlSubqueryClause()));
         } else {

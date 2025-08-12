@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.env.container.wait;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.util.concurrent.Callable;

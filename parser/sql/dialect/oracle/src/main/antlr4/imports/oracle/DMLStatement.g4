@@ -49,7 +49,7 @@ conditionalInsertElsePart
 
 insertIntoClause
     : INTO dmlTableExprClause
-    | INTO dmlTableExprClause alias? columnNames?
+    | INTO dmlTableExprClause columnNames?
     ;
 
 insertValuesClause
@@ -62,6 +62,7 @@ returningClause
 
 dmlTableExprClause
     : dmlTableClause | dmlSubqueryClause | tableCollectionExpr
+    | (dmlTableClause | dmlSubqueryClause | tableCollectionExpr) alias
     ;
 
 dmlTableClause

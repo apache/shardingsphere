@@ -2134,3 +2134,39 @@ TABLESAMPLE
 LABEL
     : L A B E L
     ;
+
+VECTOR_SEARCH
+    : V E C T O R UL_ S E A R C H
+    ;
+
+COLUMN
+    : C O L U M N
+    ;
+
+SIMILAR_TO
+    : S I M I L A R UL_ T O
+    ;
+
+METRIC
+    : M E T R I C
+    ;
+
+TOP_N
+    : T O P UL_ N
+    ;
+
+CUBE
+    : C U B E
+    ;
+
+GROUPING
+    : G R O U P I N G
+    ;
+
+SETS
+    : S E T S
+    ;
+
+DISTRIBUTED_AGG
+    : D I S T R I B U T E D UL_ A G G
+    ;

@@ -25,14 +25,12 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExternalITEnvironment;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalTestParameterLoader;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ExternalTestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.type.GitHubTestParameterLoadStrategy;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
-import org.apache.shardingsphere.test.it.sql.parser.loader.ExternalCaseSettings;
-import org.apache.shardingsphere.test.loader.ExternalSQLTestParameter;
-import org.apache.shardingsphere.test.loader.TestParameterLoadTemplate;
-import org.apache.shardingsphere.test.loader.TestParameterLoader;
-import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
-import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.parallel.Execution;
@@ -83,11 +81,11 @@ public abstract class ExternalSQLParserIT {
         }
         
         private Stream<ExternalSQLTestParameter> getTestParameters(final ExternalCaseSettings settings) throws ReflectiveOperationException {
-            TestParameterLoadStrategy loadStrategy = new GitHubTestParameterLoadStrategy();
+            ExternalTestParameterLoadStrategy loadStrategy = new GitHubTestParameterLoadStrategy();
             URI sqlCaseURI = URI.create(settings.caseURL());
             URI resultURI = URI.create(settings.resultURL());
-            TestParameterLoadTemplate loadTemplate = settings.template().getConstructor().newInstance();
-            TestParameterLoader loader = new TestParameterLoader(loadStrategy, loadTemplate);
+            ExternalTestParameterLoadTemplate loadTemplate = settings.template().getConstructor().newInstance();
+            ExternalTestParameterLoader loader = new ExternalTestParameterLoader(loadStrategy, loadTemplate);
             return loader.load(sqlCaseURI, resultURI, settings.value(), settings.reportType());
         }
     }
