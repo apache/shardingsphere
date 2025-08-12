@@ -112,7 +112,7 @@ class FirebirdPacketCodecEngineTest {
         new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));
     }
-
+    
     @Test
     void assertDecodeWithTruncatedPacketAcrossBuffers() {
         ByteBuf firstPart = Unpooled.buffer(8);
@@ -131,7 +131,7 @@ class FirebirdPacketCodecEngineTest {
             assertThat(((ByteBuf) out.get(0)).readableBytes(), is(12));
         }
     }
-
+    
     @Test
     void assertDecodeWithFullBufferAndValidLength() {
         ByteBuf byteBuf = Unpooled.buffer(8);
