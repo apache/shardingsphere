@@ -38,13 +38,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FirebirdAcceptPacketTest {
-
+    
     @Test
     void assertAcceptPacket() {
         ByteBuf buf1 = mock(ByteBuf.class);
-        when(buf1.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(),FirebirdArchType.ARCH_GENERIC.getCode(),0,5,1);
+        when(buf1.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
         ByteBuf buf2 = mock(ByteBuf.class);
-        when(buf2.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(),FirebirdArchType.ARCH_GENERIC.getCode(),0,5,2);
+        when(buf2.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 2);
         List<FirebirdProtocol> list = new ArrayList<>();
         list.add(new FirebirdProtocol(buf1));
         list.add(new FirebirdProtocol(buf2));
@@ -52,11 +52,11 @@ class FirebirdAcceptPacketTest {
         assertEquals(FirebirdCommandPacketType.ACCEPT, packet.getOpCode());
         assertThat(packet.getProtocol().getWeight(), is(2));
     }
-
+    
     @Test
     void assertWriteWithAcceptDataPacket() {
         ByteBuf protoBuf = mock(ByteBuf.class);
-        when(protoBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(),FirebirdArchType.ARCH_GENERIC.getCode(),0,5,1);
+        when(protoBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
         List<FirebirdProtocol> list = new ArrayList<>();
         list.add(new FirebirdProtocol(protoBuf));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);

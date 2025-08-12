@@ -18,38 +18,31 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FirebirdFetchStatementPacketTest {
     
     @Test
     void assertFetchStatementPacket() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(3);
-        ByteBuf blr = Unpooled.buffer();
-        blr.writeZero(4);
-        blr.writeByte(9);
-        blr.writeByte(0);
-        blr.writeByte(BlrConstants.blr_long);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_short);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_end);
-        payload.writeBuffer(blr);
-        payload.writeInt4(7);
-        payload.writeInt4(10);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.readInt4()).thenReturn(3, 7, 10);
+        ByteBuf blr = mock(ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(blr);
+        when(blr.isReadable()).thenReturn(true);
+        when(blr.readUnsignedByte()).thenReturn((short) 9, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_short, (short) BlrConstants.blr_end);
+        when(blr.skipBytes(anyInt())).thenReturn(blr);
+        FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(payload);
+        verify(payload).skipReserved(4);
         assertThat(packet.getStatementId(), is(3));
         assertThat(packet.getMessage(), is(7));
         assertThat(packet.getFetchSize(), is(10));
@@ -60,22 +53,9 @@ class FirebirdFetchStatementPacketTest {
     
     @Test
     void assertGetLength() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        ByteBuf blr = Unpooled.buffer();
-        blr.writeZero(4);
-        blr.writeByte(9);
-        blr.writeByte(0);
-        blr.writeByte(BlrConstants.blr_long);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_short);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_end);
-        payload.writeBuffer(blr);
-        payload.writeInt4(0);
-        payload.writeInt4(0);
-        payload.getByteBuf().readerIndex(0);
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.getBufferLength(8)).thenReturn(20);
         assertThat(FirebirdFetchStatementPacket.getLength(payload), is(36));
+        verify(payload).getBufferLength(8);
     }
 }

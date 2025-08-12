@@ -68,10 +68,11 @@ class FirebirdStartTransactionCommandExecutorTest {
         when(packet.getIsolationLevel()).thenReturn(TransactionIsolationLevel.SERIALIZABLE);
         FirebirdStartTransactionCommandExecutor executor = new FirebirdStartTransactionCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
+        DatabasePacket first = actual.iterator().next();
+        assertThat(first, instanceOf(FirebirdGenericResponsePacket.class));
+        assertEquals(1, ((FirebirdGenericResponsePacket) first).getHandle());
         verify(connectionSession).setAutoCommit(true);
         verify(connectionSession).setReadOnly(true);
         verify(connectionSession).setIsolationLevel(TransactionIsolationLevel.SERIALIZABLE);
-        assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
-        assertEquals(1, ((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle());
     }
 }

@@ -35,16 +35,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdInfoPacketTest {
-
+    
     @Mock
     private FirebirdPacketPayload payload;
-
+    
     @Test
     void assertGetLength() {
         when(payload.getBufferLength(12)).thenReturn(8);
         assertThat(FirebirdInfoPacket.getLength(payload), is(24));
     }
-
+    
     @Test
     void assertNewInstance() {
         ByteBuf buffer = mock(ByteBuf.class);

@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement;
 
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FirebirdAllocateStatementPacketTest {
     
     @Test
     void assertAllocateStatementPacket() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.readInt4()).thenReturn(1);
+        FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(payload);
+        verify(payload).skipReserved(4);
         assertThat(packet.getDatabaseId(), is(1));
     }
     

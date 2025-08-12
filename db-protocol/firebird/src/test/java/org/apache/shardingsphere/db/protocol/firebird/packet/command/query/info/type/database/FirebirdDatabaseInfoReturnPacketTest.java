@@ -53,7 +53,7 @@ class FirebirdDatabaseInfoReturnPacketTest {
         order.verify(payload).writeInt2LE(4);
         order.verify(payload).writeInt4LE(5);
     }
-
+    
     @Test
     void assertWriteOdsMinorVersion() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION));

@@ -17,49 +17,45 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql;
 
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 class FirebirdSQLInfoReturnPacketTest {
     
     @Test
     void assertWriteRecords() {
         FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.RECORDS, FirebirdCommonInfoPacketType.END));
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdPacketPayload result = new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8);
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.RECORDS.getCode()));
-        assertThat(result.readInt2LE(), is(0));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoReturnValue.SELECT.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.readInt4(), is(0));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoReturnValue.INSERT.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.readInt4(), is(0));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoReturnValue.UPDATE.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.readInt4(), is(0));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoReturnValue.DELETE.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.readInt4(), is(0));
-        assertThat(result.readInt1(), is(FirebirdCommonInfoPacketType.END.getCode()));
+        org.mockito.InOrder io = org.mockito.Mockito.inOrder(payload);
+        io.verify(payload).writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
+        io.verify(payload).writeInt2LE(0);
+        io.verify(payload).writeInt1(FirebirdSQLInfoReturnValue.SELECT.getCode());
+        io.verify(payload).writeInt2LE(4);
+        io.verify(payload).writeInt4LE(0);
+        io.verify(payload).writeInt1(FirebirdSQLInfoReturnValue.INSERT.getCode());
+        io.verify(payload).writeInt2LE(4);
+        io.verify(payload).writeInt4LE(0);
+        io.verify(payload).writeInt1(FirebirdSQLInfoReturnValue.UPDATE.getCode());
+        io.verify(payload).writeInt2LE(4);
+        io.verify(payload).writeInt4LE(0);
+        io.verify(payload).writeInt1(FirebirdSQLInfoReturnValue.DELETE.getCode());
+        io.verify(payload).writeInt2LE(4);
+        io.verify(payload).writeInt4LE(0);
+        io.verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
     }
     
     @Test
     void assertParseSQLInfoWithUnknownType() {
         FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE));
-        assertThrows(FirebirdProtocolException.class, () -> packet.write(new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8)));
+        assertThrows(FirebirdProtocolException.class, () -> packet.write(mock(FirebirdPacketPayload.class)));
     }
 }

@@ -54,8 +54,7 @@ class FirebirdConnectPacketTest {
                 FirebirdCommandPacketType.CONNECT.getValue(),
                 1,
                 FirebirdArchType.ARCH_GENERIC.getCode(),
-                1
-        );
+                1);
         when(payload.readString()).thenReturn("db");
         when(payload.readBuffer()).thenReturn(userInfo);
         when(payload.getByteBuf()).thenReturn(protocolBuf);
@@ -64,8 +63,7 @@ class FirebirdConnectPacketTest {
                 (short) FirebirdUserDataType.CNCT_USER.getCode(), (short) 4,
                 (short) FirebirdUserDataType.CNCT_PLUGIN_NAME.getCode(), (short) 3,
                 (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2,
-                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2
-        );
+                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2);
         when(userInfo.readSlice(4)).thenReturn(userBuf);
         when(userInfo.readSlice(3)).thenReturn(pluginBuf);
         when(userInfo.readSlice(2)).thenReturn(specBuf1, specBuf2);
@@ -78,8 +76,7 @@ class FirebirdConnectPacketTest {
         when(protocolBuf.readInt()).thenReturn(
                 FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode(),
                 FirebirdArchType.ARCH_GENERIC.getCode(),
-                0, 5, 1
-        );
+                0, 5, 1);
         FirebirdConnectPacket packet = new FirebirdConnectPacket(payload);
         assertEquals(FirebirdCommandPacketType.CONNECT, packet.getOpCode());
         assertThat(packet.getConnectVersion(), is(1));

@@ -17,25 +17,23 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement;
 
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FirebirdFreeStatementPacketTest {
     
     @Test
     void assertFreeStatementPacket() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(5);
-        payload.writeInt4(FirebirdFreeStatementPacket.DROP);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdFreeStatementPacket packet = new FirebirdFreeStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.readInt4()).thenReturn(5, FirebirdFreeStatementPacket.DROP);
+        FirebirdFreeStatementPacket packet = new FirebirdFreeStatementPacket(payload);
+        verify(payload).skipReserved(4);
         assertThat(packet.getStatementId(), is(5));
         assertThat(packet.getOption(), is(FirebirdFreeStatementPacket.DROP));
     }

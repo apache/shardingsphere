@@ -47,7 +47,7 @@ class FirebirdAcceptDataPacketTest {
         verify(payload).writeInt4(1);
         verify(payload).writeString("k");
     }
-
+    
     @Test
     void assertWriteWithoutData() {
         FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
