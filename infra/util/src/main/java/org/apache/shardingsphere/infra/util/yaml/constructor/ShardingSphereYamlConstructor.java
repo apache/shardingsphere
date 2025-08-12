@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * ShardingSphere YAML constructor.
  */
-public class ShardingSphereYamlConstructor extends Constructor {
+public final class ShardingSphereYamlConstructor extends Constructor {
     
     private final Map<Class<?>, Construct> typeConstructs = new HashMap<>();
     
@@ -60,7 +60,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     }
     
     @Override
-    protected final Construct getConstructor(final Node node) {
+    protected Construct getConstructor(final Node node) {
         return typeConstructs.getOrDefault(node.getType(), super.getConstructor(node));
     }
     
