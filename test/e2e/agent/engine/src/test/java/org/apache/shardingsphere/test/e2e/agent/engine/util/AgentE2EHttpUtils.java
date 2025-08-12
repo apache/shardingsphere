@@ -27,15 +27,15 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * HTTP utility class.
+ * Agent E2E HTTP utility class.
  */
-public final class HttpUtils {
+public final class AgentE2EHttpUtils {
     
-    private static final HttpUtils OK_HTTP_UTILS = new HttpUtils();
+    private static final AgentE2EHttpUtils OK_HTTP_UTILS = new AgentE2EHttpUtils();
     
     private final OkHttpClient client;
     
-    private HttpUtils() {
+    private AgentE2EHttpUtils() {
         client = new OkHttpClient.Builder().connectTimeout(10L, TimeUnit.SECONDS).readTimeout(10L, TimeUnit.SECONDS).writeTimeout(10L, TimeUnit.SECONDS).build();
     }
     
@@ -44,7 +44,7 @@ public final class HttpUtils {
      *
      * @return instance
      */
-    public static HttpUtils getInstance() {
+    public static AgentE2EHttpUtils getInstance() {
         return OK_HTTP_UTILS;
     }
     
