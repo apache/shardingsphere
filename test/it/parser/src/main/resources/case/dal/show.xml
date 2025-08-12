@@ -916,4 +916,24 @@
             <like pattern="order_*" start-delimiter="'" end-delimiter="'" start-index="24" stop-index="32" />
         </filter>
     </show-tables>
+
+    <show sql-case-id="show_views_basic" />
+    <show sql-case-id="show_views_with_like_wildcard" />
+    <show sql-case-id="show_views_from_database" />
+    <show sql-case-id="show_views_in_database" />
+    <show sql-case-id="show_views_in_db_with_like" />
+    <show sql-case-id="show_views_from_db_with_like" />
+    <show sql-case-id="show_materialized_views_basic" />
+    <show sql-case-id="show_materialized_views_with_like" />
+    <show sql-case-id="show_materialized_views_in_database" />
+    <show sql-case-id="show_materialized_views_from_database" />
+    <show sql-case-id="show_materialized_views_in_db_with_like" />
+    <show sql-case-id="show_materialized_views_from_db_with_like" />
+    <show sql-case-id="show_partitions_basic" />
+    <show sql-case-id="show_partitions_with_db" />
+    <show sql-case-id="show_partitions_with_partition_spec" />
+    <show sql-case-id="show_partitions_with_where" />
+    <show sql-case-id="show_partitions_with_order_by" />
+    <show sql-case-id="show_partitions_with_limit" />
+    <show sql-case-id="show_partitions_all_options" />
 </sql-parser-test-cases>

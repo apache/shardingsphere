@@ -156,4 +156,23 @@
     <sql-case id="show_tables_in_database" value="SHOW TABLES IN sales_db;" db-types="Hive" />
     <sql-case id="show_tables_with_wildcard" value="SHOW TABLES 'order_*';" db-types="Hive" />
     <sql-case id="show_tables_in_db_with_wildcard" value="SHOW TABLES IN sales_db 'order_*';" db-types="Hive" />
+    <sql-case id="show_views_basic" value="SHOW VIEWS;" db-types="Hive" />
+    <sql-case id="show_views_with_like_wildcard" value="SHOW VIEWS LIKE 'user_*';" db-types="Hive" />
+    <sql-case id="show_views_from_database" value="SHOW VIEWS FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_views_in_database" value="SHOW VIEWS IN reports_db;" db-types="Hive" />
+    <sql-case id="show_views_in_db_with_like" value="SHOW VIEWS IN sales_db LIKE 'quarterly_*|annual_*';" db-types="Hive" />
+    <sql-case id="show_views_from_db_with_like" value="SHOW VIEWS FROM inventory_db LIKE 'low_stock_|out_of_stock';" db-types="Hive" />
+    <sql-case id="show_materialized_views_basic" value="SHOW MATERIALIZED VIEWS;" db-types="Hive" />
+    <sql-case id="show_materialized_views_with_like" value="SHOW MATERIALIZED VIEWS LIKE 'sales_*';" db-types="Hive" />
+    <sql-case id="show_materialized_views_in_database" value="SHOW MATERIALIZED VIEWS IN analytics_db;" db-types="Hive" />
+    <sql-case id="show_materialized_views_from_database" value="SHOW MATERIALIZED VIEWS FROM reports_db;" db-types="Hive" />
+    <sql-case id="show_materialized_views_in_db_with_like" value="SHOW MATERIALIZED VIEWS IN inventory_db LIKE 'stock_*|supply_*';" db-types="Hive" />
+    <sql-case id="show_materialized_views_from_db_with_like" value="SHOW MATERIALIZED VIEWS FROM orders_db LIKE 'daily_*|monthly_*';" db-types="Hive" />
+    <sql-case id="show_partitions_basic" value="SHOW PARTITIONS orders;" db-types="Hive" />
+    <sql-case id="show_partitions_with_db" value="SHOW PARTITIONS sales.orders;" db-types="Hive" />
+    <sql-case id="show_partitions_with_partition_spec" value="SHOW PARTITIONS access_logs PARTITION(year='2023');" db-types="Hive" />
+    <sql-case id="show_partitions_with_where" value="SHOW PARTITIONS products WHERE month >= 6;" db-types="Hive" />
+    <sql-case id="show_partitions_with_order_by" value="SHOW PARTITIONS user_activity ORDER BY day DESC;" db-types="Hive" />
+    <sql-case id="show_partitions_with_limit" value="SHOW PARTITIONS transactions LIMIT 50;" db-types="Hive" />
+    <sql-case id="show_partitions_all_options" value="SHOW PARTITIONS retail.sales PARTITION(region='north') WHERE quarter=4 AND revenue > 50000 ORDER BY revenue DESC LIMIT 20;" db-types="Hive" />
 </sql-cases>
