@@ -1,6 +1,0 @@
-[
-  {
-    "condition":{"typeReachable":"com.github.dockerjava.transport.NamedPipeSocket"},
-    "interfaces":["com.github.dockerjava.transport.NamedPipeSocket$Kernel32"]
-  }
-]
