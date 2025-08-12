@@ -51,6 +51,6 @@ class FirebirdFrontendEngineTest {
         engine.release(connectionSession);
         verify(FirebirdStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
         verify(FirebirdTransactionIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdConnectionProtocolVersion.getInstance()).unregisterConnection(connectionId);
+        verify(FirebirdConnectionProtocolVersion.getInstance()).unsetProtocolVersion(connectionId);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtil;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,17 +41,17 @@ class FirebirdTimestampBinaryProtocolValueTest {
     @Test
     void assertRead() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
-        int encodedDate = FirebirdDateTimeUtil.getEncodedDate(dateTime);
-        int encodedTime = new FirebirdDateTimeUtil(dateTime).getEncodedTime();
+        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(dateTime);
+        int encodedTime = new FirebirdDateTimeUtils(dateTime).getEncodedTime();
         when(payload.readInt4()).thenReturn(encodedDate, encodedTime);
-        assertThat(new FirebirdTimestampBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtil.getDateTime(encodedDate, encodedTime)));
+        assertThat(new FirebirdTimestampBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getDateTime(encodedDate, encodedTime)));
     }
     
     @Test
     void assertWrite() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
         new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
-        verify(payload).writeInt4(FirebirdDateTimeUtil.getEncodedDate(dateTime));
-        verify(payload).writeInt4(new FirebirdDateTimeUtil(dateTime).getEncodedTime());
+        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
+        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
     }
 }

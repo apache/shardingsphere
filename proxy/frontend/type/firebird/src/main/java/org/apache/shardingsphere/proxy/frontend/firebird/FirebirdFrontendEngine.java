@@ -46,7 +46,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     public void release(final ConnectionSession connectionSession) {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
-        FirebirdConnectionProtocolVersion.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(connectionSession.getConnectionId());
     }
     
     @Override

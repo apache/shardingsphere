@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtil;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.util.FirebirdDateTimeUtils;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,18 +42,18 @@ class FirebirdTimestampTZBinaryProtocolValueTest {
     @Test
     void assertRead() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
-        int encodedDate = FirebirdDateTimeUtil.getEncodedDate(dateTime);
-        int encodedTime = new FirebirdDateTimeUtil(dateTime).getEncodedTime();
+        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(dateTime);
+        int encodedTime = new FirebirdDateTimeUtils(dateTime).getEncodedTime();
         when(payload.readInt4()).thenReturn(encodedDate, encodedTime, 60);
-        assertThat(new FirebirdTimestampTZBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtil.getDateTimeWithOffset(encodedDate, encodedTime, 60)));
+        assertThat(new FirebirdTimestampTZBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getDateTimeWithOffset(encodedDate, encodedTime, 60)));
     }
     
     @Test
     void assertWrite() {
         OffsetDateTime value = OffsetDateTime.of(LocalDateTime.of(2024, 1, 1, 12, 0), ZoneOffset.ofHours(2));
         LocalDateTime utc = value.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
-        int encodedDate = FirebirdDateTimeUtil.getEncodedDate(utc);
-        int encodedTime = new FirebirdDateTimeUtil(utc).getEncodedTime();
+        int encodedDate = FirebirdDateTimeUtils.getEncodedDate(utc);
+        int encodedTime = new FirebirdDateTimeUtils(utc).getEncodedTime();
         new FirebirdTimestampTZBinaryProtocolValue().write(payload, value);
         verify(payload).writeInt4(encodedDate);
         verify(payload).writeInt4(encodedTime);
