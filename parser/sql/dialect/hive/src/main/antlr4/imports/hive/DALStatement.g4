@@ -17,12 +17,15 @@
 
 grammar DALStatement;
 
-import BaseRule;
+import BaseRule, DMLStatement;
 
 show
     : showDatabases
     | showConnectors
     | showTables
+    | showViews
+    | showMaterializedViews
+    | showPartitions
     ;
 
 showDatabases
@@ -35,6 +38,22 @@ showConnectors
 
 showTables
     : SHOW TABLES (IN databaseName)? stringLiterals?
+    ;
+
+showViews
+    : SHOW VIEWS showFrom? showLike?
+    ;
+
+showMaterializedViews
+    : SHOW MATERIALIZED VIEWS showFrom? showLike?
+    ;
+
+showPartitions
+    : SHOW PARTITIONS tableName partitionSpec? whereClause? orderByClause? limitClause?
+    ;
+
+showFrom
+    : (IN | FROM) databaseName
     ;
 
 showLike

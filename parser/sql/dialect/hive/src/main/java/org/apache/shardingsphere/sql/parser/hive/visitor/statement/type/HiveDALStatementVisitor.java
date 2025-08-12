@@ -25,6 +25,9 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowData
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLikeContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConnectorsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowViewsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowMaterializedViewsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowPartitionsContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -33,6 +36,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConnectorsStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowMaterializedViewsStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowPartitionsStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowViewsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
@@ -92,5 +98,20 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
         MySQLShowTablesStatement result = new MySQLShowTablesStatement(getDatabaseType(), fromDatabase, filter, false);
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowViews(final ShowViewsContext ctx) {
+        return new HiveShowViewsStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowMaterializedViews(final ShowMaterializedViewsContext ctx) {
+        return new HiveShowMaterializedViewsStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowPartitions(final ShowPartitionsContext ctx) {
+        return new HiveShowPartitionsStatement(getDatabaseType());
     }
 }
