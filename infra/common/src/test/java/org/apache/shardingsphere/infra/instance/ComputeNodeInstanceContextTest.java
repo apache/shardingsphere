@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.instance;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.event.EventBusContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

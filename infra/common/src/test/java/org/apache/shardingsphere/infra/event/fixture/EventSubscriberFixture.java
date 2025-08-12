@@ -15,10 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.eventbus;
+package org.apache.shardingsphere.infra.event.fixture;
 
-/**
- * Event subscriber.
- */
-public interface EventSubscriber {
+import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.event.EventSubscriber;
+
+import java.util.LinkedList;
+import java.util.List;
+
+@Getter
+public final class EventSubscriberFixture implements EventSubscriber {
+    
+    private final List<String> events = new LinkedList<>();
+    
+    /**
+     * Listen.
+     *
+     * @param event event
+     */
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void listen(final String event) {
+        events.add(event);
+    }
 }
