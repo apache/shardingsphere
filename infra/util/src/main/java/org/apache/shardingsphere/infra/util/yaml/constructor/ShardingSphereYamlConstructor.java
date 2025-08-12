@@ -38,6 +38,7 @@ public final class ShardingSphereYamlConstructor extends Constructor {
     
     private final Class<?> rootClass;
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass, createLoaderOptions());
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
