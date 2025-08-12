@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * HTTP utils.
+ * HTTP utility class.
  */
 public final class HttpUtils {
     
