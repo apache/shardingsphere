@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.groovy;
+package org.apache.shardingsphere.infra.expr.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
