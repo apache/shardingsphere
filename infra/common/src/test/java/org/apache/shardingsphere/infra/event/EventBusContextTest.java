@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.eventbus;
+package org.apache.shardingsphere.infra.event;
 
-import com.google.common.eventbus.EventBus;
+import org.apache.shardingsphere.infra.event.fixture.EventSubscriberFixture;
+import org.junit.jupiter.api.Test;
 
-/**
- * Event bus context.
- */
-public final class EventBusContext {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class EventBusContextTest {
     
-    private final EventBus eventBus = new EventBus();
-    
-    /**
-     * Register event subscriber.
-     *
-     * @param subscriber event subscriber
-     */
-    public void register(final EventSubscriber subscriber) {
-        eventBus.register(subscriber);
-    }
-    
-    /**
-     * Post event.
-     *
-     * @param event event
-     */
-    public void post(final Object event) {
-        eventBus.post(event);
+    @Test
+    void assertEventBusContextTest() {
+        EventBusContext eventBusContext = new EventBusContext();
+        EventSubscriberFixture listener = new EventSubscriberFixture();
+        eventBusContext.register(listener);
+        eventBusContext.post("foo_event");
+        assertThat(listener.getEvents().size(), is(1));
+        assertThat(listener.getEvents().get(0), is("foo_event"));
     }
 }

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.builder;
 
+import org.apache.shardingsphere.infra.event.EventBusContext;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;

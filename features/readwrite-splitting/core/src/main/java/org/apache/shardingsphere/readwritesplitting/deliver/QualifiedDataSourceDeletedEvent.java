@@ -19,8 +19,8 @@ package org.apache.shardingsphere.readwritesplitting.deliver;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.event.deliver.DeliverEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
-import org.apache.shardingsphere.infra.util.event.DeliverEvent;
 
 /**
  * Qualified data source deleted event.

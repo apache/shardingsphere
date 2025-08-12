@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.deliver;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.event.EventBusContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

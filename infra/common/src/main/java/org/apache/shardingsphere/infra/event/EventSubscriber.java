@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.event;
+package org.apache.shardingsphere.infra.event;
 
 /**
- * Deliver event.
+ * Event subscriber.
  */
-public interface DeliverEvent {
+public interface EventSubscriber {
 }
