@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GroovyShell expression common utils. It mainly serves the use of the following classes.
+ * GroovyShell expression common utility class. It mainly serves the use of the following classes.
  * - `org.apache.shardingsphere.infra.expr.espresso.EspressoInlineExpressionParser`
  * - `org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser`
  */

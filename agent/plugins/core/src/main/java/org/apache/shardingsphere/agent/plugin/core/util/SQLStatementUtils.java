@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 /**
- * SQL statement utils.
+ * SQL statement utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementUtils {

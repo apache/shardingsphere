@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Pipeline data node utils.
+ * Pipeline data node utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineDataNodeUtils {
