@@ -25,6 +25,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -48,10 +50,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -108,6 +111,39 @@ class FirebirdPacketCodecEngineTest {
         List<Object> out = new LinkedList<>();
         new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
         assertThat(out.size(), is(1));
+    }
+
+    @Test
+    void assertDecodeWithTruncatedPacketAcrossBuffers() {
+        ByteBuf firstPart = Unpooled.buffer(8);
+        firstPart.writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
+        firstPart.writeInt(0);
+        List<Object> out = new LinkedList<>();
+        FirebirdPacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
+        try (MockedStatic<FirebirdCommandPacketFactory> mocked = mockStatic(FirebirdCommandPacketFactory.class)) {
+            mocked.when(() -> FirebirdCommandPacketFactory.isValidLength(any(), any(), anyInt(), any())).thenReturn(false, true);
+            codecEngine.decode(context, firstPart, out);
+            assertTrue(out.isEmpty());
+            ByteBuf secondPart = Unpooled.buffer(4);
+            secondPart.writeInt(0);
+            codecEngine.decode(context, secondPart, out);
+            assertThat(out.size(), is(1));
+            assertThat(((ByteBuf) out.get(0)).readableBytes(), is(12));
+        }
+    }
+
+    @Test
+    void assertDecodeWithFullBufferAndValidLength() {
+        ByteBuf byteBuf = Unpooled.buffer(8);
+        byteBuf.writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
+        byteBuf.writeInt(0);
+        List<Object> out = new LinkedList<>();
+        try (MockedStatic<FirebirdCommandPacketFactory> mocked = mockStatic(FirebirdCommandPacketFactory.class)) {
+            mocked.when(() -> FirebirdCommandPacketFactory.isValidLength(any(), any(), anyInt(), any())).thenReturn(true);
+            new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
+            assertThat(out.size(), is(1));
+            assertThat(((ByteBuf) out.get(0)).readableBytes(), is(8));
+        }
     }
     
     @Test
