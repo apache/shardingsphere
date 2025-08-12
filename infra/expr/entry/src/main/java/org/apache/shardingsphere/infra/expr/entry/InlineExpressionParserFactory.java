@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr.core;
+package org.apache.shardingsphere.infra.expr.entry;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
