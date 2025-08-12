@@ -297,7 +297,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
       </dependency>
        <dependency>
           <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
           <version>${shardingsphere.version}</version>
       </dependency>
        <dependency>
@@ -340,3 +340,7 @@ without it being registered as reachable. Add it to the resource metadata to sol
   com.mysql.cj.conf.ConnectionUrl.getConnectionUrlInstance(ConnectionUrl.java:291)
   com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:186)
 ```
+
+10. 受 `apache/calcite` 使用的 `janino-compiler/janino` 的影响，
+    ShardingSphere 的 `SQL Federation` 功能在 GraalVM Native Image 下不可用。
+    这同样导致 ShardingSphere Proxy Native 无法使用 OpenGauss 集成。

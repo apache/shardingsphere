@@ -1,7 +1,0 @@
-[
-{
-  "condition":{"typeReachable":"org.apiguardian.api.API"},
-  "name":"org.apiguardian.api.API",
-  "allPublicMethods": true
-}
-]
