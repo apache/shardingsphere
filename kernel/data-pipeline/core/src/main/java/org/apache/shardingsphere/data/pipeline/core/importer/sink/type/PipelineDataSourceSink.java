@@ -33,7 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedD
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import javax.sql.DataSource;

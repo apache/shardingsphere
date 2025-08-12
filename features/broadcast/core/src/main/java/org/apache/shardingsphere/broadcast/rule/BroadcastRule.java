@@ -23,13 +23,13 @@ import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import javax.sql.DataSource;
 import java.util.Collection;

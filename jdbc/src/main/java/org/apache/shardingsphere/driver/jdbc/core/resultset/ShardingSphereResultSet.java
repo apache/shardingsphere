@@ -19,11 +19,11 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.io.InputStream;
 import java.io.Reader;

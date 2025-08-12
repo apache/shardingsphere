@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.route.engine;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.hint.DataSourceHintNotExistsException;
@@ -37,6 +36,7 @@ import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.util.Collection;
 import java.util.Collections;

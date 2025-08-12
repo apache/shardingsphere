@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.annotation;
+package org.apache.shardingsphere.infra.util.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

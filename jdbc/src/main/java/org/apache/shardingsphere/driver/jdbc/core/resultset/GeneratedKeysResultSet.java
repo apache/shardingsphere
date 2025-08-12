@@ -20,7 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedGeneratedKeysResultSet;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

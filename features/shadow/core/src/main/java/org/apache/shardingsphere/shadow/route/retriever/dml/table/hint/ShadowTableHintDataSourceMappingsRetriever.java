@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.retriever.dml.table.hint;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowCondition;
 import org.apache.shardingsphere.shadow.route.determiner.HintShadowAlgorithmDeterminer;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.ShadowTableDataSourceMappingsRetriever;

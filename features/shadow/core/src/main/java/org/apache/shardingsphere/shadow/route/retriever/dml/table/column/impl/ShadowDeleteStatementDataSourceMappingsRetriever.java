@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;

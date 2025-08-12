@@ -28,8 +28,8 @@ import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnIte
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.util.Map;
 import java.util.Map.Entry;

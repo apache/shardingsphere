@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.datanode;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.util.Collection;
 import java.util.LinkedList;

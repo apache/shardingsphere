@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.user;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 /**
  * Grantee.

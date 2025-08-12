@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.model;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 /**
  * ShardingSphere privileges.
