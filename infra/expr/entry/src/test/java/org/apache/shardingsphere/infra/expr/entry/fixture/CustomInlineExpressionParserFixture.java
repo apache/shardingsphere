@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr.core.fixture;
+package org.apache.shardingsphere.infra.expr.entry.fixture;
 
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 

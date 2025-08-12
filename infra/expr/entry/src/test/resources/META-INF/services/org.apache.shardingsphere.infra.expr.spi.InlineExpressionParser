@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.expr.core.fixture.CustomInlineExpressionParserFixture
+org.apache.shardingsphere.infra.expr.entry.fixture.CustomInlineExpressionParserFixture
