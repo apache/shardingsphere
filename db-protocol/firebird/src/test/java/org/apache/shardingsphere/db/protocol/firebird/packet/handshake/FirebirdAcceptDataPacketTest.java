@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.handshake;
 
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.inOrder;
 
 class FirebirdAcceptDataPacketTest {
     
@@ -35,35 +36,27 @@ class FirebirdAcceptDataPacketTest {
         String publicKey = "key";
         FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(salt, publicKey,
                 FirebirdAuthenticationMethod.SRP, 1, "k");
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdPacketPayload result = new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8);
-        assertThat(result.readInt4(), is(salt.length + publicKey.length() + 4));
-        assertThat(result.readInt2LE(), is(salt.length));
-        byte[] readSalt = new byte[salt.length];
-        result.getByteBuf().readBytes(readSalt);
-        assertThat(readSalt, is(salt));
-        assertThat(result.readInt2LE(), is(publicKey.length()));
-        byte[] readKey = new byte[publicKey.length()];
-        result.getByteBuf().readBytes(readKey);
-        assertThat(new String(readKey, StandardCharsets.US_ASCII), is(publicKey));
-        assertThat(result.readString(), is("Srp"));
-        assertThat(result.readInt4(), is(1));
-        assertThat(result.readString(), is("k"));
+        verify(payload).writeInt4(salt.length + publicKey.length() + 4);
+        verify(payload).writeInt2LE(salt.length);
+        verify(payload).writeBytes(salt);
+        verify(payload).writeInt2LE(publicKey.length());
+        verify(payload).writeBytes(publicKey.getBytes(StandardCharsets.US_ASCII));
+        verify(payload).writeString("Srp");
+        verify(payload).writeInt4(1);
+        verify(payload).writeString("k");
     }
-    
+
     @Test
     void assertWriteWithoutData() {
-        FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(new byte[0], "",
-                FirebirdAuthenticationMethod.SRP, 0, "");
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdPacketPayload result = new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8);
-        assertThat(result.readInt4(), is(0));
-        assertThat(result.readString(), is("Srp"));
-        assertThat(result.readInt4(), is(0));
-        assertThat(result.readString(), is(""));
+        InOrder order = inOrder(payload);
+        order.verify(payload).writeInt4(0);
+        order.verify(payload).writeString("Srp");
+        order.verify(payload).writeInt4(0);
+        order.verify(payload).writeString("");
     }
 }

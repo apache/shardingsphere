@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.handshake;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdUserDataType;
@@ -27,6 +26,8 @@ import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.Firebird
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -34,43 +35,52 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdConnectPacketTest {
     
     @Test
     void assertConnectPacket() {
-        ByteBuf buf = Unpooled.buffer();
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(buf, StandardCharsets.UTF_8);
-        payload.writeInt4(FirebirdCommandPacketType.CONNECT.getValue());
-        payload.writeInt4(1);
-        payload.writeInt4(FirebirdArchType.ARCH_GENERIC.getCode());
-        payload.writeString("db");
-        payload.writeInt4(1);
-        ByteBuf userInfo = Unpooled.buffer();
-        userInfo.writeByte(FirebirdUserDataType.CNCT_USER.getCode());
-        userInfo.writeByte(4);
-        userInfo.writeBytes("user".getBytes(StandardCharsets.UTF_8));
-        userInfo.writeByte(FirebirdUserDataType.CNCT_PLUGIN_NAME.getCode());
-        userInfo.writeByte(3);
-        userInfo.writeBytes("srp".getBytes(StandardCharsets.UTF_8));
-        userInfo.writeByte(FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode());
-        userInfo.writeByte(2);
-        userInfo.writeByte(0);
-        userInfo.writeByte('A');
-        userInfo.writeByte(FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode());
-        userInfo.writeByte(2);
-        userInfo.writeByte(1);
-        userInfo.writeByte('B');
-        payload.writeBuffer(userInfo);
-        ByteBuf protocol = Unpooled.buffer();
-        protocol.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode());
-        protocol.writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
-        protocol.writeInt(0);
-        protocol.writeInt(5);
-        protocol.writeInt(1);
-        buf.writeBytes(protocol);
-        buf.readerIndex(0);
-        FirebirdConnectPacket packet = new FirebirdConnectPacket(new FirebirdPacketPayload(buf, StandardCharsets.UTF_8));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        ByteBuf userInfo = mock(ByteBuf.class);
+        ByteBuf userBuf = mock(ByteBuf.class);
+        ByteBuf pluginBuf = mock(ByteBuf.class);
+        ByteBuf specBuf1 = mock(ByteBuf.class);
+        ByteBuf specBuf2 = mock(ByteBuf.class);
+        ByteBuf protocolBuf = mock(ByteBuf.class);
+        when(payload.readInt4()).thenReturn(
+                FirebirdCommandPacketType.CONNECT.getValue(),
+                1,
+                FirebirdArchType.ARCH_GENERIC.getCode(),
+                1
+        );
+        when(payload.readString()).thenReturn("db");
+        when(payload.readBuffer()).thenReturn(userInfo);
+        when(payload.getByteBuf()).thenReturn(protocolBuf);
+        when(userInfo.isReadable()).thenReturn(true, true, true, true, false);
+        when(userInfo.readUnsignedByte()).thenReturn(
+                (short) FirebirdUserDataType.CNCT_USER.getCode(), (short) 4,
+                (short) FirebirdUserDataType.CNCT_PLUGIN_NAME.getCode(), (short) 3,
+                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2,
+                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2
+        );
+        when(userInfo.readSlice(4)).thenReturn(userBuf);
+        when(userInfo.readSlice(3)).thenReturn(pluginBuf);
+        when(userInfo.readSlice(2)).thenReturn(specBuf1, specBuf2);
+        when(userBuf.toString(StandardCharsets.UTF_8)).thenReturn("user");
+        when(pluginBuf.toString(StandardCharsets.UTF_8)).thenReturn("srp");
+        when(specBuf1.readUnsignedByte()).thenReturn((short) 0);
+        when(specBuf1.toString(StandardCharsets.US_ASCII)).thenReturn("A");
+        when(specBuf2.readUnsignedByte()).thenReturn((short) 1);
+        when(specBuf2.toString(StandardCharsets.US_ASCII)).thenReturn("B");
+        when(protocolBuf.readInt()).thenReturn(
+                FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode(),
+                FirebirdArchType.ARCH_GENERIC.getCode(),
+                0, 5, 1
+        );
+        FirebirdConnectPacket packet = new FirebirdConnectPacket(payload);
         assertEquals(FirebirdCommandPacketType.CONNECT, packet.getOpCode());
         assertThat(packet.getConnectVersion(), is(1));
         assertThat(packet.getArchType(), is(FirebirdArchType.ARCH_GENERIC));

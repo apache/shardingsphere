@@ -18,48 +18,59 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.generic;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdFetchResponsePacketTest {
     
     @Test
     void assertWriteWithRow() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        ByteBuf byteBuf = mock(ByteBuf.class);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.writerIndex()).thenReturn(0);
+        when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
-        FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket(row);
-        packet.write(payload);
-        assertThat(byteBuf.readInt(), is(FirebirdCommandPacketType.FETCH_RESPONSE.getValue()));
-        assertThat(byteBuf.readInt(), is(ISCConstants.FETCH_OK));
-        assertThat(byteBuf.readInt(), is(1));
-        byte[] nullBits = new byte[4];
-        byteBuf.readBytes(nullBits);
-        assertThat(nullBits, is(new byte[4]));
-        assertThat(byteBuf.readInt(), is(123));
+        FirebirdBinaryProtocolValue protocolValue = mock(FirebirdBinaryProtocolValue.class);
+        try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
+            mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
+            FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket(row);
+            packet.write(payload);
+            verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
+            verify(payload).writeInt4(ISCConstants.FETCH_OK);
+            verify(payload).writeInt4(1);
+            verify(byteBuf).writeZero(4);
+            verify(protocolValue).write(payload, 123);
+        }
     }
     
     @Test
     void assertWriteWithoutRow() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket();
         packet.write(payload);
-        assertThat(byteBuf.readInt(), is(FirebirdCommandPacketType.FETCH_RESPONSE.getValue()));
-        assertThat(byteBuf.readInt(), is(ISCConstants.FETCH_NO_MORE_ROWS));
-        assertThat(byteBuf.readInt(), is(0));
-        assertThat(byteBuf.readableBytes(), is(0));
+        verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
+        verify(payload).writeInt4(ISCConstants.FETCH_NO_MORE_ROWS);
+        verify(payload).writeInt4(0);
+        verify(payload, never()).getByteBuf();
     }
 }

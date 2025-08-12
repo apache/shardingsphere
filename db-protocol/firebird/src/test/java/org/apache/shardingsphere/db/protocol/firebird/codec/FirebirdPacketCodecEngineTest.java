@@ -19,8 +19,7 @@ package org.apache.shardingsphere.db.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdConstant;
@@ -62,12 +61,12 @@ class FirebirdPacketCodecEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext context;
-    
+
     @BeforeEach
     void setup() {
         when(context.channel().attr(AttributeKey.<Charset>valueOf(Charset.class.getName())).get()).thenReturn(StandardCharsets.UTF_8);
         when(context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
-        when(context.alloc().compositeBuffer(anyInt())).thenAnswer(invocation -> new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, invocation.getArgument(0)));
+        when(context.alloc().compositeBuffer(anyInt())).thenAnswer(inv -> mock(CompositeByteBuf.class, org.mockito.Mockito.RETURNS_SELF));
     }
     
     @Test
@@ -82,50 +81,75 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeSingleAllocateStatement() {
-        ByteBuf byteBuf = Unpooled.buffer(8);
-        byteBuf.writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
-        byteBuf.writeInt(1);
+        ByteBuf in = mock(ByteBuf.class);
+        ByteBuf slice = mock(ByteBuf.class);
+        when(in.readableBytes()).thenReturn(8, 0);
+        when(in.readerIndex()).thenReturn(0);
+        when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
+        when(in.readRetainedSlice(8)).thenReturn(slice);
+        when(slice.readableBytes()).thenReturn(8);
         List<Object> out = new LinkedList<>();
-        new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
+        new FirebirdPacketCodecEngine().decode(context, in, out);
         assertThat(out.size(), is(1));
         assertThat(((ByteBuf) out.get(0)).readableBytes(), is(8));
     }
     
     @Test
     void assertDecodeMultiplePackets() {
-        ByteBuf byteBuf = Unpooled.buffer(16);
-        byteBuf.writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
-        byteBuf.writeInt(1);
-        byteBuf.writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
-        byteBuf.writeInt(2);
+        ByteBuf in = mock(ByteBuf.class);
+        ByteBuf slice1 = mock(ByteBuf.class);
+        ByteBuf slice2 = mock(ByteBuf.class);
+        when(in.readableBytes()).thenReturn(16, 8, 8, 0);
+        when(in.readerIndex()).thenReturn(0);
+        when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
+        when(in.readRetainedSlice(8)).thenReturn(slice1, slice2);
         List<Object> out = new LinkedList<>();
-        new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
+        new FirebirdPacketCodecEngine().decode(context, in, out);
         assertThat(out.size(), is(2));
     }
     
     @Test
     void assertDecodeWithPartialPacket() {
-        ByteBuf byteBuf = Unpooled.buffer(16);
-        byteBuf.writeInt(FirebirdCommandPacketType.TRANSACTION.getValue());
-        byteBuf.writeInt(1);
+        ByteBuf in = mock(ByteBuf.class);
+        ByteBuf slice = mock(ByteBuf.class);
+        when(in.readableBytes()).thenReturn(8, 8);
+        when(in.readerIndex()).thenReturn(0);
+        when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.TRANSACTION.getValue());
+        when(in.writerIndex()).thenReturn(8);
+        when(in.capacity()).thenReturn(16);
+        when(in.readRetainedSlice(8)).thenReturn(slice);
         List<Object> out = new LinkedList<>();
-        new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
+        new FirebirdPacketCodecEngine().decode(context, in, out);
         assertThat(out.size(), is(1));
     }
     
     @Test
     void assertDecodeWithTruncatedPacketAcrossBuffers() {
-        ByteBuf firstPart = Unpooled.buffer(8);
-        firstPart.writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
-        firstPart.writeInt(0);
+        ByteBuf firstPart = mock(ByteBuf.class);
+        ByteBuf firstSlice = mock(ByteBuf.class);
+        ByteBuf secondPart = mock(ByteBuf.class);
+        ByteBuf secondSlice = mock(ByteBuf.class);
+        CompositeByteBuf firstComposite = mock(CompositeByteBuf.class, org.mockito.Mockito.RETURNS_SELF);
+        CompositeByteBuf secondComposite = mock(CompositeByteBuf.class, org.mockito.Mockito.RETURNS_SELF);
+        when(context.alloc().compositeBuffer(anyInt())).thenReturn(firstComposite, secondComposite);
+        when(firstPart.readableBytes()).thenReturn(8, 8);
+        when(firstPart.readerIndex()).thenReturn(0);
+        when(firstPart.getInt(0)).thenReturn(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
+        when(firstPart.writerIndex()).thenReturn(8);
+        when(firstPart.capacity()).thenReturn(8);
+        when(firstPart.readRetainedSlice(8)).thenReturn(firstSlice);
+        when(secondPart.readableBytes()).thenReturn(4);
+        when(secondPart.writerIndex()).thenReturn(4);
+        when(secondPart.capacity()).thenReturn(4);
+        when(secondPart.readRetainedSlice(4)).thenReturn(secondSlice);
+        when(firstComposite.readableBytes()).thenReturn(8);
+        when(secondComposite.readableBytes()).thenReturn(12);
         List<Object> out = new LinkedList<>();
         FirebirdPacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
         try (MockedStatic<FirebirdCommandPacketFactory> mocked = mockStatic(FirebirdCommandPacketFactory.class)) {
             mocked.when(() -> FirebirdCommandPacketFactory.isValidLength(any(), any(), anyInt(), any())).thenReturn(false, true);
             codecEngine.decode(context, firstPart, out);
             assertTrue(out.isEmpty());
-            ByteBuf secondPart = Unpooled.buffer(4);
-            secondPart.writeInt(0);
             codecEngine.decode(context, secondPart, out);
             assertThat(out.size(), is(1));
             assertThat(((ByteBuf) out.get(0)).readableBytes(), is(12));
@@ -134,13 +158,22 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeWithFullBufferAndValidLength() {
-        ByteBuf byteBuf = Unpooled.buffer(8);
-        byteBuf.writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
-        byteBuf.writeInt(0);
+        ByteBuf in = mock(ByteBuf.class);
+        ByteBuf slice = mock(ByteBuf.class);
+        CompositeByteBuf composite = mock(CompositeByteBuf.class, org.mockito.Mockito.RETURNS_SELF);
+        when(context.alloc().compositeBuffer(anyInt())).thenReturn(composite);
+        when(in.readableBytes()).thenReturn(8, 8);
+        when(in.readerIndex()).thenReturn(0);
+        when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
+        when(in.writerIndex()).thenReturn(8);
+        when(in.capacity()).thenReturn(8);
+        when(in.readRetainedSlice(8)).thenReturn(slice);
+        when(composite.readableBytes()).thenReturn(8);
+        when(slice.readableBytes()).thenReturn(8);
         List<Object> out = new LinkedList<>();
         try (MockedStatic<FirebirdCommandPacketFactory> mocked = mockStatic(FirebirdCommandPacketFactory.class)) {
             mocked.when(() -> FirebirdCommandPacketFactory.isValidLength(any(), any(), anyInt(), any())).thenReturn(true);
-            new FirebirdPacketCodecEngine().decode(context, byteBuf, out);
+            new FirebirdPacketCodecEngine().decode(context, in, out);
             assertThat(out.size(), is(1));
             assertThat(((ByteBuf) out.get(0)).readableBytes(), is(8));
         }
@@ -165,7 +198,7 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertCreatePacketPayload() {
-        ByteBuf byteBuf = Unpooled.buffer();
+        ByteBuf byteBuf = mock(ByteBuf.class);
         assertThat(new FirebirdPacketCodecEngine().createPacketPayload(byteBuf, StandardCharsets.UTF_8).getByteBuf(), is(byteBuf));
     }
 }

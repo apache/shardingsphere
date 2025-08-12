@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
@@ -97,8 +96,9 @@ class FirebirdCommandExecuteEngineTest {
     
     @Test
     void assertGetCommandPacketType() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        byteBuf.writeInt(FirebirdCommandPacketType.EXECUTE.getValue());
+        ByteBuf byteBuf = mock(ByteBuf.class);
+        when(byteBuf.readerIndex()).thenReturn(0);
+        when(byteBuf.getInt(0)).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue());
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
         assertThat(engine.getCommandPacketType(payload), is(FirebirdCommandPacketType.EXECUTE));
     }

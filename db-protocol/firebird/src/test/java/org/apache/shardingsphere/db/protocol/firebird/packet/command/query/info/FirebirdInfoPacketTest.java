@@ -18,46 +18,40 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdInfoPacketTest {
-    
+
+    @Mock
     private FirebirdPacketPayload payload;
-    
-    @BeforeEach
-    void setUp() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        byteBuf.writeZero(4);
-        byteBuf.writeInt(1);
-        byteBuf.writeInt(2);
-        byteBuf.writeInt(2);
-        byteBuf.writeByte(FirebirdSQLInfoPacketType.RECORDS.getCode());
-        byteBuf.writeByte(FirebirdCommonInfoPacketType.END.getCode());
-        byteBuf.writeZero(2);
-        byteBuf.writeInt(100);
-        payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        byteBuf.readerIndex(0);
-    }
-    
+
     @Test
     void assertGetLength() {
+        when(payload.getBufferLength(12)).thenReturn(8);
         assertThat(FirebirdInfoPacket.getLength(payload), is(24));
     }
-    
+
     @Test
     void assertNewInstance() {
+        ByteBuf buffer = mock(ByteBuf.class);
+        when(payload.readInt4()).thenReturn(1, 2, 100);
+        when(payload.readBuffer()).thenReturn(buffer);
+        when(buffer.isReadable()).thenReturn(true, true, false);
+        when(buffer.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.RECORDS.getCode(), (byte) FirebirdCommonInfoPacketType.END.getCode());
         FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
         assertThat(actual.getHandle(), is(1));
         assertThat(actual.getIncarnation(), is(2));
