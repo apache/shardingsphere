@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.retry;
+package org.apache.shardingsphere.mode.retry;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
