@@ -85,8 +85,9 @@ public final class ShardingTableRuleStatementConverter {
     
     private static Map<String, AlgorithmConfiguration> createKeyGeneratorConfiguration(final AbstractTableRuleSegment ruleSegment) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>();
-        Optional.ofNullable(ruleSegment.getKeyGenerateStrategySegment()).ifPresent(optional -> result.put(getKeyGeneratorName(ruleSegment.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()),
-                createAlgorithmConfiguration(optional.getKeyGenerateAlgorithmSegment())));
+        Optional.ofNullable(ruleSegment.getKeyGenerateStrategySegment())
+                .ifPresent(optional -> result.put(getKeyGeneratorName(ruleSegment.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()),
+                        createAlgorithmConfiguration(optional.getKeyGenerateAlgorithmSegment())));
         return result;
     }
     
