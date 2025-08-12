@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-expr-spi</artifactId>
+            <artifactId>shardingsphere-infra-expr-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
