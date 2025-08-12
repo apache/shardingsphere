@@ -360,7 +360,7 @@
                         </left>
                         <operator>=</operator>
                         <right>
-                            <literal-expression value="t_order" start-index="49" stop-index="57" />
+                            <literal-expression value="t_order" start-delimiter="'" end-delimiter="'" start-index="52" stop-index="60" />
                         </right>
                     </binary-operation-expression>
                 </expr>
