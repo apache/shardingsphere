@@ -29,7 +29,7 @@
     
     <modules>
         <module>entry</module>
-        <module>spi</module>
+        <module>core</module>
         <module>type</module>
     </modules>
 </project>
