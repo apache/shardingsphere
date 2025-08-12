@@ -20,13 +20,12 @@ package org.apache.shardingsphere.infra.expr.groovy;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -146,6 +145,8 @@ class GroovyInlineExpressionParserTest {
     }
     
     private InlineExpressionParser getInlineExpressionParser(final String expression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(new Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
+        Properties props = new Properties();
+        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression);
+        return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", props);
     }
 }
