@@ -1,6 +1,0 @@
-[
-  {
-    "condition":{"typeReachable":"org.apache.seata.config.ConfigurationCache"},
-    "interfaces":["org.apache.seata.config.Configuration"]
-  }
-]

@@ -1,0 +1,10 @@
+{
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "com.typesafe.config.impl.Parseable$ParseableResources"
+      },
+      "glob": "reference.conf"
+    }
+  ]
+}

@@ -258,15 +258,14 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
 
 以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
-用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON，
-以在 GraalVM Native Image 内部定义 `com.mysql.cj.jdbc.MysqlXADataSource` 的构造函数。
+用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON。
 
 ```json
 {
    "reflection": [
       {
          "condition": {
-            "typeReached": "com.mysql.cj.jdbc.MysqlXADataSource"
+            "typeReached": "com.mysql.cj.jdbc.Driver"
          },
          "type": "com.mysql.cj.jdbc.MysqlXADataSource",
          "allPublicMethods": true,
