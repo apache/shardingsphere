@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
+import org.awaitility.Awaitility;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.lifecycle.Startable;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.util.Collection;
 import java.util.Collections;

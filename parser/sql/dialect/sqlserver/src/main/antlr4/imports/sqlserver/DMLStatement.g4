@@ -102,7 +102,7 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? optionHint?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) withTableHint? outputClause? whereClause? optionHint?
     ;
 
 optionHint
@@ -246,7 +246,27 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
+    : GROUP BY (groupByItem (COMMA_ groupByItem)* | orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?) (WITH LP_ DISTRIBUTED_AGG RP_)?
+    ;
+
+groupByItem
+    : rollupCubeClause | groupingSetsClause | expr
+    ;
+
+rollupCubeClause
+    : (ROLLUP | CUBE) LP_ groupingExprList RP_
+    ;
+
+groupingSetsClause
+    : GROUPING SETS LP_ (rollupCubeClause | groupingExprList) (COMMA_ (rollupCubeClause | groupingExprList))* RP_
+    ;
+
+groupingExprList
+    : expressionList (COMMA_ expressionList)*
+    ;
+
+expressionList
+    : expr (COMMA_ expr)* | LP_ expr? (COMMA_ expr?)* RP_
     ;
 
 havingClause
@@ -258,7 +278,7 @@ subquery
     ;
 
 withTempTable
-    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ AS alias
+    : WITH LP_ (columnName dataType) (COMMA_ columnName dataType)* RP_ (AS alias)?
     ;
 
 withClause

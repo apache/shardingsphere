@@ -21,6 +21,8 @@ import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -30,8 +32,6 @@ import org.apache.shardingsphere.sharding.fixture.ClassBasedComplexKeysShardingA
 import org.apache.shardingsphere.sharding.fixture.ClassBasedHintShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.fixture.ClassBasedStandardShardingAlgorithmFixture;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

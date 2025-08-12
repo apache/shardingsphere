@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataR
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 
 /**
- * CDC response utils.
+ * CDC response utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCResponseUtils {

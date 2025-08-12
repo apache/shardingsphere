@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,6 +45,7 @@ class ReadwriteSplittingLoadBalancerChangedProcessorTest {
     private final RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, AlgorithmConfiguration> processor = TypedSPILoader.getService(
             RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("readwrite_splitting", "load_balancers"));
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Test
     void assertFindRuleConfigurationWhenAbsent() {
         assertThat(processor.findRuleConfiguration(mockDatabase()), deepEqual(new ReadwriteSplittingRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>())));

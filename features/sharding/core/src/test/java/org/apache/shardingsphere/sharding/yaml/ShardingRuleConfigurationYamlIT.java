@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.yaml;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
@@ -34,8 +36,6 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
 import java.util.ArrayList;
 import java.util.Collections;

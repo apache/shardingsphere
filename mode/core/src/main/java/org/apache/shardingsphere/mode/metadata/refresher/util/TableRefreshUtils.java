@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Table refresh utils.
+ * Table refresh utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {

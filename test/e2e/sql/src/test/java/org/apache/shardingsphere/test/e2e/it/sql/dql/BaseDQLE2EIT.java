@@ -24,14 +24,14 @@ import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.it.SQLE2EITContext;
 import org.apache.shardingsphere.test.e2e.env.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.it.SQLE2EIT;
 import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
+import org.apache.shardingsphere.test.e2e.it.SQLE2EIT;
+import org.apache.shardingsphere.test.e2e.it.SQLE2EITContext;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;

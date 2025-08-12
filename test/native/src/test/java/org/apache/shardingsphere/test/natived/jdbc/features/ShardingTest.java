@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.natived.jdbc.features;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +35,7 @@ class ShardingTest {
     
     @AfterEach
     void afterEach() throws SQLException {
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
     }
     
     @Test

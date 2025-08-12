@@ -256,6 +256,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.DropFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.ReloadFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.DropIndexStatementTestCase;
@@ -1759,6 +1760,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-macro")
     private final List<DropMacroStatementTestCase> dropMacroTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "reload-function")
+    private final List<ReloadFunctionStatementTestCase> reloadFunctionStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

@@ -21,7 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.util.ResourceUtil;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +72,7 @@ class SeataTest {
     void afterEach() throws SQLException {
         Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         System.clearProperty(serviceDefaultGroupListKey);
-        ResourceUtil.closeJdbcDataSource(logicDataSource);
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
         ContainerDatabaseDriver.killContainers();
     }
     

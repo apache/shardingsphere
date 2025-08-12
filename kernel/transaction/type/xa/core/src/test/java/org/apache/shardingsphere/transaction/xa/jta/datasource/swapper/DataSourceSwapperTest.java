@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
