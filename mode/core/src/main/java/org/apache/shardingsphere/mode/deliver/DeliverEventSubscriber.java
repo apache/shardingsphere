@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.deliver;
 
-import org.apache.shardingsphere.infra.event.EventSubscriber;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.eventbus.EventSubscriber;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
