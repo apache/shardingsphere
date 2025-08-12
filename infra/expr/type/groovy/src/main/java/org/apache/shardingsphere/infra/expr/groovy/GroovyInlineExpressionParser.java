@@ -24,8 +24,8 @@ import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 import groovy.util.Expando;
+import org.apache.shardingsphere.infra.expr.core.GroovyUtils;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
