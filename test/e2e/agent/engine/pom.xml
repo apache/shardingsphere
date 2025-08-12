@@ -49,7 +49,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-util</artifactId>
+            <artifactId>shardingsphere-infra-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         
