@@ -115,7 +115,7 @@ public final class PipelineContextUtils {
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistFacade(persistRepository, true));
         PipelineContext pipelineContext = new PipelineContext(contextManager.getComputeNodeInstanceContext().getModeConfiguration(),
                 new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(),
-                contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
+                        contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
         PipelineContextManager.putContext(contextKey, pipelineContext);
     }
     
