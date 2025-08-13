@@ -70,7 +70,7 @@ class PipelineGovernanceFacadeTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
         governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         watch();
     }
