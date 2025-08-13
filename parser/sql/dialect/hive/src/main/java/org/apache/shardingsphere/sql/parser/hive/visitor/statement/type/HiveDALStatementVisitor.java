@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowPart
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTablesExtendedContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTblpropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatemen
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 
 /**
  * DAL statement visitor for Hive.
@@ -135,5 +137,20 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         return new MySQLShowCreateTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+    }
+
+    @Override
+    public ASTNode visitShowIndex(final ShowIndexContext ctx) {
+        FromDatabaseSegment fromDatabase = null;
+        if (null != ctx.showFrom()) {
+            // 从 showFrom 节点中提取数据库名称
+            // showFrom 的结构是: (IN | FROM) databaseName
+            // 我们需要访问 databaseName 部分
+            ASTNode showFromNode = visit(ctx.showFrom());
+            if (showFromNode instanceof DatabaseSegment) {
+                fromDatabase = new FromDatabaseSegment(ctx.showFrom().getStart().getStartIndex(), (DatabaseSegment) showFromNode);
+            }
+        }
+        return new MySQLShowIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), fromDatabase);
     }
 }

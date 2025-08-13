@@ -964,4 +964,46 @@
             <owner name="analytics_db" start-index="18" stop-index="29" />
         </table>
     </show-create-table>
+
+    <show-index sql-case-id="show_indexes_basic">
+        <table name="orders" start-index="20" stop-index="25" />
+    </show-index>
+
+    <show-index sql-case-id="show_index_basic">
+        <table name="products" start-index="18" stop-index="25" />
+    </show-index>
+
+    <show-index sql-case-id="show_indexes_with_db_from">
+        <table name="user_logs" start-index="20" stop-index="28" />
+        <database name="analytics_db" start-index="30" stop-index="41" />
+    </show-index>
+
+    <show-index sql-case-id="show_indexes_with_db_in">
+        <table name="inventory" start-index="20" stop-index="28" />
+        <database name="warehouse_db" start-index="30" stop-index="41" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_indexes">
+        <table name="sales" start-index="28" stop-index="33" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_indexes_with_db">
+        <table name="orders" start-index="28" stop-index="34" />
+        <database name="sales_db" start-index="36" stop-index="44" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_indexes_with_db_in">
+        <table name="orders" start-index="28" stop-index="34" />
+        <database name="sales_db" start-index="36" stop-index="44" />
+    </show-index>
+
+    <show-index sql-case-id="show_index_with_db_from">
+        <table name="user_logs" start-index="18" stop-index="26" />
+        <database name="analytics_db" start-index="28" stop-index="39" />
+    </show-index>
+
+    <show-index sql-case-id="show_index_with_db_in">
+        <table name="inventory" start-index="18" stop-index="26" />
+        <database name="warehouse_db" start-index="28" stop-index="39" />
+    </show-index>
 </sql-parser-test-cases>
