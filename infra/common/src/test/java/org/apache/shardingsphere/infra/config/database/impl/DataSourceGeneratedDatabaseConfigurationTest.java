@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.infra.config.database.impl;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.config.PoolConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -41,37 +41,37 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     @Test
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertThat(dataSource, instanceOf(HikariDataSource.class));
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_db").getDataSource();
+        assertThat(dataSource, instanceOf(MockedDataSource.class));
     }
     
     @Test
     void assertGetStorageNodes() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get(new StorageNode("normal_db"));
-        assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
-        assertThat(hikariDataSource.getUsername(), is("root"));
-        assertThat(hikariDataSource.getPassword(), is(""));
+        MockedDataSource dataSource = (MockedDataSource) databaseConfig.getDataSources().get(new StorageNode("foo_db"));
+        assertThat(dataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_db"));
+        assertThat(dataSource.getUsername(), is("root"));
+        assertThat(dataSource.getPassword(), is(""));
     }
     
     @Test
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertThat(dataSource, instanceOf(HikariDataSource.class));
+        DataSource dataSource = databaseConfig.getStorageUnits().get("foo_db").getDataSource();
+        assertThat(dataSource, instanceOf(MockedDataSource.class));
     }
     
     @Test
     void assertGetRuleConfigurations() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
-        assertThat(ruleConfig.getName(), is("test_rule"));
+        assertThat(ruleConfig.getName(), is("foo_rule"));
     }
     
     @Test
     void assertGetDataSourcePoolProperties() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
-        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("normal_db").getDataSourcePoolProperties();
+        DataSourcePoolProperties props = databaseConfig.getStorageUnits().get("foo_db").getDataSourcePoolProperties();
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
         assertThat(poolStandardProps.size(), is(6));
         assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));
@@ -82,20 +82,18 @@ class DataSourceGeneratedDatabaseConfigurationTest {
         assertFalse((Boolean) poolStandardProps.get("readOnly"));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         assertThat(connStandardProps.size(), is(4));
-        assertThat(connStandardProps.get("dataSourceClassName"), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));
+        assertThat(connStandardProps.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
+        assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/foo_db"));
         assertThat(connStandardProps.get("username"), is("root"));
         assertThat(connStandardProps.get("password"), is(""));
     }
     
     private DataSourceGeneratedDatabaseConfiguration createDataSourceGeneratedDatabaseConfiguration() {
-        return new DataSourceGeneratedDatabaseConfiguration(createDataSources(), Collections.singletonList(new FixtureRuleConfiguration("test_rule")));
+        return new DataSourceGeneratedDatabaseConfiguration(Collections.singletonMap("foo_db", createDataSourceConfiguration()), Collections.singleton(new FixtureRuleConfiguration("foo_rule")));
     }
     
-    private Map<String, DataSourceConfiguration> createDataSources() {
+    private DataSourceConfiguration createDataSourceConfiguration() {
         PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
-        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(
-                new ConnectionConfiguration("com.zaxxer.hikari.HikariDataSource", "jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
-        return Collections.singletonMap("normal_db", dataSourceConfig);
+        return new DataSourceConfiguration(new ConnectionConfiguration(MockedDataSource.class.getName(), "jdbc:mock://127.0.0.1/foo_db", "root", ""), poolConfig);
     }
 }
