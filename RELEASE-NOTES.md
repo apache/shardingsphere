@@ -138,6 +138,7 @@
 1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on PostgreSQLInsertStatement - [#34425](https://github.com/apache/shardingsphere/pull/34425)
 1. SQL Parser: Fix mysql sql parser error when sql contains implicit concat expression - [#34660](https://github.com/apache/shardingsphere/pull/34660)
 1. SQL Parser: Refactor pivot and unpivot clause handling to support multiple column names - [35586](https://github.com/apache/shardingsphere/pull/35586)
+1. SQL Parser: Fix oralce sql parser error when sql contains subquery with alias - [#35239](https://github.com/apache/shardingsphere/pull/35239)
 1. SQL Binder: Fix is unable to find the outer table in the NotExpressionBinder - [36135](https://github.com/apache/shardingsphere/pull/36135)
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
 1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use sql federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)

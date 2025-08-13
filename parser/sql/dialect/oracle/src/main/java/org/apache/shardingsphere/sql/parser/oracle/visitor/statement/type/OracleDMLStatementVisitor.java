@@ -1172,6 +1172,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery,
                     getOriginalText(ctx.lateralClause().selectSubquery()));
             result = new SubqueryTableSegment(ctx.lateralClause().LP_().getSymbol().getStartIndex(), ctx.lateralClause().RP_().getSymbol().getStopIndex(), subquerySegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
         } else {
             if (null != ctx.tableCollectionExpr().collectionExpr().selectSubquery()) {
                 SubquerySegment subquerySegment = (SubquerySegment) visit(ctx.tableCollectionExpr());

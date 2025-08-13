@@ -470,7 +470,7 @@ intervalExprClause
 queryTableExpr
     : queryTableExprSampleClause
     | queryName
-    | lateralClause
+    | lateralClause (AS? alias)?
     | tableCollectionExpr
     ;
 
