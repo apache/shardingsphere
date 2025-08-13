@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
@@ -113,10 +112,8 @@ public final class PipelineContextUtils {
         ClusterPersistRepository persistRepository = getClusterPersistRepository(
                 (ClusterPersistRepositoryConfiguration) contextManager.getComputeNodeInstanceContext().getModeConfiguration().getRepository());
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistFacade(persistRepository, true));
-        PipelineContext pipelineContext = new PipelineContext(contextManager.getComputeNodeInstanceContext().getModeConfiguration(),
-                new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(),
-                        contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
-        PipelineContextManager.putContext(contextKey, pipelineContext);
+        PipelineContextManager.putContext(contextKey,
+                new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(), contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
     }
     
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
