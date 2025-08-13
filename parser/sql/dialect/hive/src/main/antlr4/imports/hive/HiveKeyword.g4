@@ -3373,3 +3373,7 @@ JAR
 CONNECTORS
     : C O N N E C T O R S
     ;
+
+FORMATTED
+    : F O R M A T T E D
+    ;

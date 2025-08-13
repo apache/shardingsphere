@@ -31,6 +31,9 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowPart
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTablesExtendedContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTblpropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowFunctionsContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -45,10 +48,13 @@ import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowPart
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowViewsStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTablesExtendedStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTblpropertiesStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowFunctionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
 
 /**
  * DAL statement visitor for Hive.
@@ -135,5 +141,43 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         return new MySQLShowCreateTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    @Override
+    public ASTNode visitShowIndex(final ShowIndexContext ctx) {
+        FromDatabaseSegment fromDatabase = null;
+        if (null != ctx.showFrom()) {
+            ASTNode showFromNode = visit(ctx.showFrom());
+            if (showFromNode instanceof DatabaseSegment) {
+                fromDatabase = new FromDatabaseSegment(ctx.showFrom().getStart().getStartIndex(), (DatabaseSegment) showFromNode);
+            }
+        }
+        return new MySQLShowIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), fromDatabase);
+    }
+    
+    @Override
+    public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
+        SimpleTableSegment table = null;
+        if (null != ctx.tableName()) {
+            table = (SimpleTableSegment) visit(ctx.tableName());
+        }
+        FromDatabaseSegment fromDatabase = null;
+        if (null != ctx.showFrom()) {
+            ASTNode showFromNode = visit(ctx.showFrom());
+            if (showFromNode instanceof DatabaseSegment) {
+                fromDatabase = new FromDatabaseSegment(ctx.showFrom().getStart().getStartIndex(), (DatabaseSegment) showFromNode);
+            }
+        }
+        ShowFilterSegment filter = null;
+        if (null != ctx.showLike()) {
+            filter = new ShowFilterSegment(ctx.showLike().getStart().getStartIndex(), ctx.showLike().getStop().getStopIndex());
+            filter.setLike((ShowLikeSegment) visit(ctx.showLike()));
+        }
+        return new MySQLShowColumnsStatement(getDatabaseType(), table, fromDatabase, filter);
+    }
+    
+    @Override
+    public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
+        return new HiveShowFunctionsStatement(getDatabaseType());
     }
 }

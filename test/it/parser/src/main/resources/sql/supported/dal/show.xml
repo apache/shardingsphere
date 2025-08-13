@@ -187,4 +187,27 @@
     <sql-case id="show_create_table_with_db" value="SHOW CREATE TABLE sales_db.orders;" db-types="Hive" />
     <sql-case id="show_create_table_view" value="SHOW CREATE TABLE user_view;" db-types="Hive" />
     <sql-case id="show_create_view_with_db" value="SHOW CREATE TABLE analytics_db.user_view;" db-types="Hive" />
+    <sql-case id="show_indexes_basic" value="SHOW INDEXES ON orders;" db-types="Hive" />
+    <sql-case id="show_index_basic" value="SHOW INDEX ON products;" db-types="Hive" />
+    <sql-case id="show_indexes_with_db_from" value="SHOW INDEXES ON user_logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_indexes_with_db_in" value="SHOW INDEXES ON inventory IN warehouse_db;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes" value="SHOW FORMATTED INDEXES ON sales;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes_with_db" value="SHOW FORMATTED INDEXES ON orders FROM sales_db;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes_with_db_in" value="SHOW FORMATTED INDEXES ON orders IN sales_db;" db-types="Hive" />
+    <sql-case id="show_index_with_db_from" value="SHOW INDEX ON user_logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_index_with_db_in" value="SHOW INDEX ON inventory IN warehouse_db;" db-types="Hive" />
+    <sql-case id="show_formatted_index" value="SHOW FORMATTED INDEX ON sales;" db-types="Hive" />
+    <sql-case id="show_formatted_index_with_db" value="SHOW FORMATTED INDEX ON orders FROM sales_db;" db-types="Hive" />
+    <sql-case id="show_formatted_index_with_db_in" value="SHOW FORMATTED INDEX ON orders IN sales_db;" db-types="Hive" />
+    <sql-case id="show_columns_basic_from" value="SHOW COLUMNS FROM users;" db-types="Hive" />
+    <sql-case id="show_columns_basic_in" value="SHOW COLUMNS IN products;" db-types="Hive" />
+    <sql-case id="show_columns_with_like" value="SHOW COLUMNS FROM orders LIKE 'user_*';" db-types="Hive" />
+    <sql-case id="show_columns_with_db_from" value="SHOW COLUMNS FROM logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_columns_with_db_from_in" value="SHOW COLUMNS FROM logs IN analytics_db;" db-types="Hive" />
+    <sql-case id="show_columns_with_like_in" value="SHOW COLUMNS IN orders LIKE 'user_*';" db-types="Hive" />
+    <sql-case id="show_columns_with_db_in_from" value="SHOW COLUMNS IN logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_columns_with_db_in_in" value="SHOW COLUMNS IN sales IN commerce_db;" db-types="Hive" />
+    <sql-case id="show_columns_db_like_from" value="SHOW COLUMNS FROM inventory FROM warehouse_db LIKE 'stock_*|quantity';" db-types="Hive" />
+    <sql-case id="show_functions_basic" value="SHOW FUNCTIONS;" db-types="Hive" />
+    <sql-case id="show_functions_with_like" value="SHOW FUNCTIONS LIKE 'concat*';" db-types="Hive" />
 </sql-cases>
