@@ -30,6 +30,7 @@ show
     | showTblproperties
     | showCreateTable
     | showIndex
+    | showColumns
     ;
 
 showDatabases
@@ -71,6 +72,10 @@ showCreateTable
 
 showIndex
     : SHOW FORMATTED? (INDEX | INDEXES) ON tableName showFrom?
+    ;
+
+showColumns
+    : SHOW COLUMNS (FROM | IN) tableName showFrom? showLike?
     ;
 
 showFrom
