@@ -1020,4 +1020,54 @@
         <table name="orders" start-index="24" stop-index="29" />
         <database name="sales_db" start-index="31" stop-index="41" />
     </show-index>
+
+    <show-columns sql-case-id="show_columns_basic_from">
+        <table name="users" start-index="18" stop-index="22" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_basic_in">
+        <table name="products" start-index="16" stop-index="23" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_like">
+        <table name="orders" start-index="18" stop-index="23" />
+        <filter start-index="25" stop-index="37">
+            <like pattern="user_*" start-delimiter="'" end-delimiter="'" start-index="25" stop-index="37" />
+        </filter>
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_from">
+        <table name="logs" start-index="18" stop-index="21" />
+        <database name="analytics_db" start-index="28" stop-index="39" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_from_in">
+        <table name="logs" start-index="18" stop-index="21" />
+        <database name="analytics_db" start-index="26" stop-index="37" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_like_in">
+        <table name="orders" start-index="16" stop-index="21" />
+        <filter start-index="23" stop-index="35">
+            <like pattern="user_*" start-delimiter="'" end-delimiter="'" start-index="23" stop-index="35" />
+        </filter>
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_in_from">
+        <table name="logs" start-index="16" stop-index="19" />
+        <database name="analytics_db" start-index="26" stop-index="37" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_with_db_in_in">
+        <table name="sales" start-index="16" stop-index="20" />
+        <database name="commerce_db" start-index="25" stop-index="35" />
+    </show-columns>
+
+    <show-columns sql-case-id="show_columns_db_like_from">
+        <table name="inventory" start-index="18" stop-index="26" />
+        <database name="warehouse_db" start-index="33" stop-index="44" />
+        <filter start-index="46" stop-index="68">
+            <like pattern="stock_*|quantity" start-delimiter="'" end-delimiter="'" start-index="46" stop-index="68" />
+        </filter>
+    </show-columns>
 </sql-parser-test-cases>
