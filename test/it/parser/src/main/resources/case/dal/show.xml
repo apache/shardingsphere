@@ -1070,4 +1070,7 @@
             <like pattern="stock_*|quantity" start-delimiter="'" end-delimiter="'" start-index="46" stop-index="68" />
         </filter>
     </show-columns>
+
+    <show sql-case-id="show_functions_basic" />
+    <show sql-case-id="show_functions_with_like" />
 </sql-parser-test-cases>

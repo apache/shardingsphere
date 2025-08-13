@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTblp
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowColumnsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowFunctionsContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowPart
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowViewsStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTablesExtendedStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTblpropertiesStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowFunctionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
@@ -172,5 +174,10 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
             filter.setLike((ShowLikeSegment) visit(ctx.showLike()));
         }
         return new MySQLShowColumnsStatement(getDatabaseType(), table, fromDatabase, filter);
+    }
+
+    @Override
+    public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
+        return new HiveShowFunctionsStatement(getDatabaseType());
     }
 }
