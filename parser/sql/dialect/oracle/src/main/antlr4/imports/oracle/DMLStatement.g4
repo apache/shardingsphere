@@ -49,7 +49,7 @@ conditionalInsertElsePart
 
 insertIntoClause
     : INTO dmlTableExprClause
-    | INTO dmlTableExprClause alias? columnNames?
+    | INTO dmlTableExprClause columnNames?
     ;
 
 insertValuesClause
@@ -62,6 +62,7 @@ returningClause
 
 dmlTableExprClause
     : dmlTableClause | dmlSubqueryClause | tableCollectionExpr
+    | (dmlTableClause | dmlSubqueryClause | tableCollectionExpr) alias
     ;
 
 dmlTableClause
@@ -521,7 +522,7 @@ pivotClause
     ;
 
 pivotForClause
-    : FOR (columnName | columnNames)
+    : FOR columnNames
     ;
 
 pivotInClause
@@ -535,7 +536,7 @@ pivotInClauseExpr
     ;
 
 unpivotClause
-    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ (columnName | columnNames) pivotForClause unpivotInClause RP_
+    : UNPIVOT ((INCLUDE | EXCLUDE) NULLS)? LP_ columnNames pivotForClause unpivotInClause RP_
     ;
 
 unpivotInClause
@@ -543,7 +544,7 @@ unpivotInClause
     ;
 
 unpivotInClauseExpr
-    : (columnName | columnNames) (AS (literals | LP_ literals (COMMA_ literals)* RP_))?
+    : columnNames (AS (literals | LP_ literals (COMMA_ literals)* RP_))?
     ;
 
 sampleClause
@@ -887,10 +888,6 @@ rowPatternNavCompound
 
 rowPatternAggregateFunc
     : (RUNNING | FINAL)? aggregationFunction
-    ;
-
-lock
-    : LOCK TABLE (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? (COMMA_ (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? )* IN lockmodeClause MODE ( NOWAIT | WAIT INTEGER_)?
     ;
 
 partitionExtensionClause

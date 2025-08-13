@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;

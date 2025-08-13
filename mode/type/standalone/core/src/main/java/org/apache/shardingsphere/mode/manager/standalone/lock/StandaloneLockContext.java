@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import org.apache.shardingsphere.infra.util.retry.RetryExecutor;
 import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.lock.LockDefinition;
+import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;

@@ -55,8 +55,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.MultiState
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -78,6 +78,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private static final Pattern MULTI_UPDATE_STATEMENTS = Pattern.compile(";(?=\\s*update)", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern MULTI_DELETE_STATEMENTS = Pattern.compile(";(?=\\s*delete)", Pattern.CASE_INSENSITIVE);
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private final MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
     
@@ -113,7 +115,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private SQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return sqlParserRule.getSQLParserEngine(databaseType);
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
@@ -123,8 +125,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
-        SQLStatementContext sqlStatementContext =
-                new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(
+                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaDataContexts.getMetaData());
     }
     
@@ -134,8 +136,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine =
                 new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
-                        (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules,
-                        metaDataContexts.getMetaData().getDatabase(connectionSession.getUsedDatabaseName()).getResourceMetaData().getStorageUnits());
+                        (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules, metaDataContexts.getMetaData());
         return executeMultiStatements(prepareEngine);
     }
     

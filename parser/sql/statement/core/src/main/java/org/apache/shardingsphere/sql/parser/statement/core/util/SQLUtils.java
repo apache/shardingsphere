@@ -124,21 +124,34 @@ public final class SQLUtils {
             return null;
         }
         if (value.startsWith(BACKTICK) && value.endsWith(BACKTICK)) {
-            int startIndex = 1;
-            int stopIndex = value.length() - 1;
-            StringBuilder exactlyTableName = new StringBuilder();
-            while (startIndex < stopIndex) {
-                if (value.charAt(startIndex) == '`' && (startIndex + 1 >= stopIndex || value.charAt(startIndex + 1) != '`')) {
-                    return value;
-                } else if (value.charAt(startIndex) == '`' && value.charAt(startIndex + 1) == '`') {
-                    startIndex++;
-                }
-                exactlyTableName.append(value.charAt(startIndex));
-                startIndex++;
-            }
-            return 0 == exactlyTableName.length() ? value : exactlyTableName.toString();
+            return getRealContentInBackticks(value);
         }
         return value;
+    }
+    
+    /**
+     * Get exactly content in backticks.
+     *
+     * @param value SQL expression
+     * @return exactly content in backticks
+     */
+    public static String getRealContentInBackticks(final String value) {
+        if (null == value) {
+            return null;
+        }
+        int startIndex = 1;
+        int stopIndex = value.length() - 1;
+        StringBuilder exactlyTableName = new StringBuilder();
+        while (startIndex < stopIndex) {
+            if (value.charAt(startIndex) == '`' && (startIndex + 1 >= stopIndex || value.charAt(startIndex + 1) != '`')) {
+                return value;
+            } else if (value.charAt(startIndex) == '`' && value.charAt(startIndex + 1) == '`') {
+                startIndex++;
+            }
+            exactlyTableName.append(value.charAt(startIndex));
+            startIndex++;
+        }
+        return 0 == exactlyTableName.length() ? value : exactlyTableName.toString();
     }
     
     /**

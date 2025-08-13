@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.database.postgresql.metadata.database.option;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 
 import java.sql.Types;
@@ -29,8 +30,15 @@ import java.util.Optional;
  */
 public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     
-    @Override
-    public Map<String, Integer> getExtraDataTypes() {
+    private static final Map<String, Integer> EXTRA_DATA_TYPES;
+    
+    private final DialectDataTypeOption delegate = new DefaultDataTypeOption();
+    
+    static {
+        EXTRA_DATA_TYPES = setUpExtraDataTypes();
+    }
+    
+    private static Map<String, Integer> setUpExtraDataTypes() {
         Map<String, Integer> result = new CaseInsensitiveMap<>();
         result.put("SMALLINT", Types.SMALLINT);
         result.put("INT", Types.INTEGER);
@@ -45,10 +53,30 @@ public final class PostgreSQLDataTypeOption implements DialectDataTypeOption {
     }
     
     @Override
+    public Map<String, Integer> getExtraDataTypes() {
+        return EXTRA_DATA_TYPES;
+    }
+    
+    @Override
     public Optional<Class<?>> findExtraSQLTypeClass(final int dataType, final boolean unsigned) {
         if (Types.SMALLINT == dataType) {
             return Optional.of(Integer.class);
         }
         return Optional.empty();
+    }
+    
+    @Override
+    public boolean isIntegerDataType(final int sqlType) {
+        return delegate.isIntegerDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isStringDataType(final int sqlType) {
+        return delegate.isStringDataType(sqlType);
+    }
+    
+    @Override
+    public boolean isBinaryDataType(final int sqlType) {
+        return delegate.isBinaryDataType(sqlType);
     }
 }

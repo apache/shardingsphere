@@ -17,11 +17,33 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.FlushStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+
+import java.util.Collection;
 
 /**
- * MySQL flush statement.
+ * Flush statement for MySQL.
  */
-public final class MySQLFlushStatement extends FlushStatement implements MySQLStatement {
+@Getter
+public final class MySQLFlushStatement extends DALStatement {
+    
+    private final Collection<SimpleTableSegment> tables;
+    
+    private final boolean flushTable;
+    
+    public MySQLFlushStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean flushTable) {
+        super(databaseType);
+        this.tables = tables;
+        this.flushTable = flushTable;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
+    }
 }

@@ -34,6 +34,10 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
+    <test-case sql="select case when (select 1 from t_order t where exists (select 1 from t_order t where t.user_id = i.item_id)) = '1' then '已启用' else '已停用' end as status from t_order_item i" db-types="MySQL,H2" scenario-types="encrypt">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <!--<test-case sql="SELECT date_format(creation_date,  '%%y-%%m-%%d') as creation_date, count(*) as c_number FROM `t_order_item` WHERE order_id in (?, ?) GROUP BY date_format(creation_date, '%%y-%%m-%%d')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion sharding-rule-type="dbtbl_with_readwrite_splitting" parameters="1000:int, 1100:int" expected-data-source-name="read_dataset" />-->
     <!--</test-case>-->

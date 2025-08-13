@@ -233,10 +233,10 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
+./mvnw release:prepare -P-dev,release,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
+-P-dev,release,all：选择 release 的 profile，这个 profile 会打包默认依赖源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
@@ -251,7 +251,7 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
+./mvnw release:prepare -P-dev,release,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了 -DdryRun=true 参数。
@@ -270,7 +270,7 @@ git push origin ${RELEASE.VERSION}
 使用稳定的网络环境，本过程可能持续`1`个小时以上。
 
 ```shell
-./mvnw release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
+./mvnw release:perform -Prelease,-dev,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
 ```
 
 -DlocalCheckout=true：从本地 checkout 代替从远程仓库拉取代码。
@@ -568,7 +568,7 @@ docker login
 ```shell
 cd ~/shardingsphere
 git checkout ${RELEASE.VERSION}
-./mvnw -pl distribution/proxy -B -Prelease,docker.buildx.push clean package
+./mvnw -pl distribution/proxy -B -P-dev,release,all,docker.buildx.push clean package
 ```
 
 3.4 确认发布成功
@@ -590,7 +590,7 @@ docker login ghcr.io/apache/shardingsphere
 ```shell
 cd ~/shardingsphere
 git checkout ${RELEASE.VERSION}
-./mvnw -am -pl distribution/agent -Prelease,docker.buildx.push -T 1C -DskipTests clean package
+./mvnw -am -pl distribution/agent -P-dev,release,all,docker.buildx.push -T 1C -DskipTests clean package
 ```
 
 3.7 确认发布成功

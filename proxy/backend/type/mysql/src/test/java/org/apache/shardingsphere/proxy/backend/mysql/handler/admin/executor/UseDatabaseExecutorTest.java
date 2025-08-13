@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -54,7 +54,7 @@ class UseDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;

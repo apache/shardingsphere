@@ -19,12 +19,15 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mode.manager.listener.StatisticsCollectJobCronUpdateListener;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 
@@ -36,7 +39,6 @@ import java.util.Properties;
  * Global configuration manager.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class GlobalConfigurationManager {
     
     private final MetaDataContexts metaDataContexts;
@@ -81,7 +83,19 @@ public final class GlobalConfigurationManager {
      * @param props properties to be altered
      */
     public synchronized void alterProperties(final Properties props) {
+        boolean isProxyMetaDataCollectorCronChanged = isProxyMetaDataCollectorCronChanged(props);
         metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
                 metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistFacade);
+        if (isProxyMetaDataCollectorCronChanged) {
+            for (StatisticsCollectJobCronUpdateListener each : ShardingSphereServiceLoader.getServiceInstances(StatisticsCollectJobCronUpdateListener.class)) {
+                each.updated();
+            }
+        }
+    }
+    
+    private boolean isProxyMetaDataCollectorCronChanged(final Properties props) {
+        String currentValue = metaDataContexts.getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
+        String newValue = new TemporaryConfigurationProperties(props).getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON);
+        return !currentValue.equalsIgnoreCase(newValue);
     }
 }

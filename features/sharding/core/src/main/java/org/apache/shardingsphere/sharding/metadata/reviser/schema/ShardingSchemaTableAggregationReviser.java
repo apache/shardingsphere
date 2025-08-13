@@ -62,7 +62,7 @@ public final class ShardingSchemaTableAggregationReviser implements SchemaTableA
     private void checkUniformed(final String logicTableName, final Collection<TableMetaData> tableMetaDataList) {
         TableMetaData sample = tableMetaDataList.iterator().next();
         Collection<TableMetaDataViolation> violations = tableMetaDataList.stream()
-                .filter(each -> !sample.equals(each)).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
+                .filter(each -> !sample.toString().equals(each.toString())).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(violations, () -> new RuleAndStorageMetaDataMismatchedException(createErrorReason(logicTableName, violations)));
     }
     

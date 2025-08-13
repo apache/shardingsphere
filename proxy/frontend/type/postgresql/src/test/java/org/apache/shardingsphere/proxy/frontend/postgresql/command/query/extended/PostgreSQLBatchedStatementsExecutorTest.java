@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -33,8 +33,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
-import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -42,12 +40,12 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -64,7 +62,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -81,6 +78,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLBatchedStatementsExecutorTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @Mock
     private ProxyDatabaseConnectionManager databaseConnectionManager;
@@ -118,11 +117,8 @@ class PostgreSQLBatchedStatementsExecutorTest {
     }
     
     private InsertStatementContext mockInsertStatementContext() {
-        PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
-        when(insertStatement.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))));
-        when(insertStatement.getValues()).thenReturn(Collections.emptyList());
-        when(insertStatement.getCommentSegments()).thenReturn(Collections.emptyList());
-        when(insertStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        InsertStatement insertStatement = new InsertStatement(databaseType);
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(insertStatement);
         return result;
@@ -135,7 +131,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
@@ -145,8 +141,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
                 new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
         when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         return result;
     }

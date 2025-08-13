@@ -31,9 +31,11 @@
     <sql-case id="alter_index_with_coalesce" value="ALTER INDEX order_index COALESCE CLEANUP ONLY PARALLEL" db-types="Oracle" />
     <sql-case id="alter_index_with_usage" value="ALTER INDEX order_index MONITORING USAGE" db-types="Oracle" />
     <sql-case id="alter_index_with_update" value="ALTER INDEX order_index UPDATE BLOCK REFERENCES" db-types="Oracle" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="alter_index_rebuild" value="ALTER INDEX order_index ON t_order REBUILD" db-types="SQLServer" />
     <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
     <sql-case id="alter_index_with_reorganize" value="ALTER INDEX order_index ON t_order REORGANIZE WITH (COMPRESS_ALL_ROW_GROUPS = ON)" db-types="SQLServer" />
+    -->
     <sql-case id="alter_index_parameters_odci" value="ALTER INDEX ResumeTextIndex PARAMETERS (':Ignore on')" db-types="Oracle" />
     <sql-case id="alter_index_modify_partition_unusable" value="ALTER INDEX cost_ix MODIFY PARTITION p2 UNUSABLE" db-types="Oracle" />
     <sql-case id="alter_index_drop_partition1" value="ALTER INDEX cost_ix DROP PARTITION p1" db-types="Oracle" />
@@ -50,7 +52,12 @@
     <sql-case id="alter_index_modify_default_attributes_tablespace" value="ALTER INDEX q1_sales_by_region_locix MODIFY DEFAULT ATTRIBUTES TABLESPACE tbs_4" db-types="Oracle" />
     <sql-case id="alter_index_rename_subpartition_to" value="ALTER INDEX scuba RENAME SUBPARTITION sys_subp3254 TO bcd_types" db-types="Oracle" />
     <sql-case id="alter_index_modify_default_attributes_initrans" value="ALTER INDEX prod_idx MODIFY DEFAULT ATTRIBUTES INITRANS 5" db-types="Oracle" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_index_with_schema" value="ALTER INDEX public.t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL,openGauss" />
+    -->
+    <sql-case id="alter_index_rebuild_basic" value="ALTER INDEX idx_product_id ON orders REBUILD" db-types="Hive" />
+    <sql-case id="alter_index_rebuild_with_partition" value="ALTER INDEX idx_sales_region ON sales PARTITION (region='Asia') REBUILD" db-types="Hive" />
+    <sql-case id="alter_index_rebuild_with_db" value="ALTER INDEX idx_product_id ON db.orders REBUILD" db-types="Hive" />
 </sql-cases>

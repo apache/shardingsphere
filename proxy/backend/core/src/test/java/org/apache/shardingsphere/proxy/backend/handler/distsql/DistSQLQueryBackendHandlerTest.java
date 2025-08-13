@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.QueryableRALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.export.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
@@ -39,10 +39,11 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -64,7 +65,7 @@ class DistSQLQueryBackendHandlerTest {
     @Test
     void assertExecuteWithNoDatabase() {
         assertThrows(NoDatabaseSelectedException.class,
-                () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+                () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     @Test
@@ -77,12 +78,13 @@ class DistSQLQueryBackendHandlerTest {
         when(computeNodeInstanceContext.getModeConfiguration()).thenReturn(mock(ModeConfiguration.class));
         ContextManager contextManager = new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(), mock(PersistRepository.class));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
+        assertThrows(UnknownDatabaseException.class, () -> new DistSQLQueryBackendHandler(mock(ExportDatabaseConfigurationStatement.class, RETURNS_DEEP_STUBS), connectionSession).execute());
     }
     
     @Test
     void assertExecuteWithAbstractStatement() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
+        assertThrows(ServiceProviderNotFoundException.class,
+                () -> new DistSQLQueryBackendHandler(mock(QueryableRALStatement.class, RETURNS_DEEP_STUBS), mock(ConnectionSession.class, RETURNS_DEEP_STUBS)).execute());
     }
     
     @Test
@@ -100,6 +102,6 @@ class DistSQLQueryBackendHandlerTest {
     }
     
     private ShowTableMetaDataStatement createSqlStatement() {
-        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new DatabaseSegment(0, 0, new IdentifierValue("foo_db")));
+        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
     }
 }

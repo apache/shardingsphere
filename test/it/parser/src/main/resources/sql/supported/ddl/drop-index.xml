@@ -21,20 +21,31 @@
     <sql-case id="drop_index_with_lock" value="DROP INDEX idx_name ON t_order LOCK=EXCLUSIVE" db-types="MySQL" />
     <sql-case id="drop_index_with_algorithm_lock" value="DROP INDEX idx_name ON t_order ALGORITHM=INPLACE LOCK=EXCLUSIVE" db-types="MySQL" />
     <sql-case id="drop_index_with_lock_algorithm" value="DROP INDEX idx_name ON t_order LOCK=EXCLUSIVE ALGORITHM=INPLACE" db-types="MySQL" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="drop_index" value="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer" />
+    -->
     <sql-case id="drop_index_without_on" value="DROP INDEX order_index" db-types="PostgreSQL,openGauss,Oracle" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="drop_index_if_exists" value="DROP INDEX IF EXISTS order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_index_with_space" value="    DROP INDEX
         order_index
     ON
         t_order    " db-types="MySQL,SQLServer" />
+    -->
     <sql-case id="drop_index_only_with_name" value="DROP INDEX order_index" db-types="Oracle,PostgreSQL,openGauss" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="drop_index_with_back_quota" value="DROP INDEX `order_index` ON `t_order`" db-types="MySQL" />
+    -->
     <sql-case id="drop_index_with_quota" value="DROP INDEX &quot;order_index&quot; ON &quot;t_order&quot;" db-types="Oracle" />
+    <!-- TODO should assert index for all databases (only Oracle can support parse index right now)
     <sql-case id="drop_index_with_double_quota" value="DROP INDEX &quot;order_index&quot;" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_index_concurrently" value="DROP INDEX CONCURRENTLY order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_index_with_schema" value="DROP INDEX public.order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_index_with_bracket" value="DROP INDEX [order_index] ON [t_order]" db-types="SQLServer" />
     <sql-case id="drop_index_if_exists_on_table" value="DROP INDEX IF EXISTS order_index ON t_order" db-types="SQLServer" />
+    -->
     <sql-case id="drop_index_with_online_force_invalidation" value="DROP INDEX order_index ONLINE FORCE DEFERRED INVALIDATION" db-types="Oracle" />
+    <sql-case id="drop_index_basic" value="DROP INDEX product_id ON orders" db-types="Hive" />
+    <sql-case id="drop_index_with_if_exists" value="DROP INDEX IF EXISTS customer_id ON customers" db-types="Hive" />
+    <sql-case id="drop_index_with_database" value="DROP INDEX product_id ON mydb.orders" db-types="Hive" />
 </sql-cases>

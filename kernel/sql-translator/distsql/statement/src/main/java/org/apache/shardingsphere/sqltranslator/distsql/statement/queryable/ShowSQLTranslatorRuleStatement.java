@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.statement.queryable;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.global.ShowGlobalRulesStatement;
 
 /**
  * Show SQL translator rule statement.

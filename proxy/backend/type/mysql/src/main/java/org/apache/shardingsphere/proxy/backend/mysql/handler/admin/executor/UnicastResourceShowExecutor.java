@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
@@ -43,7 +44,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -58,7 +59,6 @@ import java.util.stream.Collectors;
  * Unicast resource show executor.
  */
 @RequiredArgsConstructor
-@Getter
 public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
     private final DatabaseConnectorFactory databaseConnectorFactory = DatabaseConnectorFactory.getInstance();
@@ -67,11 +67,12 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     
     private final String sql;
     
-    private MergedResult mergedResult;
-    
     private DatabaseConnector databaseConnector;
     
     private ResponseHeader responseHeader;
+    
+    @Getter
+    private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
@@ -81,12 +82,10 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
             connectionSession.setCurrentDatabaseName(databaseName);
-            SQLStatementContext sqlStatementContext = new SQLBindEngine(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
-                    connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
-            databaseConnector = databaseConnectorFactory.newInstance(
-                    new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(),
-                            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()),
-                    connectionSession.getDatabaseConnectionManager(), false);
+            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+            SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+            databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(
+                    sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {

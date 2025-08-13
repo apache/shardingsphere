@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.doris.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CallContext;
@@ -41,50 +42,48 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Windo
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCallStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisDoStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisHandlerStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadDataStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadXMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * DML statement visitor for Doris.
  */
 public final class DorisDMLStatementVisitor extends DorisStatementVisitor implements DMLStatementVisitor {
     
+    public DorisDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        List<ExpressionSegment> params = new ArrayList<>(ctx.expr().size());
-        ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
-        String procedureName = ctx.identifier().getText();
-        if (null != ctx.owner()) {
-            procedureName = ctx.owner().getText() + "." + procedureName;
-        }
-        return new DorisCallStatement(procedureName, params);
+        String procedureName = null == ctx.owner() ? ctx.identifier().getText() : ctx.owner().getText() + "." + ctx.identifier().getText();
+        List<ExpressionSegment> params = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        return new CallStatement(getDatabaseType(), procedureName, params);
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        List<ExpressionSegment> params = new ArrayList<>(ctx.expr().size());
-        ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
-        return new DorisDoStatement(params);
+        return new DoStatement(getDatabaseType(), ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitHandlerStatement(final HandlerStatementContext ctx) {
-        return new DorisHandlerStatement();
+        return new MySQLHandlerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitImportStatement(final ImportStatementContext ctx) {
-        return new DorisImportStatement();
+        return new MySQLImportStatement(getDatabaseType());
     }
     
     @Override
@@ -94,16 +93,12 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        DorisLoadDataStatement result = new DorisLoadDataStatement();
-        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
-        DorisLoadXMLStatement result = new DorisLoadXMLStatement();
-        result.setTableSegment((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new MySQLLoadXMLStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

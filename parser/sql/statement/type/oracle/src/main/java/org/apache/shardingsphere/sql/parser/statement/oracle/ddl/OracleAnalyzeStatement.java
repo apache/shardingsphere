@@ -17,11 +17,25 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AnalyzeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle analyze statement.
+ * Analyze statement for Oracle.
  */
-public final class OracleAnalyzeStatement extends AnalyzeStatement implements OracleStatement {
+@Getter
+public final class OracleAnalyzeStatement extends DDLStatement {
+    
+    private final SimpleTableSegment table;
+    
+    private final IndexSegment index;
+    
+    public OracleAnalyzeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final IndexSegment index) {
+        super(databaseType);
+        this.table = table;
+        this.index = index;
+    }
 }

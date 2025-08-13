@@ -59,7 +59,7 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             return;
         }
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType());
-        payload.writeInt4(binaryProtocolValue.getColumnLength(value));
+        payload.writeInt4(binaryProtocolValue.getColumnLength(payload, value));
         binaryProtocolValue.write(payload, value);
     }
     

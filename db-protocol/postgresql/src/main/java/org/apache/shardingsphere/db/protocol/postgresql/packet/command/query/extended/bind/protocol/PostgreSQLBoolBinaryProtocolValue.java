@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
 /**
  * Binary protocol value for bool for PostgreSQL.
  */
-@Slf4j
 public final class PostgreSQLBoolBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         return 1;
     }
     
@@ -39,6 +36,6 @@ public final class PostgreSQLBoolBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedSQLOperationException("PostgreSQLBoolBinaryProtocolValue.write()");
+        payload.getByteBuf().writeBoolean("t".equals(value.toString()));
     }
 }

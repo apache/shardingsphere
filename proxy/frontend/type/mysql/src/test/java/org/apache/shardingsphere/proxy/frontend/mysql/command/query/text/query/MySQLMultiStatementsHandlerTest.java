@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.logging.rule.LoggingRule;
-import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -39,11 +37,11 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.MultiStatementsUpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -77,7 +75,7 @@ class MySQLMultiStatementsHandlerTest {
     void assertExecute() throws SQLException {
         String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
         ConnectionSession connectionSession = mockConnectionSession();
-        MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
+        UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
@@ -103,7 +101,7 @@ class MySQLMultiStatementsHandlerTest {
     void assertExecuteWithSpecifiedDatabaseName() throws SQLException {
         String sql = "update foo_db.t set v=v+1 where id=1;update foo_db.t set v=v+1 where id=2;update foo_db.t set v=v+1 where id=3";
         ConnectionSession connectionSession = mockConnectionSession();
-        MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
+        UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
@@ -131,7 +129,7 @@ class MySQLMultiStatementsHandlerTest {
                 "insert into t (id, v) values(1,1) on duplicate key update v=2;insert into t (id, v) values(2,1) "
                         + "on duplicate key update v=3;insert into t (id, v) values(2,1) on duplicate key update v=3";
         ConnectionSession connectionSession = mockConnectionSession();
-        MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
+        UpdateStatement expectedStatement = mock(UpdateStatement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
@@ -183,8 +181,7 @@ class MySQLMultiStatementsHandlerTest {
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.emptyList()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(
-                Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()),
-                        new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build())));
+                Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);

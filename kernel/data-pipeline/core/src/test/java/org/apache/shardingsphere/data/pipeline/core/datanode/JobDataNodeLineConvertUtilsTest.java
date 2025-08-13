@@ -35,12 +35,12 @@ class JobDataNodeLineConvertUtilsTest {
     
     @Test
     void assertConvertDataNodesToLines() {
-        Map<String, List<DataNode>> mockDataNodes = new LinkedHashMap<>(2, 1F);
+        Map<String, List<DataNode>> mockedTableAndDataNodesMap = new LinkedHashMap<>(2, 1F);
         List<DataNode> dataNodes = Arrays.asList(new DataNode("ds_0", "t_order_0"), new DataNode("ds_0", "t_order_1"));
         List<DataNode> itemDataNodes = Collections.singletonList(new DataNode("ds_0", "t_order_item_0"));
-        mockDataNodes.put("t_order", dataNodes);
-        mockDataNodes.put("t_order_item", itemDataNodes);
-        List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(mockDataNodes);
+        mockedTableAndDataNodesMap.put("t_order", dataNodes);
+        mockedTableAndDataNodesMap.put("t_order_item", itemDataNodes);
+        List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(mockedTableAndDataNodesMap);
         assertThat(jobDataNodeLines.size(), is(1));
         List<JobDataNodeEntry> actualNodeEntry = new ArrayList<>(jobDataNodeLines.get(0).getEntries());
         assertThat(actualNodeEntry.get(0).getLogicTableName(), is("t_order"));

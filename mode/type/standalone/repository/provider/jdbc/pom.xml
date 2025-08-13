@@ -32,12 +32,10 @@
             <artifactId>shardingsphere-standalone-mode-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
+            <artifactId>shardingsphere-standalone-mode-core</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         
         <dependency>
@@ -54,12 +52,6 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

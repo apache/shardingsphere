@@ -51,6 +51,9 @@ class OpenGaussSchemaMetaDataLoaderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @BeforeEach
     void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
@@ -78,11 +81,11 @@ class OpenGaussSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db", TypedSPILoader.getService(DatabaseType.class, "openGauss"), dataSource, Collections.emptyList()), is(createSchemaTableNames()));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(createSchemaTableNames()));
     }
     
     private Map<String, Collection<String>> createSchemaTableNames() {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        Map<String, Collection<String>> result = new LinkedHashMap<>(3, 1F);
         result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
         result.put("schema_1", Collections.emptySet());
         result.put("schema_2", Collections.emptySet());
@@ -91,6 +94,6 @@ class OpenGaussSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "openGauss")), is(Arrays.asList("public", "schema_1", "schema_2")));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaNames(dataSource.getConnection()), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
 }

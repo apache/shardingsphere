@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
-import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class YamlViewSwapperTest {
@@ -36,13 +36,13 @@ class YamlViewSwapperTest {
     void assertSwapToYamlConfiguration() {
         ShardingSphereView view = createShardingSphereView();
         YamlShardingSphereView actual = swapper.swapToYamlConfiguration(view);
-        YamlShardingSphereView expected = YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereView.class);
+        YamlShardingSphereView expected = YamlEngine.unmarshal(SystemResourceFileUtils.readFile(YAML_FILE), YamlShardingSphereView.class);
         assertThat(actual, deepEqual(expected));
     }
     
     @Test
     void assertSwapToObject() {
-        ShardingSphereView actual = swapper.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtils.readFile(YAML_FILE), YamlShardingSphereView.class));
+        ShardingSphereView actual = swapper.swapToObject(YamlEngine.unmarshal(SystemResourceFileUtils.readFile(YAML_FILE), YamlShardingSphereView.class));
         ShardingSphereView expected = createShardingSphereView();
         assertThat(actual, deepEqual(expected));
     }

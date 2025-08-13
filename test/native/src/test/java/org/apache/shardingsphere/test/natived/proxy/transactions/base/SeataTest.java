@@ -20,16 +20,13 @@ package org.apache.shardingsphere.test.natived.proxy.transactions.base;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.http.HttpStatus;
-import org.apache.seata.config.ConfigurationFactory;
-import org.apache.seata.core.rpc.netty.RmNettyRemotingClient;
-import org.apache.seata.core.rpc.netty.TmNettyRemotingClient;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
+import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledInNativeImage;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -44,6 +41,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +50,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
-@EnabledInNativeImage
+@Disabled("See https://github.com/apache/incubator-seata/issues/7523 .")
 @Testcontainers
 class SeataTest {
     
@@ -62,7 +60,7 @@ class SeataTest {
             .waitingFor(Wait.forHttp("/health").forPort(7091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("ok"::equals));
     
     @Container
-    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:17.2-bookworm")
+    private final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:17.5-bookworm")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(Paths.get("src/test/resources/test-native/sh/postgres.sh").toAbsolutePath()),
                     "/docker-entrypoint-initdb.d/postgres.sh");
@@ -96,11 +94,8 @@ class SeataTest {
     @AfterEach
     void afterEach() {
         Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
-        proxyTestingServer.close();
-        TmNettyRemotingClient.getInstance().destroy();
-        RmNettyRemotingClient.getInstance().destroy();
-        ConfigurationFactory.reload();
         System.clearProperty(serviceDefaultGroupListKey);
+        proxyTestingServer.close(Collections.singletonList("sharding_db"));
     }
     
     /**

@@ -44,12 +44,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -90,8 +90,8 @@ class PipelineDataSourceSinkTest {
     }
     
     private ImporterConfiguration mockImporterConfiguration() {
-        Map<ShardingSphereIdentifier, Set<String>> shardingColumnsMap = Collections.singletonMap(new ShardingSphereIdentifier("test_table"), Collections.singleton("user"));
-        return new ImporterConfiguration(dataSourceConfig, shardingColumnsMap, new TableAndSchemaNameMapper(Collections.emptyMap()), 1000, null, 3, 3);
+        Map<ShardingSphereIdentifier, Collection<String>> tableAndRequiredColumnsMap = Collections.singletonMap(new ShardingSphereIdentifier("test_table"), Collections.singleton("user"));
+        return new ImporterConfiguration(dataSourceConfig, tableAndRequiredColumnsMap, new TableAndSchemaNameMapper(Collections.emptyMap()), 1000, null, 3, 3);
     }
     
     private PipelineDataSourceManager mockPipelineDataSourceManager() throws SQLException {

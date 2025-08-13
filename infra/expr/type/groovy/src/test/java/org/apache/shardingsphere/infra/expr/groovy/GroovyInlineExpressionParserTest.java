@@ -20,18 +20,18 @@ package org.apache.shardingsphere.infra.expr.groovy;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -120,23 +120,18 @@ class GroovyInlineExpressionParserTest {
     
     @Test
     void assertEvaluateWithArgsExpression() {
-        assertThat(getInlineExpressionParser("${1+2}").evaluateWithArgs(new LinkedHashMap<>()), is("3"));
+        assertThat(getInlineExpressionParser("${1+2}").evaluateWithArgs(Collections.emptyMap()), is("3"));
     }
     
     @Test
     @SneakyThrows({ExecutionException.class, InterruptedException.class})
     void assertEvaluateForThreadSafety() {
         int threadCount = 10;
-        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-        List<Future<?>> futures = new ArrayList<>(threadCount);
-        for (int i = 0; i < threadCount; i++) {
-            Future<?> future = pool.submit(this::createInlineExpressionParseTask);
-            futures.add(future);
-        }
-        for (Future<?> future : futures) {
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        for (Future<?> future : IntStream.range(0, threadCount).mapToObj(i -> executorService.submit(this::createInlineExpressionParseTask)).collect(Collectors.toList())) {
             future.get();
         }
-        pool.shutdown();
+        executorService.shutdown();
     }
     
     private void createInlineExpressionParseTask() {
@@ -150,6 +145,8 @@ class GroovyInlineExpressionParserTest {
     }
     
     private InlineExpressionParser getInlineExpressionParser(final String expression) {
-        return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", PropertiesBuilder.build(new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression)));
+        Properties props = new Properties();
+        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression);
+        return TypedSPILoader.getService(InlineExpressionParser.class, "GROOVY", props);
     }
 }

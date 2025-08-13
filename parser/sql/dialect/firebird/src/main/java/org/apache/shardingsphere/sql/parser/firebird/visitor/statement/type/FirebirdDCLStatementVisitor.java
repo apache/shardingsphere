@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateRoleContext;
@@ -25,19 +26,23 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Gran
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.dcl.FirebirdRevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
 
 /**
  * DCL statement visitor for Firebird.
  */
 public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor implements DCLStatementVisitor {
     
+    public FirebirdDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        FirebirdGrantStatement result = new FirebirdGrantStatement();
+        GrantStatement result = new GrantStatement(getDatabaseType());
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -46,7 +51,7 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        FirebirdRevokeStatement result = new FirebirdRevokeStatement();
+        RevokeStatement result = new RevokeStatement(getDatabaseType());
         if (null != ctx.privilegeClause()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
         }
@@ -55,11 +60,11 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new FirebirdCreateRoleStatement();
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new FirebirdCreateUserStatement();
+        return new CreateUserStatement(getDatabaseType());
     }
 }

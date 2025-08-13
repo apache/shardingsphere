@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -122,7 +122,7 @@ class EncryptOrderByItemSupportedCheckerTest {
         TableSegmentBoundInfo tableSegmentBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db"));
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableSegmentBoundInfo, new IdentifierValue(tableName), new IdentifierValue("foo_col"), TableSourceType.TEMPORARY_TABLE));
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabaseType()).thenReturn(databaseType);
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
         ColumnOrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItem orderByItem = new OrderByItem(columnOrderByItemSegment);
         when(result.getOrderByContext().getItems()).thenReturn(Collections.singleton(orderByItem));

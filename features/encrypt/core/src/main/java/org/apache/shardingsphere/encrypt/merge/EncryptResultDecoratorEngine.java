@@ -22,13 +22,13 @@ import org.apache.shardingsphere.encrypt.merge.dal.EncryptDALResultDecorator;
 import org.apache.shardingsphere.encrypt.merge.dql.EncryptDQLResultDecorator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecoratorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 import java.util.Optional;
 

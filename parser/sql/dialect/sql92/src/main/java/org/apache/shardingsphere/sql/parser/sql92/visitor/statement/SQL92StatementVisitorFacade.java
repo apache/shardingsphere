@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.LCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type.SQL92DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type.SQL92DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type.SQL92DDLStatementVisitor;
@@ -51,6 +51,11 @@ public final class SQL92StatementVisitorFacade implements SQLStatementVisitorFac
     }
     
     @Override
+    public Class<? extends LCLStatementVisitor> getLCLVisitorClass() {
+        throw new UnsupportedOperationException("");
+    }
+    
+    @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
         return SQL92DCLStatementVisitor.class;
     }
@@ -58,11 +63,6 @@ public final class SQL92StatementVisitorFacade implements SQLStatementVisitorFac
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return SQL92DALStatementVisitor.class;
-    }
-    
-    @Override
-    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return null;
     }
     
     @Override

@@ -48,16 +48,28 @@ class PostgreSQLStringBinaryProtocolValueTest {
     }
     
     @Test
-    void assertNewInstance() {
+    void assertGetColumnLength() {
+        PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
+        assertThat(actual.getColumnLength(payload, "English"), is(7));
+        assertThat(actual.getColumnLength(payload, "中文"), is(6));
+        assertThat(actual.getColumnLength(payload, new byte[]{1, 2, 3}), is(3));
+    }
+    
+    @Test
+    void assertRead() {
         doAnswer((Answer<ByteBuf>) invocation -> {
             ((byte[]) invocation.getArguments()[0])[0] = 'a';
             return byteBuf;
         }).when(byteBuf).readBytes(any(byte[].class));
         PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
-        assertThat(actual.getColumnLength("str"), is("str".length()));
         assertThat(actual.read(payload, "a".length()), is("a"));
-        actual.write(payload, "a");
-        verify(byteBuf).writeBytes("a".getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @Test
+    void assertWrite() {
+        PostgreSQLStringBinaryProtocolValue actual = new PostgreSQLStringBinaryProtocolValue();
+        actual.write(payload, "foo");
+        verify(byteBuf).writeBytes("foo".getBytes(StandardCharsets.UTF_8));
         actual.write(payload, new byte[1]);
         verify(byteBuf).writeBytes(new byte[1]);
     }

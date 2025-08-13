@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle alter session statement.
+ * Alter session statement for Oracle.
  */
-public final class OracleAlterSessionStatement extends AlterSessionStatement implements OracleStatement {
+public final class OracleAlterSessionStatement extends DDLStatement {
+    
+    public OracleAlterSessionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

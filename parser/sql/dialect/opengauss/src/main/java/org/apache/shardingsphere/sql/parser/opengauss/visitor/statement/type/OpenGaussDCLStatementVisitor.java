@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterRoleContext;
@@ -30,26 +31,31 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Pri
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussDropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dcl.OpenGaussRevokeStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * DCL statement visitor for openGauss.
  */
 public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisitor implements DCLStatementVisitor {
     
+    public OpenGaussDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        OpenGaussGrantStatement result = new OpenGaussGrantStatement();
+        GrantStatement result = new GrantStatement(getDatabaseType());
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -58,7 +64,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        OpenGaussRevokeStatement result = new OpenGaussRevokeStatement();
+        RevokeStatement result = new RevokeStatement(getDatabaseType());
         if (containsTableSegment(ctx.privilegeClause())) {
             result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
@@ -76,31 +82,31 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new OpenGaussCreateUserStatement();
+        return new CreateUserStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new OpenGaussDropUserStatement();
+        return new DropUserStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new OpenGaussAlterUserStatement();
+        return new AlterUserStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new OpenGaussCreateRoleStatement();
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new OpenGaussAlterRoleStatement();
+        return new AlterRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new OpenGaussDropRoleStatement();
+        return new DropRoleStatement(getDatabaseType());
     }
 }

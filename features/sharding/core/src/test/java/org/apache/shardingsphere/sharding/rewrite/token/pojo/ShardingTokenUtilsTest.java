@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -34,13 +33,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 class ShardingTokenUtilsTest {
     
     @Test
     void assertGetLogicAndActualTablesWithNotTableAvailable() {
-        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), mock(SQLStatementContext.class), mock(ShardingRule.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        Map<String, String> actual = ShardingTokenUtils.getLogicAndActualTableMap(mock(RouteUnit.class), sqlStatementContext, mock(ShardingRule.class));
         assertTrue(actual.isEmpty());
     }
     
@@ -56,8 +56,8 @@ class ShardingTokenUtilsTest {
     }
     
     private static SQLStatementContext mockSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
-        when(((TableAvailable) result).getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_tbl", "bar_tbl"));
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_tbl", "bar_tbl"));
         return result;
     }
     

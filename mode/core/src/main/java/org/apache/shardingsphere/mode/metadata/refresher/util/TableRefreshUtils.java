@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Table refresh utils.
+ * Table refresh utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TableRefreshUtils {
@@ -53,7 +53,7 @@ public final class TableRefreshUtils {
      */
     public static String getTableName(final IdentifierValue tableIdentifierValue, final DatabaseType databaseType) {
         return QuoteCharacter.NONE == tableIdentifierValue.getQuoteCharacter()
-                ? new DatabaseTypeRegistry(databaseType).formatTableNamePattern(tableIdentifierValue.getValue())
+                ? new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableIdentifierValue.getValue())
                 : tableIdentifierValue.getValue();
     }
     

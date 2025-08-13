@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
-import org.apache.shardingsphere.distsql.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,9 +72,9 @@ class ParseDistSQLExecutorTest {
         DistSQLQueryBackendHandler handler = new DistSQLQueryBackendHandler(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
-        SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("SelectStatement"));
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(sqlStatement)));
     }
     
     @Test
@@ -84,8 +84,8 @@ class ParseDistSQLExecutorTest {
         DistSQLQueryBackendHandler handler = new DistSQLQueryBackendHandler(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
-        SQLStatement statement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
-        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(statement)));
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
+        assertThat(new LinkedList<>(handler.getRowData().getData()).getLast().toString(), is(JsonUtils.toJsonString(sqlStatement)));
     }
     
     @Test

@@ -8007,3 +8007,7 @@ APP
 EXCEPTION_INIT
     : E X C E P T I O N UL_ I N I T
     ;
+
+V1
+    : V '1'
+    ;

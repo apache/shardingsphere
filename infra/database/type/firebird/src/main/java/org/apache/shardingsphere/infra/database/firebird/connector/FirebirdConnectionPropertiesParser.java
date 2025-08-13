@@ -41,10 +41,9 @@ public final class FirebirdConnectionPropertiesParser implements ConnectionPrope
         DbAttachInfo dbAttachInfo = DbAttachInfo.parseConnectString(databaseURL);
         String attachObjectName = dbAttachInfo.getAttachObjectName();
         String databaseName = attachObjectName.contains("?") ? attachObjectName.split("\\?")[0] : attachObjectName;
-        Properties queryProperties = new Properties();
-        queryProperties.putAll(FBDriver.normalizeProperties(url, new Properties()));
-        return new StandardConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(),
-                databaseName, null, queryProperties, new Properties());
+        Properties queryProps = new Properties();
+        queryProps.putAll(FBDriver.normalizeProperties(url, new Properties()));
+        return new StandardConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(), databaseName, null, queryProps, new Properties());
     }
     
     @Override

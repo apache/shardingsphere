@@ -28,11 +28,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationConverter;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -69,9 +69,10 @@ class ShowShardingTableNodesExecutorTest {
         URL url = getClass().getClassLoader().getResource("yaml/config_sharding_for_table_nodes.yaml");
         assertNotNull(url);
         YamlRootConfiguration yamlRootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
-        Optional<ShardingRuleConfiguration> shardingRuleConfig = ShardingRuleConfigurationConverter.findAndConvertShardingRuleConfiguration(yamlRootConfig.getRules());
-        assertTrue(shardingRuleConfig.isPresent());
-        return new ShardingRule(shardingRuleConfig.get(),
+        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = yamlRootConfig.getRules().stream()
+                .filter(YamlShardingRuleConfiguration.class::isInstance).map(YamlShardingRuleConfiguration.class::cast).findFirst();
+        assertTrue(yamlShardingRuleConfig.isPresent());
+        return new ShardingRule(new YamlShardingRuleConfigurationSwapper().swapToObject(yamlShardingRuleConfig.get()),
                 Maps.of("ds_1", new MockedDataSource(), "ds_2", new MockedDataSource(), "ds_3", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     

@@ -87,4 +87,14 @@
     <alter-database sql-case-id="alter_database_set_options" />
     <alter-database sql-case-id="alter_database_enable_block_change_tracking_using_file" />
     <alter-database sql-case-id="alter_database_backup_controlfile_to" />
+    <alter-database sql-case-id="alter_database_set_dbproperties" />
+    <alter-database sql-case-id="alter_schema_set_dbproperties" />
+    <alter-database sql-case-id="alter_database_set_owner_user" />
+    <alter-database sql-case-id="alter_database_set_owner_role" />
+    <alter-database sql-case-id="alter_schema_set_owner_user" />
+    <alter-database sql-case-id="alter_schema_set_owner_role" />
+    <alter-database sql-case-id="alter_database_set_location" />
+    <alter-database sql-case-id="alter_schema_set_location" />
+    <alter-database sql-case-id="alter_database_set_managedlocation" />
+    <alter-database sql-case-id="alter_schema_set_managedlocation" />
 </sql-parser-test-cases>

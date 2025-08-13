@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.HandlerStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
- * MySQL handler statement.
+ * Handler statement for MySQL.
  */
-public final class MySQLHandlerStatement extends HandlerStatement implements MySQLStatement {
+public final class MySQLHandlerStatement extends DMLStatement {
+    
+    public MySQLHandlerStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

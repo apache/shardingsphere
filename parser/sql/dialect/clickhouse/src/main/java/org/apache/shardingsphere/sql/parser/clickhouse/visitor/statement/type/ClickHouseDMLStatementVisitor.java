@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
@@ -29,10 +30,6 @@ import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.In
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.clickhouse.dml.ClickHouseUpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -64,6 +61,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
@@ -79,18 +80,22 @@ import java.util.stream.Collectors;
  */
 public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisitor implements DMLStatementVisitor {
     
+    public ClickHouseDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        ClickHouseInsertStatement result = (ClickHouseInsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        ClickHouseInsertStatement result = new ClickHouseInsertStatement();
+        InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
@@ -112,13 +117,13 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitUpdate(final ClickHouseStatementParser.UpdateContext ctx) {
-        ClickHouseUpdateStatement result = new ClickHouseUpdateStatement();
+        UpdateStatement result = new UpdateStatement(getDatabaseType());
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -162,12 +167,12 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        ClickHouseDeleteStatement result = new ClickHouseDeleteStatement();
+        DeleteStatement result = new DeleteStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -183,8 +188,8 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     @Override
     public ASTNode visitSelect(final ClickHouseStatementParser.SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        ClickHouseSelectStatement result = (ClickHouseSelectStatement) visit(ctx.combineClause());
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        SelectStatement result = (SelectStatement) visit(ctx.combineClause());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -196,7 +201,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        ClickHouseSelectStatement result = new ClickHouseSelectStatement();
+        SelectStatement result = new SelectStatement(getDatabaseType());
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (!ctx.selectSpecification().isEmpty()) {
             result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
@@ -378,7 +383,7 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     @Override
     public ASTNode visitTableFactor(final ClickHouseStatementParser.TableFactorContext ctx) {
         if (null != ctx.subquery()) {
-            ClickHouseSelectStatement subquery = (ClickHouseSelectStatement) visit(ctx.subquery());
+            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {

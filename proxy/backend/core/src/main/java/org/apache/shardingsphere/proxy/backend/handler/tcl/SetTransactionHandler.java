@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -25,11 +28,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
-
-import java.sql.Connection;
 
 /**
  * Transaction set handler.
@@ -41,21 +41,20 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     
+    private final DatabaseType databaseType;
+    
     @Override
     public ResponseHeader execute() {
-        ShardingSpherePreconditions.checkState(null != sqlStatement.getScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
+        ShardingSpherePreconditions.checkState(sqlStatement.containsScope() || !connectionSession.getTransactionStatus().isInTransaction(), SwitchTypeInTransactionException::new);
         setReadOnly();
         setTransactionIsolationLevel();
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private void setReadOnly() {
-        if (!sqlStatement.getAccessMode().isPresent()) {
-            return;
-        }
-        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode().get()) {
+        if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_ONLY)) {
             connectionSession.setReadOnly(true);
-        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode().get()) {
+        } else if (sqlStatement.isDesiredAccessMode(TransactionAccessType.READ_WRITE)) {
             connectionSession.setReadOnly(false);
         }
     }
@@ -64,9 +63,8 @@ public final class SetTransactionHandler implements ProxyBackendHandler {
         if (!sqlStatement.getIsolationLevel().isPresent()) {
             return;
         }
-        connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
-                ? TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
-                : TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
+        connectionSession.setDefaultIsolationLevel(TransactionUtils.getTransactionIsolationLevel(transactionOption.getDefaultIsolationLevel()));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }

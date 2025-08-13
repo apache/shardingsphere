@@ -157,7 +157,7 @@
         <table>
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </table>
-        <index name="order_index" start-index="20" stop-index="30" />
+        <index name="order_index" start-index="20" stop-index="30" unique-key="true" />
         <column start-index="44" stop-index="51" name="order_id" />
     </create-index>
     
@@ -276,5 +276,131 @@
             <simple-table name="t1" start-index="19" stop-index="20"/>
         </table>
         <column name="c1" start-index="23" stop-index="24"/>
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_partitions">
+        <index name="IDX_ORDER_ID" start-index="13" stop-index="26" start-delimiter="&quot;" end-delimiter="&quot;" />
+        <table>
+            <simple-table name="T_ORDER" start-index="31" stop-index="39" start-delimiter="&quot;" end-delimiter="&quot;" />
+        </table>
+        <column name="ORDER_ID" start-index="42" stop-index="51" start-delimiter="&quot;" end-delimiter="&quot;" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_basic">
+        <index name="idx_product_id" start-index="13" stop-index="26" />
+        <table>
+            <simple-table name="orders" start-index="37" stop-index="42" />
+        </table>
+        <column start-index="45" stop-index="54" name="product_id" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_deferred_rebuild">
+        <index name="idx_order_date" start-index="13" stop-index="26" />
+        <table>
+            <simple-table name="orders" start-index="37" stop-index="42" />
+        </table>
+        <column start-index="45" stop-index="54" name="order_date" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_idxproperties">
+        <index name="idx_customer_id" start-index="13" stop-index="27" />
+        <table>
+            <simple-table name="customers" start-index="38" stop-index="46" />
+        </table>
+        <column start-index="49" stop-index="59" name="customer_id" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_in_table">
+        <index name="idx_product_category" start-index="13" stop-index="32" />
+        <table>
+            <simple-table name="products" start-index="43" stop-index="50" />
+        </table>
+        <column start-index="53" stop-index="60" name="category" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_row_format">
+        <index name="idx_sales_region" start-index="13" stop-index="28" />
+        <table>
+            <simple-table name="sales" start-index="39" stop-index="43" />
+        </table>
+        <column start-index="46" stop-index="51" name="region" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_stored_by">
+        <index name="idx_user_email" start-index="13" stop-index="26" />
+        <table>
+            <simple-table name="users" start-index="37" stop-index="41" />
+        </table>
+        <column start-index="44" stop-index="48" name="email" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_location">
+        <index name="idx_order_amount_STATUS" start-index="13" stop-index="35" />
+        <table>
+            <simple-table name="orders" start-index="46" stop-index="51" />
+        </table>
+        <column start-index="54" stop-index="59" name="status" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_tblproperties">
+        <index name="idx_customer_country" start-index="13" stop-index="32" />
+        <table>
+            <simple-table name="customers" start-index="43" stop-index="51" />
+        </table>
+        <column start-index="54" stop-index="60" name="country" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_comment">
+        <index name="idx_product_price" start-index="13" stop-index="29" />
+        <table>
+            <simple-table name="products" start-index="40" stop-index="47" />
+        </table>
+        <column start-index="50" stop-index="54" name="price" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_full_options">
+        <index name="idx_orders_full" start-index="13" stop-index="27" />
+        <table>
+            <simple-table name="orders" start-index="38" stop-index="43" />
+        </table>
+        <column start-index="46" stop-index="53" name="order_id" />
+        <column start-index="56" stop-index="66" name="customer_id" />
+        <column start-index="69" stop-index="78" name="order_date" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_stored_as">
+        <index name="idx_orders_full" start-index="13" stop-index="27" />
+        <table>
+            <simple-table name="orders" start-index="38" stop-index="43" />
+        </table>
+        <column start-index="46" stop-index="53" name="order_id" />
+        <column start-index="56" stop-index="66" name="customer_id" />
+        <column start-index="69" stop-index="78" name="order_date" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_full_options_with_stored_by">
+        <index name="idx_products_full" start-index="13" stop-index="29" />
+        <table>
+            <simple-table name="products" start-index="40" stop-index="47" />
+        </table>
+        <column start-index="50" stop-index="59" name="product_id" />
+        <column start-index="62" stop-index="69" name="category" />
+        <column start-index="72" stop-index="76" name="price" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_deferred_rebuild_and_in_table">
+        <index name="idx_order_customer" start-index="13" stop-index="30" />
+        <table>
+            <simple-table name="orders" start-index="41" stop-index="46" />
+        </table>
+        <column start-index="49" stop-index="59" name="customer_id" />
+    </create-index>
+
+    <create-index sql-case-id="create_index_with_location_tblproperties_comment">
+        <index name="idx_product_quantity" start-index="13" stop-index="32" />
+        <table>
+            <simple-table name="inventory" start-index="43" stop-index="51" />
+        </table>
+        <column start-index="54" stop-index="61" name="quantity" />
     </create-index>
 </sql-parser-test-cases>

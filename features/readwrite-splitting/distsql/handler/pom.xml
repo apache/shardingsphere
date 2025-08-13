@@ -39,11 +39,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-readwrite-splitting-distsql-statement</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-readwrite-splitting-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -53,6 +48,12 @@
             <version>${project.version}</version>
         </dependency>
         
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-infra-framework</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-it-distsql</artifactId>

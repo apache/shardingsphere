@@ -598,6 +598,7 @@ specialFunction
     | weightStringFunction
     | windowFunction
     | groupingFunction
+    | timeStampAddFunction
     | timeStampDiffFunction
     ;
 
@@ -607,6 +608,10 @@ currentUserFunction
 
 groupingFunction
     : GROUPING LP_ expr (COMMA_ expr)* RP_
+    ;
+
+timeStampAddFunction
+    : TIMESTAMPADD LP_ intervalUnit COMMA_ expr COMMA_ expr RP_
     ;
 
 timeStampDiffFunction
@@ -860,8 +865,8 @@ charsetWithOptBinary
     : ascii
     | unicode
     | BYTE
-    | charset charsetName BINARY?
-    | BINARY (charset charsetName)?
+    | charset charsetName collateClause? BINARY?
+    | BINARY (charset charsetName collateClause?)?
     ;
 
 ascii

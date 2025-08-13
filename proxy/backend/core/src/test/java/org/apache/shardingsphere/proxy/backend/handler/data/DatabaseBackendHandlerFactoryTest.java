@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector;
@@ -31,11 +33,11 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.ConstructionMockSettings;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.ConstructionMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -49,7 +51,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
@@ -57,14 +58,16 @@ import static org.mockito.Mockito.withSettings;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DatabaseBackendHandlerFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
         String sql = "DESC tbl";
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class, RETURNS_DEEP_STUBS));
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
-                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                mock(ConnectionSession.class), false);
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -77,12 +80,9 @@ class DatabaseBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        DatabaseBackendHandler actual =
-                DatabaseBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                        mock(ConnectionSession.class), false);
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SelectStatement(databaseType));
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -101,10 +101,10 @@ class DatabaseBackendHandlerFactoryTest {
     }
     
     private SQLStatementContext mockSQLStatementContext() {
-        SQLStatementContext result = mock(SQLStatementContext.class, withSettings().extraInterfaces(TableAvailable.class).defaultAnswer(RETURNS_DEEP_STUBS));
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SQLStatement.class));
-        when(((TableAvailable) result).getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        when(((TableAvailable) result).getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
+        when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
     }
     

@@ -17,11 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.HelpStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * MySQL help statement.
+ * Help statement for MySQL.
  */
-public final class MySQLHelpStatement extends HelpStatement implements MySQLStatement {
+@Getter
+public final class MySQLHelpStatement extends DALStatement {
+    
+    private final String searchString;
+    
+    public MySQLHelpStatement(final DatabaseType databaseType, final String searchString) {
+        super(databaseType);
+        this.searchString = searchString;
+    }
 }

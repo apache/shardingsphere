@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.state.impl.ReadOnlyProxyState
-org.apache.shardingsphere.proxy.backend.state.impl.UnavailableProxyState
+org.apache.shardingsphere.proxy.backend.state.type.ReadOnlyProxyState
+org.apache.shardingsphere.proxy.backend.state.type.UnavailableProxyState

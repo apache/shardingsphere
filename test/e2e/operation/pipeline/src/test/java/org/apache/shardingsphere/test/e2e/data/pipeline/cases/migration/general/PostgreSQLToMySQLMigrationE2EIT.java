@@ -34,11 +34,11 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -61,7 +61,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertMySQLToPostgreSQLMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
+    void assertMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
         PostgreSQLContainer<?> postgresqlContainer = null;
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {

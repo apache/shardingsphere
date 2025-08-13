@@ -15,7 +15,6 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-db-discovery-core`, high availability core
 - `org.apache.shardingsphere:shardingsphere-encrypt-core`, data encryption core
 - `org.apache.shardingsphere:shardingsphere-infra-context`, the kernel operation and metadata refresh mechanism of Context
-- `org.apache.shardingsphere:shardingsphere-logging-core`, logging core
 - `org.apache.shardingsphere:shardingsphere-mask-core`, data masking core
 - `org.apache.shardingsphere:shardingsphere-mysql-dialect-exception`, MySQL implementation of database gateway
 - `org.apache.shardingsphere:shardingsphere-parser-core`, SQL parsing core
@@ -50,7 +49,6 @@ All optional plugins are listed below in the form of `groupId:artifactId`.
 - Row Value Expressions definition
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`，Row Value Expressions that uses the Groovy syntax based on GraalVM Truffle's Espresso implementation
 - Database type identification
-  - `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers`, Adaptation of jdbcURL for `JDBC support` of `testcontainers-java`
   - `org.apache.shardingsphere:shardingsphere-infra-database-hive`, Adaptation of jdbcURL for `JDBC support` of Hive, and metadata loading implementation
   - `org.apache.shardingsphere:shardingsphere-infra-database-presto`, Adaptation of jdbcURL for `JDBC support` of Presto, and metadata loading implementation
 - SQL parsing

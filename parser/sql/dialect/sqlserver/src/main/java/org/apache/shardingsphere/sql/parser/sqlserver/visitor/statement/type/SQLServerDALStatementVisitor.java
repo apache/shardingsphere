@@ -17,24 +17,27 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainableStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dal.SQLServerExplainStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 
 /**
  * DAL statement visitor for SQLServer.
  */
 public final class SQLServerDALStatementVisitor extends SQLServerStatementVisitor implements DALStatementVisitor {
     
+    public SQLServerDALStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        SQLServerExplainStatement result = new SQLServerExplainStatement();
-        result.setSqlStatement((SQLStatement) visit(ctx.explainableStatement()));
-        return result;
+        return new ExplainStatement(getDatabaseType(), (SQLStatement) visit(ctx.explainableStatement()));
     }
     
     @Override

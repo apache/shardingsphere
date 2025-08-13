@@ -37,8 +37,7 @@ public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutio
     @Override
     public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
                                    final int connectionOffset, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
-        PreparedStatement preparedStatement = createPreparedStatement(
-                executionUnit, statementManager, connection, connectionOffset, connectionMode, option, databaseType);
+        PreparedStatement preparedStatement = createPreparedStatement(executionUnit, statementManager, connection, connectionOffset, connectionMode, option, databaseType);
         return new JDBCExecutionUnit(executionUnit, connectionMode, preparedStatement);
     }
     

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -146,6 +147,8 @@ public final class DataSourcePoolReflection {
             Properties props = new Properties();
             props.putAll((Map) fieldValue);
             method.invoke(dataSource, props);
+        } else if (Duration.class == paramType) {
+            method.invoke(dataSource, Duration.ofSeconds(Long.parseLong(fieldValue.toString())));
         } else {
             method.invoke(dataSource, fieldValue);
         }

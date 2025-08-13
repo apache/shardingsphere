@@ -19,11 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Arrays;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,26 +34,36 @@ class DataMatchTableDataConsistencyCheckerTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @Test
-    void assertInitSuccess() {
+    void assertChunkSizeInitSuccess() {
         for (String each : Arrays.asList("1", "1000")) {
             DataMatchTableDataConsistencyChecker checker = new DataMatchTableDataConsistencyChecker();
-            checker.init(buildAlgorithmProperties(each));
+            checker.init(PropertiesBuilder.build(new Property("chunk-size", each)));
             String actual = Plugins.getMemberAccessor().get(DataMatchTableDataConsistencyChecker.class.getDeclaredField("chunkSize"), checker).toString();
             assertThat(actual, is(each));
         }
     }
     
     @Test
-    void assertInitFailure() {
-        assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildAlgorithmProperties("xyz")));
+    void assertChunkSizeInitFailure() {
+        assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(PropertiesBuilder.build(new Property("chunk-size", "xyz"))));
         for (String each : Arrays.asList("0", "-1")) {
-            assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(buildAlgorithmProperties(each)));
+            assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(PropertiesBuilder.build(new Property("chunk-size", each))));
         }
     }
     
-    private Properties buildAlgorithmProperties(final String chunkSize) {
-        Properties result = new Properties();
-        result.put("chunk-size", chunkSize);
-        return result;
+    @SneakyThrows(ReflectiveOperationException.class)
+    @Test
+    void assertStreamingRangeTypeInitSuccess() {
+        for (String each : Arrays.asList("small", "large", "SMALL", "LARGE")) {
+            DataMatchTableDataConsistencyChecker checker = new DataMatchTableDataConsistencyChecker();
+            checker.init(PropertiesBuilder.build(new Property("streaming-range-type", each)));
+            String actual = Plugins.getMemberAccessor().get(DataMatchTableDataConsistencyChecker.class.getDeclaredField("streamingRangeType"), checker).toString();
+            assertThat(actual, is(each.toUpperCase()));
+        }
+    }
+    
+    @Test
+    void assertStreamingRangeTypeInitFailure() {
+        assertThrows(PipelineInvalidParameterException.class, () -> new DataMatchTableDataConsistencyChecker().init(PropertiesBuilder.build(new Property("streaming-range-type", "xyz"))));
     }
 }

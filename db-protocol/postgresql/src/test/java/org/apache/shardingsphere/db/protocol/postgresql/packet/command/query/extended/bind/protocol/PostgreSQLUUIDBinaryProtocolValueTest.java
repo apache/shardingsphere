@@ -33,7 +33,7 @@ class PostgreSQLUUIDBinaryProtocolValueTest {
     
     @Test
     void assertGetColumnLength() {
-        assertThat(new PostgreSQLUUIDBinaryProtocolValue().getColumnLength(UUID.fromString("00000000-000-0000-0000-000000000001")), is(16));
+        assertThat(new PostgreSQLUUIDBinaryProtocolValue().getColumnLength(new PostgreSQLPacketPayload(null, StandardCharsets.UTF_8), UUID.fromString("00000000-000-0000-0000-000000000001")), is(16));
     }
     
     @Test

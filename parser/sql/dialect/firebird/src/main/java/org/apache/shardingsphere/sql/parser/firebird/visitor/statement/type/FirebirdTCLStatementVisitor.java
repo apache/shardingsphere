@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CommitContext;
@@ -24,33 +25,37 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Roll
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitor;
-import org.apache.shardingsphere.sql.parser.statement.firebird.tcl.FirebirdCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.tcl.FirebirdRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.tcl.FirebirdSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.tcl.FirebirdSetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 
 /**
  * TCL statement visitor for Firebird.
  */
 public final class FirebirdTCLStatementVisitor extends FirebirdStatementVisitor implements TCLStatementVisitor {
     
+    public FirebirdTCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new FirebirdSetTransactionStatement();
+        return new SetTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new FirebirdCommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        return new FirebirdRollbackStatement();
+        return new RollbackStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        return new FirebirdSavepointStatement();
+        return new SavepointStatement(getDatabaseType(), null);
     }
 }

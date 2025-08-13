@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.sharding.route.engine.checker.dml;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -27,6 +28,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.exception.algorithm.DuplicateInsertDataRecordException;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedUpdatingShardingValueException;
@@ -41,16 +44,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.On
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -65,7 +67,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ShardingInsertRouteContextCheckerTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private ShardingRule shardingRule;
@@ -93,7 +98,7 @@ class ShardingInsertRouteContextCheckerTest {
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        return new InsertStatementContext(metaData, params, insertStatement, "foo_db");
+        return new InsertStatementContext(insertStatement, params, metaData, "foo_db");
     }
     
     @Test
@@ -204,16 +209,13 @@ class ShardingInsertRouteContextCheckerTest {
     }
     
     private InsertStatement createInsertStatement() {
-        MySQLInsertStatement result = new MySQLInsertStatement();
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        InsertStatement result = mock(InsertStatement.class);
+        when(result.getDatabaseType()).thenReturn(databaseType);
+        when(result.getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user")))));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("id"));
-        List<ColumnSegment> columnSegments = new LinkedList<>();
-        columnSegments.add(columnSegment);
-        ColumnAssignmentSegment assignmentSegment = new ColumnAssignmentSegment(0, 0, columnSegments, new ParameterMarkerExpressionSegment(0, 0, 0));
-        result.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment)));
-        Collection<ColumnSegment> columns = new LinkedList<>();
-        columns.add(columnSegment);
-        result.setInsertColumns(new InsertColumnsSegment(0, 0, columns));
+        ColumnAssignmentSegment assignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0));
+        when(result.getOnDuplicateKeyColumns()).thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignmentSegment))));
+        when(result.getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(0, 0, Collections.singleton(columnSegment))));
         return result;
     }
 }

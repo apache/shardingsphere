@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.context;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -54,7 +54,8 @@ class EncryptSQLRewriteContextDecoratorTest {
     @Test
     void assertDecorateWithNotTableAvailable() {
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class);
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlRewriteContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         decorator.decorate(rule, mock(ConfigurationProperties.class), sqlRewriteContext, mock(RouteContext.class));
         assertTrue(sqlRewriteContext.getSqlTokens().isEmpty());

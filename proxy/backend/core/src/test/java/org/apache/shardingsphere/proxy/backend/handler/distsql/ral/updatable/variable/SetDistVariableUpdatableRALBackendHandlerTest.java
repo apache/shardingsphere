@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.variable;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.SetDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

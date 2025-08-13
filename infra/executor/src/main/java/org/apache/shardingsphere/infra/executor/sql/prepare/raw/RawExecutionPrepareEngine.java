@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.raw;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Raw execution prepare engine.
  */
+@HighFrequencyInvocation
 public final class RawExecutionPrepareEngine extends AbstractExecutionPrepareEngine<RawSQLExecutionUnit> {
     
     public RawExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {

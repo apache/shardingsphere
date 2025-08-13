@@ -1,0 +1,439 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<test-cases>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id WHERE t_user_info.user_id = 13">
+        <assertion expected-result="EnumerableCalc(expr#0..6=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t4])   EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..3=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..2=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info` WHERE `user_id` = 13], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT user_id, information FROM t_user_info WHERE user_id = 12">
+        <assertion expected-result="EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info` WHERE `user_id` = 12], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT user_id FROM t_user_info WHERE user_id = 12">
+        <assertion expected-result="EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT `user_id` FROM `federate_jdbc`.`t_user_info` WHERE `user_id` = 12], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate , t_user_info WHERE t_order_federate.user_id = t_user_info.user_id">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])   EnumerableNestedLoopJoin(condition=[=(CAST($1):VARCHAR CHARACTER SET &quot;UTF-8&quot;, CAST($3):VARCHAR CHARACTER SET &quot;UTF-8&quot;)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM &#x60;federate_jdbc&#x60;.&#x60;t_order_federate&#x60;], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM &#x60;federate_jdbc&#x60;.&#x60;t_user_info&#x60;], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])   EnumerableHashJoin(condition=[=($2, $4)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR CHARACTER SET &quot;UTF-8&quot;], proj#0..1=[{exprs}], user_id0=[$t3])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR CHARACTER SET &quot;UTF-8&quot;], user_id=[$t0], user_id0=[$t2])       EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate ,t_user_info WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])   EnumerableNestedLoopJoin(condition=[=(CAST($1):VARCHAR CHARACTER SET &quot;UTF-8&quot;, CAST($3):VARCHAR CHARACTER SET &quot;UTF-8&quot;)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info` WHERE `user_id` = 13], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT user.user_id, user.information FROM (SELECT * FROM t_user_info WHERE user_id &gt; 1) as user ">
+        <assertion expected-result="EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info` WHERE `user_id` &gt; 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)">
+        <assertion expected-result="EnumerableCorrelate(correlation=[$cor2], joinType=[inner], requiredColumns=[{1}])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT &#x60;order_id&#x60;, &#x60;user_id&#x60; FROM &#x60;federate_jdbc&#x60;.&#x60;t_order_federate&#x60;], dynamicParameters=[null])   EnumerableCalc(expr#0=[{inputs}])     EnumerableAggregate(group=[{0}])       EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], expr#3=[$cor2], expr#4=[$t3.user_id], expr#5=[CAST($t4):VARCHAR CHARACTER SET &quot;UTF-8&quot;], expr#6=[CAST($t0):VARCHAR CHARACTER SET &quot;UTF-8&quot;], expr#7=[=($t5, $t6)], i=[$t2], $condition=[$t7])         EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM &#x60;federate_jdbc&#x60;.&#x60;t_user_info&#x60;], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)">
+        <assertion expected-result="EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])   EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])     EnumerableAggregate(group=[{0}])       EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])         EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info`], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE user_id = 1) AND (SELECT user_id FROM t_user_info WHERE user_id = 3)">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}])   EnumerableNestedLoopJoin(condition=[&lt;=($1, $4)], joinType=[inner])     EnumerableNestedLoopJoin(condition=[>=($1, $3)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])       EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])         EnumerableCalc(expr#0..1=[{inputs}], expr#2=[1], expr#3=[=($t0, $t2)], user_id=[$t0], $condition=[$t3])           EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info`], dynamicParameters=[null])     EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])       EnumerableCalc(expr#0..1=[{inputs}], expr#2=[3], expr#3=[=($t0, $t2)], user_id=[$t0], $condition=[$t3])         EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info`], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT order_id, user_id FROM t_order_federate UNION SELECT 1, user_id FROM t_user_info WHERE information = 'before'">
+        <assertion expected-result="EnumerableUnion(all=[false])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT '1', `user_id` FROM `federate_jdbc`.`t_user_info` WHERE `information` = 'before'], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT order_id, user_id FROM t_order_federate LIMIT 1">
+        <assertion expected-result="EnumerableLimit(fetch=[1])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT MAX(order_id), MIN(order_id), SUM(order_id), AVG(order_id), COUNT(1) FROM t_order_federate GROUP BY user_id">
+        <assertion expected-result="EnumerableCalc(expr#0..5=[{inputs}], expr#6=[0], expr#7=[=($t4, $t6)], expr#8=[null:DECIMAL(19, 9)], expr#9=[CASE($t7, $t8, $t3)], expr#10=[/($t9, $t4)], expr#11=[CAST($t10):DECIMAL(19, 9)], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t9], EXPR$3=[$t11], EXPR$4=[$t5])   EnumerableAggregate(group=[{0}], EXPR$0=[MAX($1)], EXPR$1=[MIN($1)], EXPR$2=[$SUM0($2)], agg#3=[COUNT($2)], EXPR$4=[COUNT()])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t0):DECIMAL(19, 9)], user_id=[$t1], order_id=[$t0], $f2=[$t3])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id">
+        <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..8=[{exprs}])   EnumerableHashJoin(condition=[=($1, $9)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_single_table]], sql=[SELECT * FROM `federate_jdbc`.`t_single_table`], dynamicParameters=[null])     EnumerableCalc(expr#0..5=[{inputs}], expr#6=[CAST($t0):JavaType(class java.lang.Integer)], proj#0..6=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 11) AND o.order_id BETWEEN 1000 AND 1909 ORDER BY i.item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])     EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 11) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 11) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])     EnumerableHashJoin(condition=[AND(=($1, $4), =($0, $3))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id WHERE o.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])   EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])   EnumerableHashJoin(condition=[AND(=($0, $3), =($1, $4))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id in (1000,1001)">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])   EnumerableHashJoin(condition=[AND(=($0, $3), =($1, $4))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT `order_id`, `user_id` FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) IN (1000, 1001)], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) IN (1000, 1001)], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (10, 11) AND o.order_id BETWEEN 1000 AND 1909">
+        <assertion expected-result="EnumerableAggregate(group=[{}], items_count=[COUNT()])   EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 11) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 11) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 11) AND o.order_id BETWEEN 1000 AND 1909">
+        <assertion expected-result="EnumerableAggregate(group=[{}], items_count=[COUNT()])   EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 11) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 11) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = 1000 OR o.order_id = 1100) AND o.user_id = 11">
+        <assertion expected-result="EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])   EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) IN (1000, 1100) AND CAST(`user_id` AS SIGNED) = 11], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) IN (1000, 1100) AND CAST(`user_id` AS SIGNED) = 11], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 19) AND o.order_id BETWEEN 1000 AND 1909 ORDER BY i.item_id DESC">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[DESC])   EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])     EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11], order_id0=[$t0], user_id0=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date0=[$t5])     EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 19) AND o.order_id BETWEEN 1000 AND 1909 ORDER BY i.item_id DESC LIMIT 2">
+        <assertion expected-result="EnumerableLimit(fetch=[2])   EnumerableSort(sort0=[$0], dir0=[DESC])     EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])       EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (10, 19) AND o.`order_id` BETWEEN 1000 AND 1909 ORDER BY i.item_id DESC LIMIT 2, 2">
+        <assertion expected-result="EnumerableLimit(offset=[2], fetch=[2])   EnumerableSort(sort0=[$0], dir0=[DESC])     EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])       EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM `t_order` o JOIN `t_order_item` i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.`user_id` IN (10, 19) AND o.`order_id` BETWEEN 1000 AND 1909 ORDER BY i.item_id DESC LIMIT 2 OFFSET 2">
+        <assertion expected-result="EnumerableLimit(offset=[2], fetch=[2])   EnumerableSort(sort0=[$0], dir0=[DESC])     EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])       EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT COUNT(i.user_id) FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 19) AND o.order_id BETWEEN 1000 AND 1909 GROUP BY i.item_id ORDER BY i.item_id DESC LIMIT 1, 10">
+        <assertion expected-result="EnumerableLimit(offset=[1], fetch=[10])   EnumerableSort(sort0=[$1], dir0=[DESC])     EnumerableCalc(expr#0..1=[{inputs}], EXPR$0=[$t1], item_id=[$t0])       EnumerableAggregate(group=[{0}], EXPR$0=[COUNT($1)])         EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], user_id0=[$t8])           EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])             EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])             EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT i.user_id FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 19) AND o.order_id BETWEEN 1000 AND 1909 GROUP BY i.user_id,i.item_id ORDER BY i.item_id DESC LIMIT 1, 10">
+        <assertion expected-result="EnumerableLimit(offset=[1], fetch=[10])   EnumerableSort(sort0=[$1], dir0=[DESC])     EnumerableAggregate(group=[{0, 1}])       EnumerableCalc(expr#0..11=[{inputs}], user_id=[$t8], item_id=[$t6])         EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])           EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null])           EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) IN (10, 19) AND (`order_id` >= 1000 AND `order_id` &lt;= 1909)], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) = 1000], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT DISTINCT t_order.*, t_order_item.order_id FROM t_order, t_order_item WHERE t_order.order_id = t_order_item.order_id ORDER BY t_order.order_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableAggregate(group=[{0, 1, 2, 3, 4, 5, 6}])     EnumerableCalc(expr#0..11=[{inputs}], proj#0..5=[{exprs}], order_id0=[$t7])       EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8))], joinType=[left])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item m ON o.order_id = m.order_id WHERE m.order_id IN (0, 11)">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`order_id` AS SIGNED) IN (0, 11)], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`order_id` AS SIGNED) IN (0, 11)], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id">
+        <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..8=[{exprs}])   EnumerableHashJoin(condition=[=($1, $9)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_single_table]], sql=[SELECT * FROM `federate_jdbc`.`t_single_table`], dynamicParameters=[null])     EnumerableCalc(expr#0..5=[{inputs}], expr#6=[CAST($t0):JavaType(class java.lang.Integer)], proj#0..6=[{exprs}])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_user_info o ON s.id = o.user_id">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, t_single_table]], sql=[SELECT * FROM `federate_jdbc`.`t_single_table`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_user_info]], sql=[SELECT * FROM `federate_jdbc`.`t_user_info`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item i WHERE o.order_id = 1000 AND i.item_id = 100000">
+        <assertion expected-result="EnumerableNestedLoopJoin(condition=[true], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate` WHERE `order_id` = 1000], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`item_id` AS SIGNED) = 100000], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT o.*, i.* FROM t_order_federate o, t_order_item i WHERE o.order_id = 1000 AND i.item_id = 100000 LIMIT 3">
+        <assertion expected-result="EnumerableLimit(fetch=[3])   EnumerableNestedLoopJoin(condition=[true], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate` WHERE `order_id` = 1000], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`item_id` AS SIGNED) = 100000], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT GROUP_CONCAT(i.item_id SEPARATOR ';') AS item_ids FROM t_order_federate o INNER JOIN t_order_item_federate_sharding i ON o.order_id = i.item_id WHERE i.order_id &gt;= 10000">
+        <assertion expected-result="EnumerableAggregate(group=[{}], item_ids=[LISTAGG($0, $1)])   EnumerableCalc(expr#0..7=[{inputs}], expr#8=[CAST($t3):VARCHAR CHARACTER SET &quot;UTF-8&quot;], expr#9=[_UTF-8&#x27;;&#x27;], $f0=[$t8], $f1=[$t9])     EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM &#x60;federate_jdbc&#x60;.&#x60;t_order_federate&#x60;], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM &#x60;federate_jdbc&#x60;.&#x60;t_order_item_federate_sharding&#x60; WHERE &#x60;order_id&#x60; &gt;= 10000], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="select t_order_federate.*, t_order_item_federate_sharding.* from t_order_federate, t_order_item_federate_sharding where t_order_federate.order_id = t_order_item_federate_sharding.item_id AND t_order_item_federate_sharding.remarks = 't_order_item_federate_sharding' ">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item_federate_sharding` WHERE `remarks` = 't_order_item_federate_sharding'], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="select o.*, i.* from t_order_federate o, t_order_item_federate_sharding i where o.order_id = i.item_id">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, t_order_federate]], sql=[SELECT * FROM `federate_jdbc`.`t_order_federate`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item_federate_sharding`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE `user_id` = ?], dynamicParameters=[[0]])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2">
+        <assertion expected-result="EnumerableLimit(offset=[5], fetch=[2])   EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE `user_id` = ?], dynamicParameters=[[0]])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i USING(order_id) WHERE o.user_id = ? ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$11], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], order_id=[$t12], user_id=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date=[$t5], item_id=[$t6], user_id0=[$t8], product_id=[$t9], quantity=[$t10], creation_date0=[$t11], order_id0=[$t0])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE `user_id` = ?], dynamicParameters=[[0]])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i USING(order_id) WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2">
+        <assertion expected-result="EnumerableLimit(offset=[5], fetch=[2])   EnumerableSort(sort0=[$11], sort1=[$6], dir0=[ASC], dir1=[ASC])     EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], order_id=[$t12], user_id=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date=[$t5], item_id=[$t6], user_id0=[$t8], product_id=[$t9], quantity=[$t10], creation_date0=[$t11], order_id0=[$t0])       EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE `user_id` = ?], dynamicParameters=[[0]])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], expr#13=[COALESCE($t1, $t8)], expr#14=[COALESCE($t5, $t11)], order_id=[$t12], user_id=[$t13], creation_date=[$t14], status=[$t2], merchant_id=[$t3], remark=[$t4], item_id=[$t6], product_id=[$t9], quantity=[$t10], order_id0=[$t0])     EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8), =($5, $11))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE `user_id` = ?], dynamicParameters=[[0]])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE `user_id` = ?], dynamicParameters=[[0]]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2">
+        <assertion expected-result="EnumerableLimit(offset=[5], fetch=[2])   EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])     EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], expr#13=[COALESCE($t1, $t8)], expr#14=[COALESCE($t5, $t11)], order_id=[$t12], user_id=[$t13], creation_date=[$t14], status=[$t2], merchant_id=[$t3], remark=[$t4], item_id=[$t6], product_id=[$t9], quantity=[$t10], order_id0=[$t0])       EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8), =($5, $11))], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE `user_id` = ?], dynamicParameters=[[0]])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE `user_id` = ?], dynamicParameters=[[0]]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 10 GROUP BY i.product_id">
+        <assertion expected-result="EnumerableCalc(expr#0..2=[{inputs}], EXPR$0=[$t1], EXPR$1=[$t2], product_id=[$t0])   EnumerableAggregate(group=[{0}], EXPR$0=[MIN($1)], EXPR$1=[MIN($2)])     EnumerableCalc(expr#0..11=[{inputs}], product_id=[$t9], order_id=[$t0], merchant_id=[$t3])       EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 7 ORDER BY o.order_id LIMIT 10, 10">
+        <assertion expected-result="EnumerableLimit(offset=[10], fetch=[10])   EnumerableSort(sort0=[$0], dir0=[ASC])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 7], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[left])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id WHERE i.user_id = 10 ORDER BY i.item_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableSort(sort0=[$0], dir0=[ASC])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 10 OR i.user_id = 10 ORDER BY o.order_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableHashJoin(condition=[AND(=($0, $7), OR(=(CAST($1):INTEGER, 10), =(CAST($8):INTEGER, 10)))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item i USING(order_id) WHERE o.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$11], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], order_id=[$t12], user_id=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date=[$t5], item_id=[$t6], user_id0=[$t8], product_id=[$t9], quantity=[$t10], creation_date0=[$t11], order_id0=[$t0])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[left])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_order_item i USING(order_id) WHERE i.user_id = 10 ORDER BY i.item_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], order_id=[$t12], user_id=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date=[$t5], item_id=[$t6], user_id0=[$t8], product_id=[$t9], quantity=[$t10], creation_date0=[$t11])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.user_id = 10 OR i.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$11], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], order_id=[$t12], user_id=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date=[$t5], item_id=[$t6], user_id0=[$t8], product_id=[$t9], quantity=[$t10], creation_date0=[$t11], order_id0=[$t0])     EnumerableHashJoin(condition=[AND(=($0, $7), OR(=(CAST($1):INTEGER, 10), =(CAST($8):INTEGER, 10)))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = 10 ORDER BY o.order_id">
+        <assertion expected-result="EnumerableSort(sort0=[$1], dir0=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], merchant_id=[$t12], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], creation_date=[$t5], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10], creation_date0=[$t11])     EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = 10 ORDER BY o.order_id LIMIT 5, 2">
+        <assertion expected-result="EnumerableLimit(offset=[5], fetch=[2])   EnumerableSort(sort0=[$1], dir0=[ASC])     EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], merchant_id=[$t12], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], creation_date=[$t5], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10], creation_date0=[$t11])       EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL LEFT JOIN t_order_item i WHERE o.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], expr#13=[COALESCE($t1, $t8)], expr#14=[COALESCE($t5, $t11)], order_id=[$t12], user_id=[$t13], creation_date=[$t14], status=[$t2], merchant_id=[$t3], remark=[$t4], item_id=[$t6], product_id=[$t9], quantity=[$t10], order_id0=[$t0])     EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8), =($5, $11))], joinType=[left])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL RIGHT JOIN t_order_item i WHERE i.user_id = 10 ORDER BY i.item_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], expr#13=[COALESCE($t1, $t8)], expr#14=[COALESCE($t5, $t11)], order_id=[$t12], user_id=[$t13], creation_date=[$t14], status=[$t2], merchant_id=[$t3], remark=[$t4], item_id=[$t6], product_id=[$t9], quantity=[$t10])     EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8), =($5, $11))], joinType=[right])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = 10 OR i.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t0, $t7)], expr#13=[COALESCE($t1, $t8)], expr#14=[COALESCE($t5, $t11)], order_id=[$t12], user_id=[$t13], creation_date=[$t14], status=[$t2], merchant_id=[$t3], remark=[$t4], item_id=[$t6], product_id=[$t9], quantity=[$t10], order_id0=[$t0])     EnumerableHashJoin(condition=[AND(=($0, $7), =($1, $8), =($5, $11), OR(=(CAST($1):INTEGER, 10), =(CAST($8):INTEGER, 10)))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = 10 ORDER BY o.order_id">
+        <assertion expected-result="EnumerableSort(sort0=[$2], dir0=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], expr#13=[COALESCE($t5, $t11)], merchant_id=[$t12], creation_date=[$t13], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10])     EnumerableHashJoin(condition=[AND(=($3, $6), =($5, $11))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = 10 ORDER BY o.order_id LIMIT 5, 2">
+        <assertion expected-result="EnumerableLimit(offset=[5], fetch=[2])   EnumerableSort(sort0=[$2], dir0=[ASC])     EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], expr#13=[COALESCE($t5, $t11)], merchant_id=[$t12], creation_date=[$t13], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10])       EnumerableHashJoin(condition=[AND(=($3, $6), =($5, $11))], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = 10 GROUP BY m.merchant_id">
+        <assertion expected-result="EnumerableCalc(expr#0..3=[{inputs}], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t3])   EnumerableAggregate(group=[{0}], EXPR$0=[MIN($1)], EXPR$1=[MIN($2)], EXPR$2=[MIN($3)])     EnumerableCalc(expr#0..11=[{inputs}], merchant_id0=[$t6], order_id=[$t0], merchant_id=[$t3], merchant_name=[$t8])       EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = 10 ORDER BY o.order_id, 7 LIMIT 10, 10">
+        <assertion expected-result="EnumerableLimit(offset=[10], fetch=[10])   EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])     EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($3, $6)], joinType=[left])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($3, $6)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant` WHERE CAST(`country_id` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o JOIN t_merchant m ON o.merchant_id = m.merchant_id  where o.user_id = 10 OR m.country_id = 1 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[AND(=($3, $6), OR(=(CAST($1):INTEGER, 10), =(CAST($7):INTEGER, 1)))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > 10 ORDER BY p.product_id DESC">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[DESC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE `product_id` > 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE `product_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > 10 ORDER BY p.product_id DESC LIMIT 2, 5">
+        <assertion expected-result="EnumerableLimit(offset=[2], fetch=[5])   EnumerableSort(sort0=[$0], dir0=[DESC])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE `product_id` > 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE `product_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_merchant m USING(merchant_id) WHERE o.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$1], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], merchant_id=[$t12], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], creation_date=[$t5], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10], creation_date0=[$t11])     EnumerableHashJoin(condition=[=($3, $6)], joinType=[left])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m USING(merchant_id) WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$1], sort1=[$11], sort2=[$6], dir0=[ASC], dir1=[ASC], dir2=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], merchant_id=[$t12], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], creation_date=[$t5], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10], creation_date0=[$t11], merchant_id0=[$t6])     EnumerableHashJoin(condition=[=($3, $6)], joinType=[right])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant` WHERE CAST(`country_id` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o JOIN t_merchant m USING(merchant_id) where o.user_id = 10 OR m.country_id = 1 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$1], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], merchant_id=[$t12], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], creation_date=[$t5], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10], creation_date0=[$t11])     EnumerableHashJoin(condition=[AND(=($3, $6), OR(=(CAST($1):INTEGER, 10), =(CAST($7):INTEGER, 1)))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d USING(product_id) WHERE p.product_id > 10 ORDER BY p.product_id DESC">
+        <assertion expected-result="EnumerableSort(sort0=[$9], dir0=[DESC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], product_id=[$t10], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], creation_date=[$t5], detail_id=[$t6], description=[$t8], creation_date0=[$t9], product_id0=[$t0])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE `product_id` > 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE `product_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d USING(product_id) WHERE p.product_id > 10 ORDER BY p.product_id DESC LIMIT 2, 5">
+        <assertion expected-result="EnumerableLimit(offset=[2], fetch=[5])   EnumerableSort(sort0=[$9], dir0=[DESC])     EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], product_id=[$t10], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], creation_date=[$t5], detail_id=[$t6], description=[$t8], creation_date0=[$t9], product_id0=[$t0])       EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE `product_id` > 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE `product_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL LEFT JOIN t_merchant m WHERE o.user_id = 10 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$2], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], expr#13=[COALESCE($t5, $t11)], merchant_id=[$t12], creation_date=[$t13], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10])     EnumerableHashJoin(condition=[AND(=($3, $6), =($5, $11))], joinType=[left])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL RIGHT JOIN t_merchant m WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$2], sort1=[$10], sort2=[$6], dir0=[ASC], dir1=[ASC], dir2=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], expr#13=[COALESCE($t5, $t11)], merchant_id=[$t12], creation_date=[$t13], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10], merchant_id0=[$t6])     EnumerableHashJoin(condition=[AND(=($3, $6), =($5, $11))], joinType=[right])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant` WHERE CAST(`country_id` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m where o.user_id = 10 OR m.country_id = 1 ORDER BY o.order_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$2], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..11=[{inputs}], expr#12=[COALESCE($t3, $t6)], expr#13=[COALESCE($t5, $t11)], merchant_id=[$t12], creation_date=[$t13], order_id=[$t0], user_id=[$t1], status=[$t2], remark=[$t4], country_id=[$t7], merchant_name=[$t8], business_code=[$t9], telephone=[$t10])     EnumerableHashJoin(condition=[AND(=($3, $6), =($5, $11), OR(=(CAST($1):INTEGER, 10), =(CAST($7):INTEGER, 1)))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_merchant]], sql=[SELECT * FROM `federate_jdbc`.`t_merchant`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > 10 ORDER BY p.product_id DESC">
+        <assertion expected-result="EnumerableSort(sort0=[$8], dir0=[DESC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], expr#11=[COALESCE($t5, $t9)], product_id=[$t10], creation_date=[$t11], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], detail_id=[$t6], description=[$t8], product_id0=[$t0])     EnumerableHashJoin(condition=[AND(=($0, $7), =($5, $9))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE `product_id` > 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE `product_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > 10 ORDER BY p.product_id DESC LIMIT 2, 5">
+        <assertion expected-result="EnumerableLimit(offset=[2], fetch=[5])   EnumerableSort(sort0=[$8], dir0=[DESC])     EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], expr#11=[COALESCE($t5, $t9)], product_id=[$t10], creation_date=[$t11], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], detail_id=[$t6], description=[$t8], product_id0=[$t0])       EnumerableHashJoin(condition=[AND(=($0, $7), =($5, $9))], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE `product_id` > 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE `product_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = 10 GROUP BY p.product_id">
+        <assertion expected-result="EnumerableCalc(expr#0..2=[{inputs}], EXPR$0=[$t1], EXPR$1=[$t2], product_id=[$t0])   EnumerableAggregate(group=[{0}], EXPR$0=[MIN($1)], EXPR$1=[MIN($2)])     EnumerableCalc(expr#0..9=[{inputs}], product_id=[$t0], detail_id=[$t6], category_id=[$t2])       EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])         EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE CAST(`product_id` AS SIGNED) = 10], dynamicParameters=[null])         EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`product_id` AS SIGNED) = 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p CROSS JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = 10 ORDER BY d.product_id, 7 LIMIT 10, 10">
+        <assertion expected-result="EnumerableLimit(offset=[10], fetch=[10])   EnumerableSort(sort0=[$7], sort1=[$6], dir0=[ASC], dir1=[ASC])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE CAST(`product_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`product_id` AS SIGNED) = 10], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p LEFT JOIN t_product_detail d ON d.product_id = p.product_id WHERE p.category_id = 10 ORDER BY p.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$0], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[left])     EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE CAST(`category_id` AS SIGNED) = 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p RIGHT JOIN t_product_detail d ON d.product_id = p.product_id WHERE d.detail_id = 10 ORDER BY d.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$7], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])     EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])     EnumerableSort(sort0=[$1], sort1=[$0], dir0=[ASC], dir1=[ASC])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`detail_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p JOIN t_product_detail d ON d.product_id = p.product_id WHERE d.detail_id = 10 OR p.category_id = 10 ORDER BY d.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$7], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableHashJoin(condition=[AND(=($0, $7), OR(=(CAST($6):INTEGER, 10), =(CAST($2):INTEGER, 10)))], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p LEFT JOIN t_product_detail d USING(product_id) WHERE p.category_id = 10 ORDER BY p.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], product_id=[$t10], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], creation_date=[$t5], detail_id=[$t6], description=[$t8], creation_date0=[$t9], product_id0=[$t0])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[left])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE CAST(`category_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p RIGHT JOIN t_product_detail d USING(product_id) WHERE d.detail_id = 10 ORDER BY d.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], product_id=[$t10], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], creation_date=[$t5], detail_id=[$t6], description=[$t8], creation_date0=[$t9], product_id0=[$t7])     EnumerableHashJoin(condition=[=($0, $7)], joinType=[right])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`detail_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p JOIN t_product_detail d USING(product_id) WHERE d.detail_id = 10 OR p.category_id = 10 ORDER BY d.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$9], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], product_id=[$t10], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], creation_date=[$t5], detail_id=[$t6], description=[$t8], creation_date0=[$t9], product_id0=[$t7])     EnumerableHashJoin(condition=[AND(=($0, $7), OR(=(CAST($6):INTEGER, 10), =(CAST($2):INTEGER, 10)))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p NATURAL LEFT JOIN t_product_detail d WHERE p.category_id = 10 ORDER BY p.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$8], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], expr#11=[COALESCE($t5, $t9)], product_id=[$t10], creation_date=[$t11], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], detail_id=[$t6], description=[$t8], product_id0=[$t0])     EnumerableHashJoin(condition=[AND(=($0, $7), =($5, $9))], joinType=[left])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product` WHERE CAST(`category_id` AS SIGNED) = 10], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p NATURAL RIGHT JOIN t_product_detail d WHERE d.detail_id = 10 ORDER BY d.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$8], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], expr#11=[COALESCE($t5, $t9)], product_id=[$t10], creation_date=[$t11], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], detail_id=[$t6], description=[$t8], product_id0=[$t7])     EnumerableHashJoin(condition=[AND(=($0, $7), =($5, $9))], joinType=[right])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail` WHERE CAST(`detail_id` AS SIGNED) = 10], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE d.detail_id = 10 OR p.category_id = 10 ORDER BY d.product_id, 7">
+        <assertion expected-result="EnumerableSort(sort0=[$8], sort1=[$6], dir0=[ASC], dir1=[ASC])   EnumerableCalc(expr#0..9=[{inputs}], expr#10=[COALESCE($t0, $t7)], expr#11=[COALESCE($t5, $t9)], product_id=[$t10], creation_date=[$t11], product_name=[$t1], category_id=[$t2], price=[$t3], status=[$t4], detail_id=[$t6], description=[$t8], product_id0=[$t7])     EnumerableHashJoin(condition=[AND(=($0, $7), =($5, $9), OR(=(CAST($6):INTEGER, 10), =(CAST($2):INTEGER, 10)))], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_product_detail]], sql=[SELECT * FROM `federate_jdbc`.`t_product_detail`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > 10 ORDER BY item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$6], dir0=[ASC])   EnumerableHashJoin(condition=[=($0, $7)], joinType=[inner])     EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order` WHERE CAST(`user_id` AS SIGNED) IN (10, 11, 12) AND `order_id` > 10], dynamicParameters=[null])     EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item` WHERE `order_id` > 10], dynamicParameters=[null]) "/>
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = 10) ORDER BY order_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableCalc(expr#0..6=[{inputs}], proj#0..5=[{exprs}])     EnumerableHashJoin(condition=[=($0, $6)], joinType=[inner])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableAggregate(group=[{0}])         EnumerableCalc(expr#0..11=[{inputs}], order_id=[$t1])           EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])             EnumerableCalc(expr#0..5=[{inputs}], expr#6=[CAST($t3):INTEGER], expr#7=[10], expr#8=[=($t6, $t7)], proj#0..5=[{exprs}], $condition=[$t8])               EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null])             EnumerableCalc(expr#0..5=[{inputs}], expr#6=[CAST($t0):INTEGER], expr#7=[10], expr#8=[=($t6, $t7)], proj#0..5=[{exprs}], $condition=[$t8])               EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT * FROM `federate_jdbc`.`t_product`], dynamicParameters=[null]) "/>
+    </test-case>
+    
+    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) &gt; 10 ORDER BY max_price">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])   EnumerableCalc(expr#0..5=[{inputs}], expr#6=[0], expr#7=[=($t4, $t6)], expr#8=[null:JavaType(class java.math.BigDecimal)], expr#9=[CASE($t7, $t8, $t3)], expr#10=[/($t9, $t4)], expr#11=[CAST($t10):JavaType(class java.math.BigDecimal)], expr#12=[10], expr#13=[>($t9, $t12)], max_price=[$t1], min_price=[$t2], sum_price=[$t9], avg_price=[$t11], count=[$t5], $condition=[$t13])     EnumerableAggregate(group=[{0}], max_price=[MAX($1)], min_price=[MIN($1)], sum_price=[$SUM0($1)], agg#3=[COUNT($1)], count=[COUNT()])       EnumerableCalc(expr#0..3=[{inputs}], order_id=[$t0], price=[$t3])         EnumerableHashJoin(condition=[=($1, $2)], joinType=[inner])           EnumerableCalc(expr#0..2=[{inputs}], order_id=[$t0], product_id=[$t2])             EnumerableHashJoin(condition=[=($0, $1)], joinType=[inner])               EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT `order_id` FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])               EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT `order_id`, `product_id` FROM `federate_jdbc`.`t_order_item`], dynamicParameters=[null])           EnumerableScan(table=[[federate_jdbc, t_product]], sql=[SELECT `product_id`, `price` FROM `federate_jdbc`.`t_product`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order UNION ALL SELECT * FROM t_order ORDER BY order_id LIMIT 5, 5">
+        <assertion expected-result="EnumerableLimit(offset=[5], fetch=[5])   EnumerableSort(sort0=[$0], dir0=[ASC])     EnumerableUnion(all=[true])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null])       EnumerableScan(table=[[federate_jdbc, t_order]], sql=[SELECT * FROM `federate_jdbc`.`t_order`], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.tiny_int_column = 1">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE CAST(`tiny_int_column` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.small_int_column = 1">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE CAST(`small_int_column` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.integer_column = 1">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE CAST(`integer_column` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.big_int_column = 1">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE CAST(`big_int_column` AS SIGNED) = 1], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.char_column = '1'">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `char_column` = '1'], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.varchar_column = '1'">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `varchar_column` = '1'], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM multi_types_first first JOIN multi_types_second second ON first.id = second.id WHERE second.long_varchar_column = '1'">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $22)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT * FROM `federate_jdbc`.`multi_types_second` WHERE `long_varchar_column` = '1'], dynamicParameters=[null]) " />
+    </test-case>
+    
+    <test-case sql="WITH cte AS (SELECT 1 AS col1, 2 AS col2 UNION ALL SELECT 3, 4) SELECT col1, col2 FROM cte">
+        <assertion expected-result="EnumerableValues(tuples=[[{ 1, 2 }, { 3, 4 }]]) " />
+    </test-case>
+    
+    <test-case sql="WITH cte1(col1, col2, col3) AS (SELECT id, bit_column, tiny_int_column FROM multi_types_first), cte2(col1, col2, col3) AS (SELECT id, bit_column, tiny_int_column FROM multi_types_second) SELECT * FROM cte1 inner join cte2 on cte1.col1 = cte2.col1">
+        <assertion expected-result="EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])   EnumerableScan(table=[[federate_jdbc, multi_types_first]], sql=[SELECT `id`, `bit_column`, `tiny_int_column` FROM `federate_jdbc`.`multi_types_first`], dynamicParameters=[null])   EnumerableScan(table=[[federate_jdbc, multi_types_second]], sql=[SELECT `id`, `bit_column`, `tiny_int_column` FROM `federate_jdbc`.`multi_types_second`], dynamicParameters=[null]) " />
+    </test-case>
+
+    <test-case sql="WITH cte1(col1, col2, col3) AS (SELECT 1, 2, 3 UNION ALL SELECT 4, 5, 6), cte2(col1, col2, col3) AS (SELECT 1, 2, 3 UNION ALL SELECT 4, 5, 6) SELECT cte1.* FROM cte1 inner join cte2 on cte1.col1 = cte2.col1 WHERE cte1.col1 = 1">
+        <assertion expected-result="EnumerableCalc(expr#0..5=[{inputs}], proj#0..2=[{exprs}])   EnumerableHashJoin(condition=[=($0, $3)], joinType=[inner])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])       EnumerableValues(tuples=[[{ 1, 2, 3 }, { 4, 5, 6 }]])     EnumerableCalc(expr#0..2=[{inputs}], expr#3=[1], expr#4=[=($t0, $t3)], proj#0..2=[{exprs}], $condition=[$t4])       EnumerableValues(tuples=[[{ 1, 2, 3 }, { 4, 5, 6 }]]) "/>
+    </test-case>
+</test-cases>

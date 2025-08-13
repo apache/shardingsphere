@@ -212,7 +212,7 @@ There are many modules in the project shardingsphere-example. But for now, we on
 
 > git clone https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install -Prelease
+mvn clean install -Prelease,default-dep
 
 3. Import the shardingsphere-example project to your IDE;
 

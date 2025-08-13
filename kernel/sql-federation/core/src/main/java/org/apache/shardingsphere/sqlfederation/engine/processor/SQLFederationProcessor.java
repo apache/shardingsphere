@@ -19,15 +19,15 @@ package org.apache.shardingsphere.sqlfederation.engine.processor;
 
 import org.apache.calcite.plan.Convention;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.SQLFederationExecutionPlan;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
+import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;
+import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,28 +38,28 @@ import java.sql.ResultSet;
 public interface SQLFederationProcessor {
     
     /**
-     * Register executor.
+     * Prepare.
      *
      * @param prepareEngine prepare engine
      * @param callback callback
-     * @param databaseName database name
-     * @param schemaName schema name
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
      * @param federationContext federation context
-     * @param optimizerContext optimizer context
+     * @param compilerContext compiler context
      * @param schemaPlus sql federation schema
      */
-    default void registerExecutor(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                  String databaseName, String schemaName, SQLFederationContext federationContext, OptimizerContext optimizerContext, SchemaPlus schemaPlus) {
-    }
+    void prepare(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
+                 String currentDatabaseName, String currentSchemaName, SQLFederationContext federationContext, CompilerContext compilerContext, SchemaPlus schemaPlus);
     
     /**
-     * Unregister executor.
+     * Release.
      *
+     * @param currentDatabaseName current database name
+     * @param currentSchemaName current schema name
      * @param queryContext query context
      * @param schemaPlus sql federation schema
      */
-    default void unregisterExecutor(QueryContext queryContext, SchemaPlus schemaPlus) {
-    }
+    void release(String currentDatabaseName, String currentSchemaName, QueryContext queryContext, SchemaPlus schemaPlus);
     
     /**
      * Execute plan.
@@ -73,7 +73,7 @@ public interface SQLFederationProcessor {
      * @return resultset
      */
     ResultSet executePlan(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, JDBCExecutorCallback<? extends ExecuteResult> callback,
-                          SQLFederationExecutionPlan executionPlan, SqlToRelConverter converter, SQLFederationContext federationContext, SchemaPlus schemaPlus);
+                          SQLFederationExecutionPlan executionPlan, SQLFederationRelConverter converter, SQLFederationContext federationContext, SchemaPlus schemaPlus);
     
     /**
      * Get conversion.

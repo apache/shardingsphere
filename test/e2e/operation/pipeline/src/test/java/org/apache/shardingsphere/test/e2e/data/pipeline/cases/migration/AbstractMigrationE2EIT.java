@@ -189,4 +189,15 @@ public abstract class AbstractMigrationE2EIT {
                 + "))";
         return String.format(sql, jobId, algorithmType);
     }
+    
+    protected Properties convertToProperties(final Map<String, String> map) {
+        Properties result = new Properties();
+        if (null == map || map.isEmpty()) {
+            return result;
+        }
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            result.setProperty(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
 }

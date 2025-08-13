@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
 import java.util.Optional;
 
@@ -29,8 +29,8 @@ public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowD
     
     private final String keyGeneratorName;
     
-    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final DatabaseSegment database) {
-        super(database);
+    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final FromDatabaseSegment fromDatabase) {
+        super(fromDatabase);
         this.keyGeneratorName = keyGeneratorName;
     }
     

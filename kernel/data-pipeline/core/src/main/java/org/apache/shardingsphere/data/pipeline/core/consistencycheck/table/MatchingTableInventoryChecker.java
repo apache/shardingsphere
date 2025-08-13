@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
@@ -26,6 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
@@ -51,6 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public abstract class MatchingTableInventoryChecker implements TableInventoryChecker {
     
+    @Getter(AccessLevel.PROTECTED)
     private final TableInventoryCheckParameter param;
     
     private final AtomicBoolean canceling = new AtomicBoolean(false);
@@ -73,9 +78,11 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableInventoryCheckParameter param, final ThreadPoolExecutor executor) {
         SingleTableInventoryCalculateParameter sourceParam = new SingleTableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
-                param.getColumnNames(), param.getUniqueKeys(), param.getProgressContext().getSourceTableCheckPositions().get(param.getSourceTable().getTableName()));
+                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY);
+        sourceParam.setQueryRange(new QueryRange(param.getProgressContext().getSourceTableCheckPositions().get(param.getSourceTable().getTableName()), true, null));
         SingleTableInventoryCalculateParameter targetParam = new SingleTableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
-                param.getColumnNames(), param.getUniqueKeys(), param.getProgressContext().getTargetTableCheckPositions().get(param.getTargetTable().getTableName()));
+                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY);
+        targetParam.setQueryRange(new QueryRange(param.getProgressContext().getTargetTableCheckPositions().get(param.getTargetTable().getTableName()), true, null));
         SingleTableInventoryCalculator sourceCalculator = buildSingleTableInventoryCalculator();
         this.sourceCalculator = sourceCalculator;
         SingleTableInventoryCalculator targetCalculator = buildSingleTableInventoryCalculator();

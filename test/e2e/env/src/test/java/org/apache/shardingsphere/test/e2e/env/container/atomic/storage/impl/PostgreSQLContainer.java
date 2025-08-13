@@ -19,13 +19,12 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,14 +54,12 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() instanceof PostgreSQLDatabaseType).map(Map.Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() instanceof PostgreSQLDatabaseType).map(Map.Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.presto.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PrestoStatementParser.BitExprContext;
@@ -83,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -92,7 +95,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.statement.presto.dml.PrestoSelectStatement;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -102,8 +104,11 @@ import java.util.List;
 /**
  * Statement visitor for presto.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class PrestoStatementVisitor extends PrestoStatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
@@ -362,7 +367,7 @@ public abstract class PrestoStatementVisitor extends PrestoStatementBaseVisitor<
         if (null != ctx.predicate()) {
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (PrestoSelectStatement) visit(ctx.subquery()),
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()),
                     getOriginalText(ctx.subquery())));
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -394,7 +399,7 @@ public abstract class PrestoStatementVisitor extends PrestoStatementBaseVisitor<
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null != ctx.subquery()) {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (PrestoSelectStatement) visit(ctx.subquery()),
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()),
                     getOriginalText(ctx.subquery())));
         } else {
             right = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
@@ -466,7 +471,7 @@ public abstract class PrestoStatementVisitor extends PrestoStatementBaseVisitor<
         int stopIndex = ctx.stop.getStopIndex();
         if (null != ctx.subquery()) {
             SubquerySegment subquerySegment = new SubquerySegment(
-                    ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (PrestoSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+                    ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
             return null == ctx.EXISTS() ? new SubqueryExpressionSegment(subquerySegment) : new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
         }
         if (null != ctx.parameterMarker()) {

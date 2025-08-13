@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 
@@ -34,7 +34,7 @@ import java.util.Collection;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptInsertPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
+public final class EncryptInsertPredicateColumnTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
     
     private final EncryptRule rule;
     
@@ -45,8 +45,8 @@ public final class EncryptInsertPredicateColumnTokenGenerator implements Collect
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final InsertStatementContext sqlStatementContext) {
         EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator(rule);
-        return generator.generateSQLTokens(((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext());
+        return generator.generateSQLTokens(sqlStatementContext.getInsertSelectContext().getSelectStatementContext());
     }
 }

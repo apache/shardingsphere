@@ -40,7 +40,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-util</artifactId>
+            <artifactId>shardingsphere-test-infra-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

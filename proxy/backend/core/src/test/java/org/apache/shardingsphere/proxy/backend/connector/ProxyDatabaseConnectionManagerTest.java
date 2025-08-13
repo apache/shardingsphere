@@ -42,8 +42,8 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.AfterEach;
@@ -122,6 +122,7 @@ class ProxyDatabaseConnectionManagerTest {
         when(metaData.getAllDatabases()).thenReturn(Collections.singleton(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
         when(metaData.getAllDatabases().iterator().next().getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
+        when(metaData.getProps().<Boolean>getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED)).thenReturn(true);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
         when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singletonList(transactionRule)));
@@ -232,6 +233,7 @@ class ProxyDatabaseConnectionManagerTest {
         assertTrue(databaseConnectionManager.closeConnections(false).contains(sqlException));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertCreateStorageResourceCorrectlyWhenConnectionModeMemoryStrictly() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -255,6 +257,7 @@ class ProxyDatabaseConnectionManagerTest {
         verify(actualConnection.createStatement()).execute("SET key=value");
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");

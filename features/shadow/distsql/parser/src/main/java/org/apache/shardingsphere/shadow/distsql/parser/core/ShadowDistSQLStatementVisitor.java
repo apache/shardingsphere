@@ -38,8 +38,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowTableRulesContext;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowPluginsStatement;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.CountRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowPluginsStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.CountRuleStatement;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowRuleSegment;
@@ -56,6 +56,7 @@ import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowRulesStateme
 import org.apache.shardingsphere.shadow.distsql.statement.ShowShadowTableRulesStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -98,12 +99,13 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShowShadowAlgorithms(final ShowShadowAlgorithmsContext ctx) {
-        return new ShowShadowAlgorithmsStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowShadowAlgorithmsStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
     public ASTNode visitShowDefaultShadowAlgorithm(final ShowDefaultShadowAlgorithmContext ctx) {
-        return new ShowDefaultShadowAlgorithmStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowDefaultShadowAlgorithmStatement(
+                null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
     
     @Override
@@ -149,13 +151,14 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     @Override
     public ASTNode visitShowShadowRules(final ShowShadowRulesContext ctx) {
         String ruleName = null == ctx.shadowRule() ? null : getIdentifierValue(ctx.shadowRule().ruleName());
-        DatabaseSegment databaseSegment = null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName());
-        return new ShowShadowRulesStatement(ruleName, null == ctx.databaseName() ? null : databaseSegment);
+        FromDatabaseSegment fromDatabase = null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowShadowRulesStatement(ruleName, null == ctx.databaseName() ? null : fromDatabase);
     }
     
     @Override
     public ASTNode visitShowShadowTableRules(final ShowShadowTableRulesContext ctx) {
-        return new ShowShadowTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), ctx.TABLE().getText());
+        return new ShowShadowTableRulesStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())),
+                ctx.TABLE().getText());
     }
     
     private String getIdentifierValue(final ParserRuleContext ctx) {
@@ -173,7 +176,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitCountShadowRule(final CountShadowRuleContext ctx) {
-        return new CountRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()), "SHADOW");
+        return new CountRuleStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())), "SHADOW");
     }
     
     private Collection<ShadowRuleSegment> autoCreateAlgorithmName(final Collection<ShadowRuleSegment> shadowRuleSegments) {

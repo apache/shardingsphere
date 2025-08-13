@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMe
 import org.apache.shardingsphere.infra.database.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -78,6 +77,9 @@ class OracleMetaDataLoaderTest {
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION7 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
             + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadCondition1() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -91,7 +93,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -99,6 +101,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadCondition2() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -112,7 +115,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -120,6 +123,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadCondition3() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -133,7 +137,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -141,6 +145,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadCondition4() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -155,7 +160,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -163,6 +168,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadCondition5() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -177,7 +183,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(1);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -199,7 +205,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -207,6 +213,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadCondition7() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -221,7 +228,7 @@ class OracleMetaDataLoaderTest {
         when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
         DataTypeRegistry.load(dataSource, "Oracle");
         Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, new OracleDatabaseType(), "sharding_db"));
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
@@ -230,6 +237,7 @@ class OracleMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("address", Types.VARCHAR, false, false, false, false, false, true));
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();

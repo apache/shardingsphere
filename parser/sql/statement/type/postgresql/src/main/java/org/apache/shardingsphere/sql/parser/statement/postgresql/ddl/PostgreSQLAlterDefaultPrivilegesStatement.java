@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterDefaultPrivilegesStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL alter default privileges statement.
+ * Alter default privileges statement for PostgreSQL.
  */
-public final class PostgreSQLAlterDefaultPrivilegesStatement extends AlterDefaultPrivilegesStatement implements PostgreSQLStatement {
+public final class PostgreSQLAlterDefaultPrivilegesStatement extends DDLStatement {
+    
+    public PostgreSQLAlterDefaultPrivilegesStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

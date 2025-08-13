@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterRoleContext;
@@ -30,24 +31,30 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Revoke
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleAlterRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleAlterUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleCreateRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleCreateUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleDropRoleStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleDropUserStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleGrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleRevokeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dcl.OracleSetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.AlterRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.DropRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.SetRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.AlterUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.DropUserStatement;
+
+import java.util.Collections;
 
 /**
  * DCL statement visitor for Oracle.
  */
 public final class OracleDCLStatementVisitor extends OracleStatementVisitor implements DCLStatementVisitor {
     
+    public OracleDCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        OracleGrantStatement result = new OracleGrantStatement();
+        GrantStatement result = new GrantStatement(getDatabaseType());
         if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
@@ -56,7 +63,7 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        OracleRevokeStatement result = new OracleRevokeStatement();
+        RevokeStatement result = new RevokeStatement(getDatabaseType());
         if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
             result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
@@ -65,36 +72,36 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {
-        return new OracleCreateUserStatement();
+        return new CreateUserStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropUser(final DropUserContext ctx) {
-        return new OracleDropUserStatement();
+        return new DropUserStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterUser(final AlterUserContext ctx) {
-        return new OracleAlterUserStatement();
+        return new AlterUserStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
-        return new OracleCreateRoleStatement();
+        return new CreateRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterRole(final AlterRoleContext ctx) {
-        return new OracleAlterRoleStatement();
+        return new AlterRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
-        return new OracleDropRoleStatement();
+        return new DropRoleStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSetRole(final SetRoleContext ctx) {
-        return new OracleSetRoleStatement();
+        return new SetRoleStatement(getDatabaseType());
     }
 }

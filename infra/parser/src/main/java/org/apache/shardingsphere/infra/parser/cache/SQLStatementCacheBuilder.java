@@ -39,9 +39,11 @@ public final class SQLStatementCacheBuilder {
      * @param databaseType database type
      * @return built SQL statement cache
      */
-    public static LoadingCache<String, SQLStatement> build(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption,
+    public static CacheManager<String, SQLStatement> build(final DatabaseType databaseType, final CacheOption sqlStatementCacheOption,
                                                            final CacheOption parseTreeCacheOption) {
-        return Caffeine.newBuilder().softValues().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize())
-                .build(new SQLStatementCacheLoader(databaseType, parseTreeCacheOption));
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader(databaseType, parseTreeCacheOption);
+        LoadingCache<String, SQLStatement> loadingCache =
+                Caffeine.newBuilder().softValues().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize()).build(sqlStatementCacheLoader);
+        return new CacheManager<>(loadingCache, sqlStatementCacheLoader);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +74,7 @@ public final class MySQLComStmtPrepareParameterMarkerExtractor {
     }
     
     private static List<ShardingSphereColumn> getParameterMarkerColumns(final InsertStatement insertStatement, final ShardingSphereTable table, final List<String> columnNamesOfInsert) {
-        List<ShardingSphereColumn> result = new ArrayList<>(insertStatement.getParameterMarkerSegments().size());
+        List<ShardingSphereColumn> result = new ArrayList<>(insertStatement.getParameterMarkers().size());
         for (InsertValuesSegment each : insertStatement.getValues()) {
             result.addAll(getParameterMarkerColumns(table, columnNamesOfInsert, each));
         }

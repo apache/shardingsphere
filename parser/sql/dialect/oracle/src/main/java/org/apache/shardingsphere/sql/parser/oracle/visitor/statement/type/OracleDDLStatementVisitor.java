@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
@@ -224,137 +225,135 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.directory.CreateDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.directory.DropDirectoryStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.operator.AlterOperatorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.operator.CreateOperatorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.operator.DropOperatorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.AlterPackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.pkg.DropPackageStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.AlterSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.DropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.AlterSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.CreateSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.synonym.DropSynonymStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.type.AlterTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterAuditPolicyStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterClusterStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDatabaseDictionaryStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDimensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterDiskgroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterHierarchyStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterInMemoryJoinGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterIndexTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterJavaStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterLibraryStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterLockdownProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterMaterializedViewLogStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterMaterializedZoneMapStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterOperatorStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterOutlineStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterPackageStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterPluggableDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterRollbackSegmentStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSessionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterSystemStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAnalyzeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleAuditStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateClusterStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateContextStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateControlFileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDatabaseLinkStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDimensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateDiskgroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateEditionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFlashbackArchiveStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateInMemoryJoinGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateJavaStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateLibraryStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateLockdownProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateMaterializedViewLogStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateNestedTableTypeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateObjectTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateOperatorStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateOutlineStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreatePFileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateRestorePointStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateRollbackSegmentStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSPFileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSubTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateSynonymStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateVarrayTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleCreateViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDisassociateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropClusterStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropContextStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDatabaseLinkStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDimensionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDirectoryStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropDiskgroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropEditionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropFlashbackArchiveStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropInMemoryJoinGroupStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropIndexTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropJavaStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropLibraryStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropLockdownProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropMaterializedViewLogStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropMaterializedViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropMaterializedZoneMapStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropOperatorStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropOutlineStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropPackageStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropPluggableDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropProfileStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropRestorePointStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropRollbackSegmentStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropSynonymStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTablespaceStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropTypeStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleDropViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleNoAuditStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePLSQLBlockStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OraclePurgeStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleRenameStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleSystemActionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.OracleTruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.cluster.OracleAlterClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.cluster.OracleCreateClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.cluster.OracleDropClusterStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.context.OracleCreateContextStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.context.OracleDropContextStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database.OracleAlterDatabaseDictionaryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database.OracleAlterDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database.OracleAlterPluggableDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database.OracleCreateDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database.OracleDropDatabaseLinkStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.database.OracleDropPluggableDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.dimension.OracleAlterAttributeDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.dimension.OracleAlterDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.dimension.OracleCreateDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.dimension.OracleDropDimensionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.diskgroup.OracleAlterDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.diskgroup.OracleCreateDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.diskgroup.OracleDropDiskgroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.edition.OracleCreateEditionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.edition.OracleDropEditionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.file.OracleCreateControlFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.file.OracleCreatePFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.file.OracleCreateSPFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleAlterFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleCreateFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleDropFlashbackArchiveStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.flashback.OracleFlashbackTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function.OracleCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleAlterIndexTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.index.OracleDropIndexTypeStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.java.OracleAlterJavaStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.java.OracleCreateJavaStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.java.OracleDropJavaStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.join.OracleAlterInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.join.OracleCreateInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.join.OracleDropInMemoryJoinGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.library.OracleAlterLibraryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.library.OracleCreateLibraryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.library.OracleDropLibraryStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleAlterLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleCreateLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.lockdown.OracleDropLockdownProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleAlterOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleCreateOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.outline.OracleDropOutlineStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.procedure.OracleCreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleAlterProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleCreateProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.profile.OracleDropProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.restore.OracleCreateRestorePointStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.restore.OracleDropRestorePointStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.rollback.OracleAlterRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.rollback.OracleCreateRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.rollback.OracleDropRollbackSegmentStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleAssociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.statistics.OracleDisassociateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleAlterAnalyticViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleAlterMaterializedViewLogStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleCreateMaterializedViewLogStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.view.OracleDropMaterializedViewLogStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.zone.OracleAlterMaterializedZoneMapStatement;
+import org.apache.shardingsphere.sql.parser.statement.oracle.ddl.zone.OracleDropMaterializedZoneMapStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -370,24 +369,28 @@ import java.util.stream.Collectors;
  */
 public final class OracleDDLStatementVisitor extends OracleStatementVisitor implements DDLStatementVisitor {
     
+    public OracleDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
-        OracleCreateViewStatement result = new OracleCreateViewStatement();
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setReplaceView(null != ctx.REPLACE());
-        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor();
+        OracleDMLStatementVisitor visitor = new OracleDMLStatementVisitor(getDatabaseType());
         getGlobalParameterMarkerSegments().addAll(visitor.getGlobalParameterMarkerSegments());
         getStatementParameterMarkerSegments().addAll(visitor.getStatementParameterMarkerSegments());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setSelect((SelectStatement) visitor.visit(ctx.select()));
         result.setViewDefinition(getOriginalText(ctx.select()));
-        result.addParameterMarkerSegments(getGlobalParameterMarkerSegments());
+        result.addParameterMarkers(getGlobalParameterMarkerSegments());
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        OracleCreateTableStatement result = new OracleCreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -409,7 +412,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         TypeSegment typeSegment = (TypeSegment) visit(ctx.plsqlTypeSource().typeName());
         if (null != ctx.plsqlTypeSource().objectSubTypeDef()) {
             ObjectSubTypeDefContext objectSubTypeDefContext = ctx.plsqlTypeSource().objectSubTypeDef();
-            return new OracleCreateSubTypeStatement(isReplace, isEditionable,
+            return new OracleCreateSubTypeStatement(getDatabaseType(), isReplace, isEditionable,
                     null == objectSubTypeDefContext.finalClause() || null == objectSubTypeDefContext.finalClause().NOT(),
                     null == objectSubTypeDefContext.instantiableClause() || null == objectSubTypeDefContext.instantiableClause().NOT(),
                     typeSegment,
@@ -422,13 +425,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     private ASTNode visitCreateTypeObjectBaseTypeDef(final ObjectBaseTypeDefContext ctx, final boolean isReplace, final boolean isEditionable, final TypeSegment typeSegment) {
         if (null != ctx.objectTypeDef()) {
             ObjectTypeDefContext objectTypeDefContext = ctx.objectTypeDef();
-            return new OracleCreateObjectTypeStatement(isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
+            return new OracleCreateObjectTypeStatement(getDatabaseType(), isReplace, isEditionable, null == objectTypeDefContext.finalClause() || null == objectTypeDefContext.finalClause().NOT(),
                     null == objectTypeDefContext.instantiableClause() || null == objectTypeDefContext.instantiableClause().NOT(),
                     null == objectTypeDefContext.persistableClause() || null == objectTypeDefContext.persistableClause().NOT(),
                     typeSegment, objectTypeDefContext.dataTypeDefinition().stream().map(definition -> (TypeDefinitionSegment) visit(definition)).collect(Collectors.toList()));
         } else if (null != ctx.varrayTypeSpec()) {
             VarrayTypeSpecContext varrayTypeSpecContext = ctx.varrayTypeSpec();
-            return new OracleCreateVarrayTypeStatement(isReplace, isEditionable,
+            return new OracleCreateVarrayTypeStatement(getDatabaseType(), isReplace, isEditionable,
                     null == varrayTypeSpecContext.INTEGER_() ? -1 : Integer.parseInt(varrayTypeSpecContext.INTEGER_().getText()),
                     null != varrayTypeSpecContext.typeSpec().NULL(),
                     null == varrayTypeSpecContext.typeSpec().persistableClause() || null == varrayTypeSpecContext.typeSpec().persistableClause().NOT(),
@@ -436,7 +439,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
                     (DataTypeSegment) visit(varrayTypeSpecContext.typeSpec().dataType()));
         } else {
             NestedTableTypeSpecContext nestedTableTypeSpecContext = ctx.nestedTableTypeSpec();
-            return new OracleCreateNestedTableTypeStatement(isReplace, isEditionable,
+            return new OracleCreateNestedTableTypeStatement(getDatabaseType(), isReplace, isEditionable,
                     null != nestedTableTypeSpecContext.typeSpec().NULL(),
                     null == nestedTableTypeSpecContext.typeSpec().persistableClause() || null == nestedTableTypeSpecContext.typeSpec().persistableClause().NOT(),
                     typeSegment,
@@ -538,7 +541,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        OracleAlterTableStatement result = new OracleAlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -564,16 +567,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
-        OracleAlterTablespaceStatement result = new OracleAlterTablespaceStatement();
-        if (null != ctx.tablespaceName()) {
-            result.setTablespaceSegment(
-                    new TablespaceSegment(ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())));
-        }
-        if (null != ctx.newTablespaceName()) {
-            result.setRenameTablespaceSegment(
-                    new TablespaceSegment(ctx.newTablespaceName().getStart().getStartIndex(), ctx.newTablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.newTablespaceName())));
-        }
-        return result;
+        return new AlterTablespaceStatement(getDatabaseType(),
+                null == ctx.tablespaceName() ? null
+                        : new TablespaceSegment(
+                                ctx.tablespaceName().getStart().getStartIndex(), ctx.tablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.tablespaceName())),
+                null == ctx.newTablespaceName() ? null
+                        : new TablespaceSegment(
+                                ctx.newTablespaceName().getStart().getStartIndex(), ctx.newTablespaceName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.newTablespaceName())));
     }
     
     @SuppressWarnings("unchecked")
@@ -726,34 +726,34 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropContext(final DropContextContext ctx) {
-        return new OracleDropContextStatement();
+        return new OracleDropContextStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        OracleDropTableStatement result = new OracleDropTableStatement();
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     
     @Override
     public ASTNode visitDropDatabaseLink(final DropDatabaseLinkContext ctx) {
-        return new OracleDropDatabaseLinkStatement();
+        return new OracleDropDatabaseLinkStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterDatabaseLink(final AlterDatabaseLinkContext ctx) {
-        return new OracleAlterDatabaseLinkStatement();
+        return new OracleAlterDatabaseLinkStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterDatabaseDictionary(final AlterDatabaseDictionaryContext ctx) {
-        return new OracleAlterDatabaseDictionaryStatement();
+        return new OracleAlterDatabaseDictionaryStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        OracleAlterViewStatement result = new OracleAlterViewStatement();
+        AlterViewStatement result = new AlterViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
         result.setConstraintDefinition((ConstraintDefinitionSegment) getAlterViewConstraintDefinition(ctx));
         return result;
@@ -772,71 +772,73 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropPackage(final DropPackageContext ctx) {
-        return new OracleDropPackageStatement();
+        return new DropPackageStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterPackage(final AlterPackageContext ctx) {
-        return new OracleAlterPackageStatement();
+        return new AlterPackageStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSynonym(final CreateSynonymContext ctx) {
-        return new OracleCreateSynonymStatement();
+        return new CreateSynonymStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropSynonym(final DropSynonymContext ctx) {
-        return new OracleDropSynonymStatement();
+        return new DropSynonymStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDirectory(final CreateDirectoryContext ctx) {
-        return new OracleCreateDirectoryStatement();
+        return new CreateDirectoryStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        OracleDropViewStatement result = new OracleDropViewStatement();
+        DropViewStatement result = new DropViewStatement(getDatabaseType());
         result.getViews().add((SimpleTableSegment) visit(ctx.viewName()));
         return result;
     }
     
     @Override
     public ASTNode visitCreateEdition(final CreateEditionContext ctx) {
-        return new OracleCreateEditionStatement();
+        return new OracleCreateEditionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
-        return new OracleDropTriggerStatement();
+        return new DropTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new OracleCreateTriggerStatement();
+        return new CreateTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
-        return new OracleAlterTriggerStatement();
+        return new AlterTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        OracleTruncateStatement result = new OracleTruncateStatement();
-        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        OracleCreateIndexStatement result = new OracleCreateIndexStatement();
+        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
             result.getColumns().addAll(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
         }
         result.setIndex((IndexSegment) visit(ctx.indexName()));
+        if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
+            result.getIndex().setUniqueKey(true);
+        }
         return result;
     }
     
@@ -866,53 +868,47 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        OracleAlterIndexStatement result = new OracleAlterIndexStatement();
+        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        OracleDropIndexStatement result = new OracleDropIndexStatement();
+        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
     @Override
     public ASTNode visitAlterSynonym(final AlterSynonymContext ctx) {
-        return new OracleAlterSynonymStatement();
+        return new AlterSynonymStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSession(final AlterSessionContext ctx) {
-        return new OracleAlterSessionStatement();
+        return new OracleAlterSessionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
-        return new OracleAlterDatabaseStatement();
+        return new AlterDatabaseStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSystem(final AlterSystemContext ctx) {
-        return new OracleAlterSystemStatement();
+        return new OracleAlterSystemStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAnalyze(final AnalyzeContext ctx) {
-        OracleAnalyzeStatement result = new OracleAnalyzeStatement();
-        if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        }
-        if (null != ctx.indexName()) {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
-        }
-        return result;
+        return new OracleAnalyzeStatement(getDatabaseType(), null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override
     public ASTNode visitAssociateStatistics(final AssociateStatisticsContext ctx) {
-        OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement();
+        OracleAssociateStatisticsStatement result = new OracleAssociateStatisticsStatement(getDatabaseType());
         if (null != ctx.columnAssociation()) {
             for (TableNameContext each : ctx.columnAssociation().tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
@@ -943,7 +939,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDisassociateStatistics(final DisassociateStatisticsContext ctx) {
-        OracleDisassociateStatisticsStatement result = new OracleDisassociateStatisticsStatement();
+        OracleDisassociateStatisticsStatement result = new OracleDisassociateStatisticsStatement(getDatabaseType());
         if (null != ctx.tableName()) {
             for (TableNameContext each : ctx.tableName()) {
                 result.getTables().add((SimpleTableSegment) visit(each));
@@ -987,22 +983,22 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAuditTraditional(final AuditTraditionalContext ctx) {
-        return new OracleAuditStatement();
+        return new OracleAuditStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAuditUnified(final AuditUnifiedContext ctx) {
-        return new OracleAuditStatement();
+        return new OracleAuditStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitNoAudit(final NoAuditContext ctx) {
-        return new OracleNoAuditStatement();
+        return new OracleNoAuditStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        OracleCommentStatement result = new OracleCommentStatement();
+        CommentStatement result = new CommentStatement(getDatabaseType());
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }
@@ -1018,65 +1014,54 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitFlashbackDatabase(final FlashbackDatabaseContext ctx) {
-        return new OracleFlashbackDatabaseStatement();
+        return new OracleFlashbackDatabaseStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitFlashbackTable(final FlashbackTableContext ctx) {
-        OracleFlashbackTableStatement result = new OracleFlashbackTableStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        
-        if (null != ctx.renameToTable()) {
-            result.setRenameTable((SimpleTableSegment) visit(ctx.renameToTable().tableName()));
-        }
-        return result;
+        return new OracleFlashbackTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.renameToTable() ? null : (SimpleTableSegment) visit(ctx.renameToTable().tableName()));
     }
     
     @Override
     public ASTNode visitPurge(final PurgeContext ctx) {
-        OraclePurgeStatement result = new OraclePurgeStatement();
-        if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        }
-        if (null != ctx.indexName()) {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
-        }
-        return result;
+        return new OraclePurgeStatement(getDatabaseType(), null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()));
     }
     
     @Override
     public ASTNode visitRename(final RenameContext ctx) {
-        return new OracleRenameStatement();
+        return new OracleRenameStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new OracleCreateDatabaseStatement();
+        return new CreateDatabaseStatement(getDatabaseType(), null, false);
     }
     
     @Override
     public ASTNode visitCreateDatabaseLink(final CreateDatabaseLinkContext ctx) {
-        return new OracleCreateDatabaseLinkStatement();
+        return new OracleCreateDatabaseLinkStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDimension(final CreateDimensionContext ctx) {
-        return new OracleCreateDimensionStatement();
+        return new OracleCreateDimensionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterDimension(final AlterDimensionContext ctx) {
-        return new OracleAlterDimensionStatement();
+        return new OracleAlterDimensionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropDimension(final DropDimensionContext ctx) {
-        return new OracleDropDimensionStatement();
+        return new OracleDropDimensionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropDirectory(final DropDirectoryContext ctx) {
-        return new OracleDropDirectoryStatement();
+        return new DropDirectoryStatement(getDatabaseType());
     }
     
     @Override
@@ -1094,8 +1079,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getSqlStatementsInPlsql(), getProcedureCallNames(), getDynamicSqlStatementExpressions());
+        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames());
         result.setFunctionName(visitFunctionName(ctx.plsqlFunctionSource()));
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         return result;
     }
     
@@ -1113,229 +1099,227 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropEdition(final DropEditionContext ctx) {
-        return new OracleDropEditionStatement();
+        return new OracleDropEditionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropOutline(final DropOutlineContext ctx) {
-        return new OracleDropOutlineStatement();
+        return new OracleDropOutlineStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterOutline(final AlterOutlineContext ctx) {
-        return new OracleAlterOutlineStatement();
+        return new OracleAlterOutlineStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterAnalyticView(final AlterAnalyticViewContext ctx) {
-        return new OracleAlterAnalyticViewStatement();
+        return new OracleAlterAnalyticViewStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterAttributeDimension(final AlterAttributeDimensionContext ctx) {
-        return new OracleAlterAttributeDimensionStatement();
+        return new OracleAlterAttributeDimensionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        OracleCreateSequenceStatement result = new OracleCreateSequenceStatement();
-        result.setSequenceName(ctx.sequenceName().getText());
-        return result;
+        return new CreateSequenceStatement(getDatabaseType(), ctx.sequenceName().getText());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        return new OracleAlterSequenceStatement();
+        return new AlterSequenceStatement(getDatabaseType(), null);
     }
     
     @Override
     public ASTNode visitCreateContext(final CreateContextContext ctx) {
-        return new OracleCreateContextStatement();
+        return new OracleCreateContextStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSPFile(final CreateSPFileContext ctx) {
-        return new OracleCreateSPFileStatement();
+        return new OracleCreateSPFileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreatePFile(final CreatePFileContext ctx) {
-        return new OracleCreatePFileStatement();
+        return new OracleCreatePFileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateControlFile(final CreateControlFileContext ctx) {
-        return new OracleCreateControlFileStatement();
+        return new OracleCreateControlFileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateFlashbackArchive(final CreateFlashbackArchiveContext ctx) {
-        return new OracleCreateFlashbackArchiveStatement();
+        return new OracleCreateFlashbackArchiveStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterFlashbackArchive(final AlterFlashbackArchiveContext ctx) {
-        return new OracleAlterFlashbackArchiveStatement();
+        return new OracleAlterFlashbackArchiveStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropFlashbackArchive(final DropFlashbackArchiveContext ctx) {
-        return new OracleDropFlashbackArchiveStatement();
+        return new OracleDropFlashbackArchiveStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDiskgroup(final CreateDiskgroupContext ctx) {
-        return new OracleCreateDiskgroupStatement();
+        return new OracleCreateDiskgroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropDiskgroup(final DropDiskgroupContext ctx) {
-        return new OracleDropDiskgroupStatement();
+        return new OracleDropDiskgroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateRollbackSegment(final CreateRollbackSegmentContext ctx) {
-        return new OracleCreateRollbackSegmentStatement();
+        return new OracleCreateRollbackSegmentStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRollbackSegment(final DropRollbackSegmentContext ctx) {
-        return new OracleDropRollbackSegmentStatement();
+        return new OracleDropRollbackSegmentStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropTableSpace(final DropTableSpaceContext ctx) {
-        return new OracleDropTablespaceStatement();
+        return new DropTablespaceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateLockdownProfile(final CreateLockdownProfileContext ctx) {
-        return new OracleCreateLockdownProfileStatement();
+        return new OracleCreateLockdownProfileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropLockdownProfile(final DropLockdownProfileContext ctx) {
-        return new OracleDropLockdownProfileStatement();
+        return new OracleDropLockdownProfileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateInmemoryJoinGroup(final CreateInmemoryJoinGroupContext ctx) {
-        return new OracleCreateInMemoryJoinGroupStatement();
+        return new OracleCreateInMemoryJoinGroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterInmemoryJoinGroup(final AlterInmemoryJoinGroupContext ctx) {
-        return new OracleAlterInMemoryJoinGroupStatement();
+        return new OracleAlterInMemoryJoinGroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropInmemoryJoinGroup(final DropInmemoryJoinGroupContext ctx) {
-        return new OracleDropInMemoryJoinGroupStatement();
+        return new OracleDropInMemoryJoinGroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateRestorePoint(final CreateRestorePointContext ctx) {
-        return new OracleCreateRestorePointStatement();
+        return new OracleCreateRestorePointStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropRestorePoint(final DropRestorePointContext ctx) {
-        return new OracleDropRestorePointStatement();
+        return new OracleDropRestorePointStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterOperator(final AlterOperatorContext ctx) {
-        return new OracleAlterOperatorStatement();
+        return new AlterOperatorStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterProfile(final AlterProfileContext ctx) {
-        return new OracleAlterProfileStatement();
+        return new OracleAlterProfileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterRollbackSegment(final AlterRollbackSegmentContext ctx) {
-        return new OracleAlterRollbackSegmentStatement();
+        return new OracleAlterRollbackSegmentStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
-        return new OracleDropOperatorStatement();
+        return new DropOperatorStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
-        return new OracleDropSequenceStatement();
+        return new DropSequenceStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
     public ASTNode visitAlterLibrary(final AlterLibraryContext ctx) {
-        return new OracleAlterLibraryStatement();
+        return new OracleAlterLibraryStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropType(final DropTypeContext ctx) {
-        return new OracleDropTypeStatement();
+        return new DropPackageStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterMaterializedZonemap(final AlterMaterializedZonemapContext ctx) {
-        return new OracleAlterMaterializedZoneMapStatement();
+        return new OracleAlterMaterializedZoneMapStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterJava(final AlterJavaContext ctx) {
-        return new OracleAlterJavaStatement();
+        return new OracleAlterJavaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterAuditPolicy(final AlterAuditPolicyContext ctx) {
-        return new OracleAlterAuditPolicyStatement();
+        return new OracleAlterAuditPolicyStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterCluster(final AlterClusterContext ctx) {
-        return new OracleAlterClusterStatement();
+        return new OracleAlterClusterStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterDiskgroup(final AlterDiskgroupContext ctx) {
-        return new OracleAlterDiskgroupStatement();
+        return new OracleAlterDiskgroupStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
-        return new OracleAlterIndexTypeStatement();
+        return new OracleAlterIndexTypeStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
-        return new OracleAlterMaterializedViewStatement();
+        return new AlterMaterializedViewStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterMaterializedViewLog(final AlterMaterializedViewLogContext ctx) {
-        return new OracleAlterMaterializedViewLogStatement();
+        return new OracleAlterMaterializedViewLogStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
-        return new OracleAlterFunctionStatement();
+        return new AlterFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterHierarchy(final AlterHierarchyContext ctx) {
-        return new OracleAlterHierarchyStatement();
+        return new OracleAlterHierarchyStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterLockdownProfile(final AlterLockdownProfileContext ctx) {
-        return new OracleAlterLockdownProfileStatement();
+        return new OracleAlterLockdownProfileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterPluggableDatabase(final AlterPluggableDatabaseContext ctx) {
-        return new OracleAlterPluggableDatabaseStatement();
+        return new OracleAlterPluggableDatabaseStatement(getDatabaseType());
     }
     
     @Override
@@ -1358,9 +1342,12 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement(getSqlStatementsInPlsql(), getProcedureCallNames(), getProcedureBodyEndNameSegments(),
-                getDynamicSqlStatementExpressions());
+        OracleCreateProcedureStatement result = new OracleCreateProcedureStatement(getDatabaseType());
+        result.getProcedureCallNames().addAll(getProcedureCallNames());
+        result.getProcedureBodyEndNameSegments().addAll(getProcedureBodyEndNameSegments());
+        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
         result.setProcedureName(visitProcedureName(ctx.plsqlProcedureSource()));
+        result.getSqlStatements().addAll(getSqlStatementsInPlsql());
         result.getVariableNames().addAll(getVariableNames());
         getSqlStatementsInPlsql().forEach(each -> each.getSqlStatement().getVariableNames().addAll(getVariableNames()));
         result.getCursorForLoopStatements().addAll(getCursorForLoopStatementSegments());
@@ -1446,9 +1433,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitCursorDefinition(final CursorDefinitionContext ctx) {
-        SQLStatement statement = visitSelect0(ctx.select());
-        getCursorStatements().put(null != ctx.variableName().identifier() ? new IdentifierValue(ctx.variableName().getText()).getValue()
-                : new StringLiteralValue(ctx.variableName().getText()).getValue(), statement);
+        SQLStatement sqlStatement = visitSelect0(ctx.select());
+        getCursorStatements().put(null != ctx.variableName().identifier()
+                ? new IdentifierValue(ctx.variableName().getText()).getValue()
+                : new StringLiteralValue(ctx.variableName().getText()).getValue(), sqlStatement);
         return defaultResult();
     }
     
@@ -1594,13 +1582,13 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     }
     
     private OracleStatementVisitor createOracleTCLStatementVisitor() {
-        OracleStatementVisitor result = new OracleTCLStatementVisitor();
+        OracleStatementVisitor result = new OracleTCLStatementVisitor(getDatabaseType());
         result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
     private OracleStatementVisitor createOracleDMLStatementVisitor() {
-        OracleStatementVisitor result = new OracleDMLStatementVisitor();
+        OracleStatementVisitor result = new OracleDMLStatementVisitor(getDatabaseType());
         result.getVariableNames().addAll(getVariableNames());
         return result;
     }
@@ -1639,7 +1627,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
         // TODO Visit intoClause
         OracleStatementVisitor visitor = createOracleDMLStatementVisitor();
-        OracleSelectStatement result = (OracleSelectStatement) visitor.visitSelectIntoStatement(ctx);
+        SelectStatement result = (SelectStatement) visitor.visitSelectIntoStatement(ctx);
         getSqlStatementsInPlsql().add(new SQLStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), result));
         addToTempCursorForLoopStatements(result);
         return result;
@@ -1657,131 +1645,131 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.body() && null != ctx.body().statement()) {
             ctx.body().statement().forEach(this::visit);
         }
-        return new OraclePLSQLBlockStatement();
+        return new OraclePLSQLBlockStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new OracleAlterProcedureStatement();
+        return new AlterProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
-        return new OracleDropProcedureStatement();
+        return new DropProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropIndexType(final DropIndexTypeContext ctx) {
-        return new OracleDropIndexTypeStatement();
+        return new OracleDropIndexTypeStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropProfile(final DropProfileContext ctx) {
-        return new OracleDropProfileStatement();
+        return new OracleDropProfileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropPluggableDatabase(final DropPluggableDatabaseContext ctx) {
-        return new OracleDropPluggableDatabaseStatement();
+        return new OracleDropPluggableDatabaseStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropJava(final DropJavaContext ctx) {
-        return new OracleDropJavaStatement();
+        return new OracleDropJavaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new OracleDropFunctionStatement();
+        return new DropFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropLibrary(final DropLibraryContext ctx) {
-        return new OracleDropLibraryStatement();
+        return new OracleDropLibraryStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropCluster(final DropClusterContext ctx) {
-        return new OracleDropClusterStatement();
+        return new OracleDropClusterStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
-        return new OracleDropMaterializedViewStatement();
+        return new DropMaterializedViewStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropMaterializedViewLog(final DropMaterializedViewLogContext ctx) {
-        return new OracleDropMaterializedViewLogStatement();
+        return new OracleDropMaterializedViewLogStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropMaterializedZonemap(final DropMaterializedZonemapContext ctx) {
-        return new OracleDropMaterializedZoneMapStatement();
+        return new OracleDropMaterializedZoneMapStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
-        return new OracleCreateTablespaceStatement();
+        return new CreateTablespaceStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new OracleCreateMaterializedViewStatement();
+        return new CreateMaterializedViewStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateMaterializedViewLog(final CreateMaterializedViewLogContext ctx) {
-        return new OracleCreateMaterializedViewLogStatement();
+        return new OracleCreateMaterializedViewLogStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateCluster(final CreateClusterContext ctx) {
-        return new OracleCreateClusterStatement();
+        return new OracleCreateClusterStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSystemAction(final SystemActionContext ctx) {
-        return new OracleSystemActionStatement();
+        return new OracleSystemActionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterType(final AlterTypeContext ctx) {
-        return new OracleAlterTypeStatement();
+        return new AlterTypeStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateJava(final CreateJavaContext ctx) {
-        return new OracleCreateJavaStatement();
+        return new OracleCreateJavaStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateLibrary(final CreateLibraryContext ctx) {
-        return new OracleCreateLibraryStatement();
+        return new OracleCreateLibraryStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitSwitch(final SwitchContext ctx) {
-        return new OracleSwitchStatement();
+        return new OracleSwitchStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateProfile(final CreateProfileContext ctx) {
-        return new OracleCreateProfileStatement();
+        return new OracleCreateProfileStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new OracleDropDatabaseStatement();
+        return new DropDatabaseStatement(getDatabaseType(), null, false);
     }
     
     @Override
     public ASTNode visitCreateOperator(final CreateOperatorContext ctx) {
-        return new OracleCreateOperatorStatement();
+        return new CreateOperatorStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateOutline(final CreateOutlineContext ctx) {
-        return new OracleCreateOutlineStatement();
+        return new OracleCreateOutlineStatement(getDatabaseType());
     }
 }

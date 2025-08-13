@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.UnlistenStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL unlisten statement.
+ * Unlisten statement for PostgreSQL.
  */
-public final class PostgreSQLUnlistenStatement extends UnlistenStatement implements PostgreSQLStatement {
+public final class PostgreSQLUnlistenStatement extends DDLStatement {
+    
+    public PostgreSQLUnlistenStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

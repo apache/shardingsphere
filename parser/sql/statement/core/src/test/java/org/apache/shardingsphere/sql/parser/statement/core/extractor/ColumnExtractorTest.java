@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,8 +35,7 @@ class ColumnExtractorTest {
     
     @Test
     void assertExtractColumnSegments() {
-        Collection<ColumnSegment> columnSegments = new LinkedList<>();
-        ColumnExtractor.extractColumnSegments(columnSegments, createWhereSegments());
+        Collection<ColumnSegment> columnSegments = ColumnExtractor.extractColumnSegments(createWhereSegments());
         assertThat(columnSegments.size(), is(2));
         Iterator<ColumnSegment> iterator = columnSegments.iterator();
         ColumnSegment firstColumn = iterator.next();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.computenode;
 
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;

@@ -804,6 +804,7 @@
     
     <alter-table sql-case-id="alter_table_drop_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
+        <drop-primary-key start-index="20" stop-index="35"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_not_null">
@@ -893,6 +894,7 @@
     
     <alter-table sql-case-id="alter_table_drop_constraints">
         <table name="t_order" start-index="12" stop-index="18" />
+        <drop-primary-key start-index="20" stop-index="65"/>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_add_index">
@@ -1795,5 +1797,700 @@
 
     <alter-table sql-case-id="alter_table_drop_edge_constraints">
         <table name="bought" start-index="12" stop-index="17"/>"
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_to">
+        <table name="stu" start-index="12" stop-index="14" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_tblproperties_comment">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_basic">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_with_partition_basic">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_with_basic_properties">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serde_with_all_options">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serdeproperties_field_delim">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_serdeproperties_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_unset_serdeproperties">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_unset_serdeproperties_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_clustered_by_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_clustered_with_sorted_by">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_skewed_by_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_skewed_by_with_directories">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_not_skewed_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_not_stored_as_directories_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_skewed_location_basic">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_primary_key_hive">
+        <table name="employees" start-index="12" stop-index="20" />
+        <add-constraint start-index="28" stop-index="86">
+            <primary-key-column name="emp_id" start-index="64" stop-index="69" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_foreign_key_hive">
+        <table name="orders" start-index="12" stop-index="17" />
+        <add-constraint start-index="25" stop-index="135">
+            <foreign-key-column name="emp_id" start-index="61" stop-index="66" />
+            <referenced-table name="employees" start-index="80" stop-index="90" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_unique_hive">
+        <table name="users" start-index="12" stop-index="16" />
+        <add-constraint start-index="24" stop-index="89">
+            <unique-column name="email" start-index="73" stop-index="78" />
+        </add-constraint>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_not_null">
+        <table name="products" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_default">
+        <table name="products" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_check">
+        <table name="orders" start-index="12" stop-index="17" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_constraint_hive">
+        <table name="employees" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_fileformat_basic_textfile">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_fileformat_with_partition_orc">
+        <table name="user_logs" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_location_basic">
+        <table name="logs" start-index="12" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_location_with_partition">
+        <table name="logs" start-index="12" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_touch_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_touch_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_basic">
+        <table name="transaction_logs" start-index="12" stop-index="27" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_partition">
+        <table name="transaction_logs" start-index="12" stop-index="27" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_and_wait">
+        <table name="user_actions" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_pool">
+        <table name="order_details" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance">
+        <table name="product_data" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_pool_partition">
+        <table name="order_records" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_with_tblproperties">
+        <table name="product_data" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_clustered">
+        <table name="customer_logs" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_orderby">
+        <table name="customer_logs" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_clustered_order">
+        <table name="customer_logs" start-index="12" stop-index="24" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_rebalance_combined">
+        <table name="sales_data" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_compact_multi_options">
+        <table name="log_data" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_concatenate_basic">
+        <table name="sales_rcfile" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_partition_concatenate">
+        <table name="sales_orc" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_update_columns_basic">
+        <table name="avro_user_data" start-index="12" stop-index="25" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_partition_update_columns">
+        <table name="parquet_event_log" start-index="12" stop-index="28" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_basic">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_more_partition">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_if_not_exists">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_location">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_both_options">
+        <table name="test_table" start-index="12" stop-index="21" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_rename_partition_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_basic">
+        <table name="target_table" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_exchange_partition_multiple">
+        <table name="target_table" start-index="12" stop-index="23" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_partition_retention_basic">
+        <table name="log_data" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_set_partition_retention_with_discover">
+        <table name="log_data" start-index="12" stop-index="19" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_basic">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table_add">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table_drop">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_check_table_sync">
+        <table name="sales" start-index="11" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_add">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_drop">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="msck_repair_table_sync">
+        <table name="sales" start-index="18" stop-index="22" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_recover_partitions_emr">
+        <table name="sales" start-index="12" stop-index="16" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_basic">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_if_exists">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_purge">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_ignore_protection">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_if_exists_purge">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_if_exists_ignore_protection">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_multiple_partitions_if_exists_purge">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_partition_all_options">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_multiple_partitions_all_options">
+        <table name="page_view" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_archive_partition_basic">
+        <table name="log_table" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_unarchive_partition_basic">
+        <table name="log_table" start-index="12" stop-index="20" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_column_basic">
+        <table name="test_change" start-index="12" stop-index="22" />
+        <change-column start-index="29" stop-index="55">
+            <previous-column name="a" start-delimiter="" end-delimiter="" start-index="31" stop-index="31" />
+            <column-definition type="INT" start-delimiter="" end-delimiter="" start-index="33" stop-index="38">
+                <column name="a1"/>
+            </column-definition>
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_with_partition_column_comment_first_cascade">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-07'" start-index="19" stop-index="35" />
+        <change-column start-index="38" stop-index="115">
+            <previous-column name="dt" start-index="57" stop-index="58" />
+            <column-definition type="STRING" start-index="60" stop-index="75">
+                <column name="sale_date"/>
+            </column-definition>
+            <comment value="move to first with comment" start-index="68" stop-index="88" />
+            <column-position start-index="114" stop-index="118" />
+            <cascade start-index="102" stop-index="114" />
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_with_partition_column_comment_first_restrict">
+        <table name="logs" start-index="12" stop-index="15" />
+        <partition spec="level='warn'" start-index="18" stop-index="33" />
+        <change-column start-index="36" stop-index="114">
+            <previous-column name="msg" start-index="56" stop-index="58" />
+            <column-definition type="STRING" start-index="60" stop-index="77">
+                <column name="warning_msg"/>
+            </column-definition>
+            <comment value="set as first column" start-index="70" stop-index="88" />
+            <column-position start-index="109" stop-index="113" />
+            <restrict start-index="102" stop-index="113" />
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_with_partition_column_comment_after_cascade">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-07'" start-index="19" stop-index="35" />
+        <change-column start-index="38" stop-index="117">
+            <previous-column name="dt" start-index="57" stop-index="58" />
+            <column-definition type="STRING" start-index="60" stop-index="75">
+                <column name="sale_date"/>
+            </column-definition>
+            <comment value="move after region with comment" start-index="68" stop-index="94" />
+            <column-position start-index="124" stop-index="129">
+                <column name="region"/>
+                <after-column name="region"/>
+            </column-position>
+            <cascade start-index="113" stop-index="116" />
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_with_partition_column_comment_after_restrict">
+        <table name="logs" start-index="12" stop-index="15" />
+        <partition spec="level='info'" start-index="18" stop-index="33" />
+        <change-column start-index="36" stop-index="118">
+            <previous-column name="msg" start-index="56" stop-index="58" />
+            <column-definition type="STRING" start-index="60" stop-index="73">
+                <column name="log_msg" start-index="53" stop-index="59"/>
+            </column-definition>
+            <comment value="position after timestamp" start-index="67" stop-index="88" />
+            <column-position start-index="116" stop-index="124">
+                <column name="timestamp"/>
+                <after-column name="timestamp"/>
+            </column-position>
+            <restrict start-index="112" stop-index="117" />
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_with_quoted_column1">
+        <table name="sales" start-index="12" stop-index="16" />
+        <change-column start-index="23" stop-index="117">
+            <previous-column name="order.date" start-delimiter="`" end-delimiter="`" start-index="32" stop-index="43" />
+            <column-definition type="STRING" start-delimiter="`" end-delimiter="`" start-index="45" stop-index="63">
+                <column name="order_date"/>
+            </column-definition>
+            <comment value="rename column with dot" start-index="60" stop-index="81" />
+            <column-position start-index="98" stop-index="102" />
+            <cascade start-index="90" stop-index="102" />
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_change_with_quoted_column2">
+        <table name="logs" start-index="12" stop-index="15" />
+        <partition spec="level='error'" start-index="18" stop-index="34" />
+        <change-column start-index="36" stop-index="125">
+            <previous-column name="msg:content" start-delimiter="`" end-delimiter="`" start-index="57" stop-index="69" />
+            <column-definition type="STRING" start-delimiter="`" end-delimiter="`" start-index="71" stop-index="94">
+                <column name="message_content"/>
+            </column-definition>
+            <comment value="rename column with colon" start-index="80" stop-index="101" />
+            <column-position start-index="137" stop-index="145">
+                <column name="timestamp"/>
+                <after-column name="timestamp"/>
+            </column-position>
+            <restrict start-index="125" stop-index="134" />
+        </change-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_basic">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-column start-index="23" stop-index="51">
+            <column-definition type="STRING" start-index="31" stop-index="43">
+                <column name="gender" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_basic">
+        <table name="users" start-index="12" stop-index="16" />
+        <replace-columns start-index="23" stop-index="61">
+            <column name="id" type="INT" start-index="39" stop-index="45" />
+            <column name="name" type="STRING" start-index="47" stop-index="60" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_partition">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-07'" start-index="19" stop-index="35" />
+        <add-column start-index="41" stop-index="69">
+            <column-definition type="STRING" start-index="56" stop-index="68">
+                <column name="gender" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_with_partition">
+        <table name="logs" start-index="12" stop-index="15" />
+        <partition spec="level='info'" start-index="18" stop-index="33" />
+        <replace-columns start-index="39" stop-index="87">
+            <column name="timestamp" type="STRING" start-index="55" stop-index="68" />
+            <column name="message" type="STRING" start-index="70" stop-index="86" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_comment">
+        <table name="products" start-index="12" stop-index="19" />
+        <add-column start-index="26" stop-index="74">
+            <column-definition type="STRING" start-index="34" stop-index="74">
+                <column name="gender" />
+            </column-definition>
+            <comment value="This is a comment" start-index="55" stop-index="73" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_with_comment">
+        <table name="orders" start-index="12" stop-index="17" />
+        <replace-columns start-index="24" stop-index="100">
+            <column name="order_id" type="INT" comment="unique order identifier" start-index="40" stop-index="75" />
+            <column name="total" type="DECIMAL(10,2)" start-index="77" stop-index="99" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_cascade">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-column start-index="23" stop-index="68">
+            <column-definition type="FLOAT" start-index="31" stop-index="44">
+                <column name="tax_rate" />
+            </column-definition>
+            <cascade start-index="53" stop-index="67" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_restrict">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-column start-index="23" stop-index="70">
+            <column-definition type="FLOAT" start-index="31" stop-index="44">
+                <column name="tax_rate" />
+            </column-definition>
+            <restrict start-index="53" stop-index="69" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_with_cascade">
+        <table name="users" start-index="12" stop-index="16" />
+        <replace-columns start-index="23" stop-index="79">
+            <column name="user_id" type="INT" start-index="39" stop-index="49" />
+            <column name="email" type="STRING" start-index="51" stop-index="64" />
+            <cascade start-index="66" stop-index="78" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_with_restrict">
+        <table name="users" start-index="12" stop-index="16" />
+        <replace-columns start-index="23" stop-index="81">
+            <column name="user_id" type="INT" start-index="39" stop-index="49" />
+            <column name="email" type="STRING" start-index="51" stop-index="64" />
+            <restrict start-index="66" stop-index="80" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_partition_and_comment">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-07'" start-index="19" stop-index="35" />
+        <add-column start-index="41" stop-index="100">
+            <column-definition type="DECIMAL(8,2)" start-index="56" stop-index="118">
+                <column name="shipping_fee" />
+            </column-definition>
+            <comment value="delivery cost for the order" start-index="77" stop-index="99" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_partition_cascade1">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-08'" start-index="19" stop-index="35" />
+        <add-column start-index="41" stop-index="89">
+            <column-definition type="DECIMAL(10,2)" start-index="56" stop-index="79">
+                <column name="refund_amt" />
+            </column-definition>
+            <cascade start-index="78" stop-index="88" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_partition_restrict1">
+        <table name="users" start-index="12" stop-index="16" />
+        <partition spec="region='asia'" start-index="19" stop-index="35" />
+        <add-column start-index="41" stop-index="89">
+            <column-definition type="INT" start-index="57" stop-index="71">
+                <column name="login_count" />
+            </column-definition>
+            <restrict start-index="70" stop-index="88" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_comment_cascade">
+        <table name="sales" start-index="12" stop-index="16" />
+        <add-column start-index="23" stop-index="110">
+            <column-definition type="DECIMAL(8,2)" start-index="31" stop-index="99">
+                <column name="discountverseas_fee" />
+            </column-definition>
+            <comment value="international shipping fee" start-index="64" stop-index="90" />
+            <cascade start-index="92" stop-index="109" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_comment_restrict">
+        <table name="products" start-index="12" stop-index="19" />
+        <add-column start-index="26" stop-index="108">
+            <column-definition type="STRING" start-index="34" stop-index="87">
+                <column name="material" />
+            </column-definition>
+            <comment value="product material composition" start-index="59" stop-index="86" />
+            <restrict start-index="88" stop-index="107" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_with_partition_and_comment">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-07'" start-index="19" stop-index="35" />
+        <replace-columns start-index="41" stop-index="109">
+            <column name="order_id" type="INT" start-index="57" stop-index="67" />
+            <column name="shipping_fee" type="DECIMAL(8,2)" start-index="69" stop-index="89" />
+            <comment value="delivery cost for the order" start-index="91" stop-index="108" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_partition_cascade1">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-08'" start-index="19" stop-index="35" />
+        <replace-columns start-index="41" stop-index="97">
+            <column name="product_id" type="INT" start-index="57" stop-index="69" />
+            <column name="refund_amt" type="DECIMAL(10,2)" start-index="71" stop-index="92" />
+            <cascade start-index="94" stop-index="96" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_partition_restrict1">
+        <table name="users" start-index="12" stop-index="16" />
+        <partition spec="region='asia'" start-index="19" stop-index="35" />
+        <replace-columns start-index="41" stop-index="95">
+            <column name="username" type="STRING" start-index="57" stop-index="70" />
+            <column name="login_count" type="INT" start-index="72" stop-index="85" />
+            <restrict start-index="87" stop-index="94" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_comment_cascade">
+        <table name="sales" start-index="12" stop-index="16" />
+        <replace-columns start-index="23" stop-index="137">
+            <column name="overseas_fee" type="DECIMAL(8,2)" comment="international shipping fee" start-index="39" stop-index="85" />
+            <column name="service_charge" type="DECIMAL(6,2)" comment="platform service fee" start-index="87" stop-index="132" />
+            <cascade start-index="134" stop-index="136" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_columns_comment_restrict">
+        <table name="products" start-index="12" stop-index="19" />
+        <replace-columns start-index="26" stop-index="135">
+            <column name="material" type="STRING" comment="product material composition" start-index="42" stop-index="86" />
+            <column name="origin" type="STRING" comment="production place" start-index="88" stop-index="130" />
+            <restrict start-index="132" stop-index="134" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_full_combination1">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-09'" start-index="19" stop-index="35" />
+        <add-column start-index="41" stop-index="109">
+            <column-definition type="DECIMAL(6,2)" start-index="56" stop-index="112">
+                <column name="insurance_fee" />
+            </column-definition>
+            <comment value="order insurance cost" start-index="77" stop-index="97" />
+            <cascade start-index="99" stop-index="108" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_full_combination2">
+        <table name="users" start-index="12" stop-index="16" />
+        <partition spec="region='europe'" start-index="19" stop-index="36" />
+        <add-column start-index="42" stop-index="110">
+            <column-definition type="TIMESTAMP" start-index="59" stop-index="106">
+                <column name="last_login" />
+            </column-definition>
+            <comment value="latest login time" start-index="74" stop-index="93" />
+            <restrict start-index="95" stop-index="109" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_replace_columns_partition_comment_cascade1">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-10'" start-index="19" stop-index="35" />
+        <replace-columns start-index="41" stop-index="143">
+            <column name="order_id" type="INT" comment="unique order identifier" start-index="57" stop-index="92" />
+            <column name="final_amount" type="DECIMAL(10,2)" comment="total amount after discounts" start-index="94" stop-index="138" />
+            <cascade start-index="140" stop-index="142" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_replace_columns_partition_comment_restrict1">
+    <table name="users" start-index="12" stop-index="16" />
+        <partition spec="region='africa'" start-index="19" stop-index="36" />
+        <replace-columns start-index="42" stop-index="142">
+            <column name="user_name" type="STRING" comment="user full name" start-index="58" stop-index="92" />
+            <column name="signup_date" type="DATE" comment="account creation date" start-index="94" stop-index="137" />
+            <restrict start-index="139" stop-index="141" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_replace_columns_quoted1">
+        <table name="sales" start-index="12" stop-index="16" />
+        <partition spec="dt='2025-11'" start-index="19" stop-index="35" />
+        <replace-columns start-index="41" stop-index="167">
+            <column name="order id" start-delimiter="`" end-delimiter="`" type="INT" comment="unique order number" start-index="57" stop-index="107" />
+            <column name="final amount" start-delimiter="`" end-delimiter="`" type="DECIMAL(10,2)" comment="total after tax" start-index="109" stop-index="164" />
+            <cascade start-index="166" stop-index="167" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_replace_columns_quoted2">
+        <table name="users" start-index="12" stop-index="16" />
+        <partition spec="region='south_america'" start-index="19" stop-index="40" />
+        <replace-columns start-index="46" stop-index="157">
+            <column name="user name" start-delimiter="`" end-delimiter="`" type="STRING" comment="full name of user" start-index="62" stop-index="106" />
+            <column name="login count" start-delimiter="`" end-delimiter="`" type="INT" comment="number of logins" start-index="108" stop-index="152" />
+            <restrict start-index="154" stop-index="156" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_replace_columns_quoted3">
+        <table name="products" start-index="12" stop-index="19" />
+        <partition spec="cat='clothing'" start-index="22" stop-index="40" />
+        <replace-columns start-index="46" stop-index="163">
+            <column name="size info" start-delimiter="`" end-delimiter="`" type="STRING" comment="size specification" start-index="62" stop-index="112" />
+            <column name="color code" start-delimiter="`" end-delimiter="`" type="INT" comment="RGB color value" start-index="114" stop-index="158" />
+            <cascade start-index="160" stop-index="162" />
+        </replace-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_replace_columns_quoted4">
+        <table name="orders" start-index="12" stop-index="17" />
+        <partition spec="status='shipped'" start-index="20" stop-index="40" />
+        <replace-columns start-index="46" stop-index="165">
+            <column name="ship date" start-delimiter="`" end-delimiter="`" type="DATE" comment="actual shipping date" start-index="62" stop-index="112" />
+            <column name="tracking id" start-delimiter="`" end-delimiter="`" type="STRING" comment="logistics tracking number" start-index="114" stop-index="159" />
+            <restrict start-index="161" stop-index="164" />
+        </replace-columns>
     </alter-table>
 </sql-parser-test-cases>

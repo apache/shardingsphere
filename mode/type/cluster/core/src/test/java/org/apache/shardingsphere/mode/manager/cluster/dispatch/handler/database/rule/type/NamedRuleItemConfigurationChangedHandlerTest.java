@@ -29,7 +29,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,7 +77,7 @@ class NamedRuleItemConfigurationChangedHandlerTest {
     
     @Test
     void assertHandleDropItem() {
-        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/named/foo_rule_item/active_version", "0", Type.DELETED));
+        handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/rules/fixture/named/foo_rule_item", "0", Type.DELETED));
         verify(contextManager.getMetaDataContextManager().getDatabaseRuleItemManager()).drop(deepEq(new DatabaseRuleNodePath("foo_db", "fixture", new DatabaseRuleItem("named", "foo_rule_item"))));
     }
 }

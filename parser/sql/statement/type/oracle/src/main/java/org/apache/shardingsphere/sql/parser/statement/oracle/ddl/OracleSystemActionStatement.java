@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.SystemActionStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle drop database link statement.
+ * System action statement for Oracle.
  */
-public final class OracleSystemActionStatement extends SystemActionStatement implements OracleStatement {
+public final class OracleSystemActionStatement extends DDLStatement {
+    
+    public OracleSystemActionStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

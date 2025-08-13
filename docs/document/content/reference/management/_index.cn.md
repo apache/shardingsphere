@@ -95,13 +95,12 @@ namespace
    ├    ├     ├──${databaseName.groupName.dataSourceName} 
    ├    ├     ├──${databaseName.groupName.dataSourceName}
    ├──statistics
-   ├    ├──shardingsphere
-   ├    ├     ├──schemas
-   ├    ├     ├     ├──shardingsphere
-   ├    ├     ├     ├     ├──tables             # 系统表
-   ├    ├     ├     ├     ├     ├──sharding_table_statistics    # 分片统计表数据
-   ├    ├     ├     ├     ├     ├     ├──8a2dcb0d97c3d86ef77b3d4651a1d7d0  # md5
-   ├    ├     ├     ├     ├     ├──cluster_information    # 集群信息表
+   ├    ├──databases
+   ├    ├     ├──shardingsphere
+   ├    ├     ├     ├──schemas
+   ├    ├     ├     ├     ├──shardingsphere
+   ├    ├     ├     ├     ├     ├──tables # 系统表
+   ├    ├     ├     ├     ├     ├   ├──cluster_information    # 集群信息表
 ```
 
 ### /rules

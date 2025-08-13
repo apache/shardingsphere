@@ -33,4 +33,12 @@
     <sql-case id="drop_table_with_double_quota" value="DROP TABLE &quot;t_order&quot;" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_table_with_bracket" value="DROP TABLE [t_order]" db-types="SQLServer" />
     <sql-case id="drop_bit_xor_table" value="drop table BIT_XOR" db-types="MySQL" />
+    <sql-case id="drop_table_hive" value="DROP TABLE t_log" db-types="Hive"/>
+    <sql-case id="drop_table_if_exists_hive" value="DROP TABLE IF EXISTS t_log" db-types="Hive" />
+    <sql-case id="drop_table_purge_hive" value="DROP TABLE t_log PURGE" db-types="Hive" />
+    <sql-case id="drop_table_if_exists_purge_hive" value="DROP TABLE IF EXISTS t_log PURGE" db-types="Hive" />
+    <sql-case id="drop_table_hive_with_db" value="DROP TABLE test_db.t_log" db-types="Hive"/>
+    <sql-case id="drop_table_if_exists_hive_with_db" value="DROP TABLE IF EXISTS test_db.t_log" db-types="Hive" />
+    <sql-case id="drop_table_purge_hive_with_db" value="DROP TABLE test_db.t_log PURGE" db-types="Hive" />
+    <sql-case id="drop_table_if_exists_purge_hive_with_db" value="DROP TABLE IF EXISTS test_db.t_log PURGE" db-types="Hive" />
 </sql-cases>

@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <describe sql-case-id="explain_extended_select">
+    <explain sql-case-id="explain_extended_select">
         <select>
             <projections start-index="24" stop-index="49">
                 <expression-projection text="10 % 7" start-index="24" stop-index="29">
@@ -31,7 +31,7 @@
                             </right>
                             <operator>%</operator>
                         </binary-operation-expression>
-                    </expr>    
+                    </expr>
                 </expression-projection>
                 <expression-projection text="10 mod 7" start-index="32" stop-index="39">
                     <expr>
@@ -61,9 +61,9 @@
                 </expression-projection>
             </projections>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_partitions_select">
+    <explain sql-case-id="explain_partitions_select">
         <select>
             <projections start-index="26" stop-index="26">
                 <expression-projection text="1" start-index="26" stop-index="26">
@@ -71,17 +71,17 @@
                 </expression-projection>
             </projections>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_select_constant_without_table">
+    <explain sql-case-id="explain_select_constant_without_table">
         <select>
             <projections start-index="15" stop-index="20">
                 <expression-projection text="1" alias="a" start-index="15" stop-index="20" />
             </projections>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_update_without_condition">
+    <explain sql-case-id="explain_update_without_condition">
         <update>
             <table start-index="15" stop-index="21">
                 <simple-table name="t_order" start-index="15" stop-index="21" />
@@ -95,9 +95,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_insert_without_parameters">
+    <explain sql-case-id="explain_insert_without_parameters">
         <insert>
             <table name="t_order" start-index="20" stop-index="26" />
             <columns start-index="28" stop-index="54">
@@ -122,9 +122,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_delete_without_sharding_value">
+    <explain sql-case-id="explain_delete_without_sharding_value">
         <delete>
             <table name="t_order" start-index="20" stop-index="26" />
             <where start-index="28" stop-index="41" literal-stop-index="46">
@@ -142,9 +142,9 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_select_with_binding_tables">
+    <explain sql-case-id="explain_select_with_binding_tables">
         <select>
             <from>
                 <join-table join-type="INNER">
@@ -178,9 +178,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_create_table_as_select">
+    <explain sql-case-id="explain_create_table_as_select">
         <create-table>
             <table name="t_order_new" start-index="21" stop-index="31" />
             <select>
@@ -192,9 +192,9 @@
                 </projections>
             </select>
         </create-table>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_create_table_as_select_with_explicit_column_names">
+    <explain sql-case-id="explain_create_table_as_select_with_explicit_column_names">
         <create-table>
             <table name="t_order_new" start-index="21" stop-index="31" />
             <column name="order_id_new" start-index="34" stop-index="45" />
@@ -209,9 +209,9 @@
                 </projections>
             </select>
         </create-table>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_create_remote_table_as_select">
+    <explain sql-case-id="explain_create_remote_table_as_select">
         <create-table>
             <table name="t_order_new" start-index="28" stop-index="38" />
             <select>
@@ -247,9 +247,9 @@
                 </projections>
             </select>
         </create-table>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_analyze">
+    <explain sql-case-id="explain_with_analyze">
         <select>
             <projections start-index="23" stop-index="23">
                 <shorthand-projection start-index="23" stop-index="23" />
@@ -271,9 +271,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_analyze_format">
+    <explain sql-case-id="explain_with_analyze_format">
         <select>
             <projections start-index="37" stop-index="37">
                 <shorthand-projection start-index="37" stop-index="37" />
@@ -295,15 +295,15 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_analyze_delete">
+    <explain sql-case-id="explain_with_analyze_delete">
         <delete>
             <table name="t_order" start-index="28" stop-index="34" />
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_analyze_delete_condition">
+    <explain sql-case-id="explain_with_analyze_delete_condition">
         <delete>
             <table name="t1" start-index="23" stop-index="24" />
             <where start-index="54" stop-index="74">
@@ -332,9 +332,9 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_analyze_update">
+    <explain sql-case-id="explain_with_analyze_update">
         <update>
             <table start-index="7" stop-index="13">
                 <simple-table name="t_order" start-index="23" stop-index="29" />
@@ -348,9 +348,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_analyze_insert">
+    <explain sql-case-id="explain_with_analyze_insert">
         <insert>
             <table name="t_order" start-index="28" stop-index="34" />
             <columns start-index="36" stop-index="45">
@@ -364,47 +364,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="desc_table">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-    </describe>
-    
-    <describe sql-case-id="desc_table_with_col_name">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="colName" start-index="15" stop-index="21" />
-    </describe>
-    
-    <describe sql-case-id="desc_table_with_placeholder">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="___" start-index="15" stop-index="17" />
-    </describe>
-    
-    <describe sql-case-id="desc_table_with_wild">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
-    </describe>
-    
-    <describe sql-case-id="describe_table">
-        <simple-table name="tableName" start-index="9" stop-index="17" />
-    </describe>
-    
-    <describe sql-case-id="describe_table_with_col_name">
-        <simple-table name="tableName" start-index="9" stop-index="17" />
-        <column-wild name="colName" start-index="19" stop-index="25" />
-    </describe>
-    
-    <describe sql-case-id="describe_table_with_placeholder">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="___" start-index="15" stop-index="17" />
-    </describe>
-    
-    <describe sql-case-id="describe_table_with_wild">
-        <simple-table name="tableName" start-index="5" stop-index="13" />
-        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
-    </describe>
-    
-    <describe sql-case-id="explain_table">
+    <explain sql-case-id="explain_table">
         <select>
             <order-by>
                 <column-item name="order_id" start-index="31" stop-index="38" />
@@ -420,21 +382,21 @@
                 <simple-table name="t_order" start-index="8" stop-index="20" />
             </from>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_create_materialized_view_with_data" />
+    <explain sql-case-id="explain_create_materialized_view_with_data" />
     
-    <describe sql-case-id="explain_create_materialized_view_with_no_data" />
+    <explain sql-case-id="explain_create_materialized_view_with_no_data" />
     
-    <describe sql-case-id="explain_performance">
+    <explain sql-case-id="explain_performance">
         <select>
             <projections start-index="27" stop-index="27">
                 <expression-projection text="1" start-index="27" stop-index="27" />
             </projections>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_alias_as_keyword">
+    <explain sql-case-id="explain_for_select_alias_as_keyword">
         <select>
             <from>
                 <simple-table name="t_order_item" alias="length" start-index="53" stop-index="71" />
@@ -460,9 +422,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_with_binding_tables">
+    <explain sql-case-id="explain_for_select_with_binding_tables">
         <select>
             <from>
                 <join-table join-type="INNER">
@@ -496,9 +458,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_with_analyze">
+    <explain sql-case-id="explain_for_select_with_analyze">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24" />
@@ -520,9 +482,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_with_statement">
+    <explain sql-case-id="explain_for_select_with_statement">
         <select>
             <projections start-index="53" stop-index="53">
                 <shorthand-projection start-index="53" stop-index="53" />
@@ -544,9 +506,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_with_into">
+    <explain sql-case-id="explain_for_select_with_into">
         <select>
             <projections start-index="37" stop-index="37">
                 <shorthand-projection start-index="37" stop-index="37" />
@@ -568,9 +530,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_with_into_dblink">
+    <explain sql-case-id="explain_for_select_with_into_dblink">
         <select>
             <projections start-index="65" stop-index="65">
                 <shorthand-projection start-index="65" stop-index="65" />
@@ -592,9 +554,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_update_without_condition">
+    <explain sql-case-id="explain_for_update_without_condition">
         <update>
             <table start-index="24" stop-index="30">
                 <simple-table name="t_order" start-index="24" stop-index="30" />
@@ -608,9 +570,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_update">
+    <explain sql-case-id="explain_for_update">
         <update>
             <table start-index="8" stop-index="14">
                 <simple-table name="t_order" start-index="24" stop-index="30" />
@@ -624,9 +586,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_update_with_statement">
+    <explain sql-case-id="explain_for_update_with_statement">
         <update>
             <table start-index="37" stop-index="43">
                 <simple-table name="t_order" start-index="53" stop-index="59" />
@@ -640,9 +602,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_update_with_into">
+    <explain sql-case-id="explain_for_update_with_into">
         <update>
             <table start-index="21" stop-index="27">
                 <simple-table name="t_order" start-index="37" stop-index="43" />
@@ -656,9 +618,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_update_with_into_dblink">
+    <explain sql-case-id="explain_for_update_with_into_dblink">
         <update>
             <table start-index="48" stop-index="54">
                 <simple-table name="t_order" start-index="65" stop-index="71" />
@@ -672,9 +634,9 @@
                 </assignment>
             </set>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_insert_without_parameters">
+    <explain sql-case-id="explain_for_insert_without_parameters">
         <insert>
             <table name="t_order" start-index="29" stop-index="35" />
             <columns start-index="37" stop-index="63">
@@ -699,9 +661,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_with_analyze_insert">
+    <explain sql-case-id="explain_for_with_analyze_insert">
         <insert>
             <table name="t_order" start-index="29" stop-index="35" />
             <columns start-index="37" stop-index="46">
@@ -715,9 +677,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_insert_statement">
+    <explain sql-case-id="explain_for_insert_statement">
         <insert>
             <table name="t_order" start-index="58" stop-index="64" />
             <columns start-index="66" stop-index="75">
@@ -731,9 +693,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_insert_into">
+    <explain sql-case-id="explain_for_insert_into">
         <insert>
             <table name="t_order" start-index="42" stop-index="48" />
             <columns start-index="50" stop-index="59">
@@ -747,9 +709,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_insert_into_dblink">
+    <explain sql-case-id="explain_for_insert_into_dblink">
         <insert>
             <table name="t_order" start-index="70" stop-index="76" />
             <columns start-index="78" stop-index="87">
@@ -763,9 +725,9 @@
                 </value>
             </values>
         </insert>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_delete_without_sharding_value">
+    <explain sql-case-id="explain_for_delete_without_sharding_value">
         <delete>
             <table name="t_order" start-index="29" stop-index="35" />
             <where start-index="37" stop-index="50" literal-stop-index="55">
@@ -783,15 +745,15 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_with_analyze_delete">
+    <explain sql-case-id="explain_for_with_analyze_delete">
         <delete>
             <table name="t_order" start-index="29" stop-index="35" />
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_delete_condition">
+    <explain sql-case-id="explain_for_delete_condition">
         <delete>
             <table name="t_order" start-index="29" stop-index="35" />
             <where start-index="37" stop-index="55">
@@ -810,9 +772,9 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_delete_statement">
+    <explain sql-case-id="explain_for_delete_statement">
         <delete>
             <table name="t_order" start-index="58" stop-index="64" />
             <where start-index="66" stop-index="84">
@@ -831,9 +793,9 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_delete_into">
+    <explain sql-case-id="explain_for_delete_into">
         <delete>
             <table name="t_order" start-index="42" stop-index="48" />
             <where start-index="50" stop-index="68">
@@ -852,9 +814,9 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_delete_into_dblink">
+    <explain sql-case-id="explain_for_delete_into_dblink">
         <delete>
             <table name="t_order" start-index="70" stop-index="76" />
             <where start-index="78" stop-index="96">
@@ -873,9 +835,9 @@
                 </expr>
             </where>
         </delete>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_set_statement_id_with_select">
+    <explain sql-case-id="explain_set_statement_id_with_select">
         <select>
             <projections start-index="68" stop-index="76">
                 <column-projection name="last_name" start-index="68" stop-index="76" />
@@ -884,9 +846,9 @@
                 <simple-table name="employees" start-index="83" stop-index="91" />
             </from>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_set_statement_id_with_into_select1">
+    <explain sql-case-id="explain_set_statement_id_with_into_select1">
         <select>
             <projections start-index="109" stop-index="109">
                 <shorthand-projection start-index="109" stop-index="109" />
@@ -920,9 +882,9 @@
             </where>
         </select>
         <comment start-index="69" stop-index="93" text="/*+ LEADING(E@SEL$2 D@SEL$2 T@SEL$1) */" />
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_set_statement_id_with_into_select2">
+    <explain sql-case-id="explain_set_statement_id_with_into_select2">
         <select>
             <projections start-index="95" stop-index="95">
                 <shorthand-projection start-index="95" stop-index="95" />
@@ -956,9 +918,9 @@
             </where>
         </select>
         <comment start-index="69" stop-index="93" text="/*+ LEADING(v.e v.d t) */" />
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_set_statement_id_with_into_update">
+    <explain sql-case-id="explain_set_statement_id_with_into_update">
         <update>
             <table start-index="76" stop-index="84">
                 <simple-table name="employees" start-index="76" stop-index="84" />
@@ -1015,9 +977,9 @@
                 </expr>
             </where>
         </update>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_for_select_with_unique_partition_by">
+    <explain sql-case-id="explain_for_select_with_unique_partition_by">
         <select>
             <projections start-index="24" stop-index="49">
                 <column-projection name="country" start-index="24" stop-index="30" />
@@ -1053,9 +1015,9 @@
                 <cell-assignment-column name="sales" start-index="269" stop-index="273" />
             </model>
         </select>
-    </describe>
+    </explain>
     
-    <describe sql-case-id="explain_with_select_comment">
+    <explain sql-case-id="explain_with_select_comment">
         <select>
             <projections start-index="78" stop-index="78">
                 <shorthand-projection start-index="78" stop-index="78" />
@@ -1066,9 +1028,9 @@
         </select>
         <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
         <comment start-index="36" stop-index="76" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_with_group_by">
+    <explain sql-case-id="explain_for_select_with_group_by">
         <select>
             <projections start-index="24" stop-index="64">
                 <column-projection name="calendar_month_desc" start-index="24" stop-index="44" >
@@ -1109,9 +1071,9 @@
                 </column-item>
             </group-by>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_with_function">
+    <explain sql-case-id="explain_for_select_with_function">
         <select>
             <projections start-index="24" stop-index="39">
                 <aggregation-projection type="SUM" expression="SUM(amount_sold)" start-index="24" stop-index="39" />
@@ -1140,9 +1102,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_with_function_and_function">
+    <explain sql-case-id="explain_for_select_with_function_and_function">
         <select>
             <projections start-index="24" stop-index="41">
                 <aggregation-projection type="SUM" expression="SUM(quantity_sold)" start-index="24" stop-index="41" />
@@ -1171,9 +1133,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select">
+    <explain sql-case-id="explain_for_select">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24" />
@@ -1213,9 +1175,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_emp_range" >
+    <explain sql-case-id="explain_for_select_emp_range" >
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>
@@ -1224,9 +1186,9 @@
                 <simple-table name="emp_range" start-index="31" stop-index="39"/>
             </from>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_emp_comp" >
+    <explain sql-case-id="explain_for_select_emp_comp" >
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>
@@ -1235,9 +1197,9 @@
                 <simple-table name="emp_comp" start-index="31" stop-index="38"/>
             </from>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_with_comments">
+    <explain sql-case-id="explain_for_select_with_comments">
         <select>
             <projections start-index="44" stop-index="59">
                 <column-projection name="deptno" start-index="44" stop-index="49"/>
@@ -1251,9 +1213,9 @@
             </group-by>
         </select>
         <comment text="/*+ result_cache */" start-index="24" stop-index="42"/>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_job_history" >
+    <explain sql-case-id="explain_for_select_job_history" >
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>
@@ -1262,9 +1224,9 @@
                 <simple-table name="v_emp_job_history" start-index="31" stop-index="47"/>
             </from>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_emp_comp_where">
+    <explain sql-case-id="explain_for_select_emp_comp_where">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24" />
@@ -1286,9 +1248,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_emp_range_where">
+    <explain sql-case-id="explain_for_select_emp_range_where">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24" />
@@ -1317,9 +1279,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_where_and_function">
+    <explain sql-case-id="explain_for_select_where_and_function">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24" />
@@ -1348,9 +1310,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_xml_query">
+    <explain sql-case-id="explain_for_select_xml_query">
         <select>
             <projections start-index="24" stop-index="107">
                 <expression-projection text="XMLQUERY('/PurchaseOrder/LineItems/LineItem')" start-index="24" stop-index="107" />
@@ -1380,9 +1342,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_where_between">
+    <explain sql-case-id="explain_for_select_where_between">
         <select>
             <projections start-index="24" stop-index="53">
                 <aggregation-projection type="SUM" alias="total_revenue" expression="SUM(amount_sold)" start-index="24" stop-index="39"/>
@@ -1406,9 +1368,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_where_between_groupby_having">
+    <explain sql-case-id="explain_for_select_where_between_groupby_having">
         <select>
             <projections start-index="24" stop-index="49">
                 <column-projection name="cust_last_name" start-index="24" stop-index="39">
@@ -1496,45 +1458,9 @@
                 </expr>
             </having>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_alias_where_colon">
-        <select>
-            <projections start-index="24" stop-index="24">
-                <shorthand-projection start-index="24" stop-index="24"/>
-            </projections>
-            <from>
-                <simple-table name="sales" alias="s" start-index="31" stop-index="37"/>
-            </from>
-            <where start-index="39" stop-index="72">
-                <expr>
-                    <in-expression start-index="45" stop-index="72">
-                        <left>
-                            <column name="time_id" start-index="45" stop-index="51"/>
-                        </left>
-                        <right>
-                            <list-expression start-index="56" stop-index="72">
-                                <items>
-                                    <common-expression start-index="58" stop-index="59" text=":a"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="62" stop-index="63" text=":b"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="66" stop-index="67" text=":c"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="70" stop-index="71" text=":d"/>
-                                </items>
-                            </list-expression>
-                        </right>
-                    </in-expression>
-                </expr>
-            </where>
-        </select>
-    </describe>
-
-    <describe sql-case-id="explain_for_select_where_todate_function">
+    <explain sql-case-id="explain_for_select_where_todate_function">
         <select>
             <projections start-index="24" stop-index="24">
                 <shorthand-projection start-index="24" stop-index="24"/>
@@ -1563,45 +1489,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_where_colon">
-        <select>
-            <projections start-index="24" stop-index="24">
-                <shorthand-projection start-index="24" stop-index="24"/>
-            </projections>
-            <from>
-                <simple-table name="sales" start-index="31" stop-index="35"/>
-            </from>
-            <where start-index="37" stop-index="69">
-                <expr>
-                    <in-expression start-index="43" stop-index="69">
-                        <left>
-                            <column name="time_id" start-index="43" stop-index="49"/>
-                        </left>
-                        <right>
-                            <list-expression start-index="54" stop-index="69">
-                                <items>
-                                    <common-expression start-index="55" stop-index="56" text=":a"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="59" stop-index="60" text=":b"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="63" stop-index="64" text=":c"/>
-                                </items>
-                                <items>
-                                    <common-expression start-index="67" stop-index="68" text=":d"/>
-                                </items>
-                            </list-expression>
-                        </right>
-                    </in-expression>
-                </expr>
-            </where>
-        </select>
-    </describe>
-
-    <describe sql-case-id="explain_for_select_group_by_multi_columns">
+    <explain sql-case-id="explain_for_select_group_by_multi_columns">
         <select>
             <projections start-index="24" stop-index="65">
                 <column-projection name="prod_name" start-index="24" stop-index="34">
@@ -1729,9 +1619,9 @@
                 </column-item>
             </group-by>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_in_sub_query">
+    <explain sql-case-id="explain_for_select_in_sub_query">
         <select>
             <projections start-index="24" stop-index="39">
                 <aggregation-projection type="SUM" expression="sum(amount_sold)" start-index="24" stop-index="39"/>
@@ -1774,9 +1664,9 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 
-    <describe sql-case-id="explain_for_select_between_to_date_function">
+    <explain sql-case-id="explain_for_select_between_to_date_function">
         <select>
             <projections start-index="24" stop-index="39">
                 <aggregation-projection type="SUM" expression="sum(amount_sold)" start-index="24" stop-index="39"/>
@@ -1814,5 +1704,5 @@
                 </expr>
             </where>
         </select>
-    </describe>
+    </explain>
 </sql-parser-test-cases>

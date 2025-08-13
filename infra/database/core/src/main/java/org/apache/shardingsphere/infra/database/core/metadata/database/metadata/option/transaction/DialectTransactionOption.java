@@ -37,4 +37,8 @@ public final class DialectTransactionOption {
     
     // TODO Investgate the reason of some databases cannot support meta data refreshed in transaction. The method should be removed finally after metadata refresh supported for all database.
     private final boolean isSupportMetaDataRefreshInTransaction;
+    
+    private final int defaultIsolationLevel;
+    
+    private final boolean isReturnRollbackStatementWhenCommitFailed;
 }

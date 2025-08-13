@@ -36,5 +36,10 @@
             <artifactId>shardingsphere-infra-database-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-parser-sql-statement-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

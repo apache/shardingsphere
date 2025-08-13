@@ -21,7 +21,7 @@ import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.natived.commons.TestShardingService;
-import org.apache.shardingsphere.test.natived.commons.proxy.ProxyTestingServer;
+import org.apache.shardingsphere.test.natived.commons.util.ProxyTestingServer;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +38,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Properties;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "SameParameterValue", "resource"})
@@ -46,7 +47,7 @@ import java.util.Properties;
 class MySQLTest {
     
     @Container
-    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.1.0-oraclelinux9")
+    private final GenericContainer<?> mysqlContainer = new GenericContainer<>("mysql:9.4.0-oraclelinux9")
             .withEnv("MYSQL_ROOT_PASSWORD", "yourStrongPassword123!")
             .withExposedPorts(3306);
     
@@ -78,7 +79,7 @@ class MySQLTest {
     
     @AfterEach
     void afterEach() {
-        proxyTestingServer.close();
+        proxyTestingServer.close(Collections.singletonList("sharding_db"));
     }
     
     /**

@@ -51,6 +51,6 @@ public final class EncryptorComparator {
      * @return same encryptors or not
      */
     public static boolean isSame(final EncryptAlgorithm encryptor1, final EncryptAlgorithm encryptor2) {
-        return null != encryptor1 && null != encryptor2 ? encryptor1.toConfiguration().equals(encryptor2.toConfiguration()) : encryptor1 == encryptor2;
+        return null == encryptor1 || null == encryptor2 ? encryptor1 == encryptor2 : encryptor1.toConfiguration().equals(encryptor2.toConfiguration());
     }
 }

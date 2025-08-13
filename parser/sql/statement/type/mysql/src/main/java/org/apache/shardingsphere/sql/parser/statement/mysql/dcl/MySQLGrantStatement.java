@@ -19,21 +19,21 @@ package org.apache.shardingsphere.sql.parser.statement.mysql.dcl;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.GrantStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * MySQL grant statement.
+ * Grant statement for MySQL.
  */
 @Getter
 @Setter
-public final class MySQLGrantStatement extends GrantStatement implements MySQLStatement {
+public final class MySQLGrantStatement extends GrantStatement {
     
     private final Collection<RoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
     
@@ -44,4 +44,8 @@ public final class MySQLGrantStatement extends GrantStatement implements MySQLSt
     private String aclObject;
     
     private GrantLevelSegment level;
+    
+    public MySQLGrantStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

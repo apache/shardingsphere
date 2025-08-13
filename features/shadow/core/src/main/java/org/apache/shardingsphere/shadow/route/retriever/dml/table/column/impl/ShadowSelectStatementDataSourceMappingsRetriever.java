@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.route.retriever.dml.table.column.impl;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.route.retriever.dml.table.column.ShadowColumnDataSourceMappingsRetriever;
 import org.apache.shardingsphere.shadow.route.util.ShadowExtractor;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtra
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
@@ -67,9 +66,7 @@ public final class ShadowSelectStatementDataSourceMappingsRetriever extends Shad
     private Collection<ExpressionSegment> getWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : sqlStatementContext.getWhereSegments()) {
-            for (AndPredicate predicate : ExpressionExtractor.extractAndPredicates(each.getExpr())) {
-                result.addAll(predicate.getPredicates());
-            }
+            result.addAll(ExpressionExtractor.extractAllExpressions(each.getExpr()));
         }
         return result;
     }

@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
-    public int getColumnLength(final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         return value instanceof BigDecimal ? ByteConverter.numeric((BigDecimal) value).length : value.toString().getBytes(StandardCharsets.UTF_8).length;
     }
     

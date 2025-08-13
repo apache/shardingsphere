@@ -28,7 +28,7 @@ public interface DialectSchemaOption {
     /**
      * Is schema feature available.
      *
-     * @return true or false
+     * @return available or not
      */
     boolean isSchemaAvailable();
     
@@ -46,4 +46,11 @@ public interface DialectSchemaOption {
      * @return default schema name
      */
     Optional<String> getDefaultSchema();
+    
+    /**
+     * Get default system schema name.
+     *
+     * @return default system schema name
+     */
+    Optional<String> getDefaultSystemSchema();
 }

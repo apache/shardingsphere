@@ -335,7 +335,7 @@
     
     <select sql-case-id="select_with_exists_sub_query_with_project">
         <projections start-index="7" stop-index="36">
-            <subquery-projection start-index="14" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
+            <expression-projection start-index="7" stop-index="36" text="EXISTS (SELECT 1 FROM t_order)" literal-text="EXISTS (SELECT 1 FROM t_order)">
                 <subquery start-index="15" stop-index="35">
                     <select>
                         <from>
@@ -346,7 +346,7 @@
                         </projections>
                     </select>
                 </subquery>
-            </subquery-projection>
+            </expression-projection>
         </projections>
     </select>
 

@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLSetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowOtherStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.MySQLShowOtherStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -59,7 +59,7 @@ public final class MySQLDialectSaneQueryResultEngine implements DialectSaneQuery
         if (sqlStatement instanceof MySQLShowOtherStatement) {
             return Optional.of(createQueryResult());
         }
-        if (sqlStatement instanceof MySQLSetStatement) {
+        if (sqlStatement instanceof SetStatement) {
             return Optional.of(new UpdateResult(0, 0L));
         }
         return Optional.empty();

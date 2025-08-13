@@ -31,10 +31,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
     
@@ -42,7 +42,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertTrue(dataSource instanceof HikariDataSource);
+        assertThat(dataSource, instanceOf(HikariDataSource.class));
     }
     
     @Test
@@ -58,7 +58,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("normal_db").getDataSource();
-        assertTrue(dataSource instanceof HikariDataSource);
+        assertThat(dataSource, instanceOf(HikariDataSource.class));
     }
     
     @Test

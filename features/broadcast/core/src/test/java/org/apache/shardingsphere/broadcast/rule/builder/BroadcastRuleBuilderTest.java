@@ -19,11 +19,12 @@ package org.apache.shardingsphere.broadcast.rule.builder;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.test.fixture.database.MockedDatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -34,12 +35,13 @@ import static org.mockito.Mockito.mock;
 
 class BroadcastRuleBuilderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertBuild() {
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", new MockedDatabaseType(), mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)),
-                instanceOf(BroadcastRule.class));
+        assertThat(builder.build(ruleConfig, "", databaseType, mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)), instanceOf(BroadcastRule.class));
     }
 }

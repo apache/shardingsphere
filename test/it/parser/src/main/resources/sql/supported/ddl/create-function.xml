@@ -22,19 +22,18 @@
         LANGUAGE SQL
         IMMUTABLE
         RETURNS NULL ON NULL INPUT" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
-<!--    TODO Fix me. -->
-<!--    <sql-case id="create_function_with_argname" value="CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS-->
-<!--        $$-->
-<!--            BEGIN-->
-<!--                RETURN i + 1;-->
-<!--            END;-->
-<!--        $$ LANGUAGE plpgsql" db-types="PostgreSQL,openGauss" />-->
-<!--    <sql-case id="create_function_with_multiple_output_parameters" value="CREATE FUNCTION dup(in int, out f1 int, out f2 text)-->
-<!--        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$-->
-<!--        LANGUAGE SQL" db-types="PostgreSQL,openGauss" case-types="Placeholder" />-->
-<!--    <sql-case id="create_function_return_table" value="CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)-->
-<!--        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$-->
-<!--        LANGUAGE SQL" db-types="PostgreSQL,openGauss" case-types="Placeholder" />-->
+    <sql-case id="create_function_with_argname" value="CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS
+        $$
+            BEGIN
+                RETURN i + 1;
+            END;
+        $$ LANGUAGE plpgsql" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_function_with_multiple_output_parameters" value="CREATE FUNCTION dup(in int, out f1 int, out f2 text)
+        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+        LANGUAGE SQL" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
+    <sql-case id="create_function_return_table" value="CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)
+        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$
+        LANGUAGE SQL" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
     <sql-case id="create_function_with_execute" value="CREATE FUNCTION dbo.ISOweek (@DATE datetime)
         RETURNS int WITH EXECUTE AS CALLER AS
         BEGIN
@@ -75,4 +74,13 @@
     <sql-case id="create_function_with_loop" value="CREATE FUNCTION f(cur SYS_REFCURSOR, mgr_hiredate DATE) RETURN NUMBER IS emp_hiredate DATE; before number :=0; after number:=0; begin loop fetch cur into emp_hiredate; exit when cur%NOTFOUND; if emp_hiredate > mgr_hiredate then after:=after+1; else before:=before+1; end if; end loop; close cur; if before > after then return 1; else return 0; end if; end;" db-types="Oracle" />
     <sql-case id="create_function_with_aggregate_using_function" value="CREATE OR REPLACE EDITIONABLE FUNCTION MY_FUNC (P1 VARCHAR2) RETURN VARCHAR2 AGGREGATE USING MY_AGG_FUNC AS LANGUAGE JAVA NAME 'test';" db-types="Oracle" />
     <sql-case id="create_function_with_simple_arithmetic" value="CREATE FUNCTION ADD_INT(A INT, B INT DEFAULT 0) RETURNS INT AS BEGIN RETURN A+B; END" db-types="Firebird"/>
+    <sql-case id="create_temporary_function_basic" value="CREATE TEMPORARY FUNCTION parse_json AS 'com.example.JsonParser';" db-types="Hive" />
+    <sql-case id="create_function_basic" value="CREATE FUNCTION calculate_score AS 'com.example.ScoreCalculator';" db-types="Hive" />
+    <sql-case id="create_function_with_db" value="CREATE FUNCTION db1.calculate_score AS 'com.example.ScoreCalculator';" db-types="Hive" />
+    <sql-case id="create_function_with_single_jar" value="CREATE FUNCTION parse_json AS 'com.example.JsonParser' USING JAR 'hdfs:///udfs/json-parser.jar';" db-types="Hive" />
+    <sql-case id="create_function_with_single_file" value="CREATE FUNCTION load_config AS 'com.example.ConfigLoader' USING FILE 'hdfs:///udfs/app.properties';" db-types="Hive" />
+    <sql-case id="create_function_with_single_archive" value="CREATE FUNCTION process_archive_data AS 'com.example.ArchiveProcessor' USING ARCHIVE 'hdfs:///udfs/data-files.tar.gz';" db-types="Hive" />
+    <sql-case id="create_function_with_two_resources" value="CREATE FUNCTION process_data AS 'com.example.DataProcessor' USING JAR 'hdfs:///udfs/data-processor.jar', FILE 'hdfs:///udfs/config.properties';" db-types="Hive" />
+    <sql-case id="create_function_with_three_resource_types" value="CREATE FUNCTION process_multi_data AS 'com.example.MultiDataProcessor' USING JAR 'hdfs:///udfs/core-processor.jar', FILE 'hdfs:///configs/processing-rules.json', ARCHIVE 'hdfs:///datasets/sample-data.tar.gz';" db-types="Hive" />
+    <sql-case id="create_function_with_three_resource_types_and_db" value="CREATE FUNCTION db1.process_multi_data AS 'com.example.MultiDataProcessor' USING JAR 'hdfs:///udfs/core-processor.jar', FILE 'hdfs:///configs/processing-rules.json', ARCHIVE 'hdfs:///datasets/sample-data.tar.gz';" db-types="Hive" />
 </sql-cases>

@@ -51,6 +51,9 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @BeforeEach
     void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
@@ -78,8 +81,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaTableNames("foo_db",
-                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), dataSource, Collections.emptyList()), is(createSchemaTableNames()));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(createSchemaTableNames()));
     }
     
     private Map<String, Collection<String>> createSchemaTableNames() {
@@ -92,6 +94,6 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaNames() throws SQLException {
-        assertThat(SchemaMetaDataLoader.loadSchemaNames(dataSource.getConnection(), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), is(Arrays.asList("public", "schema_1", "schema_2")));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaNames(dataSource.getConnection()), is(Arrays.asList("public", "schema_1", "schema_2")));
     }
 }

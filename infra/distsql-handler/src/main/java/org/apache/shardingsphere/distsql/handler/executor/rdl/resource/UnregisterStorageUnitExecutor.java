@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.statement.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.InUsedStorageUnitException;
@@ -44,7 +43,6 @@ import java.util.stream.Collectors;
  * Unregister storage unit executor.
  */
 @Setter
-@Slf4j
 public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecutor<UnregisterStorageUnitStatement>, DistSQLExecutorDatabaseAware {
     
     private ShardingSphereDatabase database;

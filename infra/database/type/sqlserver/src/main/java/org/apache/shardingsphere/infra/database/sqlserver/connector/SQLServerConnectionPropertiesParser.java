@@ -34,7 +34,7 @@ public final class SQLServerConnectionPropertiesParser implements ConnectionProp
     
     private static final int DEFAULT_PORT = 1433;
     
-    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:|tc:)?sqlserver:.*//([\\w\\-\\.]+):?(\\d*);\\S*(databaseName|database)=([\\w\\-\\.]+);?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:(microsoft:|tc:)?sqlserver:.*//([\\w-.]+):?(\\d*);\\S*(databaseName|database)=([\\w-.]+);?", Pattern.CASE_INSENSITIVE);
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {

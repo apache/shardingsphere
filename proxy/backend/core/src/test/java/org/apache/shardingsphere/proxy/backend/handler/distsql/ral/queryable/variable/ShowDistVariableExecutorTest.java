@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.variable;
 
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.statement.ral.queryable.show.ShowDistVariableStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

@@ -69,14 +69,14 @@ public final class DriverExecuteBatchExecutor {
         this.metaData = metaData;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
         batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
-        prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, database);
+        prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, database, metaData);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final StatementOption statementOption, final StatementManager statementManager,
-                                                                                                           final ShardingSphereDatabase database) {
+                                                                                                           final ShardingSphereDatabase database, final ShardingSphereMetaData metaData) {
         int maxConnectionsSizePerQuery = connection.getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
-                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+                database.getRuleMetaData().getRules(), metaData);
     }
     
     /**

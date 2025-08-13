@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueDataTypeException;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGeneratorFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
@@ -71,7 +71,7 @@ public final class WhereClauseShardingConditionEngine {
      * @return sharding conditions
      */
     public List<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        if (!(sqlStatementContext instanceof WhereAvailable)) {
+        if (!(sqlStatementContext instanceof WhereContextAvailable)) {
             return Collections.emptyList();
         }
         List<ShardingCondition> result = new ArrayList<>();
@@ -85,7 +85,7 @@ public final class WhereClauseShardingConditionEngine {
         Collection<AndPredicate> andPredicates = ExpressionExtractor.extractAndPredicates(expression);
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
-            Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), params);
+            Map<HashColumn, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), params);
             if (shardingConditionValues.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -97,8 +97,8 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, final List<Object> params) {
-        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
+    private Map<HashColumn, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates, final List<Object> params) {
+        Map<HashColumn, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
                 String tableName = columnSegment.getColumnBoundInfo().getOriginalTable().getValue();
@@ -106,7 +106,7 @@ public final class WhereClauseShardingConditionEngine {
                 if (!shardingColumn.isPresent()) {
                     continue;
                 }
-                Column column = new Column(shardingColumn.get(), tableName);
+                HashColumn column = new HashColumn(shardingColumn.get(), tableName);
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timestampServiceRule);
                 if (!shardingConditionValue.isPresent()) {
                     continue;
@@ -117,9 +117,9 @@ public final class WhereClauseShardingConditionEngine {
         return result;
     }
     
-    private ShardingCondition createShardingCondition(final Map<Column, Collection<ShardingConditionValue>> shardingConditionValues) {
+    private ShardingCondition createShardingCondition(final Map<HashColumn, Collection<ShardingConditionValue>> shardingConditionValues) {
         ShardingCondition result = new ShardingCondition();
-        for (Entry<Column, Collection<ShardingConditionValue>> entry : shardingConditionValues.entrySet()) {
+        for (Entry<HashColumn, Collection<ShardingConditionValue>> entry : shardingConditionValues.entrySet()) {
             try {
                 ShardingConditionValue shardingConditionValue = mergeShardingConditionValues(entry.getKey(), entry.getValue());
                 if (shardingConditionValue instanceof AlwaysFalseShardingConditionValue) {
@@ -134,7 +134,7 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private ShardingConditionValue mergeShardingConditionValues(final Column column, final Collection<ShardingConditionValue> shardingConditionValues) {
+    private ShardingConditionValue mergeShardingConditionValues(final HashColumn column, final Collection<ShardingConditionValue> shardingConditionValues) {
         Collection<Comparable<?>> listValue = null;
         Range<Comparable<?>> rangeValue = null;
         Set<Integer> parameterMarkerIndexes = new HashSet<>();

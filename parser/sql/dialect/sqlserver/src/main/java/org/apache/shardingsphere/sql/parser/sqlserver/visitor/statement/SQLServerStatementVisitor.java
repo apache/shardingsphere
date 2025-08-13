@@ -19,15 +19,19 @@ package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AggregationFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AiGenerateEmbeddingsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ApproxFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AssignmentContext;
@@ -38,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Bit
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.BooleanPrimaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CastFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ChangeTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ColumnNameWithSortContext;
@@ -49,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Con
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CreateTableAsSelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CteClauseSetContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.CurrentUserFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DataTypeNameContext;
@@ -58,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Del
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExecContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FreetextTableFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FromClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GraphAggFunctionContext;
@@ -80,6 +87,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Jso
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonKeyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonNullClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.JsonObjectFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LagLeadFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LinkedServerNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.LiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MergeInsertClauseContext;
@@ -89,6 +98,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Mul
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NullValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.NumberLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenDatasourceFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenJsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OpenRowSetFunctionContext;
@@ -100,6 +110,11 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Out
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OutputWithColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParameterMarkerContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PivotValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredicateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProcedureNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ProjectionContext;
@@ -124,6 +139,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Sta
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SubqueryContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableFactorContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintExtendedContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableHintLimitedContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableNamesContext;
@@ -131,6 +147,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Tab
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TopContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TrimFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TryParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.UpdateStatisticsContext;
@@ -139,6 +156,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithTableHintContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.XmlMethodCallContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
@@ -146,6 +164,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarker
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ScanUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.StatisticsDimension;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -218,7 +237,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -229,13 +253,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.SQLServerUpdateStatisticsStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerDeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerMergeStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.sqlserver.dml.SQLServerUpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.statistics.SQLServerUpdateStatisticsStatement;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VectorSearchFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VectorSearchParametersContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.RollupCubeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingSetsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingExprListContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExpressionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredictFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -246,8 +273,11 @@ import java.util.stream.Collectors;
 /**
  * Statement visitor for SQLServer.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
@@ -321,6 +351,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     @Override
+    public final ASTNode visitVariableName(final VariableNameContext ctx) {
+        return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((IdentifierValue) visit(ctx.identifier())).getValue());
+    }
+    
+    @Override
     public final ASTNode visitRegularIdentifier(final RegularIdentifierContext ctx) {
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null == unreservedWord ? new IdentifierValue(ctx.getText()) : (IdentifierValue) visit(unreservedWord);
@@ -349,7 +384,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             OwnerSegment ownerSegment = new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier()));
             if (null != ctx.databaseName()) {
                 DatabaseNameContext databaseName = ctx.databaseName();
-                ownerSegment.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
+                OwnerSegment databaseSegment = new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier()));
+                ownerSegment.setOwner(databaseSegment);
+                setLinkedServerForDatabase(databaseSegment, ctx);
             }
             result.setOwner(ownerSegment);
         } else if (null != ctx.databaseName()) {
@@ -357,6 +394,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setOwner(new OwnerSegment(databaseName.getStart().getStartIndex(), databaseName.getStop().getStopIndex(), (IdentifierValue) visit(databaseName.identifier())));
         }
         return result;
+    }
+    
+    private void setLinkedServerForDatabase(final OwnerSegment databaseSegment, final TableNameContext ctx) {
+        if (null != ctx.linkedServerName()) {
+            LinkedServerNameContext linkedServerName = ctx.linkedServerName();
+            OwnerSegment linkedServerSegment =
+                    new OwnerSegment(linkedServerName.getStart().getStartIndex(), linkedServerName.getStop().getStopIndex(), (IdentifierValue) visit(linkedServerName.identifier()));
+            databaseSegment.setOwner(linkedServerSegment);
+        }
     }
     
     @Override
@@ -438,6 +484,12 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.distinctFrom()) {
             return createBinaryOperationExpression(ctx, ctx.distinctFrom().getText());
+        }
+        if (null != ctx.AT() && null != ctx.TIME() && null != ctx.ZONE()) {
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.expr(1));
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, "AT TIME ZONE", text);
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
     }
@@ -528,7 +580,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
             right = listExpression;
         } else {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(ctx.subquery()),
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()),
                     getOriginalText(ctx.subquery())));
         }
         boolean not = null != ctx.NOT();
@@ -586,7 +638,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (SQLServerSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -602,6 +654,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.columnName()) {
             return visit(ctx.columnName());
+        }
+        if (null != ctx.xmlMethodCall()) {
+            return visit(ctx.xmlMethodCall());
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
             return visit(ctx.expr(0));
@@ -642,9 +697,16 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitAggregationFunction(final AggregationFunctionContext ctx) {
         String aggregationType = ctx.aggregationFunctionName().getText();
-        return AggregationType.isAggregationType(aggregationType)
-                ? createAggregationSegment(ctx, aggregationType)
-                : new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        if (AggregationType.isAggregationType(aggregationType)) {
+            return createAggregationSegment(ctx, aggregationType);
+        }
+        FunctionSegment functionSegment = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), aggregationType, getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                functionSegment.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return functionSegment;
     }
     
     private ASTNode createAggregationSegment(final AggregationFunctionContext ctx, final String aggregationType) {
@@ -708,7 +770,112 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.trimFunction()) {
             return visit(ctx.trimFunction());
         }
+        if (null != ctx.changeTableFunction()) {
+            return visit(ctx.changeTableFunction());
+        }
+        if (null != ctx.aiFunction()) {
+            return visit(ctx.aiFunction());
+        }
+        if (null != ctx.freetextTableFunction()) {
+            return visit(ctx.freetextTableFunction());
+        }
+        if (null != ctx.currentUserFunction()) {
+            return visit(ctx.currentUserFunction());
+        }
+        if (null != ctx.vectorSearchFunction()) {
+            return visit(ctx.vectorSearchFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitVectorSearchFunction(final VectorSearchFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VECTOR_SEARCH().getText(), getOriginalText(ctx));
+        VectorSearchParametersContext params = ctx.vectorSearchParameters();
+        if (null != params.vectorSearchTable()) {
+            String tableText = params.vectorSearchTable().getText();
+            result.getParameters().add(new LiteralExpressionSegment(params.vectorSearchTable().getStart().getStartIndex(), params.vectorSearchTable().getStop().getStopIndex(), tableText));
+        }
+        if (null != params.columnName()) {
+            String columnText = params.columnName().getText();
+            result.getParameters().add(new LiteralExpressionSegment(params.columnName().getStart().getStartIndex(), params.columnName().getStop().getStopIndex(), columnText));
+        }
+        if (null != params.expr() && !params.expr().isEmpty()) {
+            result.getParameters().add((ExpressionSegment) visit(params.expr(0)));
+        }
+        if (null != params.vectorSearchMetric() && null != params.vectorSearchMetric().stringLiterals()) {
+            String metricText = params.vectorSearchMetric().stringLiterals().getText();
+            result.getParameters().add(new LiteralExpressionSegment(params.vectorSearchMetric().stringLiterals().getStart().getStartIndex(),
+                    params.vectorSearchMetric().stringLiterals().getStop().getStopIndex(), metricText));
+        }
+        if (null != params.expr() && params.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(params.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCurrentUserFunction(final CurrentUserFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURRENT_USER().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitFreetextTableFunction(final FreetextTableFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.FREETEXTTABLE().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAiFunction(final AiFunctionContext ctx) {
+        if (null != ctx.aiGenerateEmbeddingsFunction()) {
+            return visit(ctx.aiGenerateEmbeddingsFunction());
+        }
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitAiGenerateEmbeddingsFunction(final AiGenerateEmbeddingsFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.AI_GENERATE_EMBEDDINGS().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add(new LiteralExpressionSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), ctx.identifier().getText()));
+        if (ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitChangeTableFunction(final ChangeTableFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHANGETABLE().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlMethodCall(final XmlMethodCallContext ctx) {
+        String fullMethodName;
+        if (null == ctx.alias()) {
+            fullMethodName = ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
+        } else {
+            fullMethodName = ctx.alias().getText() + "." + ctx.columnName().getText() + "." + ctx.xmlMethodName().getText();
+        }
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                fullMethodName, getOriginalText(ctx));
+        if (null == ctx.alias()) {
+            OwnerSegment owner = new OwnerSegment(ctx.columnName().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ctx.columnName().getText()));
+            result.setOwner(owner);
+        } else {
+            String ownerName = ctx.alias().getText() + "." + ctx.columnName().getText();
+            OwnerSegment owner = new OwnerSegment(ctx.alias().getStart().getStartIndex(), ctx.columnName().getStop().getStopIndex(), new IdentifierValue(ownerName));
+            result.setOwner(owner);
+        }
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     private ASTNode getFunctionSegment(final int startIndex, final int stopIndex, final String functionName, final String text, final List<ExprContext> exprList) {
@@ -768,13 +935,73 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.convertFunction()) {
             return visit(ctx.convertFunction());
         }
+        if (null != ctx.parseFunction()) {
+            return visit(ctx.parseFunction());
+        }
+        if (null != ctx.tryParseFunction()) {
+            return visit(ctx.tryParseFunction());
+        }
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getChild(0).getChild(0).getText(), getOriginalText(ctx));
     }
     
     @Override
+    public ASTNode visitParseFunction(final ParseFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.PARSE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.USING() && ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitTryParseFunction(final TryParseFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRY_PARSE().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
+        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.USING() && ctx.expr().size() > 1) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
+        }
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
+        if (null != ctx.lagLeadFunction()) {
+            return visit(ctx.lagLeadFunction());
+        }
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
-        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        if (null != ctx.NTILE() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.PERCENTILE_CONT() || null != ctx.PERCENTILE_DISC()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.getChild(2)));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitLagLeadFunction(final LagLeadFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> parameters = getLagLeadFunctionParameters(ctx);
+        result.getParameters().addAll(parameters);
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getLagLeadFunctionParameters(final LagLeadFunctionContext ctx) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        boolean insideParentheses = false;
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            String childText = ctx.getChild(i).getText();
+            if ("(".equals(childText)) {
+                insideParentheses = true;
+                continue;
+            }
+            if (")".equals(childText) && insideParentheses) {
+                break;
+            }
+            if (insideParentheses && ctx.getChild(i) instanceof ExprContext) {
+                result.add((ExpressionSegment) visit(ctx.getChild(i)));
+            }
+        }
         return result;
     }
     
@@ -830,7 +1057,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        String functionName = null != ctx.CAST() ? ctx.CAST().getText() : ctx.TRY_CAST().getText();
+        String functionName = null == ctx.CAST() ? ctx.TRY_CAST().getText() : ctx.CAST().getText();
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
         if (exprSegment instanceof ColumnSegment) {
@@ -846,7 +1073,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitConvertFunction(final ConvertFunctionContext ctx) {
-        String functionName = null != ctx.CONVERT() ? ctx.CONVERT().getText() : ctx.TRY_CONVERT().getText();
+        String functionName = null == ctx.CONVERT() ? ctx.TRY_CONVERT().getText() : ctx.CONVERT().getText();
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
@@ -858,8 +1085,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.getParameters().add((ExpressionSegment) visit(each));
+            }
+        }
+        return result;
     }
     
     @Override
@@ -879,6 +1111,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitOpenQueryFunction(final OpenQueryFunctionContext ctx) {
         return getFunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENQUERY().getText(), getOriginalText(ctx), ctx.expr());
+    }
+    
+    @Override
+    public ASTNode visitOpenDatasourceFunction(final OpenDatasourceFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.OPENDATASOURCE().getText(), getOriginalText(ctx));
+        for (ExprContext each : ctx.expr()) {
+            result.getParameters().add((ExpressionSegment) visit(each));
+        }
+        if (null != ctx.tableName()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
+        }
+        return result;
     }
     
     @Override
@@ -955,8 +1199,8 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
-        SQLServerSelectStatement result = (SQLServerSelectStatement) visit(ctx.aggregationClause());
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        SelectStatement result = (SelectStatement) visit(ctx.aggregationClause());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -968,25 +1212,25 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SQLServerSelectStatement result = new SQLServerSelectStatement();
+        SelectStatement result = new SelectStatement(databaseType);
         result.setProjections((ProjectionsSegment) visit(ctx.projections()));
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
             WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
-            result.setWithSegment(withSegment);
+            result.setWith(withSegment);
         }
         if (null != ctx.duplicateSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
         if (null != ctx.intoClause()) {
-            result.setIntoSegment((TableSegment) visit(ctx.intoClause()));
+            result.setInto((TableSegment) visit(ctx.intoClause()));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
             result.setFrom(tableSource);
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -1008,7 +1252,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         Collection<CommonTableExpressionSegment> result = new LinkedList<>();
         for (CteClauseContext each : ctx.cteClause()) {
             SubquerySegment subquery = new SubquerySegment(each.subquery().aggregationClause().start.getStartIndex(),
-                    each.subquery().aggregationClause().stop.getStopIndex(), (SQLServerSelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
+                    each.subquery().aggregationClause().stop.getStopIndex(), (SelectStatement) visit(each.subquery()), getOriginalText(each.subquery()));
             CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (AliasSegment) visit(each.alias()), subquery);
             if (null != each.columnNames()) {
                 ColumnNamesContext columnNames = each.columnNames();
@@ -1112,10 +1356,80 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public ASTNode visitGroupByClause(final GroupByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
-        for (OrderByItemContext each : ctx.orderByItem()) {
-            items.add((OrderByItemSegment) visit(each));
+        if (!ctx.groupByItem().isEmpty()) {
+            for (GroupByItemContext each : ctx.groupByItem()) {
+                items.addAll(generateOrderByItemsFromGroupByItem(each));
+            }
+        } else if (!ctx.orderByItem().isEmpty()) {
+            for (OrderByItemContext each : ctx.orderByItem()) {
+                items.add((OrderByItemSegment) visit(each));
+            }
         }
         return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.expr()) {
+            OrderByItemSegment item = (OrderByItemSegment) extractValueFromGroupByItemExpression(ctx.expr());
+            result.add(item);
+        } else if (null != ctx.rollupCubeClause()) {
+            result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(ctx.rollupCubeClause()));
+        } else {
+            result.addAll(generateOrderByItemSegmentsFromGroupingSetsClause(ctx.groupingSetsClause()));
+        }
+        return result;
+    }
+    
+    private ASTNode extractValueFromGroupByItemExpression(final ExprContext ctx) {
+        ASTNode expression = visit(ctx);
+        if (expression instanceof ColumnSegment) {
+            ColumnSegment column = (ColumnSegment) expression;
+            return new ColumnOrderByItemSegment(column, OrderDirection.ASC, null);
+        }
+        if (expression instanceof LiteralExpressionSegment) {
+            LiteralExpressionSegment literalExpression = (LiteralExpressionSegment) expression;
+            return new IndexOrderByItemSegment(literalExpression.getStartIndex(), literalExpression.getStopIndex(),
+                    SQLUtils.getExactlyNumber(literalExpression.getLiterals().toString(), 10).intValue(), OrderDirection.ASC, null);
+        }
+        return new ExpressionOrderByItemSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, null, (ExpressionSegment) expression);
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromRollupCubeClause(final RollupCubeClauseContext ctx) {
+        return new LinkedList<>(generateOrderByItemSegmentsFromGroupingExprList(ctx.groupingExprList()));
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromGroupingSetsClause(final GroupingSetsClauseContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.rollupCubeClause()) {
+            for (RollupCubeClauseContext each : ctx.rollupCubeClause()) {
+                result.addAll(generateOrderByItemSegmentsFromRollupCubeClause(each));
+            }
+        }
+        if (null != ctx.groupingExprList()) {
+            for (GroupingExprListContext each : ctx.groupingExprList()) {
+                result.addAll(generateOrderByItemSegmentsFromGroupingExprList(each));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromGroupingExprList(final GroupingExprListContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        for (ExpressionListContext each : ctx.expressionList()) {
+            result.addAll(generateOrderByItemSegmentsFromExpressionList(each));
+        }
+        return result;
+    }
+    
+    private Collection<OrderByItemSegment> generateOrderByItemSegmentsFromExpressionList(final ExpressionListContext ctx) {
+        Collection<OrderByItemSegment> result = new LinkedList<>();
+        if (null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                result.add((OrderByItemSegment) extractValueFromGroupByItemExpression(each));
+            }
+        }
+        return result;
     }
     
     /**
@@ -1130,29 +1444,29 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        SQLServerInsertStatement result;
+        InsertStatement result;
         if (null != ctx.insertDefaultValue()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
+            result = (InsertStatement) visit(ctx.insertDefaultValue());
         } else if (null != ctx.insertValuesClause()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
+            result = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertExecClause()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertExecClause());
+            result = (InsertStatement) visit(ctx.insertExecClause());
         } else {
-            result = (SQLServerInsertStatement) visit(ctx.insertSelectClause());
+            result = (InsertStatement) visit(ctx.insertSelectClause());
         }
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.rowSetFunction()) {
-            result.setRowSetFunctionSegment((FunctionSegment) visit(ctx.rowSetFunction()));
+            result.setRowSetFunction((FunctionSegment) visit(ctx.rowSetFunction()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1160,21 +1474,50 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     public ASTNode visitRowSetFunction(final RowSetFunctionContext ctx) {
         if (null != ctx.openRowSetFunction()) {
             return visit(ctx.openRowSetFunction());
-        } else {
+        } else if (null != ctx.openQueryFunction()) {
             return visit(ctx.openQueryFunction());
+        } else if (null != ctx.predictFunction()) {
+            return visit(ctx.predictFunction());
+        } else {
+            return visit(ctx.openDatasourceFunction());
         }
+    }
+    
+    @Override
+    public ASTNode visitPredictFunction(final PredictFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.PREDICT().getText(), getOriginalText(ctx));
+        if (null != ctx.variableName()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.variableName()));
+        } else if (null != ctx.literals()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.literals()));
+        }
+        result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
+        if (null != ctx.alias()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.alias().getStart().getStartIndex(), ctx.alias().getStop().getStopIndex(), ctx.alias().getText()));
+        }
+        if (null != ctx.ONNX()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.ONNX().getSymbol().getStartIndex(), ctx.ONNX().getSymbol().getStopIndex(), ctx.ONNX().getText()));
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitWithTableHint(final WithTableHintContext ctx) {
         WithTableHintSegment result = new WithTableHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
         if (null != ctx.tableHintLimited()) {
-            Collection<TableHintLimitedSegment> tableHintLimitedSegments = new LinkedList<>();
             for (TableHintLimitedContext each : ctx.tableHintLimited()) {
                 tableHintLimitedSegments.add((TableHintLimitedSegment) visit(each));
             }
-            result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         }
+        if (null != ctx.tableHintExtended()) {
+            for (TableHintExtendedContext each : ctx.tableHintExtended()) {
+                TableHintLimitedSegment segment = new TableHintLimitedSegment(each.start.getStartIndex(), each.stop.getStopIndex());
+                segment.setValue(each.getText());
+                tableHintLimitedSegments.add(segment);
+            }
+        }
+        result.getTableHintLimitedSegments().addAll(tableHintLimitedSegments);
         return result;
     }
     
@@ -1187,19 +1530,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
     
     @Override
     public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
-        result.setExecSegment((ExecSegment) visit(ctx.exec()));
+        result.setExec((ExecSegment) visit(ctx.exec()));
         return result;
     }
     
@@ -1278,11 +1621,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
@@ -1297,11 +1640,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        SQLServerInsertStatement result = new SQLServerInsertStatement();
+        InsertStatement result = new InsertStatement(databaseType);
         result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         result.setInsertSelect(createInsertSelectSegment(ctx));
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         return result;
     }
@@ -1317,7 +1660,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
-        SQLServerSelectStatement selectStatement = (SQLServerSelectStatement) visit(ctx.select());
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
         return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
@@ -1329,9 +1672,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        SQLServerUpdateStatement result = new SQLServerUpdateStatement();
+        UpdateStatement result = new UpdateStatement(databaseType);
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
@@ -1339,18 +1682,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setFrom((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
+            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1397,9 +1740,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        SQLServerDeleteStatement result = new SQLServerDeleteStatement();
+        DeleteStatement result = new DeleteStatement(databaseType);
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.multipleTablesClause()) {
             result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
@@ -1407,15 +1750,15 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setTable((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
-        result.addParameterMarkerSegments(getParameterMarkerSegments());
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
@@ -1590,7 +1933,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             if (null != ctx.subquery().merge()) {
                 subquerySegment.setMerge((MergeStatement) visit(ctx.subquery()));
             } else {
-                subquerySegment.setSelect((SQLServerSelectStatement) visit(ctx.subquery()));
+                subquerySegment.setSelect((SelectStatement) visit(ctx.subquery()));
             }
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {
@@ -1613,7 +1956,87 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
             return result;
         }
+        if (null != ctx.xmlMethodCall()) {
+            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.xmlMethodCall());
+            FunctionTableSegment result = new FunctionTableSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        if (null != ctx.pivotTable()) {
+            return visit(ctx.pivotTable());
+        }
+        if (null != ctx.rowSetFunction()) {
+            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.rowSetFunction());
+            FunctionTableSegment result = new FunctionTableSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
         return visit(ctx.tableReferences());
+    }
+    
+    @Override
+    public ASTNode visitPivotTable(final PivotTableContext ctx) {
+        FunctionSegment pivotFunction = (FunctionSegment) visit(ctx.pivotClause());
+        FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), pivotFunction);
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPivotClause(final PivotClauseContext ctx) {
+        String pivotType = null == ctx.PIVOT() ? "UNPIVOT" : "PIVOT";
+        String functionText = getOriginalText(ctx);
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), pivotType, functionText);
+        if (null != ctx.tableName()) {
+            SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.tableName());
+            result.getParameters().add(new LiteralExpressionSegment(tableSegment.getStartIndex(), tableSegment.getStopIndex(), tableSegment.getTableName().getIdentifier().getValue()));
+        } else if (null != ctx.subquery()) {
+            SubquerySegment subquerySegment =
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            if (null == ctx.alias()) {
+                result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
+            } else {
+                AliasSegment aliasSegment = (AliasSegment) visit(ctx.alias());
+                SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment.getStartIndex(), subquerySegment.getStopIndex(), subquerySegment);
+                subqueryTableSegment.setAlias(aliasSegment);
+                result.getParameters().add(new SubqueryExpressionSegment(subquerySegment));
+            }
+        }
+        if (null == ctx.PIVOT()) {
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(0)));
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(1)));
+            CollectionValue<ExpressionSegment> pivotValues = (CollectionValue<ExpressionSegment>) visit(ctx.pivotValueList());
+            result.getParameters().addAll(pivotValues.getValue());
+        } else {
+            result.getParameters().add((ExpressionSegment) visit(ctx.aggregationFunction()));
+            result.getParameters().add((ColumnSegment) visit(ctx.columnName(0)));
+            CollectionValue<ExpressionSegment> pivotValues = (CollectionValue<ExpressionSegment>) visit(ctx.pivotValueList());
+            result.getParameters().addAll(pivotValues.getValue());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPivotValueList(final PivotValueListContext ctx) {
+        CollectionValue<ExpressionSegment> result = new CollectionValue<>();
+        for (PivotValueContext pivotValueContext : ctx.pivotValue()) {
+            result.getValue().add((ExpressionSegment) visit(pivotValueContext));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPivotValue(final PivotValueContext ctx) {
+        if (null != ctx.expr()) {
+            return visit(ctx.expr());
+        }
+        return new LiteralExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final TableSegment tableSegment) {
@@ -1626,6 +2049,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         result.setJoinType(getJoinType(ctx));
         if (null != ctx.joinSpecification()) {
             visitJoinSpecification(ctx.joinSpecification(), result);
+        }
+        if (null != ctx.joinHint()) {
+            result.setJoinHint(ctx.joinHint().getChild(0).getText());
         }
         return result;
     }
@@ -1665,10 +2091,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
-        SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(databaseType);
         if (null != ctx.createTableAsSelect()) {
             result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
-            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createTableAsSelect().select()));
+            result.setSelectStatement((SelectStatement) visit(ctx.createTableAsSelect().select()));
             if (null != ctx.createTableAsSelect().columnNames()) {
                 CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createTableAsSelect().columnNames());
                 for (ColumnSegment each : columnSegments.getValue()) {
@@ -1677,28 +2103,22 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             }
         } else {
             result.setTable((SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName()));
-            result.setSelectStatement((SQLServerSelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
+            result.setSelectStatement((SelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
         }
         return result;
     }
     
     @Override
     public ASTNode visitUpdateStatistics(final UpdateStatisticsContext ctx) {
-        SQLServerUpdateStatisticsStatement result = new SQLServerUpdateStatisticsStatement();
-        if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        }
+        List<IndexSegment> indexSegments = null;
         if (null != ctx.indexName() && !ctx.indexName().isEmpty()) {
-            List<IndexSegment> indexSegments = new LinkedList<>();
+            indexSegments = new LinkedList<>();
             for (IndexNameContext indexNameContext : ctx.indexName()) {
                 indexSegments.add((IndexSegment) visit(indexNameContext));
             }
-            result.setIndexes(indexSegments);
         }
-        if (null != ctx.statisticsWithClause()) {
-            result.setStrategy((StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
-        }
-        return result;
+        return new SQLServerUpdateStatisticsStatement(databaseType, null == ctx.tableName() ? null : (SimpleTableSegment) visit(ctx.tableName()),
+                indexSegments, null == ctx.statisticsWithClause() ? null : (StatisticsStrategySegment) visit(ctx.statisticsWithClause()));
     }
     
     @Override
@@ -1774,13 +2194,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        SQLServerMergeStatement result = new SQLServerMergeStatement();
+        MergeStatement result = new MergeStatement(databaseType);
         result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
         if (null != ctx.withClause()) {
-            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+            result.setWith((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withMergeHint()) {
-            result.setWithTableHintSegment((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
+            result.setWithTableHint((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
             if (null != ctx.withMergeHint().indexName()) {
                 Collection<IndexSegment> indexSegments = new LinkedList<>();
                 for (IndexNameContext each : ctx.withMergeHint().indexName()) {
@@ -1797,14 +2217,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.mergeWhenClause()) {
             for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
-                result.getWhenAndThenSegments().add((MergeWhenAndThenSegment) visit(each));
+                result.getWhenAndThens().add((MergeWhenAndThenSegment) visit(each));
             }
         }
         if (null != ctx.outputClause()) {
-            result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));
+            result.setOutput((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHintSegment((OptionHintSegment) visit(ctx.optionHint()));
+            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
         return result;
     }
@@ -1816,13 +2236,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setAndExpr((ExpressionSegment) visit(ctx.mergeDeleteClause().expr()));
         }
         if (null != ctx.mergeUpdateClause()) {
-            result.setUpdate((SQLServerUpdateStatement) visit(ctx.mergeUpdateClause()));
+            result.setUpdate((UpdateStatement) visit(ctx.mergeUpdateClause()));
             if (null != ctx.mergeUpdateClause().expr()) {
                 result.setAndExpr((ExpressionSegment) visit(ctx.mergeUpdateClause().expr()));
             }
         }
         if (null != ctx.mergeInsertClause()) {
-            result.setInsert((SQLServerInsertStatement) visit(ctx.mergeInsertClause()));
+            result.setInsert((InsertStatement) visit(ctx.mergeInsertClause()));
             if (null != ctx.mergeInsertClause().expr()) {
                 result.setAndExpr((ExpressionSegment) visit(ctx.mergeInsertClause().expr()));
             }
@@ -1832,18 +2252,18 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMergeInsertClause(final MergeInsertClauseContext ctx) {
-        SQLServerInsertStatement result;
+        InsertStatement result;
         if (null != ctx.insertDefaultValue()) {
-            result = (SQLServerInsertStatement) visit(ctx.insertDefaultValue());
+            result = (InsertStatement) visit(ctx.insertDefaultValue());
         } else {
-            result = (SQLServerInsertStatement) visit(ctx.insertValuesClause());
+            result = (InsertStatement) visit(ctx.insertValuesClause());
         }
         return result;
     }
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        SQLServerUpdateStatement result = new SQLServerUpdateStatement();
+        UpdateStatement result = new UpdateStatement(databaseType);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         return result;
     }

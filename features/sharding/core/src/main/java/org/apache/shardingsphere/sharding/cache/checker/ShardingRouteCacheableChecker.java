@@ -24,11 +24,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.DeleteStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -145,7 +144,7 @@ public final class ShardingRouteCacheableChecker {
     }
     
     private ShardingRouteCacheableCheckResult checkUpdateOrDeleteCacheable(final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        Collection<String> tableNames = ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames();
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (1 != tableNames.size()) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.it.rewrite.engine;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorAware;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -64,6 +64,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.io.File;
 import java.io.IOException;
@@ -137,14 +138,14 @@ public abstract class SQLRewriterIT {
         return result;
     }
     
-    private SQLStatementContext bind(final SQLRewriteEngineTestParameters testParams, final ShardingSphereMetaData metaData,
-                                     final String databaseName, final HintValueContext hintValueContext, final SQLStatement sqlStatement, final SQLParserEngine sqlParserEngine) {
+    private SQLStatementContext bind(final SQLRewriteEngineTestParameters testParams, final ShardingSphereMetaData metaData, final String databaseName,
+                                     final HintValueContext hintValueContext, final SQLStatement sqlStatement, final SQLParserEngine sqlParserEngine) {
         SQLStatementContext result = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
         if (result instanceof ParameterAware) {
             ((ParameterAware) result).setUpParameters(testParams.getInputParameters());
         }
-        if (result instanceof CursorAware) {
-            ((CursorAware) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
+        if (result instanceof CursorHeldSQLStatementContext) {
+            ((CursorHeldSQLStatementContext) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
         }
         return result;
     }
@@ -167,8 +168,8 @@ public abstract class SQLRewriterIT {
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            SQLRewriterITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(SQLRewriterITSettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            SQLRewriterITSettings settings = context.getRequiredTestClass().getAnnotation(SQLRewriterITSettings.class);
             Preconditions.checkNotNull(settings, "Annotation SQLRewriterITSettings is required.");
             return SQLRewriteEngineTestParametersBuilder.loadTestParameters(settings.value().toUpperCase(), settings.value(), SQLRewriterIT.class).stream().map(Arguments::of);
         }

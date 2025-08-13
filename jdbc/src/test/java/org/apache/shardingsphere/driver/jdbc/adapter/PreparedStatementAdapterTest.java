@@ -70,7 +70,7 @@ class PreparedStatementAdapterTest {
                         new SQLFederationRule(new DefaultSQLFederationRuleConfigurationBuilder().build(), Collections.emptyList()))));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(
-                connection.getCurrentDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+                connection.getCurrentDatabaseName()).getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
         shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1", null);
     }
     

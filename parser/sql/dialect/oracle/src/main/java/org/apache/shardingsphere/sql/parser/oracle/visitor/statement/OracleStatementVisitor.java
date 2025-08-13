@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
@@ -160,7 +162,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureBodyEndNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -172,11 +179,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleSelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.CursorForLoopStatementSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureBodyEndNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.ProcedureCallNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.oracle.plsql.SQLStatementSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -192,8 +194,11 @@ import java.util.stream.Collectors;
 /**
  * Statement visitor for Oracle.
  */
+@RequiredArgsConstructor
 @Getter
 public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> globalParameterMarkerSegments = new LinkedList<>();
     
@@ -247,9 +252,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.intervalLiterals()) {
             return visit(ctx.intervalLiterals());
-        }
-        if (null != ctx.bindLiterals()) {
-            return visit(ctx.bindLiterals());
         }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, interval, boolean or null.");
     }
@@ -513,7 +515,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
             right = new SubqueryExpressionSegment(
-                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
         }
         String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -538,14 +540,20 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null == ctx.subquery()) {
-            ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-            for (ExprContext each : ctx.expr()) {
-                listExpression.getItems().add((ExpressionSegment) visit(each));
+            if (null == ctx.LP_() || null == ctx.RP_()) {
+                StringLiteralsContext stringLiteralsContext = ctx.stringLiterals();
+                right = new LiteralExpressionSegment(stringLiteralsContext.start.getStartIndex(), stringLiteralsContext.stop.getStopIndex(),
+                        ((StringLiteralValue) visit(stringLiteralsContext)).getValue());
+            } else {
+                ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+                for (ExprContext each : ctx.expr()) {
+                    listExpression.getItems().add((ExpressionSegment) visit(each));
+                }
+                right = listExpression;
             }
-            right = listExpression;
         } else {
             right = new SubqueryExpressionSegment(
-                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+                    new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
         }
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
@@ -614,7 +622,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());
@@ -1085,7 +1093,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CURSOR().toString(), ctx.getText());
         result.getParameters()
                 .add(new SubqueryExpressionSegment(
-                        new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()))));
+                        new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()))));
         return result;
     }
     
@@ -1124,7 +1132,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.MULTISET()) {
             result.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(),
-                    (OracleSelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()))));
+                    (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()))));
         } else {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         }

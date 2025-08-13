@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.SecurityLabelStmtStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * PostgreSQL security label statement.
+ * Security label statement for PostgreSQL.
  */
-public final class PostgreSQLSecurityLabelStmtStatement extends SecurityLabelStmtStatement implements PostgreSQLStatement {
+public final class PostgreSQLSecurityLabelStmtStatement extends DDLStatement {
+    
+    public PostgreSQLSecurityLabelStmtStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

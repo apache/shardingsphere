@@ -32,12 +32,13 @@ import java.util.Map;
 /**
  * ShardingSphere YAML constructor.
  */
-public class ShardingSphereYamlConstructor extends Constructor {
+public final class ShardingSphereYamlConstructor extends Constructor {
     
     private final Map<Class<?>, Construct> typeConstructs = new HashMap<>();
     
     private final Class<?> rootClass;
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass, createLoaderOptions());
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
@@ -60,7 +61,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     }
     
     @Override
-    protected final Construct getConstructor(final Node node) {
+    protected Construct getConstructor(final Node node) {
         return typeConstructs.getOrDefault(node.getType(), super.getConstructor(node));
     }
     

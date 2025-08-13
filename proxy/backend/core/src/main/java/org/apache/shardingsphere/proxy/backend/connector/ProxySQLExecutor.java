@@ -19,10 +19,12 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -51,7 +53,7 @@ import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
-import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -59,13 +61,13 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CloseStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.FetchStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.MoveStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLInsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.ddl.OpenGaussCursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -116,28 +118,26 @@ public final class ProxySQLExecutor {
     }
     
     private String getSchemaName(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
-        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDefaultSchemaName(database.getName());
-        return sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSchemaName().orElse(defaultSchemaName)
-                : defaultSchemaName;
+        String defaultSchemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName());
+        return sqlStatementContext.getTablesContext().getSchemaName().orElse(defaultSchemaName);
     }
     
     /**
      * Check execute prerequisites.
      *
-     * @param executionContext execution context
+     * @param sqlStatementContext execution context
      */
-    public void checkExecutePrerequisites(final ExecutionContext executionContext) {
+    public void checkExecutePrerequisites(final SQLStatementContext sqlStatementContext) {
         ShardingSpherePreconditions.checkState(
-                isValidExecutePrerequisites(executionContext.getSqlStatementContext().getSqlStatement()), () -> new TableModifyInTransactionException(getTableName(executionContext)));
+                isValidExecutePrerequisites(sqlStatementContext.getSqlStatement()), () -> new TableModifyInTransactionException(getTableName(sqlStatementContext.getTablesContext())));
     }
     
     private boolean isValidExecutePrerequisites(final SQLStatement sqlStatement) {
-        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction((DDLStatement) sqlStatement);
+        return !(sqlStatement instanceof DDLStatement) || isSupportDDLInTransaction(sqlStatement.getDatabaseType(), (DDLStatement) sqlStatement);
     }
     
-    private boolean isSupportDDLInTransaction(final DDLStatement sqlStatement) {
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+    private boolean isSupportDDLInTransaction(final DatabaseType databaseType, final DDLStatement sqlStatement) {
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption();
         boolean isDDLWithoutMetaDataChanged = isDDLWithoutMetaDataChanged(sqlStatement);
         if (isInXATransaction()) {
             return transactionOption.isSupportDDLInXATransaction() && (isDDLWithoutMetaDataChanged || transactionOption.isSupportMetaDataRefreshInTransaction());
@@ -164,13 +164,11 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isCursorStatement(final DDLStatement sqlStatement) {
-        return sqlStatement instanceof OpenGaussCursorStatement || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
+        return sqlStatement instanceof CursorStatement || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
     }
     
-    private String getTableName(final ExecutionContext executionContext) {
-        return executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().isEmpty()
-                ? ((TableAvailable) executionContext.getSqlStatementContext()).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue()
-                : "unknown_table";
+    private String getTableName(final TablesContext tablesContext) {
+        return tablesContext.getSimpleTables().isEmpty() ? "unknown_table" : tablesContext.getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
     }
     
     /**
@@ -185,8 +183,11 @@ public final class ProxySQLExecutor {
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules();
         int maxConnectionsSizePerQuery = ProxyContext.getInstance()
                 .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
-        return hasRawExecutionRule(rules) ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(executionContext.getSqlStatementContext().getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+        boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof InsertStatement
+                && dialectDatabaseMetaData.getGeneratedKeyOption().isSupportReturnGeneratedKeys();
+        return hasRawExecutionRule(rules)
+                ? rawExecute(executionContext, rules, maxConnectionsSizePerQuery)
                 : useDriverToExecute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys, SQLExecutorExceptionHandler.isExceptionThrown());
     }
     
@@ -220,7 +221,7 @@ public final class ProxySQLExecutor {
         String databaseName = databaseConnectionManager.getConnectionSession().getUsedDatabaseName();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 type, maxConnectionsSizePerQuery, databaseConnectionManager, statementManager, new StatementOption(isReturnGeneratedKeys), rules,
-                ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getResourceMetaData().getStorageUnits());
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
         try {
             executionGroupContext = prepareEngine.prepare(databaseName, executionContext.getRouteContext(), executionContext.getExecutionUnits(),
@@ -251,7 +252,8 @@ public final class ProxySQLExecutor {
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabase(databaseConnectionManager.getConnectionSession().getUsedDatabaseName()).getProtocolType();
-        Optional<ExecuteResult> executeResult = new SaneQueryResultEngine(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException);
+        Optional<ExecuteResult> executeResult = DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, databaseType)
+                .flatMap(optional -> optional.getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException));
         return executeResult.map(Collections::singletonList).orElseThrow(() -> originalException);
     }
 }

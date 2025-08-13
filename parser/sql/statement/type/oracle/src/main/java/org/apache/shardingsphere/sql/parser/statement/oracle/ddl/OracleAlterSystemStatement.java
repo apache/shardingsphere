@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.AlterSystemStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.OracleStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
- * Oracle alter system statement.
+ * Alter system statement for Oracle.
  */
-public final class OracleAlterSystemStatement extends AlterSystemStatement implements OracleStatement {
+public final class OracleAlterSystemStatement extends DDLStatement {
+    
+    public OracleAlterSystemStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

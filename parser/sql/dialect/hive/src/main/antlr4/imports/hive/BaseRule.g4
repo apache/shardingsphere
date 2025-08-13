@@ -636,6 +636,10 @@ charsetName
     : textOrIdentifier | BINARY | DEFAULT
     ;
 
+databaseName
+    : identifier
+    ;
+
 tableName
     : (owner DOT_)? name
     ;
@@ -649,6 +653,10 @@ indexName
     ;
 
 constraintName
+    : identifier
+    ;
+
+macroName
     : identifier
     ;
 

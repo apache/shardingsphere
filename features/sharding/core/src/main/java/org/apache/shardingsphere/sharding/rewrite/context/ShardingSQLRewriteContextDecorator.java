@@ -19,10 +19,6 @@ package org.apache.shardingsphere.sharding.rewrite.context;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.AlterIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.DropIndexStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
@@ -35,6 +31,9 @@ import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRew
 import org.apache.shardingsphere.sharding.rewrite.token.ShardingTokenGenerateBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 
 import java.util.Collection;
 
@@ -47,7 +46,7 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     @Override
     public void decorate(final ShardingRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
         SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
-        if (!isAlterOrDropIndexStatement(sqlStatementContext) && !isCursorAvailableStatement(sqlStatementContext) && !containsShardingTable(rule, sqlStatementContext)) {
+        if (!isAlterOrDropIndexStatement(sqlStatementContext) && !isCursorContextAvailableStatement(sqlStatementContext) && !containsShardingTable(rule, sqlStatementContext)) {
             return;
         }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
@@ -59,18 +58,15 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     }
     
     private boolean isAlterOrDropIndexStatement(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof AlterIndexStatementContext || sqlStatementContext instanceof DropIndexStatementContext;
+        return sqlStatementContext.getSqlStatement() instanceof AlterIndexStatement || sqlStatementContext.getSqlStatement() instanceof DropIndexStatement;
     }
     
-    private boolean isCursorAvailableStatement(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof CursorAvailable;
+    private boolean isCursorContextAvailableStatement(final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent();
     }
     
     private boolean containsShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
-            return false;
-        }
-        for (SimpleTableSegment each : ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables()) {
+        for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             if (rule.isShardingTable(each.getTableName().getIdentifier().getValue())) {
                 return true;
             }

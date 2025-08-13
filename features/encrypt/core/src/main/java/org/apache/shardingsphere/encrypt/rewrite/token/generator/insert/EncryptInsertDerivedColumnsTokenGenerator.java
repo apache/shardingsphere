@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
@@ -60,7 +60,7 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
         if (!encryptTable.isPresent()) {
             return Collections.emptyList();
         }
-        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> derivedColumnNames = getDerivedColumnNames(encryptTable.get(), each);

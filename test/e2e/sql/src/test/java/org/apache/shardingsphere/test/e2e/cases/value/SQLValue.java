@@ -41,7 +41,7 @@ public final class SQLValue {
     private final int index;
     
     public SQLValue(final String value, final String type, final int index) {
-        this.value = null == type ? value : getValue(value, type);
+        this.value = null == type ? value : getValue(value, type.toLowerCase());
         this.index = index;
     }
     
@@ -53,14 +53,17 @@ public final class SQLValue {
             return null;
         }
         switch (type) {
-            case "String":
+            case "string":
             case "varchar":
             case "char":
+            case "tinytext":
             case "text":
             case "longtext":
             case "mediumtext":
             case "json":
             case "clob":
+            case "enum":
+            case "set":
                 return value;
             case "tinyint":
                 return Byte.parseByte(value);
@@ -69,38 +72,64 @@ public final class SQLValue {
                 return Short.parseShort(value);
             case "smallint unsigned":
             case "mediumint":
+            case "mediumint unsigned":
             case "year":
             case "int":
+            case "integer":
                 return Integer.parseInt(value);
             case "int unsigned":
-            case "bigint unsigned":
             case "bigint":
             case "long":
                 return Long.parseLong(value);
+            case "bigint unsigned":
+                return new BigDecimal(value);
             case "float":
+            case "real":
                 return Float.parseFloat(value);
             case "float unsigned":
             case "double":
+            case "double unsigned":
                 return Double.parseDouble(value);
             case "numeric":
-                return value.contains(".") ? Double.parseDouble(value) : Long.parseLong(value);
-            case "double unsigned":
             case "decimal":
+            case "numeric unsigned":
             case "decimal unsigned":
                 return new BigDecimal(value);
             case "boolean":
                 return Boolean.parseBoolean(value);
-            case "Date":
+            case "date":
                 return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
             case "datetime":
+                if (26 == value.length()) {
+                    return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getFullMillisFormatter()));
+                }
                 if (10 == value.length()) {
                     return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getDateFormatter()));
                 }
                 return Date.valueOf(LocalDate.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
             case "time":
+                if (value.length() > 8) {
+                    return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getFullTimeFormatter()));
+                }
                 return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getTimeFormatter()));
             case "timestamp":
-                return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisFormatter()));
+                if (26 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getFullMillisFormatter()));
+                }
+                if (19 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
+                }
+                if (21 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getShortMillisFormatter()));
+                }
+                if (22 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getDoubleMillisFormatter()));
+                }
+                if (23 == value.length()) {
+                    return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getLongMillisFormatter()));
+                }
+                return Timestamp.valueOf(LocalDateTime.parse(value, DateTimeFormatterFactory.getStandardFormatter()));
+            case "tinyblob":
             case "blob":
             case "longblob":
             case "mediumblob":
@@ -131,7 +160,7 @@ public final class SQLValue {
             return formatString(DateTimeFormatterFactory.getTimeFormatter().format(((Time) value).toLocalTime()));
         }
         if (value instanceof Timestamp) {
-            return formatString(DateTimeFormatterFactory.getShortMillisFormatter().format(((Timestamp) value).toLocalDateTime()));
+            return formatString(DateTimeFormatterFactory.getLongMillisFormatter().format(((Timestamp) value).toLocalDateTime()));
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));

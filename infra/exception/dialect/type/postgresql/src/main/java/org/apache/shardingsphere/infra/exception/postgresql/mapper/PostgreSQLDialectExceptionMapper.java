@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.UnknownUsernameException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.exception.postgresql.sqlstate.PostgreSQLState;
 import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;

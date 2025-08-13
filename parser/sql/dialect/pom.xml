@@ -46,13 +46,6 @@
             <artifactId>shardingsphere-parser-sql-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-it-parser</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     
     <profiles>

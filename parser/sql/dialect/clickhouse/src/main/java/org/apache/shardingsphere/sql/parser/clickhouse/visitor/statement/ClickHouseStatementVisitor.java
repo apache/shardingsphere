@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
@@ -55,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Owner
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -65,7 +68,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.statement.sql92.dml.SQL92SelectStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -76,8 +78,11 @@ import java.util.stream.Collectors;
 /**
  * ClickHouse Statement visitor.
  */
+@RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBaseVisitor<ASTNode> {
+    
+    private final DatabaseType databaseType;
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
     
@@ -294,7 +299,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
         if (null != ctx.subquery()) {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQL92SelectStatement) visit(ctx.subquery()),
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()),
                     getOriginalText(ctx.subquery())));
         } else {
             ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
@@ -358,7 +363,7 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.subquery()) {
-            return new SubquerySegment(startIndex, stopIndex, (SQL92SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
+            return new SubquerySegment(startIndex, stopIndex, (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
         }
         if (null != ctx.parameterMarker()) {
             ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(ctx.parameterMarker());

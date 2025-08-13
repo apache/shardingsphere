@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Single table load utils.
+ * Single table load utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleTableLoadUtils {

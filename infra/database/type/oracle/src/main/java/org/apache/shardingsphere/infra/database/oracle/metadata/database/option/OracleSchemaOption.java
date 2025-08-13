@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.oracle.metadata.database.option;
 
+import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 
 import java.sql.Connection;
@@ -28,9 +29,11 @@ import java.util.Optional;
  */
 public final class OracleSchemaOption implements DialectSchemaOption {
     
+    private final DialectSchemaOption delegate = new DefaultSchemaOption(false, null);
+    
     @Override
     public boolean isSchemaAvailable() {
-        return true;
+        return delegate.isSchemaAvailable();
     }
     
     @Override
@@ -44,6 +47,11 @@ public final class OracleSchemaOption implements DialectSchemaOption {
     
     @Override
     public Optional<String> getDefaultSchema() {
-        return Optional.empty();
+        return delegate.getDefaultSchema();
+    }
+    
+    @Override
+    public Optional<String> getDefaultSystemSchema() {
+        return delegate.getDefaultSystemSchema();
     }
 }

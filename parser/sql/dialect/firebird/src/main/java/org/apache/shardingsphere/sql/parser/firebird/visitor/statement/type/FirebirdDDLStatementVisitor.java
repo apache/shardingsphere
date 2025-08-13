@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.AddColumnSpecificationContext;
@@ -63,23 +64,23 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.collation.CreateCollationStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.AlterDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.domain.CreateDomainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.AlterSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.sequence.CreateSequenceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.AlterTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdAlterDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdAlterProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdAlterSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdAlterTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdAlterTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCommentStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateCollationStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateDomainStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateProcedureStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateSequenceStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdCreateTriggerStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdDropTableStatement;
-import org.apache.shardingsphere.sql.parser.statement.firebird.ddl.FirebirdExecuteStatement;
 
 import java.util.Collections;
 
@@ -88,10 +89,14 @@ import java.util.Collections;
  */
 public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor implements DDLStatementVisitor {
     
+    public FirebirdDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        FirebirdCreateTableStatement result = new FirebirdCreateTableStatement();
+        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -126,7 +131,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-        DataTypeSegment dataType = ctx.dataType() != null ? (DataTypeSegment) visit(ctx.dataType()) : null;
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.dataTypeOption().stream().anyMatch(each -> null != each.primaryKey());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
         for (DataTypeOptionContext each : ctx.dataTypeOption()) {
@@ -180,7 +185,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        FirebirdAlterTableStatement result = new FirebirdAlterTableStatement();
+        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
@@ -202,7 +207,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitAlterDomain(final AlterDomainContext ctx) {
-        return new FirebirdAlterDomainStatement();
+        return new AlterDomainStatement(getDatabaseType());
     }
     
     @SuppressWarnings("unchecked")
@@ -248,68 +253,64 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        FirebirdDropTableStatement result = new FirebirdDropTableStatement();
+        DropTableStatement result = new DropTableStatement(getDatabaseType());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new FirebirdCreateFunctionStatement();
+        return new CreateFunctionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
-        return new FirebirdCreateProcedureStatement();
+        return new CreateProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
-        return new FirebirdAlterProcedureStatement();
+        return new AlterProcedureStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterSequence(final AlterSequenceContext ctx) {
-        FirebirdAlterSequenceStatement result = new FirebirdAlterSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new AlterSequenceStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitCreateCollation(final CreateCollationContext ctx) {
-        return new FirebirdCreateCollationStatement();
+        return new CreateCollationStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateDomain(final CreateDomainContext ctx) {
-        return new FirebirdCreateDomainStatement();
+        return new CreateDomainStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitAlterTrigger(final AlterTriggerContext ctx) {
-        return new FirebirdAlterTriggerStatement();
+        return new AlterTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
-        return new FirebirdCreateTriggerStatement();
+        return new CreateTriggerStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCreateSequence(final CreateSequenceContext ctx) {
-        FirebirdCreateSequenceStatement result = new FirebirdCreateSequenceStatement();
-        result.setSequenceName(((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
-        return result;
+        return new CreateSequenceStatement(getDatabaseType(), ((SimpleTableSegment) visit(ctx.tableName())).getTableName().getIdentifier().getValue());
     }
     
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new FirebirdExecuteStatement();
+        return new ExecuteStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        FirebirdCommentStatement result = new FirebirdCommentStatement();
+        CommentStatement result = new CommentStatement(getDatabaseType());
         if (null != ctx.tableName()) {
             result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         }

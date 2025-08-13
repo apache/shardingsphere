@@ -18,63 +18,33 @@
 package org.apache.shardingsphere.infra.database.core.connector.url;
 
 import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
+
+import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandardJdbcUrlParserTest {
     
-    @Test
-    void assertParseSimpleJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mock://127.0.0.1/");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getDatabase(), is(""));
-        assertTrue(actual.getQueryProperties().isEmpty());
-    }
-    
-    @Test
-    void assertParseMySQLJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/demo_ds?useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(2));
-        assertThat(actual.getQueryProperties().getProperty("useSSL"), is(Boolean.FALSE.toString()));
-        assertThat(actual.getQueryProperties().getProperty("sessionVariables"), is("group_concat_max_len=204800,SQL_SAFE_UPDATES=0"));
-    }
-    
-    @Test
-    void assertParseMySQLJdbcUrlWithReplication() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/demo_ds?useUnicode=true");
-        assertThat(actual.getHostname(), is("master-ip"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(1));
-        assertThat(actual.getQueryProperties().getProperty("useUnicode"), is(Boolean.TRUE.toString()));
-    }
-    
-    @Test
-    void assertParsePostgreSQLJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:postgresql://127.0.0.1:5432/demo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(5432));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertThat(actual.getQueryProperties().size(), is(2));
-        assertThat(actual.getQueryProperties().getProperty("prepareThreshold"), is("1"));
-        assertThat(actual.getQueryProperties().getProperty("preferQueryMode"), is("extendedForPrepared"));
-    }
-    
-    @Test
-    void assertParseMicrosoftSQLServerJdbcUrl() {
-        JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds");
-        assertThat(actual.getHostname(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3306));
-        assertThat(actual.getDatabase(), is("demo_ds"));
-        assertTrue(actual.getQueryProperties().isEmpty());
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertParse(final String name, final String actualURL, final String expectedHostname, final int expectedPort, final String expectedDatabaseName, final Properties expectedQueryProps) {
+        JdbcUrl actual = new StandardJdbcUrlParser().parse(actualURL);
+        assertThat(actual.getHostname(), is(expectedHostname));
+        assertThat(actual.getPort(), is(expectedPort));
+        assertThat(actual.getDatabase(), is(expectedDatabaseName));
+        assertThat(actual.getQueryProperties(), is(expectedQueryProps));
     }
     
     @Test
@@ -82,22 +52,36 @@ class StandardJdbcUrlParserTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
-    @Test
-    void assertParseTestContainersJDBCUrl() {
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds").getDatabase(), is("demo_ds"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:postgresql:9.6.8:///demo_ds").getDatabase(), is("demo_ds"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:postgis:9.6-2.5:///demo_ds").getDatabase(), is("demo_ds"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:timescaledb:2.1.0-pg13:///demo_ds").getDatabase(), is("demo_ds"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:trino:352://localhost/memory/default").getDatabase(), is("memory/default"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:cockroach:v21.2.3:///demo_ds").getDatabase(), is("demo_ds"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:tidb:v6.1.0:///demo_ds").getDatabase(), is("demo_ds"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITSCRIPT=somepath/init_mysql.sql")
-                .getQueryProperties().getProperty("TC_INITSCRIPT"), is("somepath/init_mysql.sql"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITSCRIPT=file:src/main/resources/init_mysql.sql")
-                .getQueryProperties().getProperty("TC_INITSCRIPT"), is("file:src/main/resources/init_mysql.sql"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction")
-                .getQueryProperties().getProperty("TC_INITFUNCTION"), is("org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds?TC_DAEMON=true").getQueryProperties().getProperty("TC_DAEMON"), is("true"));
-        assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:postgresql:9.6.8:///demo_ds?TC_TMPFS=/testtmpfs:rw").getQueryProperties().getProperty("TC_TMPFS"), is("/testtmpfs:rw"));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            return Stream.of(
+                    Arguments.arguments("simple", "jdbc:mock://127.0.0.1/", "127.0.0.1", -1, "", new Properties()),
+                    Arguments.arguments("MySQL_v4", "jdbc:mysql://127.0.0.1:3306/foo_ds?useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0", "127.0.0.1", 3306, "foo_ds",
+                            PropertiesBuilder.build(new Property("useSSL", Boolean.FALSE.toString()), new Property("sessionVariables", "group_concat_max_len=204800,SQL_SAFE_UPDATES=0"))),
+                    Arguments.arguments("MySQL_v6", "jdbc:mysql://[fe80::d114:22b3:a0d9:2b3]:3306/foo_ds", "fe80::d114:22b3:a0d9:2b3", 3306, "foo_ds", new Properties()),
+                    Arguments.arguments("MySQL_with_replication", "jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/foo_ds?useUnicode=true", "master-ip", 3306, "foo_ds",
+                            PropertiesBuilder.build(new Property("useUnicode", Boolean.TRUE.toString()))),
+                    Arguments.arguments("PostgreSQL_v4", "jdbc:postgresql://127.0.0.1:5432/foo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared", "127.0.0.1", 5432, "foo_ds",
+                            PropertiesBuilder.build(new Property("prepareThreshold", "1"), new Property("preferQueryMode", "extendedForPrepared"))),
+                    Arguments.arguments("testcontainers_MySQL", "jdbc:tc:mysql:5.7.34:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_Postgres", "jdbc:tc:postgresql:9.6.8:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_PostGIS", "jdbc:tc:postgis:9.6-2.5:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_TimescaleDB", "jdbc:tc:timescaledb:2.1.0-pg13:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_Trino", "jdbc:tc:trino:352://localhost/memory/default", "localhost", -1, "memory/default", new Properties()),
+                    Arguments.arguments("testcontainers_CockroachDB", "jdbc:tc:cockroach:v21.2.3:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_TiDB", "jdbc:tc:tidb:v6.1.0:///demo_ds", "", -1, "demo_ds", new Properties()),
+                    Arguments.arguments("testcontainers_INITSCRIPT_CLASSPATH", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITSCRIPT=somepath/init_mysql.sql", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_INITSCRIPT", "somepath/init_mysql.sql"))),
+                    Arguments.arguments("testcontainers_INITSCRIPT", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITSCRIPT=file:src/main/resources/init_mysql.sql", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_INITSCRIPT", "file:src/main/resources/init_mysql.sql"))),
+                    Arguments.arguments("testcontainers_INITFUNCTION", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_INITFUNCTION=org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_INITFUNCTION", "org.testcontainers.jdbc.JDBCDriverTest::sampleInitFunction"))),
+                    Arguments.arguments("testcontainers_DAEMON", "jdbc:tc:mysql:5.7.34:///demo_ds?TC_DAEMON=true", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_DAEMON", Boolean.TRUE.toString()))),
+                    Arguments.arguments("testcontainers_TMPFS", "jdbc:tc:postgresql:9.6.8:///demo_ds?TC_TMPFS=/testtmpfs:rw", "", -1, "demo_ds",
+                            PropertiesBuilder.build(new Property("TC_TMPFS", "/testtmpfs:rw"))));
+        }
     }
 }

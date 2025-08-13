@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * ClickHouse TCL statement visitor.
+ * TCL statement visitor for ClickHouse.
  */
 public final class ClickHouseTCLStatementVisitor extends ClickHouseStatementVisitor implements TCLStatementVisitor {
     
+    public ClickHouseTCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

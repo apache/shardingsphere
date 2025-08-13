@@ -17,11 +17,29 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dml;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.LoadXMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.UnsupportedDistributeSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
- * MySQL load xml statement.
+ * Load xml statement for MySQL.
  */
-public final class MySQLLoadXMLStatement extends LoadXMLStatement implements MySQLStatement {
+@Getter
+public final class MySQLLoadXMLStatement extends DMLStatement {
+    
+    private final SimpleTableSegment table;
+    
+    public MySQLLoadXMLStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
+        super(databaseType);
+        this.table = table;
+    }
+    
+    @Override
+    public SQLStatementAttributes getAttributes() {
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
+    }
 }

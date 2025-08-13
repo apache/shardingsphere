@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CallContext;
@@ -27,32 +28,34 @@ import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaus
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCallStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussCopyStatement;
-import org.apache.shardingsphere.sql.parser.statement.opengauss.dml.OpenGaussDoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.dml.PostgreSQLCopyStatement;
+
+import java.util.Collections;
 
 /**
  * DML statement visitor for openGauss.
  */
 public final class OpenGaussDMLStatementVisitor extends OpenGaussStatementVisitor implements DMLStatementVisitor {
     
+    public OpenGaussDMLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
-        return new OpenGaussCallStatement();
+        return new CallStatement(getDatabaseType(), null, Collections.emptyList());
     }
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new OpenGaussDoStatement();
+        return new DoStatement(getDatabaseType(), Collections.emptyList());
     }
     
     @Override
     public ASTNode visitCopy(final CopyContext ctx) {
-        OpenGaussCopyStatement result = new OpenGaussCopyStatement();
-        if (null != ctx.qualifiedName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.qualifiedName()));
-        }
-        return result;
+        return new PostgreSQLCopyStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()), Collections.emptyList(), null);
     }
     
     @Override

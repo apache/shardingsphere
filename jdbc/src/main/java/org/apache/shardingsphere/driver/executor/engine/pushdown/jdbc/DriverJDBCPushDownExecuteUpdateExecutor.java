@@ -24,7 +24,6 @@ import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplay
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionalExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
@@ -43,7 +42,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -111,7 +111,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
             PushDownMetaDataRefreshEngine pushDownMetaDataRefreshEngine =
                     new PushDownMetaDataRefreshEngine(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props);
             if (pushDownMetaDataRefreshEngine.isNeedRefresh(executionContext.getSqlStatementContext())) {
-                if (isNeedImplicitCommit(executionContext.getSqlStatementContext())) {
+                if (isNeedImplicitCommit(executionContext.getSqlStatementContext().getSqlStatement())) {
                     connection.commit();
                 }
                 pushDownMetaDataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
@@ -138,18 +138,15 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
         return result;
     }
     
-    private boolean isNeedImplicitCommit(final SQLStatementContext sqlStatementContext) {
-        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatementContext.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
-        return !connection.getAutoCommit() && sqlStatementContext.getSqlStatement() instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
+    private boolean isNeedImplicitCommit(final SQLStatement sqlStatement) {
+        DialectTransactionOption transactionOption = new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getTransactionOption();
+        return !connection.getAutoCommit() && sqlStatement instanceof DDLStatement && transactionOption.isDDLNeedImplicitCommit();
     }
     
     private boolean isNeedAccumulate(final Collection<ShardingSphereRule> rules, final SQLStatementContext sqlStatementContext) {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
-            return false;
-        }
         for (ShardingSphereRule each : rules) {
             Optional<DataNodeRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataNodeRuleAttribute.class);
-            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+            if (ruleAttribute.isPresent() && ruleAttribute.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;
             }
         }

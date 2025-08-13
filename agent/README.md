@@ -24,7 +24,7 @@ Supports for OpenTelemetry.
 ```shell
 git clone https://github.com/apache/shardingsphere.git
 cd shardingsphere
-./mvnw clean install -Prelease
+./mvnw clean install -P-dev,release,all
 ```
 
 Artifact is `distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz`

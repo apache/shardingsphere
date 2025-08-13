@@ -37,7 +37,6 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - 行表达式
   - `org.apache.shardingsphere:shardingsphere-infra-expr-espresso`，基于 GraalVM Truffle 的 Espresso 实现的使用 Groovy 语法的行表达式
 - 数据库类型识别
-  - `org.apache.shardingsphere:shardingsphere-infra-database-testcontainers`， 对 `testcontainers-java` 的 `JDBC support` 的 jdbcURL 的识别适配
   - `org.apache.shardingsphere:shardingsphere-infra-database-hive`， 对 Hive 的 jdbcURL 的识别适配，元数据加载实现
   - `org.apache.shardingsphere:shardingsphere-infra-database-presto`， 对 Presto 的 jdbcURL 的识别适配，元数据加载实现
 - SQL 解析

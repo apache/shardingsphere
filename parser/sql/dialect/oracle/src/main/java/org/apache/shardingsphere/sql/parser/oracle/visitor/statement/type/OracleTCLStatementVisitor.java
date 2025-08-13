@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
@@ -26,52 +27,53 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Savepo
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.lcl.LockStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.oracle.dml.OracleLockStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleCommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleRollbackStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSavepointStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetConstraintsStatement;
-import org.apache.shardingsphere.sql.parser.statement.oracle.tcl.OracleSetTransactionStatement;
+
+import java.util.Collections;
 
 /**
  * TCL statement visitor for Oracle.
  */
 public final class OracleTCLStatementVisitor extends OracleStatementVisitor implements TCLStatementVisitor {
     
+    public OracleTCLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new OracleSetTransactionStatement();
+        return new SetTransactionStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitCommit(final CommitContext ctx) {
-        return new OracleCommitStatement();
+        return new CommitStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitRollback(final RollbackContext ctx) {
-        OracleRollbackStatement result = new OracleRollbackStatement();
-        if (null != ctx.savepointClause().savepointName()) {
-            result.setSavepointName(((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
-        }
-        return result;
+        return null == ctx.savepointClause().savepointName() ? new RollbackStatement(getDatabaseType())
+                : new RollbackStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.savepointClause().savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
-        OracleSavepointStatement result = new OracleSavepointStatement();
-        result.setSavepointName(((IdentifierValue) visit(ctx.savepointName())).getValue());
-        return result;
+        return new SavepointStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.savepointName())).getValue());
     }
     
     @Override
     public ASTNode visitSetConstraints(final SetConstraintsContext ctx) {
-        return new OracleSetConstraintsStatement();
+        return new SetConstraintsStatement(getDatabaseType());
     }
     
     @Override
     public ASTNode visitLock(final LockContext ctx) {
-        return new OracleLockStatement();
+        return new LockStatement(getDatabaseType(), Collections.emptyList());
     }
 }

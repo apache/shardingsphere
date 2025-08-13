@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type;
 
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitor;
 
 /**
- * ClickHouse DAL statement visitor.
+ * DAL statement visitor for ClickHouse.
  */
 public final class ClickHouseDALStatementVisitor extends ClickHouseStatementVisitor implements DALStatementVisitor {
+    
+    public ClickHouseDALStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }

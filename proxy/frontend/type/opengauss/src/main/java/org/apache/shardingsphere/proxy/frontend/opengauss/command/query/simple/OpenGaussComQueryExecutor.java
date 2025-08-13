@@ -44,10 +44,10 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.EmptyStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.CommitStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.RollbackStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

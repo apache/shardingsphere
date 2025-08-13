@@ -17,11 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.ResetStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ResetOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+
+import java.util.List;
 
 /**
- * MySQL reset statement.
+ * Reset statement for MySQL.
  */
-public final class MySQLResetStatement extends ResetStatement implements MySQLStatement {
+@Getter
+public final class MySQLResetStatement extends DALStatement {
+    
+    private final List<ResetOptionSegment> options;
+    
+    public MySQLResetStatement(final DatabaseType databaseType, final List<ResetOptionSegment> options) {
+        super(databaseType);
+        this.options = options;
+    }
 }
