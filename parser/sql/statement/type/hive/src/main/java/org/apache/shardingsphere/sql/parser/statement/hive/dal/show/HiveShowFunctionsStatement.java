@@ -2,7 +2,7 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache Software Foundation License, Version 2.0
+ * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -22,11 +22,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
-import java.util.Optional;
-
+/**
+ * Show functions statement for Hive.
+ */
 public final class HiveShowFunctionsStatement extends DALStatement {
-
-
+    
     public HiveShowFunctionsStatement(final DatabaseType databaseType) {
         super(databaseType);
     }

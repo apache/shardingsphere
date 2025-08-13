@@ -142,7 +142,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowCreateTable(final ShowCreateTableContext ctx) {
         return new MySQLShowCreateTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
-
+    
     @Override
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         FromDatabaseSegment fromDatabase = null;
@@ -154,7 +154,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
         }
         return new MySQLShowIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), fromDatabase);
     }
-
+    
     @Override
     public ASTNode visitShowColumns(final ShowColumnsContext ctx) {
         SimpleTableSegment table = null;
@@ -175,7 +175,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
         }
         return new MySQLShowColumnsStatement(getDatabaseType(), table, fromDatabase, filter);
     }
-
+    
     @Override
     public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
         return new HiveShowFunctionsStatement(getDatabaseType());
