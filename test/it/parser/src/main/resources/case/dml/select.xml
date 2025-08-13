@@ -11652,4 +11652,29 @@
             <column-item name="CustomerKey" start-index="51" stop-index="61" />
         </group-by>
     </select>
+
+    <select sql-case-id="select_with_predict_function">
+        <projections start-index="7" stop-index="18">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="d" start-index="7" stop-index="7" />
+            </shorthand-projection>
+            <column-projection name="Score" start-index="12" stop-index="18">
+                <owner name="p" start-index="12" stop-index="12" />
+            </column-projection>
+        </projections>
+        <from start-index="26" stop-index="96">
+            <function-table table-alias="p" start-index="26" stop-index="91">
+                <table-function function-name="PREDICT" text="PREDICT(MODEL = @model, DATA = dbo.mytable AS d) WITH (Score FLOAT)">
+                    <parameter>
+                        <parameter-marker value="@model" start-index="40" stop-index="45" />
+                    </parameter>
+                    <parameter>
+                        <simple-table name="mytable" alias="d" start-index="54" stop-index="70">
+                            <owner name="dbo" start-index="54" stop-index="54" />
+                        </simple-table>
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

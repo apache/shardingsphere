@@ -2170,3 +2170,15 @@ SETS
 DISTRIBUTED_AGG
     : D I S T R I B U T E D UL_ A G G
     ;
+
+PREDICT
+    : P R E D I C T
+    ;
+
+RUNTIME
+    : R U N T I M E
+    ;
+
+ONNX
+    : O N N X
+    ;

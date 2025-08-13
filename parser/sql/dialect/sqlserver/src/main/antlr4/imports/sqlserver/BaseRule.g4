@@ -481,7 +481,19 @@ openQueryFunction
     ;
 
 rowSetFunction
-    : openRowSetFunction | openQueryFunction | openDatasourceFunction
+    : openRowSetFunction | openQueryFunction | openDatasourceFunction | predictFunction
+    ;
+
+predictFunction
+    : PREDICT LP_ MODEL EQ_ (variableName | literals) COMMA_ DATA EQ_ tableName (AS alias)? (COMMA_ RUNTIME EQ_ ONNX)? RP_ WITH LP_ predictResultSetDefinition RP_
+    ;
+
+predictResultSetDefinition
+    : predictColumnDefinition (COMMA_ predictColumnDefinition)*
+    ;
+
+predictColumnDefinition
+    : columnName dataType (COLLATE collationName)? (NULL | NOT NULL)?
     ;
 
 regularFunction

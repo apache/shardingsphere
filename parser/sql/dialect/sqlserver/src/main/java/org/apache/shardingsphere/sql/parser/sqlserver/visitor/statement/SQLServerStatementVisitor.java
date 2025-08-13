@@ -164,6 +164,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarker
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ScanUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.StatisticsDimension;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -260,6 +261,8 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rol
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingSetsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExpressionListContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredictFunctionContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -345,6 +348,11 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
         return null == ctx.regularIdentifier() ? visit(ctx.delimitedIdentifier()) : visit(ctx.regularIdentifier());
+    }
+    
+    @Override
+    public final ASTNode visitVariableName(final VariableNameContext ctx) {
+        return new VariableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((IdentifierValue) visit(ctx.identifier())).getValue());
     }
     
     @Override
@@ -1468,9 +1476,29 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             return visit(ctx.openRowSetFunction());
         } else if (null != ctx.openQueryFunction()) {
             return visit(ctx.openQueryFunction());
+        } else if (null != ctx.predictFunction()) {
+            return visit(ctx.predictFunction());
         } else {
             return visit(ctx.openDatasourceFunction());
         }
+    }
+    
+    @Override
+    public ASTNode visitPredictFunction(final PredictFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.PREDICT().getText(), getOriginalText(ctx));
+        if (null != ctx.variableName()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.variableName()));
+        } else if (null != ctx.literals()) {
+            result.getParameters().add((ExpressionSegment) visit(ctx.literals()));
+        }
+        result.getParameters().add(new LiteralExpressionSegment(ctx.tableName().getStart().getStartIndex(), ctx.tableName().getStop().getStopIndex(), ctx.tableName().getText()));
+        if (null != ctx.alias()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.alias().getStart().getStartIndex(), ctx.alias().getStop().getStopIndex(), ctx.alias().getText()));
+        }
+        if (null != ctx.ONNX()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.ONNX().getSymbol().getStartIndex(), ctx.ONNX().getSymbol().getStopIndex(), ctx.ONNX().getText()));
+        }
+        return result;
     }
     
     @Override
@@ -1938,6 +1966,14 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         }
         if (null != ctx.pivotTable()) {
             return visit(ctx.pivotTable());
+        }
+        if (null != ctx.rowSetFunction()) {
+            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.rowSetFunction());
+            FunctionTableSegment result = new FunctionTableSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
         }
         return visit(ctx.tableReferences());
     }
