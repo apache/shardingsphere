@@ -32,10 +32,9 @@
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+            <artifactId>shardingsphere-infra-data-source-pool-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -62,6 +61,12 @@
             <scope>test</scope>
         </dependency>
         
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-database-mysql</artifactId>
