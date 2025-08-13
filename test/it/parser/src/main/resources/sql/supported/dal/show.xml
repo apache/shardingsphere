@@ -187,4 +187,16 @@
     <sql-case id="show_create_table_with_db" value="SHOW CREATE TABLE sales_db.orders;" db-types="Hive" />
     <sql-case id="show_create_table_view" value="SHOW CREATE TABLE user_view;" db-types="Hive" />
     <sql-case id="show_create_view_with_db" value="SHOW CREATE TABLE analytics_db.user_view;" db-types="Hive" />
+    <sql-case id="show_indexes_basic" value="SHOW INDEXES ON orders;" db-types="Hive" />
+    <sql-case id="show_index_basic" value="SHOW INDEX ON products;" db-types="Hive" />
+    <sql-case id="show_indexes_with_db_from" value="SHOW INDEXES ON user_logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_indexes_with_db_in" value="SHOW INDEXES ON inventory IN warehouse_db;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes" value="SHOW FORMATTED INDEXES ON sales;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes_with_db" value="SHOW FORMATTED INDEXES ON orders FROM sales_db;" db-types="Hive" />
+    <sql-case id="show_formatted_indexes_with_db_in" value="SHOW FORMATTED INDEXES ON orders IN sales_db;" db-types="Hive" />
+    <sql-case id="show_index_with_db_from" value="SHOW INDEX ON user_logs FROM analytics_db;" db-types="Hive" />
+    <sql-case id="show_index_with_db_in" value="SHOW INDEX ON inventory IN warehouse_db;" db-types="Hive" />
+    <sql-case id="show_formatted_index" value="SHOW FORMATTED INDEX ON sales;" db-types="Hive" />
+    <sql-case id="show_formatted_index_with_db" value="SHOW FORMATTED INDEX ON orders FROM sales_db;" db-types="Hive" />
+    <sql-case id="show_formatted_index_with_db_in" value="SHOW FORMATTED INDEX ON orders IN sales_db;" db-types="Hive" />
 </sql-cases>

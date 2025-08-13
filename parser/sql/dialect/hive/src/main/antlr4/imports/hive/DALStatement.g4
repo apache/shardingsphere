@@ -29,6 +29,7 @@ show
     | showTablesExtended
     | showTblproperties
     | showCreateTable
+    | showIndex
     ;
 
 showDatabases
@@ -66,6 +67,10 @@ showTblproperties
 
 showCreateTable
     : SHOW CREATE TABLE (tableName | viewName)
+    ;
+
+showIndex
+    : SHOW FORMATTED? (INDEX | INDEXES) ON tableName showFrom?
     ;
 
 showFrom
