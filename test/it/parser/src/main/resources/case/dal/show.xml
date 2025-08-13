@@ -936,4 +936,32 @@
     <show sql-case-id="show_partitions_with_order_by" />
     <show sql-case-id="show_partitions_with_limit" />
     <show sql-case-id="show_partitions_all_options" />
+    <show sql-case-id="show_table_extended_basic" />
+    <show sql-case-id="show_table_extended_in_database" />
+    <show sql-case-id="show_table_extended_from_database" />
+    <show sql-case-id="show_table_extended_with_partition" />
+    <show sql-case-id="show_table_extended_all_options_in" />
+    <show sql-case-id="show_table_extended_all_options_from" />
+    <show sql-case-id="show_tblproperties_basic" />
+    <show sql-case-id="show_tblproperties_with_key" />
+
+    <show-create-table sql-case-id="show_create_table_basic">
+        <table name="orders" start-index="18" stop-index="23" />
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_create_table_with_db">
+        <table name="orders" start-index="18" stop-index="32">
+            <owner name="sales_db" start-index="18" stop-index="25" />
+        </table>
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_create_table_view">
+        <table name="user_view" start-index="18" stop-index="26" />
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_create_view_with_db">
+        <table name="user_view" start-index="18" stop-index="39">
+            <owner name="analytics_db" start-index="18" stop-index="29" />
+        </table>
+    </show-create-table>
 </sql-parser-test-cases>
