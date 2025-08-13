@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.route.engine.tableless.type.unicast;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.tableless.TablelessRouteEngine;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.shadow.rule.ShadowDataSourceRule;
 
 import java.util.Arrays;

@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.executor.kernel;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 import java.sql.SQLException;
 import java.util.Collection;

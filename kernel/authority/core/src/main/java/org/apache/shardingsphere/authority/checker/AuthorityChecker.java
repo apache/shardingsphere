@@ -19,9 +19,9 @@ package org.apache.shardingsphere.authority.checker;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 
 /**
  * Authority checker.

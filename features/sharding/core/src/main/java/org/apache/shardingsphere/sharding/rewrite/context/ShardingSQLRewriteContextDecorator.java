@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.context;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
@@ -25,7 +26,6 @@ import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewri
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewritersBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder.SQLTokenGeneratorBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rewrite.parameter.ShardingParameterRewritersRegistry;
 import org.apache.shardingsphere.sharding.rewrite.token.ShardingTokenGenerateBuilder;

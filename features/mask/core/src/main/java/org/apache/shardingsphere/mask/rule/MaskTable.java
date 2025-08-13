@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;

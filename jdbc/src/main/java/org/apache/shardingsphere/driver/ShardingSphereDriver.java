@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.exception.DriverRegisterException;
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.Connection;
 import java.sql.Driver;

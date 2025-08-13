@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.event.WriteRowEvent;
-import org.apache.shardingsphere.infra.util.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
