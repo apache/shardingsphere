@@ -11677,4 +11677,42 @@
             </function-table>
         </from>
     </select>
+
+    <select sql-case-id="select_window_clause" parameters="1">
+        <projections start-index="7" stop-index="112">
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <expression-projection text="ROW_NUMBER() OVER w" start-index="16" stop-index="50" alias="row_number">
+                <expr>
+                    <function start-index="16" stop-index="34" text="ROW_NUMBER() OVER w" function-name="ROW_NUMBER" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="RANK() OVER w" start-index="53" stop-index="75" alias="rank">
+                <expr>
+                    <function start-index="53" stop-index="65" text="RANK() OVER w" function-name="RANK" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="DENSE_RANK() OVER w" start-index="78" stop-index="112" alias="dense_rank">
+                <expr>
+                    <function start-index="78" stop-index="96" text="DENSE_RANK() OVER w" function-name="DENSE_RANK" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="119" stop-index="125" />
+        </from>
+        <where start-index="127" stop-index="144">
+            <expr>
+                <binary-operation-expression start-index="133" stop-index="144">
+                    <left>
+                        <column name="order_id" start-index="133" stop-index="140" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="144" stop-index="144" />
+                        <parameter-marker-expression parameter-index="0" start-index="144" stop-index="144" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
