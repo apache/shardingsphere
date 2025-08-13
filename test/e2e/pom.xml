@@ -51,6 +51,11 @@
             <artifactId>shardingsphere-infra-url-classpath</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-url-absolutepath</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
