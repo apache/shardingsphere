@@ -31,6 +31,7 @@ show
     | showCreateTable
     | showIndex
     | showColumns
+    | showFunctions
     ;
 
 showDatabases
@@ -76,6 +77,10 @@ showIndex
 
 showColumns
     : SHOW COLUMNS (FROM | IN) tableName showFrom? showLike?
+    ;
+
+showFunctions
+    : SHOW FUNCTIONS showLike?
     ;
 
 showFrom

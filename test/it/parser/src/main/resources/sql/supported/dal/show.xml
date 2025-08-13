@@ -208,4 +208,6 @@
     <sql-case id="show_columns_with_db_from" value="SHOW COLUMNS IN logs FROM analytics_db;" db-types="Hive" />
     <sql-case id="show_columns_with_db_in" value="SHOW COLUMNS IN sales IN commerce_db;" db-types="Hive" />
     <sql-case id="show_columns_db_like" value="SHOW COLUMNS FROM inventory FROM warehouse_db LIKE 'stock_*|quantity';" db-types="Hive" />
+    <sql-case id="show_functions_basic" value="SHOW FUNCTIONS;" db-types="Hive" />
+    <sql-case id="show_functions_with_like" value="SHOW FUNCTIONS LIKE 'concat*';" db-types="Hive" />
 </sql-cases>
