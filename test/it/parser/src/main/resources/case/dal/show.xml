@@ -966,44 +966,58 @@
     </show-create-table>
 
     <show-index sql-case-id="show_indexes_basic">
-        <table name="orders" start-index="20" stop-index="25" />
+        <table name="orders" start-index="16" stop-index="21" />
     </show-index>
 
     <show-index sql-case-id="show_index_basic">
-        <table name="products" start-index="18" stop-index="25" />
+        <table name="products" start-index="14" stop-index="21" />
     </show-index>
 
     <show-index sql-case-id="show_indexes_with_db_from">
-        <table name="user_logs" start-index="20" stop-index="28" />
-        <database name="analytics_db" start-index="30" stop-index="41" />
+        <table name="user_logs" start-index="16" stop-index="24" />
+        <database name="analytics_db" start-index="26" stop-index="42" />
     </show-index>
 
     <show-index sql-case-id="show_indexes_with_db_in">
-        <table name="inventory" start-index="20" stop-index="28" />
-        <database name="warehouse_db" start-index="30" stop-index="41" />
+        <table name="inventory" start-index="16" stop-index="24" />
+        <database name="warehouse_db" start-index="26" stop-index="40" />
     </show-index>
 
     <show-index sql-case-id="show_formatted_indexes">
-        <table name="sales" start-index="28" stop-index="33" />
+        <table name="sales" start-index="26" stop-index="30" />
     </show-index>
 
     <show-index sql-case-id="show_formatted_indexes_with_db">
-        <table name="orders" start-index="28" stop-index="34" />
-        <database name="sales_db" start-index="36" stop-index="44" />
+        <table name="orders" start-index="26" stop-index="31" />
+        <database name="sales_db" start-index="33" stop-index="45" />
     </show-index>
 
     <show-index sql-case-id="show_formatted_indexes_with_db_in">
-        <table name="orders" start-index="28" stop-index="34" />
-        <database name="sales_db" start-index="36" stop-index="44" />
+        <table name="orders" start-index="26" stop-index="31" />
+        <database name="sales_db" start-index="33" stop-index="43" />
     </show-index>
 
     <show-index sql-case-id="show_index_with_db_from">
-        <table name="user_logs" start-index="18" stop-index="26" />
-        <database name="analytics_db" start-index="28" stop-index="39" />
+        <table name="user_logs" start-index="14" stop-index="22" />
+        <database name="analytics_db" start-index="24" stop-index="40" />
     </show-index>
 
     <show-index sql-case-id="show_index_with_db_in">
-        <table name="inventory" start-index="18" stop-index="26" />
-        <database name="warehouse_db" start-index="28" stop-index="39" />
+        <table name="inventory" start-index="14" stop-index="22" />
+        <database name="warehouse_db" start-index="24" stop-index="38" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_index">
+        <table name="sales" start-index="24" stop-index="28" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_index_with_db">
+        <table name="orders" start-index="24" stop-index="29" />
+        <database name="sales_db" start-index="31" stop-index="43" />
+    </show-index>
+
+    <show-index sql-case-id="show_formatted_index_with_db_in">
+        <table name="orders" start-index="24" stop-index="29" />
+        <database name="sales_db" start-index="31" stop-index="41" />
     </show-index>
 </sql-parser-test-cases>

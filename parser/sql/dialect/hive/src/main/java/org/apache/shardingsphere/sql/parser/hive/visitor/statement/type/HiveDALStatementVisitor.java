@@ -143,9 +143,6 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         FromDatabaseSegment fromDatabase = null;
         if (null != ctx.showFrom()) {
-            // 从 showFrom 节点中提取数据库名称
-            // showFrom 的结构是: (IN | FROM) databaseName
-            // 我们需要访问 databaseName 部分
             ASTNode showFromNode = visit(ctx.showFrom());
             if (showFromNode instanceof DatabaseSegment) {
                 fromDatabase = new FromDatabaseSegment(ctx.showFrom().getStart().getStartIndex(), (DatabaseSegment) showFromNode);
