@@ -46,7 +46,7 @@ class ConsistencyCheckJobExecutorCallbackTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @Test

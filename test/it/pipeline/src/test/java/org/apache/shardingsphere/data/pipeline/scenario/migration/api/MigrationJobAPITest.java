@@ -110,7 +110,7 @@ class MigrationJobAPITest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
         jobType = new MigrationJobType();
         jobAPI = (MigrationJobAPI) TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION");
         jobConfigManager = new PipelineJobConfigurationManager(jobType);

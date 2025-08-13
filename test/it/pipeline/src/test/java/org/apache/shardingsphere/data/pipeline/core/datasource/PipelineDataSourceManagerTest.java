@@ -41,7 +41,7 @@ class PipelineDataSourceManagerTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @BeforeEach

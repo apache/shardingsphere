@@ -38,7 +38,7 @@ class PipelineDistributedBarrierTest {
     
     @BeforeAll
     static void setUp() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @Test

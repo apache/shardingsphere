@@ -98,9 +98,9 @@ public final class PipelineContextUtils {
     private static final PipelineExecuteEngine EXECUTE_ENGINE = PipelineExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
     
     /**
-     * Mock mode configuration and context manager.
+     * Init pipeline context manager.
      */
-    public static void mockModeConfigAndContextManager() {
+    public static void initPipelineContextManager() {
         EmbedTestingServer.start();
         PipelineContextKey contextKey = getContextKey();
         if (null != PipelineContextManager.getContext(contextKey)) {
@@ -109,12 +109,13 @@ public final class PipelineContextUtils {
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
                 SystemResourceFileUtils.readFile("config_sharding_sphere_jdbc_source.yaml"));
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig.getDataSourceConfiguration();
-        ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
         ContextManager contextManager = getContextManager(rootConfig);
-        ClusterPersistRepository persistRepository = getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository());
+        ClusterPersistRepository persistRepository = getClusterPersistRepository(
+                (ClusterPersistRepositoryConfiguration) contextManager.getComputeNodeInstanceContext().getModeConfiguration().getRepository());
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), new MetaDataPersistFacade(persistRepository, true));
-        PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(),
-                contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
+        PipelineContext pipelineContext = new PipelineContext(contextManager.getComputeNodeInstanceContext().getModeConfiguration(),
+                new ContextManager(metaDataContexts, contextManager.getComputeNodeInstanceContext(),
+                        contextManager.getLockContext(), contextManager.getPersistServiceFacade().getRepository()));
         PipelineContextManager.putContext(contextKey, pipelineContext);
     }
     
