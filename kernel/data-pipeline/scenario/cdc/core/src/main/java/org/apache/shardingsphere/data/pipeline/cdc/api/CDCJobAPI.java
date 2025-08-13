@@ -75,6 +75,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -155,7 +156,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         sinkConfig.setSinkType(sinkType.name());
         sinkConfig.setProps(sinkProps);
         result.setSinkConfig(sinkConfig);
-        ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
+        ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
         result.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(param.getTableAndDataNodesMap());
         result.setJobShardingDataNodes(jobDataNodeLines.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
@@ -282,7 +283,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
      */
     public Collection<CDCJobItemInfo> getJobItemInfos(final String jobId) {
         CDCJobConfiguration jobConfig = new PipelineJobConfigurationManager(jobType).getJobConfiguration(jobId);
-        ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
+        ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getMetaDataContexts().getMetaData().getDatabase(jobConfig.getDatabaseName());
         Collection<CDCJobItemInfo> result = new LinkedList<>();
         for (TransmissionJobItemInfo each : new TransmissionJobManager(jobType).getJobItemInfos(jobId)) {
             TransmissionJobItemProgress jobItemProgress = each.getJobItemProgress();
@@ -300,8 +301,10 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         if (!queryCurrentPositionSQL.isPresent()) {
             return "";
         }
-        try (Connection connection = storageUnit.getDataSource().getConnection()) {
-            ResultSet resultSet = connection.createStatement().executeQuery(queryCurrentPositionSQL.get());
+        try (
+                Connection connection = storageUnit.getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(queryCurrentPositionSQL.get())) {
             resultSet.next();
             return resultSet.getString(1);
         } catch (final SQLException ex) {

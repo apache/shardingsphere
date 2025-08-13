@@ -67,7 +67,6 @@ import org.apache.shardingsphere.infra.exception.core.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.lock.LockDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
@@ -112,14 +111,13 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String jobId = jobConfig.getJobId();
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(jobId);
-        ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
-        LockContext lockContext = contextManager.getLockContext();
+        ContextManager contextManager = PipelineContextManager.getContext(contextKey);
         if (!jobItemManager.getProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobItemManager.persistProgress(jobItemContext);
         }
         LockDefinition lockDefinition = new GlobalLockDefinition(new MigrationPrepareLock(jobConfig.getJobId()));
         long startTimeMillis = System.currentTimeMillis();
-        if (lockContext.tryLock(lockDefinition, 600 * 1000L)) {
+        if (contextManager.getLockContext().tryLock(lockDefinition, 600 * 1000L)) {
             log.info("Lock success, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
             try {
                 PipelineJobOffsetGovernanceRepository offsetRepository = PipelineAPIFactory.getPipelineGovernanceFacade(contextKey).getJobFacade().getOffset();
@@ -132,7 +130,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
                 }
             } finally {
                 log.info("Unlock, jobId={}, shardingItem={}, cost {} ms.", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
-                lockContext.unlock(lockDefinition);
+                contextManager.getLockContext().unlock(lockDefinition);
             }
         } else {
             log.warn("Lock failed, jobId={}, shardingItem={}.", jobId, jobItemContext.getShardingItem());
