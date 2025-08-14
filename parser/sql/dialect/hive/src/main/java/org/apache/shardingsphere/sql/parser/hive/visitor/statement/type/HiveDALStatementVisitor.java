@@ -190,27 +190,27 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
         return new HiveShowFunctionsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowGrantedRolesAndPrivileges(final ShowGrantedRolesAndPrivilegesContext ctx) {
         return new MySQLShowGrantsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowLocks(final ShowLocksContext ctx) {
         return new HiveShowLocksStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowConf(final ShowConfContext ctx) {
         return new HiveShowConfStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowTransactions(final ShowTransactionsContext ctx) {
         return new HiveShowTransactionsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowCompactions(final ShowCompactionsContext ctx) {
         return new HiveShowCompactionsStatement(getDatabaseType());
