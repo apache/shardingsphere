@@ -5,7 +5,7 @@ weight = 7
 
 ### 描述
 
-`SHOW KEY GENERATE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口的所有实现类。
+`SHOW KEY GENERATE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm` 接口的所有实现类。
 
 ### 语法
 
@@ -31,7 +31,7 @@ showKeyGenerateAlgorithmPlugins ::=
 
 ### 示例
 
-- 查询 `org.apache.shardingsphere.keygen.core.algorithm.KeyGenerateAlgorithm` 接口的所有实现类
+- 查询 `org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm` 接口的所有实现类
 
 ```sql
 SHOW KEY GENERATE ALGORITHM PLUGINS
