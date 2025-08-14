@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.hash;
 
-import org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 

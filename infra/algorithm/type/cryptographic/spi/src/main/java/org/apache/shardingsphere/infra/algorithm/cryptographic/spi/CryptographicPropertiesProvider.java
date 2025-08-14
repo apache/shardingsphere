@@ -15,20 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.messagedigest.core;
+package org.apache.shardingsphere.infra.algorithm.cryptographic.spi;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 
 /**
- * Message digest algorithm.
+ * Provider of cryptographic properties.
  */
-public interface MessageDigestAlgorithm extends ShardingSphereAlgorithm {
+public interface CryptographicPropertiesProvider extends ShardingSphereAlgorithm {
     
     /**
-     * Digest.
+     * Get secret key.
      *
-     * @param plainValue plain value
-     * @return digest value
+     * @return secret key.
      */
-    String digest(Object plainValue);
+    byte[] getSecretKey();
+    
+    /**
+     * Get mode.
+     *
+     * @return mode
+     */
+    String getMode();
+    
+    /**
+     * Get padding.
+     *
+     * @return padding
+     */
+    String getPadding();
+    
+    /**
+     * Get iv parameter.
+     *
+     * @return iv parameter
+     */
+    byte[] getIvParameter();
+    
+    /**
+     * Get encoder.
+     *
+     * @return encoder
+     */
+    String getEncoder();
 }

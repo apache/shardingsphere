@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.messagedigest.md5;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.infra.algorithm.messagedigest.core.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
 
 import java.util.Properties;
 

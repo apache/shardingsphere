@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicPropertiesProvider;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.crypto.Cipher;

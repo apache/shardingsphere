@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;

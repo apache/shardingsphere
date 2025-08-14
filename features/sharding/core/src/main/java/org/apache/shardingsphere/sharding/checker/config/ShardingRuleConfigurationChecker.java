@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.checker.config;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.keygen.core.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 

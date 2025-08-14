@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.algorithm.loadbalancer.random;
 
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
