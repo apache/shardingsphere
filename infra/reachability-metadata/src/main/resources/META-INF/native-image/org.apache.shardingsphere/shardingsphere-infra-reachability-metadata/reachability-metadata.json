@@ -540,15 +540,13 @@
     },
     {
       "condition": {
-        "typeReached": "javax.security.auth.login.Configuration"
+        "typeReached": "com.facebook.presto.jdbc.internal.guava.reflect.Reflection"
       },
-      "type": "sun.security.provider.ConfigFile",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
+      "type": {
+        "proxy": [
+          "java.lang.reflect.TypeVariable"
+        ]
+      }
     }
   ],
   "resources": [
@@ -556,7 +554,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.**"
+      "glob": "META-INF/services/org.apache.shardingsphere.*"
     },
     {
       "condition": {
@@ -578,12 +576,6 @@
     }
   ],
   "bundles": [
-    {
-      "condition": {
-        "typeReached": "com.microsoft.sqlserver.jdbc.SQLServerResource"
-      },
-      "name": "com.microsoft.sqlserver.jdbc.SQLServerResource"
-    },
     {
       "condition": {
         "typeReached": "org.opengauss.util.GT"

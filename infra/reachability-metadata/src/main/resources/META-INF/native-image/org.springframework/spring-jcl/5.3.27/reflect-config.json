@@ -1,6 +1,0 @@
-[
-{
-  "condition":{"typeReachable":"org.apache.commons.logging.LogAdapter"},
-  "name":"org.apache.logging.log4j.spi.ExtendedLogger"
-}
-]

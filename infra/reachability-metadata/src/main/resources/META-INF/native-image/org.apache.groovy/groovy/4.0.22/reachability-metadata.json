@@ -1,0 +1,611 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.io.FileType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.Closure"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.EmptyRange"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.ExpandoMetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.GString"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "groovy.lang.GString"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.GroovyObject"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "groovy.lang.GroovyObject"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$4"
+      },
+      "type": "groovy.lang.GroovyObjectSupport"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.IntRange"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.ListWithDefault"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.MetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "groovy.lang.MetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass"
+      },
+      "type": "groovy.lang.MetaObjectProtocol"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.MetaProperty"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass"
+      },
+      "type": "groovy.lang.MutableMetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.ObjectRange"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.Range"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.SpreadMap"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.Writable"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.lang.groovydoc.Groovydoc"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "groovy.runtime.metaclass.CustomMetaClassCreationHandle"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.Binding"
+      },
+      "type": "groovy.runtime.metaclass.groovy.lang.BindingMetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "groovy.runtime.metaclass.groovy.lang.ExpandoMetaClassMetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.GroovyShell"
+      },
+      "type": "groovy.runtime.metaclass.groovy.lang.GroovyShellMetaClass"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "groovy.util.BufferedIterator"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "org.codehaus.groovy.runtime.GStringImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "type": "org.codehaus.groovy.runtime.NullObject"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaMethodIndex"
+      },
+      "type": "org.codehaus.groovy.runtime.callsite.CallSite"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.NumberNumberDiv",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.NumberNumberMinus",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.NumberNumberMultiply",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.NumberNumberPlus",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.BooleanArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.BooleanArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.ByteArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.ByteArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.CharacterArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.CharacterArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.DoubleArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.DoubleArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.FloatArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.FloatArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.IntegerArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.IntegerArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.LongArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.LongArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.ObjectArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.ObjectArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.ShortArrayGetAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl"
+      },
+      "type": "org.codehaus.groovy.runtime.dgmimpl.arrays.ShortArrayPutAtMetaMethod",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.vmplugin.VMPluginFactory"
+      },
+      "type": "org.codehaus.groovy.vmplugin.v16.Java16",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.stdclasses.CachedSAMClass"
+      },
+      "type": "groovy.lang.Buildable",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$3"
+      },
+      "type": "org.codehaus.groovy.vmplugin.v8.PluginDefaultGroovyMethods",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$3"
+      },
+      "type": "org.codehaus.groovy.runtime.DefaultGroovyMethodsSupport",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$3"
+      },
+      "type": "org.codehaus.groovy.vmplugin.v9.PluginDefaultGroovyMethods",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$3"
+      },
+      "type": "org.codehaus.groovy.vmplugin.v10.PluginDefaultGroovyMethods",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$3"
+      },
+      "type": "org.codehaus.groovy.runtime.DefaultGroovyStaticMethods",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$3"
+      },
+      "type": "groovy.lang.MetaClassImpl",
+      "allDeclaredMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.stdclasses.CachedSAMClass"
+      },
+      "type": "groovy.lang.MetaMethod",
+      "allDeclaredMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.ExpandoMetaClassBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.MetaClassImplBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.MetaClassImplCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.ExpandoMetaClassCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.BindingBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.GroovyObjectSupportBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.GroovyObjectSupportCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.BindingCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.GroovyShellBeanInfo"
+    },
+    {
+      "condition": {
+        "typeReached": "groovy.lang.MetaClassImpl"
+      },
+      "type": "groovy.lang.GroovyShellCustomizer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$1"
+      },
+      "type": "groovy.lang.Binding",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.CachedClass$2"
+      },
+      "type": "groovy.lang.GroovyShell",
+      "allDeclaredConstructors": true,
+      "allDeclaredMethods": true,
+      "allPublicMethods": true,
+      "allDeclaredFields": true
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"
+      },
+      "glob": "META-INF/dgminfo"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.m12n.ExtensionModuleScanner"
+      },
+      "glob": "META-INF/groovy/org.codehaus.groovy.runtime.ExtensionModule"
+    },
+    {
+      "condition": {
+        "typeReached": "org.codehaus.groovy.runtime.m12n.ExtensionModuleScanner"
+      },
+      "glob": "META-INF/services/org.codehaus.groovy.runtime.ExtensionModule"
+    }
+  ]
+}

@@ -3876,7 +3876,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory"
+        "typeReached": "org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory"
       },
       "type": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser",
       "methods": [
@@ -3972,7 +3972,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory"
+        "typeReached": "org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory"
       },
       "type": "org.apache.shardingsphere.infra.expr.interval.IntervalInlineExpressionParser",
       "methods": [
@@ -4068,7 +4068,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory"
+        "typeReached": "org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory"
       },
       "type": "org.apache.shardingsphere.infra.expr.literal.LiteralInlineExpressionParser",
       "methods": [
@@ -4270,12 +4270,6 @@
         "typeReached": "org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic.RemoveTokenGenerator"
       },
       "type": "org.apache.shardingsphere.infra.rewrite.mysql.MySQLToBeRemovedSegmentsProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.url.core.ShardingSphereURLLoadEngine"
-      },
-      "type": "org.apache.shardingsphere.infra.url.absolutepath.AbsolutePathURLLoader"
     },
     {
       "condition": {

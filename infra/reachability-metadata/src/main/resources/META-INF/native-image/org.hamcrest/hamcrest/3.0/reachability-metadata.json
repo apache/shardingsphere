@@ -1,0 +1,16 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.hamcrest.TypeSafeMatcher"
+      },
+      "type": "org.hamcrest.collection.IsEmptyCollection"
+    },
+    {
+      "condition": {
+        "typeReached": "org.hamcrest.TypeSafeDiagnosingMatcher"
+      },
+      "type": "org.hamcrest.collection.IsIterableContainingInAnyOrder"
+    }
+  ]
+}
