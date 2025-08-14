@@ -110,7 +110,7 @@ optionHint
     ;
 
 singleTableClause
-    : FROM? LP_? tableName RP_? (AS? alias)?
+    : FROM? LP_? (tableName | rowSetFunction) RP_? (AS? alias)?
     ;
 
 multipleTablesClause
