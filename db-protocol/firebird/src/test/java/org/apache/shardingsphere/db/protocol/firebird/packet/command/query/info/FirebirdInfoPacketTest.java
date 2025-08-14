@@ -30,7 +30,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +37,9 @@ class FirebirdInfoPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
     
     @Test
     void assertGetLength() {
@@ -47,11 +49,10 @@ class FirebirdInfoPacketTest {
     
     @Test
     void assertNewInstance() {
-        ByteBuf buffer = mock(ByteBuf.class);
         when(payload.readInt4()).thenReturn(1, 2, 100);
-        when(payload.readBuffer()).thenReturn(buffer);
-        when(buffer.isReadable()).thenReturn(true, true, false);
-        when(buffer.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.RECORDS.getCode(), (byte) FirebirdCommonInfoPacketType.END.getCode());
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(true, true, false);
+        when(byteBuf.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.RECORDS.getCode(), (byte) FirebirdCommonInfoPacketType.END.getCode());
         FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
         assertThat(actual.getHandle(), is(1));
         assertThat(actual.getIncarnation(), is(2));

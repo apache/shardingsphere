@@ -19,18 +19,23 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.stat
 
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdFreeStatementPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertFreeStatementPacket() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.readInt4()).thenReturn(5, FirebirdFreeStatementPacket.DROP);
         FirebirdFreeStatementPacket packet = new FirebirdFreeStatementPacket(payload);
         verify(payload).skipReserved(4);

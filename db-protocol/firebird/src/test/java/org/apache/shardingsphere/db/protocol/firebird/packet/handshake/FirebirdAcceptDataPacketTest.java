@@ -20,15 +20,21 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.handshake;
 import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.inOrder;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdAcceptDataPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertWriteWithData() {
@@ -36,7 +42,6 @@ class FirebirdAcceptDataPacketTest {
         String publicKey = "key";
         FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(salt, publicKey,
                 FirebirdAuthenticationMethod.SRP, 1, "k");
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         verify(payload).writeInt4(salt.length + publicKey.length() + 4);
         verify(payload).writeInt2LE(salt.length);
@@ -51,7 +56,6 @@ class FirebirdAcceptDataPacketTest {
     @Test
     void assertWriteWithoutData() {
         FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt4(0);

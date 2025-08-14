@@ -28,12 +28,12 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,15 +42,21 @@ import static org.mockito.Mockito.mockStatic;
 @ExtendWith(MockitoExtension.class)
 class FirebirdFetchResponsePacketTest {
     
+    @Mock
+    private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
+    
+    @Mock
+    private FirebirdBinaryProtocolValue protocolValue;
+    
     @Test
     void assertWriteWithRow() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        ByteBuf byteBuf = mock(ByteBuf.class);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
         when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
-        FirebirdBinaryProtocolValue protocolValue = mock(FirebirdBinaryProtocolValue.class);
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
             FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket(row);
@@ -65,7 +71,6 @@ class FirebirdFetchResponsePacketTest {
     
     @Test
     void assertWriteWithoutRow() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         FirebirdFetchResponsePacket packet = new FirebirdFetchResponsePacket();
         packet.write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());

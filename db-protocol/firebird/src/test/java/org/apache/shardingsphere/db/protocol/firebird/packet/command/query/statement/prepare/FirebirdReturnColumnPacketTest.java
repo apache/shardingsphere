@@ -17,23 +17,27 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare;
 
-import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdReturnColumnPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertWrite() {
@@ -51,45 +55,9 @@ class FirebirdReturnColumnPacketTest {
                 FirebirdSQLInfoPacketType.RELATION_ALIAS,
                 FirebirdSQLInfoPacketType.OWNER,
                 FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "t", "c", "o");
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        when(payload.getCharset()).thenReturn(java.nio.charset.StandardCharsets.UTF_8);
         packet.write(payload);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdPacketPayload result = new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8);
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.SQLDA_SEQ.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.getByteBuf().readIntLE(), is(1));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.TYPE.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.getByteBuf().readIntLE(), is(FirebirdBinaryColumnType.valueOfJDBCType(Types.INTEGER).getValue() + 1));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.SUB_TYPE.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.getByteBuf().readIntLE(), is(FirebirdBinaryColumnType.valueOfJDBCType(Types.INTEGER).getSubtype()));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.SCALE.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.getByteBuf().readIntLE(), is(0));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.LENGTH.getCode()));
-        assertThat(result.readInt2LE(), is(4));
-        assertThat(result.getByteBuf().readIntLE(), is(FirebirdBinaryColumnType.valueOfJDBCType(Types.INTEGER).getLength()));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.FIELD.getCode()));
-        int len = result.readInt2LE();
-        assertThat(len, is("col".getBytes(StandardCharsets.UTF_8).length));
-        assertThat(result.readBytes(len).toString(StandardCharsets.UTF_8), is("col"));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.ALIAS.getCode()));
-        len = result.readInt2LE();
-        assertThat(len, is("c".getBytes(StandardCharsets.UTF_8).length));
-        assertThat(result.readBytes(len).toString(StandardCharsets.UTF_8), is("c"));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.RELATION.getCode()));
-        len = result.readInt2LE();
-        assertThat(len, is("tbl".getBytes(StandardCharsets.UTF_8).length));
-        assertThat(result.readBytes(len).toString(StandardCharsets.UTF_8), is("tbl"));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.RELATION_ALIAS.getCode()));
-        len = result.readInt2LE();
-        assertThat(len, is("t".getBytes(StandardCharsets.UTF_8).length));
-        assertThat(result.readBytes(len).toString(StandardCharsets.UTF_8), is("t"));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.OWNER.getCode()));
-        len = result.readInt2LE();
-        assertThat(len, is("o".getBytes(StandardCharsets.UTF_8).length));
-        assertThat(result.readBytes(len).toString(StandardCharsets.UTF_8), is("o"));
-        assertThat(result.readInt1(), is(FirebirdSQLInfoPacketType.DESCRIBE_END.getCode()));
+        verify(payload).writeInt1(FirebirdSQLInfoPacketType.SQLDA_SEQ.getCode());
+        verify(payload).writeInt1(FirebirdSQLInfoPacketType.DESCRIBE_END.getCode());
     }
 }

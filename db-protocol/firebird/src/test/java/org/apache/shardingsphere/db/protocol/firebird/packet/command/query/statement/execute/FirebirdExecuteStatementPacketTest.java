@@ -18,44 +18,45 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.execute;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdExecuteStatementPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
     
     @Test
     void assertExecuteStatementPacket() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(FirebirdCommandPacketType.EXECUTE.getValue());
-        payload.writeInt4(1);
-        payload.writeInt4(2);
-        ByteBuf blr = Unpooled.buffer();
-        blr.writeZero(4);
-        blr.writeByte(5);
-        blr.writeByte(0);
-        blr.writeByte(BlrConstants.blr_long);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_end);
-        payload.writeBuffer(blr);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.writeInt1(0);
-        payload.writeBytes(new byte[3]);
-        payload.writeInt4(123);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8),
-                FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
+        when(payload.readInt1()).thenReturn(0);
+        doNothing().when(payload).skipPadding(anyInt());
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(true);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
+        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
+        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getType(), is(FirebirdCommandPacketType.EXECUTE));
         assertThat(packet.getStatementId(), is(1));
         assertThat(packet.getTransactionId(), is(2));
@@ -65,38 +66,19 @@ class FirebirdExecuteStatementPacketTest {
     
     @Test
     void assertExecuteStatementPacketForStoredProcedure() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(FirebirdCommandPacketType.EXECUTE2.getValue());
-        payload.writeInt4(1);
-        payload.writeInt4(2);
-        ByteBuf blr = Unpooled.buffer();
-        blr.writeZero(4);
-        blr.writeByte(5);
-        blr.writeByte(0);
-        blr.writeByte(BlrConstants.blr_long);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_end);
-        payload.writeBuffer(blr);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.writeInt1(0);
-        payload.writeBytes(new byte[3]);
-        payload.writeInt4(123);
-        ByteBuf returnBlr = Unpooled.buffer();
-        returnBlr.writeZero(4);
-        returnBlr.writeByte(5);
-        returnBlr.writeByte(0);
-        returnBlr.writeByte(BlrConstants.blr_long);
-        returnBlr.writeZero(3);
-        returnBlr.writeByte(BlrConstants.blr_end);
-        payload.writeBuffer(returnBlr);
-        payload.writeInt4(9);
-        payload.writeInt4(30);
-        payload.writeInt4(1);
-        payload.writeInt4(1024);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8),
-                FirebirdProtocolVersion.PROTOCOL_VERSION19);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE2.getValue(), 1, 2, 0, 1, 123, 9);
+        when(payload.readInt1()).thenReturn(0);
+        doNothing().when(payload).skipPadding(anyInt());
+        ByteBuf returnBlr = mock(ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(byteBuf, returnBlr);
+        when(byteBuf.isReadable()).thenReturn(true);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
+        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
+        when(returnBlr.isReadable()).thenReturn(true);
+        when(returnBlr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
+        when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
+        when(payload.readInt4Unsigned()).thenReturn(30L, 1L, 1024L);
+        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION19);
         assertThat(packet.isStoredProcedure(), is(true));
         assertThat(packet.getReturnColumns(), is(Collections.singletonList(FirebirdBinaryColumnType.LONG)));
         assertThat(packet.getOutputMessageNumber(), is(9));
@@ -108,25 +90,17 @@ class FirebirdExecuteStatementPacketTest {
     
     @Test
     void assertGetLength() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(FirebirdCommandPacketType.EXECUTE.getValue());
-        payload.writeInt4(1);
-        payload.writeInt4(2);
-        ByteBuf blr = Unpooled.buffer();
-        blr.writeZero(4);
-        blr.writeByte(5);
-        blr.writeByte(0);
-        blr.writeByte(BlrConstants.blr_long);
-        blr.writeZero(3);
-        blr.writeByte(BlrConstants.blr_end);
-        payload.writeBuffer(blr);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.writeInt1(0);
-        payload.writeBytes(new byte[3]);
-        payload.writeInt4(123);
-        int expectedLength = payload.getByteBuf().writerIndex();
-        payload.getByteBuf().readerIndex(0);
-        assertThat(FirebirdExecuteStatementPacket.getLength(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), is(expectedLength));
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
+        when(payload.readInt1()).thenReturn(0);
+        doNothing().when(payload).skipPadding(anyInt());
+        ByteBuf blr = mock(ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(blr);
+        when(blr.isReadable()).thenReturn(true);
+        when(blr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
+        when(blr.skipBytes(anyInt())).thenReturn(blr);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readerIndex()).thenReturn(42);
+        assertThat(FirebirdExecuteStatementPacket.getLength(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), is(42));
+        verify(byteBuf).resetReaderIndex();
     }
 }

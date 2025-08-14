@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
@@ -32,12 +33,23 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdGenericResponsePacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
+    
+    @Mock
+    private FirebirdPacket data;
+    
+    @Mock
+    private FirebirdStatusVector vector;
     
     @Test
     void assertGetHandleAndId() {
@@ -56,8 +68,6 @@ class FirebirdGenericResponsePacketTest {
     
     @Test
     void assertWriteWithoutData() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        ByteBuf byteBuf = mock(ByteBuf.class);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         new FirebirdGenericResponsePacket().setHandle(3).setId(4).write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
@@ -69,13 +79,9 @@ class FirebirdGenericResponsePacketTest {
     
     @Test
     void assertWriteWithDataAndStatusVector() throws ReflectiveOperationException {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        ByteBuf byteBuf = mock(ByteBuf.class);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(4, 8);
-        FirebirdPacket data = mock(FirebirdPacket.class);
-        FirebirdStatusVector vector = mock(FirebirdStatusVector.class);
         FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setHandle(1).setId(2).setData(data);
         Field field = FirebirdGenericResponsePacket.class.getDeclaredField("statusVector");
         field.setAccessible(true);

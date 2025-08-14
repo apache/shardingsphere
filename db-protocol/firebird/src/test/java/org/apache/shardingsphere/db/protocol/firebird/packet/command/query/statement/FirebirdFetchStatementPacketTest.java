@@ -22,25 +22,32 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.Fireb
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdFetchStatementPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
     
     @Test
     void assertFetchStatementPacket() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.readInt4()).thenReturn(3, 7, 10);
-        ByteBuf blr = mock(ByteBuf.class);
-        when(payload.readBuffer()).thenReturn(blr);
-        when(blr.isReadable()).thenReturn(true);
-        when(blr.readUnsignedByte()).thenReturn((short) 9, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_short, (short) BlrConstants.blr_end);
-        when(blr.skipBytes(anyInt())).thenReturn(blr);
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(true);
+        when(byteBuf.readUnsignedByte()).thenReturn((short) 9, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_short, (short) BlrConstants.blr_end);
+        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(payload);
         verify(payload).skipReserved(4);
         assertThat(packet.getStatementId(), is(3));
@@ -53,7 +60,6 @@ class FirebirdFetchStatementPacketTest {
     
     @Test
     void assertGetLength() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.getBufferLength(8)).thenReturn(20);
         assertThat(FirebirdFetchStatementPacket.getLength(payload), is(36));
         verify(payload).getBufferLength(8);

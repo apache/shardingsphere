@@ -17,24 +17,28 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-
-import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdCommitTransactionPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertReadTransactionId() {
-        ByteBuf buf = Unpooled.buffer();
-        buf.writeZero(4);
-        buf.writeInt(123);
-        FirebirdCommitTransactionPacket packet = new FirebirdCommitTransactionPacket(new FirebirdPacketPayload(buf, StandardCharsets.UTF_8));
+        when(payload.readInt4()).thenReturn(123);
+        FirebirdCommitTransactionPacket packet = new FirebirdCommitTransactionPacket(payload);
+        verify(payload).skipReserved(4);
         assertThat(packet.getTransactionId(), is(123));
     }
     

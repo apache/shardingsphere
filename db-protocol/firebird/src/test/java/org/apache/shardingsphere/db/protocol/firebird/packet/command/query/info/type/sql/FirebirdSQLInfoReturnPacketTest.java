@@ -21,19 +21,24 @@ import org.apache.shardingsphere.db.protocol.firebird.exception.FirebirdProtocol
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdSQLInfoReturnPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertWriteRecords() {
         FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.RECORDS, FirebirdCommonInfoPacketType.END));
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         org.mockito.InOrder io = org.mockito.Mockito.inOrder(payload);
         io.verify(payload).writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
@@ -56,6 +61,6 @@ class FirebirdSQLInfoReturnPacketTest {
     @Test
     void assertParseSQLInfoWithUnknownType() {
         FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE));
-        assertThrows(FirebirdProtocolException.class, () -> packet.write(mock(FirebirdPacketPayload.class)));
+        assertThrows(FirebirdProtocolException.class, () -> packet.write(payload));
     }
 }

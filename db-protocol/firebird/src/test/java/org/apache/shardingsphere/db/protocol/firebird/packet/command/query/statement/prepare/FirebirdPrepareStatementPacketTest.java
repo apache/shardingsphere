@@ -17,32 +17,40 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare;
 
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-
-import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdPrepareStatementPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertPrepareStatementPacket() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.writeInt4(2);
-        payload.writeInt4(3);
-        payload.writeString("select 1");
-        payload.writeBuffer(new byte[]{(byte) FirebirdSQLInfoPacketType.STMT_TYPE.getCode(), (byte) FirebirdSQLInfoPacketType.DESCRIBE_VARS.getCode()});
-        payload.writeInt4(10);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8));
+        doNothing().when(payload).skipReserved(anyInt());
+        when(payload.readInt4()).thenReturn(1, 2, 3, 10);
+        when(payload.readString()).thenReturn("select 1");
+        io.netty.buffer.ByteBuf infoBuffer = mock(io.netty.buffer.ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(infoBuffer);
+        when(infoBuffer.isReadable()).thenReturn(true, true, false);
+        when(infoBuffer.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.STMT_TYPE.getCode(), (byte) FirebirdSQLInfoPacketType.DESCRIBE_VARS.getCode());
+        FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(payload);
+        verify(payload).skipReserved(4);
         assertThat(packet.getTransactionId(), is(1));
         assertThat(packet.getStatementId(), is(2));
         assertThat(packet.getSqlDialect(), is(3));
@@ -57,30 +65,22 @@ class FirebirdPrepareStatementPacketTest {
     
     @Test
     void assertIsValidStatementHandleWhenInvalid() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.writeInt4(0xFFFF);
-        payload.writeInt4(3);
-        payload.writeString("select 1");
-        payload.writeBuffer(new byte[0]);
-        payload.writeInt4(10);
-        payload.getByteBuf().readerIndex(0);
-        FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(new FirebirdPacketPayload(payload.getByteBuf(), StandardCharsets.UTF_8));
+        doNothing().when(payload).skipReserved(anyInt());
+        when(payload.readInt4()).thenReturn(1, 0xFFFF, 3, 10);
+        when(payload.readString()).thenReturn("select 1");
+        io.netty.buffer.ByteBuf infoBuffer = mock(io.netty.buffer.ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(infoBuffer);
+        when(infoBuffer.isReadable()).thenReturn(false);
+        FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(payload);
         assertFalse(packet.isValidStatementHandle());
     }
     
     @Test
     void assertGetLength() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        payload.writeInt4(0);
-        payload.writeInt4(1);
-        payload.writeInt4(2);
-        payload.writeInt4(3);
-        payload.writeString("select 1");
-        payload.writeBuffer(new byte[]{(byte) FirebirdSQLInfoPacketType.STMT_TYPE.getCode(), (byte) FirebirdSQLInfoPacketType.DESCRIBE_VARS.getCode()});
-        payload.writeInt4(10);
-        payload.getByteBuf().readerIndex(0);
+        when(payload.getBufferLength(16)).thenReturn(12);
+        when(payload.getBufferLength(28)).thenReturn(8);
         assertThat(FirebirdPrepareStatementPacket.getLength(payload), is(40));
+        verify(payload).getBufferLength(16);
+        verify(payload).getBufferLength(28);
     }
 }

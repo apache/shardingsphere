@@ -25,7 +25,10 @@ import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.Firebird
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +40,22 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdAcceptPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
     
     @Test
     void assertAcceptPacket() {
-        ByteBuf buf1 = mock(ByteBuf.class);
-        when(buf1.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
+        when(byteBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
         ByteBuf buf2 = mock(ByteBuf.class);
         when(buf2.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 2);
         List<FirebirdProtocol> list = new ArrayList<>();
-        list.add(new FirebirdProtocol(buf1));
+        list.add(new FirebirdProtocol(byteBuf));
         list.add(new FirebirdProtocol(buf2));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
         assertEquals(FirebirdCommandPacketType.ACCEPT, packet.getOpCode());
@@ -55,13 +64,11 @@ class FirebirdAcceptPacketTest {
     
     @Test
     void assertWriteWithAcceptDataPacket() {
-        ByteBuf protoBuf = mock(ByteBuf.class);
-        when(protoBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
+        when(byteBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
         List<FirebirdProtocol> list = new ArrayList<>();
-        list.add(new FirebirdProtocol(protoBuf));
+        list.add(new FirebirdProtocol(byteBuf));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
         packet.setAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         InOrder io = inOrder(payload);
         packet.write(payload);
         io.verify(payload).writeInt4(FirebirdCommandPacketType.ACCEPT_DATA.getValue());

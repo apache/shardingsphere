@@ -18,42 +18,50 @@
 package org.apache.shardingsphere.db.protocol.firebird.packet.handshake;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.firebird.constant.buffer.type.FirebirdDatabaseParameterBufferType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-
-import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdAttachPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertAttachPacket() {
-        ByteBuf buf = Unpooled.buffer();
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(buf, StandardCharsets.UTF_8);
-        payload.writeInt4(100);
-        payload.writeString("db");
-        ByteBuf dpb = Unpooled.buffer();
-        dpb.writeByte(1);
-        dpb.writeByte(FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode());
-        dpb.writeByte(4);
-        dpb.writeBytes("UTF8".getBytes(StandardCharsets.UTF_8));
-        dpb.writeByte(FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA.getCode());
-        dpb.writeByte(2);
-        dpb.writeBytes("ad".getBytes(StandardCharsets.UTF_8));
-        dpb.writeByte(FirebirdDatabaseParameterBufferType.USER_NAME.getCode());
-        dpb.writeByte(4);
-        dpb.writeBytes("user".getBytes(StandardCharsets.UTF_8));
-        dpb.writeByte(FirebirdDatabaseParameterBufferType.PASSWORD_ENC.getCode());
-        dpb.writeByte(6);
-        dpb.writeBytes("passwd".getBytes(StandardCharsets.UTF_8));
-        payload.writeBuffer(dpb);
-        buf.readerIndex(0);
-        FirebirdAttachPacket packet = new FirebirdAttachPacket(new FirebirdPacketPayload(buf, StandardCharsets.UTF_8));
+        when(payload.readInt4()).thenReturn(100);
+        when(payload.readString()).thenReturn("db");
+        ByteBuf dpb = mock(ByteBuf.class);
+        when(payload.readBuffer()).thenReturn(dpb);
+        when(dpb.readUnsignedByte()).thenReturn(
+                (short) 1,
+                (short) FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode(),
+                (short) FirebirdDatabaseParameterBufferType.SPECIFIC_AUTH_DATA.getCode(),
+                (short) FirebirdDatabaseParameterBufferType.USER_NAME.getCode(),
+                (short) FirebirdDatabaseParameterBufferType.PASSWORD_ENC.getCode());
+        when(dpb.isReadable()).thenReturn(true, true, true, true, false);
+        when(dpb.readByte()).thenReturn((byte) 4, (byte) 2, (byte) 4, (byte) 6);
+        ByteBuf slice1 = mock(ByteBuf.class);
+        when(slice1.toString(java.nio.charset.StandardCharsets.UTF_8)).thenReturn("UTF8");
+        ByteBuf slice2 = mock(ByteBuf.class);
+        when(slice2.toString(java.nio.charset.StandardCharsets.UTF_8)).thenReturn("ad");
+        ByteBuf slice3 = mock(ByteBuf.class);
+        when(slice3.toString(java.nio.charset.StandardCharsets.UTF_8)).thenReturn("user");
+        ByteBuf slice4 = mock(ByteBuf.class);
+        when(slice4.toString(java.nio.charset.StandardCharsets.UTF_8)).thenReturn("passwd");
+        when(dpb.readSlice(anyInt())).thenReturn(slice1, slice2, slice3, slice4);
+        FirebirdAttachPacket packet = new FirebirdAttachPacket(payload);
         assertEquals(100, packet.getId());
         assertThat(packet.getDatabase(), is("db"));
         assertThat(packet.getEncoding(), is("UTF8"));

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCom
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
@@ -41,9 +42,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FirebirdConnectPacketTest {
     
+    @Mock
+    private FirebirdPacketPayload payload;
+    
     @Test
     void assertConnectPacket() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         ByteBuf userInfo = mock(ByteBuf.class);
         ByteBuf userBuf = mock(ByteBuf.class);
         ByteBuf pluginBuf = mock(ByteBuf.class);

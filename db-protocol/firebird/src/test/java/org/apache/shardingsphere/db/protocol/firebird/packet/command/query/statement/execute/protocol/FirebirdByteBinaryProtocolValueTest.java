@@ -28,7 +28,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdByteBinaryProtocolValueTest {
@@ -36,11 +35,13 @@ class FirebirdByteBinaryProtocolValueTest {
     @Mock
     private FirebirdPacketPayload payload;
     
+    @Mock
+    private ByteBuf byteBuf;
+    
     @Test
     void assertRead() {
-        ByteBuf buf = mock(ByteBuf.class);
-        when(payload.readBuffer()).thenReturn(buf);
-        assertThat(new FirebirdByteBinaryProtocolValue().read(payload), is(buf));
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        assertThat(new FirebirdByteBinaryProtocolValue().read(payload), is(byteBuf));
     }
     
     @Test

@@ -86,6 +86,12 @@ class FirebirdCommandExecuteEngineTest {
     @Mock
     private ProxyDatabaseConnectionManager databaseConnectionManager;
     
+    @Mock
+    private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
+    
     private FirebirdCommandExecuteEngine engine;
     
     @BeforeEach
@@ -96,7 +102,6 @@ class FirebirdCommandExecuteEngineTest {
     
     @Test
     void assertGetCommandPacketType() {
-        ByteBuf byteBuf = mock(ByteBuf.class);
         when(byteBuf.readerIndex()).thenReturn(0);
         when(byteBuf.getInt(0)).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue());
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
@@ -105,7 +110,6 @@ class FirebirdCommandExecuteEngineTest {
     
     @Test
     void assertGetCommandPacket() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(connectionSession.getConnectionId()).thenReturn(1);
         FirebirdConnectionProtocolVersion connectionProtocolVersion = mock(FirebirdConnectionProtocolVersion.class);
         when(FirebirdConnectionProtocolVersion.getInstance()).thenReturn(connectionProtocolVersion);

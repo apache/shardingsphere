@@ -26,16 +26,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.mockito.InOrder;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.inOrder;
+
+@ExtendWith(MockitoExtension.class)
 class FirebirdDatabaseInfoReturnPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertWriteDialect() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT));
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt1(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode());
@@ -46,7 +53,6 @@ class FirebirdDatabaseInfoReturnPacketTest {
     @Test
     void assertWriteOdsVersion() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.ODS_VERSION));
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt1(FirebirdDatabaseInfoPacketType.ODS_VERSION.getCode());
@@ -57,7 +63,6 @@ class FirebirdDatabaseInfoReturnPacketTest {
     @Test
     void assertWriteOdsMinorVersion() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION));
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt1(FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION.getCode());
@@ -68,7 +73,6 @@ class FirebirdDatabaseInfoReturnPacketTest {
     @Test
     void assertWriteFirebirdVersion() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.FIREBIRD_VERSION));
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         packet.write(payload);
         String serverName = String.format("Firebird %d.%d (ShardingSphere-Proxy)", 5, 0);
         String fbVersion = String.format("%s-%s%d.%d.%d.%d %s", FirebirdArchType.ARCHITECTURE.getIdentifier(), "V", 5, 0, 0, 0, serverName);
@@ -83,6 +87,6 @@ class FirebirdDatabaseInfoReturnPacketTest {
     @Test
     void assertParseDatabaseInfoWithUnknownType() {
         FirebirdDatabaseInfoReturnPacket packet = new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.DB_ID));
-        assertThrows(FirebirdProtocolException.class, () -> packet.write(mock(FirebirdPacketPayload.class)));
+        assertThrows(FirebirdProtocolException.class, () -> packet.write(payload));
     }
 }

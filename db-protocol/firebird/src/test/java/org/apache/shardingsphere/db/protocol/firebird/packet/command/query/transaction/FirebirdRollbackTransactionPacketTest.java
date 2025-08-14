@@ -19,18 +19,23 @@ package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.tran
 
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdRollbackTransactionPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertReadTransactionId() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.readInt4()).thenReturn(456);
         FirebirdRollbackTransactionPacket packet = new FirebirdRollbackTransactionPacket(payload);
         verify(payload).skipReserved(4);
