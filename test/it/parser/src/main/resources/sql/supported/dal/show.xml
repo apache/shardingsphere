@@ -222,4 +222,5 @@
     <sql-case id="show_locks_database" value="SHOW LOCKS DATABASE sales_db;" db-types="Hive" />
     <sql-case id="show_locks_schema" value="SHOW LOCKS SCHEMA sales_db;" db-types="Hive" />
     <sql-case id="show_conf" value="SHOW CONF 'hive.exec.dynamic.partition';" db-types="Hive" />
+    <sql-case id="show_transactions" value="SHOW TRANSACTIONS;" db-types="Hive" />
 </sql-cases>

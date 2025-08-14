@@ -3389,3 +3389,7 @@ PRINCIPALS
 CONF
     : C O N F
     ;
+
+TRANSACTIONS
+ : T R A N S A C T I O N S
+ ;

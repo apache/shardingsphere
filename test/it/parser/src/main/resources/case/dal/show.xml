@@ -1085,4 +1085,5 @@
     <show sql-case-id="show_locks_database" />
     <show sql-case-id="show_locks_schema" />
     <show sql-case-id="show_conf" />
+    <show sql-case-id="show_transactions" />
 </sql-parser-test-cases>

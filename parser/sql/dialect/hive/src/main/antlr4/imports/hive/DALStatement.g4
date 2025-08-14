@@ -35,6 +35,7 @@ show
     | showGrantedRolesAndPrivileges
     | showLocks
     | showConf
+    | showTransactions
     ;
 
 showDatabases
@@ -104,6 +105,10 @@ showLocks
 
 showConf
     : SHOW CONF configurationName
+    ;
+
+showTransactions
+    : SHOW TRANSACTIONS
     ;
 
 showFrom
