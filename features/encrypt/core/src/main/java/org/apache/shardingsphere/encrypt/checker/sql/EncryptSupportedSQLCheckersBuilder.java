@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.checker.sql.projection.EncryptSelectPro
 import org.apache.shardingsphere.encrypt.checker.sql.with.EncryptWithClauseSupportedChecker;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder;
 
@@ -37,16 +38,19 @@ import java.util.Collection;
  */
 public final class EncryptSupportedSQLCheckersBuilder implements SupportedSQLCheckersBuilder<EncryptRule> {
     
+    private final Collection<SupportedSQLChecker<?, EncryptRule>> supportedSQLCheckers = Arrays.asList(
+            new EncryptSelectProjectionSupportedChecker(),
+            new EncryptInsertSelectProjectionSupportedChecker(),
+            new EncryptPredicateColumnSupportedChecker(),
+            new EncryptOrderByItemSupportedChecker(),
+            new EncryptWithClauseSupportedChecker(),
+            new EncryptCombineClauseSupportedChecker(),
+            new EncryptInsertSelectSupportedChecker());
+    
+    @HighFrequencyInvocation
     @Override
     public Collection<SupportedSQLChecker<?, EncryptRule>> getSupportedSQLCheckers() {
-        return Arrays.asList(
-                new EncryptSelectProjectionSupportedChecker(),
-                new EncryptInsertSelectProjectionSupportedChecker(),
-                new EncryptPredicateColumnSupportedChecker(),
-                new EncryptOrderByItemSupportedChecker(),
-                new EncryptWithClauseSupportedChecker(),
-                new EncryptCombineClauseSupportedChecker(),
-                new EncryptInsertSelectSupportedChecker());
+        return supportedSQLCheckers;
     }
     
     @Override
