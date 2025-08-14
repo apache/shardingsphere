@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
-
 /**
  * Supported SQL checker.
  *
