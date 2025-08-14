@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-infra-algorithm-key-generator</artifactId>
+        <artifactId>shardingsphere-infra-algorithm-message-digest</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-algorithm-key-generator-core</artifactId>
+    <artifactId>shardingsphere-infra-algorithm-message-digest-spi</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra-algorithm-load-balancer</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-algorithm-load-balancer-core</artifactId>
+    <artifactId>shardingsphere-infra-algorithm-load-balancer-spi</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>

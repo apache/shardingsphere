@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-infra-algorithm-cryptographic</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-infra-algorithm-cryptographic-core</artifactId>
+    <artifactId>shardingsphere-infra-algorithm-cryptographic-spi</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
