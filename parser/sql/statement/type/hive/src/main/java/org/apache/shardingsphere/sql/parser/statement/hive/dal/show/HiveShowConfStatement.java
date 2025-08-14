@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  * Show conf extended statement for Hive.
  */
 public final class HiveShowConfStatement extends DALStatement {
-
+    
     public HiveShowConfStatement(final DatabaseType databaseType) {
         super(databaseType);
     }

@@ -34,6 +34,9 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCrea
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowColumnsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowFunctionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowGrantedRolesAndPrivilegesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLocksContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConfContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -49,8 +52,11 @@ import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowView
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTablesExtendedStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTblpropertiesStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowFunctionsStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowLocksStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConfStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowGrantsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
@@ -179,5 +185,20 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
         return new HiveShowFunctionsStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowGrantedRolesAndPrivileges(final ShowGrantedRolesAndPrivilegesContext ctx) {
+        return new MySQLShowGrantsStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowLocks(final ShowLocksContext ctx) {
+        return new HiveShowLocksStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowConf(final ShowConfContext ctx) {
+        return new HiveShowConfStatement(getDatabaseType());
     }
 }

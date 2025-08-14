@@ -661,7 +661,7 @@ macroName
     ;
 
 configurationName
-    : identifier
+    : string_
     ;
 
 oldColumn

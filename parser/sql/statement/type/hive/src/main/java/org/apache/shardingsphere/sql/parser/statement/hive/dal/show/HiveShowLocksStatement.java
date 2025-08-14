@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  * Show locks extended statement for Hive.
  */
 public final class HiveShowLocksStatement extends DALStatement {
-
+    
     public HiveShowLocksStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
