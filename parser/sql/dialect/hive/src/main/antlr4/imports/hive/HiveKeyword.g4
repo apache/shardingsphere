@@ -3385,3 +3385,7 @@ FORMATTED
 PRINCIPALS
     : P R I N C I P A L S
     ;
+
+CONF
+    : C O N F
+    ;

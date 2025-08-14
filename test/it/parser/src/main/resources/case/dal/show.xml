@@ -1084,4 +1084,5 @@
     <show sql-case-id="show_locks_partition_extended" />
     <show sql-case-id="show_locks_database" />
     <show sql-case-id="show_locks_schema" />
+    <show sql-case-id="show_conf" />
 </sql-parser-test-cases>

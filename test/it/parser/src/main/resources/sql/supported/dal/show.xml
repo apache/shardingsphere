@@ -221,4 +221,5 @@
     <sql-case id="show_locks_partition_extended" value="SHOW LOCKS orders PARTITION (dt='2024-08-01') EXTENDED;" db-types="Hive" />
     <sql-case id="show_locks_database" value="SHOW LOCKS DATABASE sales_db;" db-types="Hive" />
     <sql-case id="show_locks_schema" value="SHOW LOCKS SCHEMA sales_db;" db-types="Hive" />
+    <sql-case id="show_conf" value="SHOW CONF hive.exec.dynamic.partition;" db-types="Hive" />
 </sql-cases>

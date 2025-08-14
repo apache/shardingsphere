@@ -34,6 +34,7 @@ show
     | showFunctions
     | showGrantedRolesAndPrivileges
     | showLocks
+    | showConf
     ;
 
 showDatabases
@@ -99,6 +100,10 @@ showLocks
     | SHOW LOCKS tableName PARTITION partitionSpec?
     | SHOW LOCKS tableName PARTITION partitionSpec? EXTENDED
     | SHOW LOCKS (DATABASE | SCHEMA) databaseName
+    ;
+
+showConf
+    : SHOW CONF configurationName
     ;
 
 showFrom

@@ -660,6 +660,10 @@ macroName
     : identifier
     ;
 
+configurationName
+    : identifier
+    ;
+
 oldColumn
     : columnName
     ;
