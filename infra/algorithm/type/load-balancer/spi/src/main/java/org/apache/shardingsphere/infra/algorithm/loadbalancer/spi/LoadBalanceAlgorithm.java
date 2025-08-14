@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.loadbalancer.core;
+package org.apache.shardingsphere.infra.algorithm.loadbalancer.spi;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 

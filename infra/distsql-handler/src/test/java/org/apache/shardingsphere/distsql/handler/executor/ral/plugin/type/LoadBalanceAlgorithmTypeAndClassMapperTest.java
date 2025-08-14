@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin.type;
 
 import org.apache.shardingsphere.distsql.handler.executor.ral.plugin.PluginTypeAndClassMapper;
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 

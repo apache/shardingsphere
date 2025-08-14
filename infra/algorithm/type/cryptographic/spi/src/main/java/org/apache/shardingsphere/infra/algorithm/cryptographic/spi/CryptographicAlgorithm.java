@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.algorithm.keygen.core;
+package org.apache.shardingsphere.infra.algorithm.cryptographic.spi;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-
-import java.util.Collection;
 
 /**
- * Key generate algorithm.
+ * Cryptographic algorithm.
  */
-public interface KeyGenerateAlgorithm extends ShardingSphereAlgorithm {
+public interface CryptographicAlgorithm extends ShardingSphereAlgorithm {
     
     /**
-     * Generate keys.
+     * Encrypt.
      *
-     * @param context algorithm SQL context 
-     * @param keyGenerateCount key generate count
-     * @return generated keys
+     * @param plainValue plain value
+     * @return cipher value
      */
-    Collection<? extends Comparable<?>> generateKeys(AlgorithmSQLContext context, int keyGenerateCount);
+    Object encrypt(Object plainValue);
     
     /**
-     * Judge whether support auto increment or not.
+     * Decrypt.
      *
-     * @return whether support auto increment or not
+     * @param cipherValue cipher value
+     * @return plain value
      */
-    default boolean isSupportAutoIncrement() {
-        return false;
-    }
+    Object decrypt(Object cipherValue);
 }
