@@ -21,11 +21,11 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Show transactions extended statement for Hive.
+ * Show compactions extended statement for Hive.
  */
-public final class HiveShowTransactionsStatement extends DALStatement {
+public final class HiveShowCompactionsStatement extends DALStatement {
     
-    public HiveShowTransactionsStatement(final DatabaseType databaseType) {
+    public HiveShowCompactionsStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }
