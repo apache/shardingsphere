@@ -1073,4 +1073,16 @@
 
     <show sql-case-id="show_functions_basic" />
     <show sql-case-id="show_functions_with_like" />
+    <show sql-case-id="show_role_grant_basic" />
+    <show sql-case-id="show_grant_basic" />
+    <show sql-case-id="show_current_roles" />
+    <show sql-case-id="show_roles_basic" />
+    <show sql-case-id="show_principals_basic" />
+    <show sql-case-id="show_locks_basic" />
+    <show sql-case-id="show_locks_extended" />
+    <show sql-case-id="show_locks_partition" />
+    <show sql-case-id="show_locks_partition_extended" />
+    <show sql-case-id="show_locks_database" />
+    <show sql-case-id="show_locks_schema" />
+    <show sql-case-id="show_conf" />
 </sql-parser-test-cases>

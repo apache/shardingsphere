@@ -2183,6 +2183,10 @@ ROLE
     : R O L E
     ;
 
+ROLES
+    : R O L E S
+    ;
+
 ROLLBACK
     : R O L L B A C K
     ;
@@ -3376,4 +3380,12 @@ CONNECTORS
 
 FORMATTED
     : F O R M A T T E D
+    ;
+
+PRINCIPALS
+    : P R I N C I P A L S
+    ;
+
+CONF
+    : C O N F
     ;

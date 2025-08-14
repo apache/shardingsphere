@@ -32,6 +32,9 @@ show
     | showIndex
     | showColumns
     | showFunctions
+    | showGrantedRolesAndPrivileges
+    | showLocks
+    | showConf
     ;
 
 showDatabases
@@ -81,6 +84,26 @@ showColumns
 
 showFunctions
     : SHOW FUNCTIONS showLike?
+    ;
+
+showGrantedRolesAndPrivileges
+    : SHOW ROLE GRANT
+    | SHOW GRANT
+    | SHOW CURRENT ROLES
+    | SHOW ROLES
+    | SHOW PRINCIPALS
+    ;
+
+showLocks
+    : SHOW LOCKS tableName
+    | SHOW LOCKS tableName EXTENDED
+    | SHOW LOCKS tableName partitionSpec
+    | SHOW LOCKS tableName partitionSpec EXTENDED
+    | SHOW LOCKS (DATABASE | SCHEMA) databaseName
+    ;
+
+showConf
+    : SHOW CONF configurationName
     ;
 
 showFrom
