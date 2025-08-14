@@ -34,12 +34,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-algorithm-key-generator-core</artifactId>
+            <artifactId>shardingsphere-infra-algorithm-key-generator-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-algorithm-load-balancer-core</artifactId>
+            <artifactId>shardingsphere-infra-algorithm-load-balancer-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
