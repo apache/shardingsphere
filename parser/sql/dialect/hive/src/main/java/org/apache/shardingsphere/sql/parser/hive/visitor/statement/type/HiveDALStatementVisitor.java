@@ -37,6 +37,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowFunc
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowGrantedRolesAndPrivilegesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLocksContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConfContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTransactionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCompactionsContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
@@ -54,6 +56,8 @@ import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTblp
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowFunctionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowLocksStatement;
 import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowConfStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowTransactionsStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.show.HiveShowCompactionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowGrantsStatement;
@@ -200,5 +204,15 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitShowConf(final ShowConfContext ctx) {
         return new HiveShowConfStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowTransactions(final ShowTransactionsContext ctx) {
+        return new HiveShowTransactionsStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowCompactions(final ShowCompactionsContext ctx) {
+        return new HiveShowCompactionsStatement(getDatabaseType());
     }
 }

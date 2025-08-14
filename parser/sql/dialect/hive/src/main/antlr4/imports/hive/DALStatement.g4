@@ -35,6 +35,8 @@ show
     | showGrantedRolesAndPrivileges
     | showLocks
     | showConf
+    | showTransactions
+    | showCompactions
     ;
 
 showDatabases
@@ -104,6 +106,16 @@ showLocks
 
 showConf
     : SHOW CONF configurationName
+    ;
+
+showTransactions
+    : SHOW TRANSACTIONS
+    ;
+
+showCompactions
+    : SHOW COMPACTIONS (DATABASE | SCHEMA) databaseName
+    | SHOW COMPACTIONS tableName? partitionSpec? (POOL stringLiterals)? (TYPE stringLiterals)? (STATE stringLiterals)? orderByClause? limitClause?
+    | SHOW COMPACTIONS COMPACTIONID EQ_ NUMBER_
     ;
 
 showFrom

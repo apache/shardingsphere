@@ -173,7 +173,7 @@
     <sql-case id="show_partitions_with_partition_spec" value="SHOW PARTITIONS access_logs PARTITION(year='2023');" db-types="Hive" />
     <sql-case id="show_partitions_with_where" value="SHOW PARTITIONS products WHERE month >= 6;" db-types="Hive" />
     <sql-case id="show_partitions_with_order_by" value="SHOW PARTITIONS user_activity ORDER BY day DESC;" db-types="Hive" />
-    <sql-case id="show_partitions_with_limit" value="SHOW PARTITIONS transactions LIMIT 50;" db-types="Hive" />
+    <sql-case id="show_partitions_with_limit" value="SHOW PARTITIONS sales LIMIT 50;" db-types="Hive" />
     <sql-case id="show_partitions_all_options" value="SHOW PARTITIONS retail.sales PARTITION(region='north') WHERE quarter=4 AND revenue > 50000 ORDER BY revenue DESC LIMIT 20;" db-types="Hive" />
     <sql-case id="show_table_extended_basic" value="SHOW TABLE EXTENDED LIKE 'order_*';" db-types="Hive" />
     <sql-case id="show_table_extended_in_database" value="SHOW TABLE EXTENDED IN sales_db LIKE 'order_*';" db-types="Hive" />
@@ -222,4 +222,17 @@
     <sql-case id="show_locks_database" value="SHOW LOCKS DATABASE sales_db;" db-types="Hive" />
     <sql-case id="show_locks_schema" value="SHOW LOCKS SCHEMA sales_db;" db-types="Hive" />
     <sql-case id="show_conf" value="SHOW CONF 'hive.exec.dynamic.partition';" db-types="Hive" />
+    <sql-case id="show_transactions" value="SHOW TRANSACTIONS;" db-types="Hive" />
+    <sql-case id="show_compactions_basic" value="SHOW COMPACTIONS;" db-types="Hive" />
+    <sql-case id="show_compactions_with_database" value="SHOW COMPACTIONS DATABASE db1;" db-types="Hive" />
+    <sql-case id="show_compactions_with_schema" value="SHOW COMPACTIONS SCHEMA db1;" db-types="Hive" />
+    <sql-case id="show_compactions_with_table" value="SHOW COMPACTIONS tbl0;" db-types="Hive" />
+    <sql-case id="show_compactions_with_partition" value="SHOW COMPACTIONS tbl0 PARTITION (p=101, day='Monday');" db-types="Hive" />
+    <sql-case id="show_compactions_with_type" value="SHOW COMPACTIONS TYPE 'minor';" db-types="Hive" />
+    <sql-case id="show_compactions_with_pool" value="SHOW COMPACTIONS POOL 'pool0';" db-types="Hive" />
+    <sql-case id="show_compactions_with_state" value="SHOW COMPACTIONS STATE 'working';" db-types="Hive" />
+    <sql-case id="show_compactions_with_order" value="SHOW COMPACTIONS ORDER BY `start` DESC;" db-types="Hive" />
+    <sql-case id="show_compactions_with_limit" value="SHOW COMPACTIONS LIMIT 10;" db-types="Hive" />
+    <sql-case id="show_compactions_with_compaction_ID" value="SHOW COMPACTIONS compactionid=1;" db-types="Hive" />
+    <sql-case id="show_compactions_all_options" value="SHOW COMPACTIONS db1.tbl0 PARTITION (p=101, day='Monday') POOL 'pool0' TYPE 'minor' STATE 'ready for cleaning' ORDER BY `start` DESC LIMIT 5;" db-types="Hive" />
 </sql-cases>

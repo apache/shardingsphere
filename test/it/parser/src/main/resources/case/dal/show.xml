@@ -1085,4 +1085,17 @@
     <show sql-case-id="show_locks_database" />
     <show sql-case-id="show_locks_schema" />
     <show sql-case-id="show_conf" />
+    <show sql-case-id="show_transactions" />
+    <show sql-case-id="show_compactions_basic" />
+    <show sql-case-id="show_compactions_with_database" />
+    <show sql-case-id="show_compactions_with_schema" />
+    <show sql-case-id="show_compactions_with_table" />
+    <show sql-case-id="show_compactions_with_partition" />
+    <show sql-case-id="show_compactions_with_type" />
+    <show sql-case-id="show_compactions_with_pool" />
+    <show sql-case-id="show_compactions_with_state" />
+    <show sql-case-id="show_compactions_with_order" />
+    <show sql-case-id="show_compactions_with_limit" />
+    <show sql-case-id="show_compactions_with_compaction_ID" />
+    <show sql-case-id="show_compactions_all_options" />
 </sql-parser-test-cases>

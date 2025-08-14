@@ -3389,3 +3389,19 @@ PRINCIPALS
 CONF
     : C O N F
     ;
+
+TRANSACTIONS
+    : T R A N S A C T I O N S
+    ;
+
+COMPACTIONS
+    : C O M P A C T I O N S
+    ;
+
+STATE
+    : S T A T E
+    ;
+
+COMPACTIONID
+    : C O M P A C T I O N I D
+    ;
