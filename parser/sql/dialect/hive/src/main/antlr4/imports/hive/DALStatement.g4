@@ -32,6 +32,7 @@ show
     | showIndex
     | showColumns
     | showFunctions
+    | showGrantedRolesAndPrivileges
     ;
 
 showDatabases
@@ -81,6 +82,14 @@ showColumns
 
 showFunctions
     : SHOW FUNCTIONS showLike?
+    ;
+
+showGrantedRolesAndPrivileges
+    : SHOW ROLE GRANT
+    | SHOW GRANT
+    | SHOW CURRENT ROLES
+    | SHOW ROLES
+    | SHOW PRINCIPALS
     ;
 
 showFrom
