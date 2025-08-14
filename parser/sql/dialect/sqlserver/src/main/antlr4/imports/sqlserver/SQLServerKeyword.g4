@@ -2182,3 +2182,7 @@ RUNTIME
 ONNX
     : O N N X
     ;
+
+WINDOW
+    : W I N D O W
+    ;

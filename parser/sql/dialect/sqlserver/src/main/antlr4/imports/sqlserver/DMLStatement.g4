@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause? optionHint?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause? optionHint? windowClause?
     ;
 
 duplicateSpecification
@@ -162,6 +162,14 @@ unqualifiedShorthand
 
 qualifiedShorthand
     : identifier DOT_ASTERISK_
+    ;
+
+windowClause
+    : WINDOW windowItem (COMMA_ windowItem)*
+    ;
+
+windowItem
+    : identifier AS windowSpecification
     ;
 
 onFileGroupClause

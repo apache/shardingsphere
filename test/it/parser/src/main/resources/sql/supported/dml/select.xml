@@ -368,4 +368,5 @@
     <sql-case id="select_identity_function" value="SELECT IDENTITY(int,1,1) AS ID_Num INTO NewTable FROM OldTable;" db-types="SQLServer"/>
     <sql-case id="select_group_by_with_distributed_agg" value="SELECT CustomerKey FROM FactInternetSales GROUP BY CustomerKey WITH (DISTRIBUTED_AGG)" db-types="SQLServer"/>
     <sql-case id="select_with_predict_function" value="SELECT d.*, p.Score FROM PREDICT(MODEL = @model, DATA = dbo.mytable AS d) WITH (Score FLOAT) AS p;" db-types="SQLServer"/>
+    <sql-case id="select_window_clause" value="SELECT user_id, ROW_NUMBER() OVER w AS 'row_number', RANK() OVER w AS 'rank', DENSE_RANK() OVER w AS 'dense_rank' FROM t_order WHERE order_id = ? WINDOW w AS (ORDER BY user_id)" db-types="SQLServer"/>
 </sql-cases>
