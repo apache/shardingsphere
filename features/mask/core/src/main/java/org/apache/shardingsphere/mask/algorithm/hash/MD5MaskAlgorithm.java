@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mask.algorithm.hash;
 
 import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
@@ -35,6 +36,7 @@ public final class MD5MaskAlgorithm implements MaskAlgorithm<Object, String> {
         digestAlgorithm = TypedSPILoader.getService(MessageDigestAlgorithm.class, getType(), props);
     }
     
+    @HighFrequencyInvocation
     @Override
     public String mask(final Object plainValue) {
         return digestAlgorithm.digest(plainValue);
