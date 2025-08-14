@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
  * Supported SQL checker.
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
  * @param <T> type of SQL statement context
  * @param <R> type of ShardingSphere rule
  */
-@SingletonSPI
 public interface SupportedSQLChecker<T extends SQLStatementContext, R extends ShardingSphereRule> {
     
     /**
