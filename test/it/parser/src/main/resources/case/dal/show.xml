@@ -1078,4 +1078,10 @@
     <show sql-case-id="show_current_roles" />
     <show sql-case-id="show_roles_basic" />
     <show sql-case-id="show_principals_basic" />
+    <show sql-case-id="show_locks_basic" />
+    <show sql-case-id="show_locks_extended" />
+    <show sql-case-id="show_locks_partition" />
+    <show sql-case-id="show_locks_partition_extended" />
+    <show sql-case-id="show_locks_database" />
+    <show sql-case-id="show_locks_schema" />
 </sql-parser-test-cases>

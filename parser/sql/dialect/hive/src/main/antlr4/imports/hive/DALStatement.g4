@@ -33,6 +33,7 @@ show
     | showColumns
     | showFunctions
     | showGrantedRolesAndPrivileges
+    | showLocks
     ;
 
 showDatabases
@@ -90,6 +91,14 @@ showGrantedRolesAndPrivileges
     | SHOW CURRENT ROLES
     | SHOW ROLES
     | SHOW PRINCIPALS
+    ;
+
+showLocks
+    : SHOW LOCKS tableName
+    | SHOW LOCKS tableName EXTENDED
+    | SHOW LOCKS tableName PARTITION partitionSpec?
+    | SHOW LOCKS tableName PARTITION partitionSpec? EXTENDED
+    | SHOW LOCKS (DATABASE | SCHEMA) databaseName
     ;
 
 showFrom

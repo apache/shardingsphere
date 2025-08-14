@@ -215,4 +215,10 @@
     <sql-case id="show_current_roles" value="SHOW CURRENT ROLES;" db-types="Hive" />
     <sql-case id="show_roles_basic" value="SHOW ROLES;" db-types="Hive" />
     <sql-case id="show_principals_basic" value="SHOW PRINCIPALS;" db-types="Hive" />
+    <sql-case id="show_locks_basic" value="SHOW LOCKS orders;" db-types="Hive" />
+    <sql-case id="show_locks_extended" value="SHOW LOCKS orders EXTENDED;" db-types="Hive" />
+    <sql-case id="show_locks_partition" value="SHOW LOCKS orders PARTITION (dt='2024-08-01');" db-types="Hive" />
+    <sql-case id="show_locks_partition_extended" value="SHOW LOCKS orders PARTITION (dt='2024-08-01') EXTENDED;" db-types="Hive" />
+    <sql-case id="show_locks_database" value="SHOW LOCKS DATABASE sales_db;" db-types="Hive" />
+    <sql-case id="show_locks_schema" value="SHOW LOCKS SCHEMA sales_db;" db-types="Hive" />
 </sql-cases>
