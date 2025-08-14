@@ -64,6 +64,9 @@ class FirebirdPacketCodecEngineTest {
     @Mock
     private ByteBuf byteBuf;
     
+    @Mock
+    private DatabasePacket packet;
+    
     @BeforeEach
     void setup() {
         when(context.channel().attr(AttributeKey.<Charset>valueOf(Charset.class.getName())).get()).thenReturn(StandardCharsets.UTF_8);
@@ -183,14 +186,12 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertEncode() {
-        DatabasePacket packet = mock(DatabasePacket.class);
         new FirebirdPacketCodecEngine().encode(context, packet, byteBuf);
         verify(packet).write(any(FirebirdPacketPayload.class));
     }
     
     @Test
     void assertEncodeOccursException() {
-        DatabasePacket packet = mock(DatabasePacket.class);
         doThrow(RuntimeException.class).when(packet).write(any(FirebirdPacketPayload.class));
         new FirebirdPacketCodecEngine().encode(context, packet, byteBuf);
         verify(byteBuf).resetWriterIndex();

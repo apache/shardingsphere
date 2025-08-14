@@ -24,15 +24,20 @@ import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayl
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Types;
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdPrepareStatementReturnPacketTest {
+    
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
     void assertWrite() {
@@ -40,12 +45,10 @@ class FirebirdPrepareStatementReturnPacketTest {
         packet.setType(FirebirdSQLInfoReturnValue.SELECT);
         ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
-        FirebirdReturnColumnPacket columnPacket = new FirebirdReturnColumnPacket(Collections.singleton(FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "", "", "");
+        FirebirdReturnColumnPacket columnPacket =
+                new FirebirdReturnColumnPacket(Collections.singleton(FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "", "", "");
         packet.getDescribeSelect().add(columnPacket);
         packet.getDescribeBind().add(columnPacket);
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        io.netty.buffer.ByteBuf byteBuf = mock(io.netty.buffer.ByteBuf.class);
-        when(payload.getByteBuf()).thenReturn(byteBuf);
         packet.write(payload);
         verify(payload).writeInt1(FirebirdSQLInfoPacketType.STMT_TYPE.getCode());
         verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());

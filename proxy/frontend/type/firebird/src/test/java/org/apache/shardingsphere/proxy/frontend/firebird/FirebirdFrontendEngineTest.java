@@ -27,14 +27,17 @@ import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdConnectionProtocolVersion.class})
 class FirebirdFrontendEngineTest {
+    
+    @Mock
+    private ConnectionSession connectionSession;
     
     private FirebirdFrontendEngine engine;
     
@@ -45,7 +48,6 @@ class FirebirdFrontendEngineTest {
     
     @Test
     void assertRelease() {
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
         int connectionId = 1;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         engine.release(connectionSession);

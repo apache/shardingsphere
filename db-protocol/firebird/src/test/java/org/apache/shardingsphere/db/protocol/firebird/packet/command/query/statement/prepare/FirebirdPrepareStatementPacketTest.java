@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement.prepare;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,15 +40,17 @@ class FirebirdPrepareStatementPacketTest {
     @Mock
     private FirebirdPacketPayload payload;
     
+    @Mock
+    private ByteBuf byteBuf;
+    
     @Test
     void assertPrepareStatementPacket() {
         doNothing().when(payload).skipReserved(anyInt());
         when(payload.readInt4()).thenReturn(1, 2, 3, 10);
         when(payload.readString()).thenReturn("select 1");
-        io.netty.buffer.ByteBuf infoBuffer = mock(io.netty.buffer.ByteBuf.class);
-        when(payload.readBuffer()).thenReturn(infoBuffer);
-        when(infoBuffer.isReadable()).thenReturn(true, true, false);
-        when(infoBuffer.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.STMT_TYPE.getCode(), (byte) FirebirdSQLInfoPacketType.DESCRIBE_VARS.getCode());
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(true, true, false);
+        when(byteBuf.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.STMT_TYPE.getCode(), (byte) FirebirdSQLInfoPacketType.DESCRIBE_VARS.getCode());
         FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(payload);
         verify(payload).skipReserved(4);
         assertThat(packet.getTransactionId(), is(1));
@@ -68,9 +70,8 @@ class FirebirdPrepareStatementPacketTest {
         doNothing().when(payload).skipReserved(anyInt());
         when(payload.readInt4()).thenReturn(1, 0xFFFF, 3, 10);
         when(payload.readString()).thenReturn("select 1");
-        io.netty.buffer.ByteBuf infoBuffer = mock(io.netty.buffer.ByteBuf.class);
-        when(payload.readBuffer()).thenReturn(infoBuffer);
-        when(infoBuffer.isReadable()).thenReturn(false);
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(false);
         FirebirdPrepareStatementPacket packet = new FirebirdPrepareStatementPacket(payload);
         assertFalse(packet.isValidStatementHandle());
     }

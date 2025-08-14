@@ -30,7 +30,6 @@ import org.mockito.Mock;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,9 +40,11 @@ class FirebirdAuthenticationEngineTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext context;
     
+    @Mock
+    private ConnectionIdGenerator idGenerator;
+    
     @Test
     void assertHandshake() {
-        ConnectionIdGenerator idGenerator = mock(ConnectionIdGenerator.class);
         when(ConnectionIdGenerator.getInstance()).thenReturn(idGenerator);
         when(idGenerator.nextId()).thenReturn(1);
         FirebirdAuthenticationEngine engine = new FirebirdAuthenticationEngine();

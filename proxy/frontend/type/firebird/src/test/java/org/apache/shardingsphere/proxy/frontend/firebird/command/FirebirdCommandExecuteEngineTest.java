@@ -56,7 +56,6 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -92,6 +91,30 @@ class FirebirdCommandExecuteEngineTest {
     @Mock
     private ByteBuf byteBuf;
     
+    @Mock
+    private FirebirdConnectionProtocolVersion connectionProtocolVersion;
+    
+    @Mock
+    private CommandExecutor executor;
+    
+    @Mock
+    private CommandPacket packet;
+    
+    @Mock
+    private ConnectionResourceLock connectionResourceLock;
+    
+    @Mock
+    private ContextManager mockContextManager;
+    
+    @Mock
+    private FirebirdPacket errorPacket;
+    
+    @Mock
+    private FirebirdCommandPacket commandPacket;
+    
+    @Mock
+    private DatabasePacket rowPacket;
+    
     private FirebirdCommandExecuteEngine engine;
     
     @BeforeEach
@@ -111,18 +134,14 @@ class FirebirdCommandExecuteEngineTest {
     @Test
     void assertGetCommandPacket() {
         when(connectionSession.getConnectionId()).thenReturn(1);
-        FirebirdConnectionProtocolVersion connectionProtocolVersion = mock(FirebirdConnectionProtocolVersion.class);
         when(FirebirdConnectionProtocolVersion.getInstance()).thenReturn(connectionProtocolVersion);
         when(connectionProtocolVersion.getProtocolVersion(1)).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
-        FirebirdCommandPacket commandPacket = mock(FirebirdCommandPacket.class);
         when(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXECUTE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION10)).thenReturn(commandPacket);
         assertThat(engine.getCommandPacket(payload, FirebirdCommandPacketType.EXECUTE, connectionSession), is(commandPacket));
     }
     
     @Test
     void assertGetCommandExecutor() throws SQLException {
-        CommandExecutor executor = mock(CommandExecutor.class);
-        CommandPacket packet = mock(CommandPacket.class);
         when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, packet, connectionSession)).thenReturn(executor);
         assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.EXECUTE, packet, connectionSession), is(executor));
     }
@@ -130,21 +149,17 @@ class FirebirdCommandExecuteEngineTest {
     @Test
     void assertGetErrorPacket() {
         Exception cause = new Exception("error");
-        FirebirdPacket errorPacket = mock(FirebirdPacket.class);
         when(FirebirdErrorPacketFactory.newInstance(cause)).thenReturn(errorPacket);
         assertThat(engine.getErrorPacket(cause), is(errorPacket));
     }
     
     @Test
     void assertWriteQueryData() throws SQLException {
-        ConnectionResourceLock connectionResourceLock = mock(ConnectionResourceLock.class);
         when(databaseConnectionManager.getConnectionResourceLock()).thenReturn(connectionResourceLock);
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
         when(channel.isActive()).thenReturn(true);
         when(queryCommandExecutor.next()).thenReturn(true, false);
-        DatabasePacket rowPacket = mock(DatabasePacket.class);
         when(queryCommandExecutor.getQueryRowPacket()).thenReturn(rowPacket);
-        ContextManager mockContextManager = mock(ContextManager.class);
         MetaDataContexts metaDataContexts =
                 new MetaDataContexts(new ShardingSphereMetaData(), new ShardingSphereStatistics());
         when(mockContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);

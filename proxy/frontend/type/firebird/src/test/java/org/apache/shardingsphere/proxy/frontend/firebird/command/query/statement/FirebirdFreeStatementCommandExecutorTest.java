@@ -35,7 +35,6 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,9 +47,11 @@ class FirebirdFreeStatementCommandExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @Mock
+    private ServerPreparedStatementRegistry registry;
+    
     @Test
     void assertExecuteWithDrop() throws SQLException {
-        ServerPreparedStatementRegistry registry = mock(ServerPreparedStatementRegistry.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
         when(packet.getStatementId()).thenReturn(1);
@@ -62,7 +63,6 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWithUnprepare() throws SQLException {
-        ServerPreparedStatementRegistry registry = mock(ServerPreparedStatementRegistry.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.UNPREPARE);
         when(packet.getStatementId()).thenReturn(1);

@@ -67,10 +67,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyBackendHandlerFactory.class, ProxyContext.class})
@@ -88,16 +86,26 @@ class FirebirdExecuteStatementCommandExecutorTest {
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
     
+    @Mock
+    private ConnectionContext connectionContext;
+    
+    @Mock
+    private QueryHeader queryHeader;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private UpdateStatementContext updateContext;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private SelectStatementContext selectContext;
+    
     @BeforeEach
     void setUp() {
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
-        when(connectionSession.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData());
-        SelectStatementContext selectContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectContext.getSqlStatement()).thenReturn(new org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement(databaseType));
         registry.addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT * FROM tbl", selectContext, new HintValueContext()));
-        UpdateStatementContext updateContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(updateContext.getSqlStatement()).thenReturn(new org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement(databaseType));
         registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext()));
     }
@@ -109,7 +117,6 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterValues()).thenReturn(new ArrayList<>());
         when(packet.isStoredProcedure()).thenReturn(true);
         FirebirdExecuteStatementCommandExecutor executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        QueryHeader queryHeader = mock(QueryHeader.class);
         when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
         when(proxyBackendHandler.next()).thenReturn(true, true);
         QueryResponseRow row = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
