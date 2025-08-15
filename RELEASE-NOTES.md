@@ -114,6 +114,7 @@
 1. SQL Parser: Support SQL Server clustered index parse - [#36132](https://github.com/apache/shardingsphere/pull/36132)
 1. SQL Parser: Support SQL Server the CATALOG identifier parse - [#36137](https://github.com/apache/shardingsphere/pull/36137)
 1. SQL Parser: Support Hive ALTER PARTITION statement parse - [#36072](https://github.com/apache/shardingsphere/pull/36072)
+1. SQL Parser: Support table alias in insert statement in Oracle - [#36202](https://github.com/apache/shardingsphere/pull/36202)
 1. SQL Binder: Fix is unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
 1. SQL Binder: Support select aggregation function sql bind in projection and having - [#34379](https://github.com/apache/shardingsphere/pull/34379)
 1. SQL Binder: Support column definition for the WITH clause and ExternalTableBinderContext in CommonTableExpressionBinder.[#34384](https://github.com/apache/shardingsphere/pull/34384)
@@ -133,7 +134,6 @@
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
-1. SQL Parser: Support table alias in insert statement in Oracle - [#36202](https://github.com/apache/shardingsphere/pull/36202)
 
 ### Bug Fixes
 
