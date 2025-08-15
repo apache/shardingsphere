@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqltranslator.natived;
+package org.apache.shardingsphere.sqltranslator.distsql.handler.fixture;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
-import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
+import java.util.List;
 
-import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-
-class NativeSQLTranslatorTest {
+public final class DistSQLSQLTranslatorFixture implements SQLTranslator {
     
-    @Test
-    void assertTranslateByType() {
-        SQLTranslator sqlTranslator = TypedSPILoader.getService(SQLTranslator.class, "NATIVE");
-        assertThat(sqlTranslator.translate("SELECT 1", Collections.emptyList(), mock(QueryContext.class), mock(DatabaseType.class), mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)),
-                deepEqual(new SQLTranslatorContext("SELECT 1", Collections.emptyList())));
+    @Override
+    public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+                                          final RuleMetaData globalRuleMetaData) {
+        return new SQLTranslatorContext(sql, parameters);
+    }
+    
+    @Override
+    public String getType() {
+        return "DistSQL:FIXTURE";
     }
 }

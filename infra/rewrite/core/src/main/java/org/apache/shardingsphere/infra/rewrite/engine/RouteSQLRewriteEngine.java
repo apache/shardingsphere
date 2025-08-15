@@ -46,6 +46,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Route SQL rewrite engine.
@@ -171,8 +172,12 @@ public final class RouteSQLRewriteEngine {
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         for (Entry<RouteUnit, SQLRewriteUnit> entry : sqlRewriteUnits.entrySet()) {
             DatabaseType storageType = storageUnits.get(entry.getKey().getDataSourceMapper().getActualName()).getStorageType();
-            SQLTranslatorContext sqlTranslatorContext = translatorRule.translate(entry.getValue().getSql(), entry.getValue().getParameters(), queryContext, storageType, database, globalRuleMetaData);
-            SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(sqlTranslatorContext.getSql(), sqlTranslatorContext.getParameters());
+            String sql = entry.getValue().getSql();
+            List<Object> parameters = entry.getValue().getParameters();
+            Optional<SQLTranslatorContext> sqlTranslatorContext = translatorRule.translate(sql, parameters, queryContext, storageType, database, globalRuleMetaData);
+            String translatedSQL = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getSql() : sql;
+            List<Object> translatedParameters = sqlTranslatorContext.isPresent() ? sqlTranslatorContext.get().getParameters() : parameters;
+            SQLRewriteUnit sqlRewriteUnit = new SQLRewriteUnit(translatedSQL, translatedParameters);
             result.put(entry.getKey(), sqlRewriteUnit);
         }
         return result;

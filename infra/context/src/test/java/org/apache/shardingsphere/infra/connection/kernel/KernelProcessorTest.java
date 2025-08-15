@@ -83,7 +83,7 @@ class KernelProcessorTest {
     private SQLTranslatorRule mockSQLTranslatorRule() {
         SQLTranslatorRule result = mock(SQLTranslatorRule.class);
         when(result.getAttributes()).thenReturn(new RuleAttributes());
-        when(result.translate(any(), any(), any(), any(), any(), any())).thenReturn(new SQLTranslatorContext("", Collections.emptyList()));
+        when(result.translate(any(), any(), any(), any(), any(), any())).thenReturn(Optional.of(new SQLTranslatorContext("", Collections.emptyList())));
         return result;
     }
     

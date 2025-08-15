@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 import java.util.List;
 import java.util.Locale;
 
-public final class FixtureSQLTranslator implements SQLTranslator {
+public final class CoreSQLTranslatorFixture implements SQLTranslator {
     
     @Override
     public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
@@ -40,6 +40,6 @@ public final class FixtureSQLTranslator implements SQLTranslator {
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "CORE:FIXTURE";
     }
 }
