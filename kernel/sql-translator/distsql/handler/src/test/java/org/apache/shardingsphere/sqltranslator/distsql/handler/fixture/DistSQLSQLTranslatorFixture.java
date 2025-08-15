@@ -29,7 +29,8 @@ import java.util.List;
 public final class DistSQLSQLTranslatorFixture implements SQLTranslator {
     
     @Override
-    public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database, final RuleMetaData globalRuleMetaData) {
+    public SQLTranslatorContext translate(final String sql, final List<Object> parameters, final QueryContext queryContext, final DatabaseType storageType, final ShardingSphereDatabase database,
+                                          final RuleMetaData globalRuleMetaData) {
         return new SQLTranslatorContext(sql, parameters);
     }
     
