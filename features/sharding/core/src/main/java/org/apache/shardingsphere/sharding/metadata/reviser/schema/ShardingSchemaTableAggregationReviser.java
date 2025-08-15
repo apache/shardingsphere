@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.revise.SchemaTableMetaDataAggregator;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
@@ -32,7 +31,6 @@ import java.util.Map;
 /**
  * Sharding schema table aggregation reviser.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class ShardingSchemaTableAggregationReviser implements SchemaTableAggregationReviser<ShardingRule> {
     

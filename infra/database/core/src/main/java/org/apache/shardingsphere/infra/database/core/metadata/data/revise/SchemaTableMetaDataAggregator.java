@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.core.metadata.data.revise;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 /**
  * Schema table meta data aggregator.
  */
-@Slf4j
 public final class SchemaTableMetaDataAggregator {
     
     /**
