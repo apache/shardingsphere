@@ -15,19 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.handshake;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdSRPAuthenticationDataTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertNormalizeLoginUppercase() {
+        assertThat(FirebirdSRPAuthenticationData.normalizeLogin("abc"), is("ABC"));
+    }
+    
+    @Test
+    void assertNormalizeLoginQuoted() {
+        assertThat(FirebirdSRPAuthenticationData.normalizeLogin("\"Ab\"\"c\""), is("Ab\"c"));
+    }
+    
+    @Test
+    void assertNormalizeLoginNull() {
+        assertNull(FirebirdSRPAuthenticationData.normalizeLogin(null));
+    }
+    
+    @Test
+    void assertNormalizeLoginEmpty() {
+        assertThat(FirebirdSRPAuthenticationData.normalizeLogin(""), is(""));
     }
 }

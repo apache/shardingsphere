@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdSQLInfoPacketTypeTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertValueOf() {
+        assertThat(FirebirdSQLInfoPacketType.valueOf(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()),
+                is(FirebirdSQLInfoPacketType.STMT_TYPE));
+    }
+    
+    @Test
+    void assertIsCommon() {
+        assertThat(FirebirdSQLInfoPacketType.TYPE.isCommon(), is(false));
     }
 }

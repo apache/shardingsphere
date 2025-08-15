@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.transaction;
 
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-class FirebirdProtocolDefaultVersionProviderTest {
+@ExtendWith(MockitoExtension.class)
+class FirebirdCommitTransactionPacketTest {
     
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertReadTransactionId() {
+        when(payload.readInt4()).thenReturn(123);
+        FirebirdCommitTransactionPacket packet = new FirebirdCommitTransactionPacket(payload);
+        verify(payload).skipReserved(4);
+        assertThat(packet.getTransactionId(), is(123));
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(FirebirdCommitTransactionPacket.getLength(), is(8));
     }
 }

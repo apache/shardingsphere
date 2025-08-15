@@ -21,30 +21,37 @@ import org.apache.shardingsphere.authentication.Authenticator;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.ParameterDeclarations;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FirebirdAuthenticatorTypeTest {
     
-    private final AuthorityRule rule = mock(AuthorityRule.class);
+    @Mock
+    private AuthorityRule rule;
+    
+    @Mock
+    private ShardingSphereUser shardingsphereUser;
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertAuthenticator(final String name, final String authenticatorType, final String expectedAuthenticatorClassName) {
         when(rule.getAuthenticatorType(any())).thenReturn(authenticatorType);
-        Authenticator actual = new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
+        Authenticator actual = new AuthenticatorFactory<>(FirebirdAuthenticatorType.class, rule).newInstance(shardingsphereUser);
         assertThat(actual.getClass().getSimpleName(), is(expectedAuthenticatorClassName));
     }
     

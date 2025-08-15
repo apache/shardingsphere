@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info;
 
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdInfoPacketTypeTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertSQLInfoPacketType() {
+        FirebirdInfoPacketType type = FirebirdSQLInfoPacketType.RECORDS;
+        assertThat(type.getCode(), is(FirebirdSQLInfoPacketType.RECORDS.getCode()));
+        assertFalse(type.isCommon());
+    }
+    
+    @Test
+    void assertCommonInfoPacketType() {
+        FirebirdInfoPacketType type = FirebirdCommonInfoPacketType.END;
+        assertThat(type.getCode(), is(FirebirdCommonInfoPacketType.END.getCode()));
+        assertTrue(type.isCommon());
     }
 }

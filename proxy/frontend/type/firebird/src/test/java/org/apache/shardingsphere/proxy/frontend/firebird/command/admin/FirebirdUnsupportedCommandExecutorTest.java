@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 
+import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdUnsupportedCommandExecutorTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertExecute() {
+        FirebirdUnsupportedCommandExecutor executor = new FirebirdUnsupportedCommandExecutor();
+        assertThat(executor.execute().iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
     }
 }

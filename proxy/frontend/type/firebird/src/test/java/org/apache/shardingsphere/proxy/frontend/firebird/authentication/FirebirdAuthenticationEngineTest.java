@@ -15,44 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird;
+package org.apache.shardingsphere.proxy.frontend.firebird.authentication;
 
-import org.apache.shardingsphere.db.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({ProxyContext.class, FirebirdStatementIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdConnectionProtocolVersion.class})
-class FirebirdFrontendEngineTest {
+@StaticMockSettings({ConnectionIdGenerator.class, FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class})
+class FirebirdAuthenticationEngineTest {
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ChannelHandlerContext context;
     
     @Mock
-    private ConnectionSession connectionSession;
-    
-    private FirebirdFrontendEngine engine;
-    
-    @BeforeEach
-    void setUp() {
-        engine = new FirebirdFrontendEngine();
-    }
+    private ConnectionIdGenerator idGenerator;
     
     @Test
-    void assertRelease() {
-        int connectionId = 1;
-        when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        engine.release(connectionSession);
-        verify(FirebirdStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdTransactionIdGenerator.getInstance()).unregisterConnection(connectionId);
-        verify(FirebirdConnectionProtocolVersion.getInstance()).unsetProtocolVersion(connectionId);
+    void assertHandshake() {
+        when(ConnectionIdGenerator.getInstance()).thenReturn(idGenerator);
+        when(idGenerator.nextId()).thenReturn(1);
+        FirebirdAuthenticationEngine engine = new FirebirdAuthenticationEngine();
+        assertThat(engine.handshake(context), is(1));
+        verify(FirebirdTransactionIdGenerator.getInstance()).registerConnection(1);
+        verify(FirebirdStatementIdGenerator.getInstance()).registerConnection(1);
     }
+    
+    // TODO Implement tests for authenticate() method for the following cases: CONNECT, ATTACH, Cont_Auth (when implemented), Unknown Option
 }

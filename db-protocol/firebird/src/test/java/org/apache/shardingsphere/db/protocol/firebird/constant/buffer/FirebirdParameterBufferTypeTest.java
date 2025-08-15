@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.constant.buffer;
 
+import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdValueFormat;
+import org.apache.shardingsphere.db.protocol.firebird.constant.buffer.type.FirebirdDatabaseParameterBufferType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class FirebirdProtocolDefaultVersionProviderTest {
-    
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+class FirebirdParameterBufferTypeTest {
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertGetCodeAndFormat() {
+        FirebirdParameterBufferType actual = FirebirdDatabaseParameterBufferType.PAGE_SIZE;
+        assertThat(actual.getCode(), is(FirebirdDatabaseParameterBufferType.PAGE_SIZE.getCode()));
+        assertThat(actual.getFormat(), is(FirebirdValueFormat.INT));
     }
 }

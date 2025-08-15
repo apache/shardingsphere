@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.admin;
 
+import org.apache.shardingsphere.db.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-class FirebirdProtocolDefaultVersionProviderTest {
+@ExtendWith(MockitoExtension.class)
+class FirebirdUnsupportedCommandPacketTest {
     
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertWrite() {
+        assertDoesNotThrow(() -> new FirebirdUnsupportedCommandPacket(FirebirdCommandPacketType.ACCEPT).write(payload));
     }
 }

@@ -15,19 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.firebird.constant;
+package org.apache.shardingsphere.db.protocol.firebird.packet.command.query.statement;
 
+import org.apache.shardingsphere.db.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-class FirebirdProtocolDefaultVersionProviderTest {
+@ExtendWith(MockitoExtension.class)
+class FirebirdAllocateStatementPacketTest {
     
-    private final FirebirdProtocolDefaultVersionProvider provider = new FirebirdProtocolDefaultVersionProvider();
+    @Mock
+    private FirebirdPacketPayload payload;
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider.getDatabaseType(), is("Firebird"));
+    void assertAllocateStatementPacket() {
+        when(payload.readInt4()).thenReturn(1);
+        FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(payload);
+        verify(payload).skipReserved(4);
+        assertThat(packet.getDatabaseId(), is(1));
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(FirebirdAllocateStatementPacket.getLength(), is(8));
     }
 }
