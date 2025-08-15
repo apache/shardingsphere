@@ -25,6 +25,6 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 class SQLTranslatorRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     SQLTranslatorRuleConfigurationYamlIT() {
-        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
+        super("yaml/sql-translator-rule.yaml", new SQLTranslatorRuleConfiguration("CORE:FIXTURE", PropertiesBuilder.build(new Property("k0", "v0"), new Property("k1", "v1")), true));
     }
 }

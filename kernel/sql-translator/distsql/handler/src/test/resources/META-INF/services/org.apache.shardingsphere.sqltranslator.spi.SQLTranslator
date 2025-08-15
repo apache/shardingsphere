@@ -15,7 +15,4 @@
 # limitations under the License.
 #
 
-rules:
-  - !SQL_TRANSLATOR
-    type: DistSQL:FIXTURE
-    useOriginalSQLWhenTranslatingFailed: true
+org.apache.shardingsphere.sqltranslator.distsql.handler.fixture.DistSQLSQLTranslatorFixture

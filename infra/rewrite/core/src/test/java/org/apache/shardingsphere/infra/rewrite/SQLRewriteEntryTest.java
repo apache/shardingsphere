@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -89,7 +90,7 @@ class SQLRewriteEntryTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
-        when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(new SQLTranslatorContext("", Collections.emptyList()));
+        when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(Optional.of(new SQLTranslatorContext("", Collections.emptyList())));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new RuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
         RouteUnit firstRouteUnit = mock(RouteUnit.class);

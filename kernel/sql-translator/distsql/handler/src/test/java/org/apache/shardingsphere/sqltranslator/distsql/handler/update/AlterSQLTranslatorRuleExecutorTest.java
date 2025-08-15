@@ -57,13 +57,13 @@ class AlterSQLTranslatorRuleExecutorTest extends GlobalRuleDefinitionExecutorTes
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(Arguments.arguments("withTrueOriginalSQLWhenTranslatingFailed",
-                    new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
-                    new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), true),
-                    new SQLTranslatorRuleConfiguration("NATIVE", PropertiesBuilder.build(new Property("foo", "bar")), true)),
+                    new SQLTranslatorRuleConfiguration("DISTSQL:FIXTURE", new Properties(), true),
+                    new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("DISTSQL:FIXTURE", PropertiesBuilder.build(new Property("foo", "bar"))), true),
+                    new SQLTranslatorRuleConfiguration("DISTSQL:FIXTURE", PropertiesBuilder.build(new Property("foo", "bar")), true)),
                     Arguments.arguments("withNullOriginalSQLWhenTranslatingFailed",
-                            new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true),
-                            new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("NATIVE", PropertiesBuilder.build(new Property("foo", "bar"))), null),
-                            new SQLTranslatorRuleConfiguration("NATIVE", PropertiesBuilder.build(new Property("foo", "bar")), true)));
+                            new SQLTranslatorRuleConfiguration("DISTSQL:FIXTURE", new Properties(), true),
+                            new AlterSQLTranslatorRuleStatement(new AlgorithmSegment("DISTSQL:FIXTURE", PropertiesBuilder.build(new Property("foo", "bar"))), null),
+                            new SQLTranslatorRuleConfiguration("DISTSQL:FIXTURE", PropertiesBuilder.build(new Property("foo", "bar")), true)));
         }
     }
 }
