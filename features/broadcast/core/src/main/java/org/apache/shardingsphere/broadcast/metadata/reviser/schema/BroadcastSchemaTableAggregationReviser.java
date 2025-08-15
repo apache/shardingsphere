@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.metadata.reviser.schema;
+package org.apache.shardingsphere.broadcast.metadata.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.database.core.metadata.data.revise.SchemaTableMetaDataAggregator;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,10 +30,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Sharding schema table aggregation reviser.
+ * Broadcast schema table aggregation reviser.
  */
+@Slf4j
 @RequiredArgsConstructor
-public final class ShardingSchemaTableAggregationReviser implements SchemaTableAggregationReviser<ShardingRule> {
+public final class BroadcastSchemaTableAggregationReviser implements SchemaTableAggregationReviser<BroadcastRule> {
     
     private final boolean checkTableMetaDataEnabled;
     
@@ -44,7 +46,7 @@ public final class ShardingSchemaTableAggregationReviser implements SchemaTableA
     }
     
     @Override
-    public Collection<TableMetaData> aggregate(final ShardingRule rule) {
+    public Collection<TableMetaData> aggregate(final BroadcastRule rule) {
         return new SchemaTableMetaDataAggregator().aggregate(checkTableMetaDataEnabled, tableMetaDataMap);
     }
 }

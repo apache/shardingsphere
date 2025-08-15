@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception.kernel.metadata;
+package org.apache.shardingsphere.infra.database.core.metadata.data.revise;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
 
 /**
- * Rule and storage metadata mismatched exception.
+ * Table meta data violation.
  */
-public final class RuleAndStorageMetaDataMismatchedException extends MetaDataSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class TableMetaDataViolation {
     
-    private static final long serialVersionUID = -1931359961875820757L;
+    private final String actualTableName;
     
-    public RuleAndStorageMetaDataMismatchedException(final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 10, "Rule and storage meta data mismatched, reason is: %s.", reason);
-    }
+    private final TableMetaData tableMetaData;
 }
