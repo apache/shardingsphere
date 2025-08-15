@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.output.ExpectedOutputClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedFunctionTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSubqueryTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
@@ -59,4 +60,7 @@ public final class DeleteStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "subquery-table")
     private ExpectedSubqueryTable subqueryTable;
+    
+    @XmlElement(name = "function-table")
+    private ExpectedFunctionTable functionTable;
 }

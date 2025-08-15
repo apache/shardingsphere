@@ -1764,11 +1764,21 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSingleTableClause(final SingleTableClauseContext ctx) {
-        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
-        if (null != ctx.alias()) {
-            result.setAlias((AliasSegment) visit(ctx.alias()));
+        if (null != ctx.tableName()) {
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        } else if (null != ctx.rowSetFunction()) {
+            FunctionSegment functionSegment = (FunctionSegment) visit(ctx.rowSetFunction());
+            FunctionTableSegment result = new FunctionTableSegment(functionSegment.getStartIndex(), functionSegment.getStopIndex(), functionSegment);
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
         }
-        return result;
+        return null;
     }
     
     @Override
