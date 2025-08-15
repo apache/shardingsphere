@@ -1473,6 +1473,25 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.ChannelEventHandler"
+      },
+      "type": "org.apache.seata.core.rpc.netty.ChannelEventHandler",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.oceanbase.OceanBaseInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.parser.FuryUndoLogParser"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.seata.config.ConfigurationCache"
       },
       "type": {
