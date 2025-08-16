@@ -80,8 +80,8 @@ import java.util.Optional;
 /**
  * SQL federation engine.
  */
-@Slf4j
 @Getter
+@Slf4j
 public final class SQLFederationEngine implements AutoCloseable {
     
     private final ProcessEngine processEngine = new ProcessEngine();

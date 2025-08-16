@@ -68,7 +68,7 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
     
     private final List<String> columnNames;
     
-    public InsertStatementBaseContext(final InsertStatement sqlStatement, final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+    public InsertStatementBaseContext(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         this.metaData = metaData;
         this.sqlStatement = sqlStatement;
         this.currentDatabaseName = currentDatabaseName;

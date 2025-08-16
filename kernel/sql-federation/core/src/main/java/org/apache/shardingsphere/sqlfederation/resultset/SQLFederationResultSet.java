@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sqlfederation.resultset;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.schema.Schema;
@@ -56,7 +55,6 @@ import java.util.Map;
 /**
  * SQL federation result set.
  */
-@Slf4j
 public final class SQLFederationResultSet extends AbstractUnsupportedOperationSQLFederationResultSet {
     
     private static final String ASCII = "Ascii";

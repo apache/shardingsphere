@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -29,7 +30,7 @@ import java.util.Collection;
  * Global data changed event handler.
  */
 @SingletonSPI
-public interface GlobalDataChangedEventHandler {
+public interface GlobalDataChangedEventHandler extends ShardingSphereSPI {
     
     /**
      * Get subscribed node path.

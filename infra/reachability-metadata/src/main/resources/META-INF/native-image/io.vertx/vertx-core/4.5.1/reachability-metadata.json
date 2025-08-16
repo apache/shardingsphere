@@ -1,0 +1,28 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "io.vertx.core.logging.LoggerFactory"
+      },
+      "type": "io.vertx.core.logging.SLF4JLogDelegateFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "io.vertx.core.logging.LoggerFactory"
+      },
+      "type": "io.vertx.core.logging.Log4j2LogDelegateFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

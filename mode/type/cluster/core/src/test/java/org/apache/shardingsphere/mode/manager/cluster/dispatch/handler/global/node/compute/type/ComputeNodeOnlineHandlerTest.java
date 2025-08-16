@@ -52,7 +52,7 @@ class ComputeNodeOnlineHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/nodes/compute_nodes/online")).findFirst().orElse(null);
+                .filter(each -> "/nodes/compute_nodes/online".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
     }
     

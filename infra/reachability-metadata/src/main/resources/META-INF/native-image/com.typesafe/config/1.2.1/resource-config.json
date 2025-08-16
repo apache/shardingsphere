@@ -1,8 +1,0 @@
-{
-  "resources":{
-  "includes":[{
-    "condition":{"typeReachable":"com.typesafe.config.impl.Parseable$ParseableResources"},
-    "pattern":"\\Qreference.conf\\E"
-  }]},
-  "bundles":[]
-}

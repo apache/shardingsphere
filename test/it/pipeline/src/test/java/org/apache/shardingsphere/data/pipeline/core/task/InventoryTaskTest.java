@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
@@ -56,7 +56,7 @@ class InventoryTaskTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
     }
     
     @AfterAll

@@ -16,8 +16,8 @@
 #
 
 ds_0:
-  dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
-  driverClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDriver
+  dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource
+  driverClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDriver
   url: jdbc:mock://localhost:3306/ds_0
   username: root
   password: root

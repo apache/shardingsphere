@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.representer.processor;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 
@@ -24,7 +25,7 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
  * ShardingSphere YAML tuple processor.
  */
 @SingletonSPI
-public interface ShardingSphereYamlTupleProcessor {
+public interface ShardingSphereYamlTupleProcessor extends ShardingSphereSPI {
     
     /**
      * Get tuple name.

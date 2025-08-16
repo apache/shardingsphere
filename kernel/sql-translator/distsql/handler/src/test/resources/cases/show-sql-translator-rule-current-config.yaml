@@ -17,5 +17,5 @@
 
 rules:
   - !SQL_TRANSLATOR
-    type: NATIVE
+    type: DistSQL:FIXTURE
     useOriginalSQLWhenTranslatingFailed: true

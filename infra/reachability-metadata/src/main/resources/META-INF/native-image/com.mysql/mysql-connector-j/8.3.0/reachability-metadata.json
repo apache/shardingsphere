@@ -1,0 +1,36 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.mysql.cj.exceptions.ExceptionFactory"
+      },
+      "type": "com.mysql.cj.exceptions.CJException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "com.mysql.cj.jdbc.NonRegisteringDriver"
+      },
+      "type": "com.mysql.cj.jdbc.AbandonedConnectionCleanupThread"
+    },
+    {
+      "condition": {
+        "typeReached": "com.mysql.cj.NativeSession"
+      },
+      "type": "com.mysql.cj.util.PerVmServerConfigCacheFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

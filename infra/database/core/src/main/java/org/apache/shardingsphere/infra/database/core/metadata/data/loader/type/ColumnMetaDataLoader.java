@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 /**
  * Column meta data loader.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class ColumnMetaDataLoader {
     
     private static final String COLUMN_NAME = "COLUMN_NAME";
@@ -91,7 +91,7 @@ public final class ColumnMetaDataLoader {
                 result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i)));
             }
         } catch (final SQLException ex) {
-            log.error("Error occurred while loading column meta data, sql: {}", emptyResultSQL, ex);
+            log.error("Error occurred while loading column meta data, SQL: {}", emptyResultSQL, ex);
             throw ex;
         }
         return result;

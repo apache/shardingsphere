@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
  * Supported SQL checker.
- * 
+ *
  * @param <T> type of SQL statement context
  * @param <R> type of ShardingSphere rule
  */

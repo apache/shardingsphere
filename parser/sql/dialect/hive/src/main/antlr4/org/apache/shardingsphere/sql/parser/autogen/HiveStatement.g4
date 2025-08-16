@@ -17,7 +17,7 @@
 
 grammar HiveStatement;
 
-import Comments, DMLStatement, DDLStatement;
+import Comments, DMLStatement, DDLStatement, DALStatement;
 
 // TODO correct hive SQL parsing according to official documentation
 execute
@@ -48,6 +48,8 @@ execute
     | dropMacro
     | createFunction
     | dropFunction
+    | reloadFunction
+    | show
     ) (SEMI_ EOF? | EOF)
     | EOF
     ;

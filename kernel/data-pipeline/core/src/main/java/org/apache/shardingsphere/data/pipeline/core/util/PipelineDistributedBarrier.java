@@ -163,7 +163,7 @@ public final class PipelineDistributedBarrier {
         
         @Override
         protected ClusterPersistRepository initialize() {
-            return (ClusterPersistRepository) PipelineContextManager.getContext(contextKey).getContextManager().getPersistServiceFacade().getRepository();
+            return (ClusterPersistRepository) PipelineContextManager.getContext(contextKey).getPersistServiceFacade().getRepository();
         }
     }
 }

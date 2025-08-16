@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.algorithm.cryptographic.aes.props;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicPropertiesProvider;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.nio.charset.StandardCharsets;

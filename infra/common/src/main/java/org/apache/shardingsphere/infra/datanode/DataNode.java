@@ -57,11 +57,14 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
-        // TODO remove duplicated splitting?
-        boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
-        ShardingSpherePreconditions.checkState(isIncludeInstance || isValidDataNode(dataNode, 2), () -> new InvalidDataNodeFormatException(dataNode));
-        ShardingSpherePreconditions.checkState(!isIncludeInstance || isValidDataNode(dataNode, 3), () -> new InvalidDataNodeFormatException(dataNode));
+        // Validate data node format first
+        validateDataNodeFormat(dataNode);
+        
+        // Split only once
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
+        
+        // Determine if instance is included and set fields accordingly
+        boolean isIncludeInstance = segments.size() == 3;
         dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
@@ -95,11 +98,52 @@ public final class DataNode {
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
-        return dataNodeStr.contains(DELIMITER) && tier == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+        if (!dataNodeStr.contains(DELIMITER)) {
+            return false;
+        }
+        
+        // Check for leading or trailing delimiter
+        if (dataNodeStr.startsWith(DELIMITER) || dataNodeStr.endsWith(DELIMITER)) {
+            return false;
+        }
+        
+        // Check for consecutive delimiters (which would create empty segments)
+        if (dataNodeStr.contains(DELIMITER + DELIMITER)) {
+            return false;
+        }
+        
+        // Check for whitespace around delimiters
+        if (dataNodeStr.contains(" " + DELIMITER) || dataNodeStr.contains(DELIMITER + " ")) {
+            return false;
+        }
+        
+        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNodeStr);
+        
+        // Check if any segment is empty or contains only whitespace
+        for (String segment : segments) {
+            if (segment.trim().isEmpty()) {
+                return false;
+            }
+        }
+        
+        return tier == segments.size();
     }
     
     private boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
         return isValidDataNode(actualDataNodes, 3);
+    }
+    
+    /**
+     * Validates the data node format based on its structure.
+     *
+     * @param dataNode the data node string to validate
+     * @throws InvalidDataNodeFormatException if the format is invalid
+     */
+    private void validateDataNodeFormat(final String dataNode) {
+        // Check if it's a valid 2-segment or 3-segment format
+        if (!isValidDataNode(dataNode, 2) && !isValidDataNode(dataNode, 3)) {
+            throw new InvalidDataNodeFormatException(dataNode);
+        }
     }
     
     /**

@@ -258,15 +258,14 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
 或将对应 JSON 提交到 https://github.com/oracle/graalvm-reachability-metadata 一侧。
 
 以 `com.mysql:mysql-connector-j:9.0.0` 的 `com.mysql.cj.jdbc.MysqlXADataSource` 类为例，这是 MySQL JDBC Driver 的 `javax.sql.XADataSource` 的实现。
-用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON，
-以在 GraalVM Native Image 内部定义 `com.mysql.cj.jdbc.MysqlXADataSource` 的构造函数。
+用户需要在自有项目的 claapath 的 `/META-INF/native-image/com.mysql/mysql-connector-j/9.0.0/` 文件夹的 `reachability-metadata.json`文件内定义如下 JSON。
 
 ```json
 {
    "reflection": [
       {
          "condition": {
-            "typeReached": "com.mysql.cj.jdbc.MysqlXADataSource"
+            "typeReached": "com.mysql.cj.jdbc.Driver"
          },
          "type": "com.mysql.cj.jdbc.MysqlXADataSource",
          "allPublicMethods": true,
@@ -297,7 +296,7 @@ Caused by: java.io.UnsupportedEncodingException: Codepage Cp1252 is not supporte
       </dependency>
        <dependency>
           <groupId>org.apache.shardingsphere</groupId>
-          <artifactId>shardingsphere-parser-sql-clickhouse</artifactId>
+          <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
           <version>${shardingsphere.version}</version>
       </dependency>
        <dependency>
@@ -340,3 +339,7 @@ without it being registered as reachable. Add it to the resource metadata to sol
   com.mysql.cj.conf.ConnectionUrl.getConnectionUrlInstance(ConnectionUrl.java:291)
   com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:186)
 ```
+
+10. 受 `apache/calcite` 使用的 `janino-compiler/janino` 的影响，
+    ShardingSphere 的 `SQL Federation` 功能在 GraalVM Native Image 下不可用。
+    这同样导致 ShardingSphere Proxy Native 无法使用 OpenGauss 集成。

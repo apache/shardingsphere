@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource.fixture;
 
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 
 import javax.sql.DataSource;
 

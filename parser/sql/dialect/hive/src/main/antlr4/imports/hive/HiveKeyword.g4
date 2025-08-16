@@ -863,6 +863,10 @@ FUNCTION
     : F U N C T I O N
     ;
 
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
 GENERAL
     : G E N E R A L
     ;
@@ -2179,6 +2183,10 @@ ROLE
     : R O L E
     ;
 
+ROLES
+    : R O L E S
+    ;
+
 ROLLBACK
     : R O L L B A C K
     ;
@@ -2943,6 +2951,10 @@ VIEW
     : V I E W
     ;
 
+VIEWS
+    : V I E W S
+    ;
+
 VIRTUAL
     : V I R T U A L
     ;
@@ -3360,4 +3372,36 @@ MACRO
 
 JAR
     : J A R
+    ;
+
+CONNECTORS
+    : C O N N E C T O R S
+    ;
+
+FORMATTED
+    : F O R M A T T E D
+    ;
+
+PRINCIPALS
+    : P R I N C I P A L S
+    ;
+
+CONF
+    : C O N F
+    ;
+
+TRANSACTIONS
+    : T R A N S A C T I O N S
+    ;
+
+COMPACTIONS
+    : C O M P A C T I O N S
+    ;
+
+STATE
+    : S T A T E
+    ;
+
+COMPACTIONID
+    : C O M P A C T I O N I D
     ;

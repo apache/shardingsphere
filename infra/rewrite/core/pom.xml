@@ -37,15 +37,10 @@
             <artifactId>shardingsphere-sql-translator-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-translator-native-provider</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-fixture-database</artifactId>
+            <artifactId>shardingsphere-test-infra-fixture-database</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -110,7 +110,7 @@ optionHint
     ;
 
 singleTableClause
-    : FROM? LP_? tableName RP_? (AS? alias)?
+    : FROM? LP_? (tableName | rowSetFunction) RP_? (AS? alias)?
     ;
 
 multipleTablesClause
@@ -130,7 +130,7 @@ aggregationClause
     ;
 
 selectClause
-    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause? optionHint?
+    : selectWithClause? SELECT duplicateSpecification? projections intoClause? onFileGroupClause? (fromClause withTempTable? withTableHint?)? whereClause? groupByClause? havingClause? orderByClause? forClause? optionHint? windowClause?
     ;
 
 duplicateSpecification
@@ -164,6 +164,14 @@ qualifiedShorthand
     : identifier DOT_ASTERISK_
     ;
 
+windowClause
+    : WINDOW windowItem (COMMA_ windowItem)*
+    ;
+
+windowItem
+    : identifier AS windowSpecification
+    ;
+
 onFileGroupClause
     : ON identifier
     ;
@@ -185,7 +193,7 @@ tableReference
     ;
 
 tableFactor
-    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | expr (AS? alias)? columnNames? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
+    : tableName (FOR PATH)? forSystemTimeClause? (AS? alias)? tableSampleClause? withTableHint? | subquery AS? alias columnNames? | rowSetFunction (AS? alias)? | expr (AS? alias)? columnNames? | xmlMethodCall (AS? alias)? columnNames? | LP_ tableReferences RP_ | pivotTable
     ;
 
 pivotTable
@@ -246,7 +254,27 @@ whereClause
     ;
 
 groupByClause
-    : GROUP BY orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?
+    : GROUP BY (groupByItem (COMMA_ groupByItem)* | orderByItem (COMMA_ orderByItem)* (WITH ROLLUP)?) (WITH LP_ DISTRIBUTED_AGG RP_)?
+    ;
+
+groupByItem
+    : rollupCubeClause | groupingSetsClause | expr
+    ;
+
+rollupCubeClause
+    : (ROLLUP | CUBE) LP_ groupingExprList RP_
+    ;
+
+groupingSetsClause
+    : GROUPING SETS LP_ (rollupCubeClause | groupingExprList) (COMMA_ (rollupCubeClause | groupingExprList))* RP_
+    ;
+
+groupingExprList
+    : expressionList (COMMA_ expressionList)*
+    ;
+
+expressionList
+    : expr (COMMA_ expr)* | LP_ expr? (COMMA_ expr?)* RP_
     ;
 
 havingClause

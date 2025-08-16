@@ -1,8 +1,0 @@
-{
-  "resources":{
-  "includes":[{
-    "condition":{"typeReachable":"io.netty.util.Version"},
-    "pattern":"\\QMETA-INF/io.netty.versions.properties\\E"
-  }]},
-  "bundles":[]
-}

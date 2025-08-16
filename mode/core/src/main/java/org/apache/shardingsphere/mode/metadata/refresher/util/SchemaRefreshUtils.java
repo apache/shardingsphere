@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 /**
- * Schema refresh utils.
+ * Schema refresh utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaRefreshUtils {

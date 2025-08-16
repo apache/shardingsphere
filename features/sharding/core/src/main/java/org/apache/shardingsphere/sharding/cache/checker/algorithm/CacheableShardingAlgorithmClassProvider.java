@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.cache.checker.algorithm;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
@@ -24,7 +25,7 @@ import java.util.Collection;
 /**
  * Cacheable sharding algorithm class provider.
  */
-public interface CacheableShardingAlgorithmClassProvider {
+public interface CacheableShardingAlgorithmClassProvider extends ShardingSphereSPI {
     
     /**
      * Get classes of cacheable sharding algorithm.

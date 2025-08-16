@@ -36,7 +36,6 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
@@ -70,7 +69,7 @@ class PipelineGovernanceFacadeTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtils.mockModeConfigAndContextManager();
+        PipelineContextUtils.initPipelineContextManager();
         governanceFacade = PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey());
         watch();
     }
@@ -189,8 +188,7 @@ class PipelineGovernanceFacadeTest {
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
-        ContextManager contextManager = PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getContextManager();
-        return (ClusterPersistRepository) contextManager.getPersistServiceFacade().getRepository();
+        return (ClusterPersistRepository) PipelineContextManager.getContext(PipelineContextUtils.getContextKey()).getPersistServiceFacade().getRepository();
     }
     
     private MigrationJobItemContext mockJobItemContext() {

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin;
 
-import org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +30,7 @@ public final class RoundRobinLoadBalanceAlgorithm implements LoadBalanceAlgorith
     
     private final AtomicInteger count = new AtomicInteger(0);
     
+    @HighFrequencyInvocation
     @Override
     public String getTargetName(final String groupName, final List<String> availableTargetNames) {
         return availableTargetNames.get(Math.abs(count.getAndIncrement()) % availableTargetNames.size());

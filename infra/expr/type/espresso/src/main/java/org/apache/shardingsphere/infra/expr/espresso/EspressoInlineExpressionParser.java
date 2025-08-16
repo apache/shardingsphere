@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.expr.espresso;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.expr.core.GroovyUtils;
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
-import org.apache.shardingsphere.infra.util.groovy.GroovyUtils;
 
 import java.net.URL;
 import java.util.ArrayList;

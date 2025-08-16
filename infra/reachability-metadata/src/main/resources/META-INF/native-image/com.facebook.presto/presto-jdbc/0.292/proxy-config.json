@@ -1,6 +1,0 @@
-[
-  {
-    "condition":{"typeReachable":"com.facebook.presto.jdbc.internal.guava.reflect.Reflection"},
-    "interfaces":["java.lang.reflect.TypeVariable"]
-  }
-]

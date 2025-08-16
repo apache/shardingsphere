@@ -63,11 +63,11 @@ public final class FirebirdConnectionProtocolVersion {
     }
     
     /**
-     * Unregister connection.
+     * Unset protocol version for connection.
      *
      * @param connectionId connection ID
      */
-    public void unregisterConnection(final int connectionId) {
+    public void unsetProtocolVersion(final int connectionId) {
         protocolVersionCache.remove(connectionId);
     }
 }

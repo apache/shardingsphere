@@ -5,7 +5,7 @@ weight = 3
 
 ### 描述
 
-`SHOW LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm` 接口的所有实现类。
+`SHOW LOAD BALANCE ALGORITHM PLUGINS` 语法用于查询 `org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm` 接口的所有实现类。
 
 ### 语法
 
@@ -31,7 +31,7 @@ showLoadBalanceAlgorithmPlugins ::=
 
 ### 示例
 
-- 查询 `org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm` 接口的所有实现类
+- 查询 `org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm` 接口的所有实现类
 
 ```sql
 SHOW LOAD BALANCE ALGORITHM PLUGINS

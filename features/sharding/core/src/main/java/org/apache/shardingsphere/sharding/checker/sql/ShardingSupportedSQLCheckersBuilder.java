@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker.sql;
 
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder;
 import org.apache.shardingsphere.sharding.checker.sql.ddl.ShardingAlterIndexSupportedChecker;
@@ -44,23 +45,26 @@ import java.util.Collection;
  */
 public final class ShardingSupportedSQLCheckersBuilder implements SupportedSQLCheckersBuilder<ShardingRule> {
     
+    private final Collection<SupportedSQLChecker<?, ShardingRule>> supportedSQLCheckers = Arrays.asList(
+            new ShardingAlterIndexSupportedChecker(),
+            new ShardingAlterTableSupportedChecker(),
+            new ShardingAlterViewSupportedChecker(),
+            new ShardingCreateFunctionSupportedChecker(),
+            new ShardingCreateIndexSupportedChecker(),
+            new ShardingCreateProcedureSupportedChecker(),
+            new ShardingCreateTableSupportedChecker(),
+            new ShardingCreateViewSupportedChecker(),
+            new ShardingDropIndexSupportedChecker(),
+            new ShardingDropTableSupportedChecker(),
+            new ShardingRenameTableSupportedChecker(),
+            new ShardingInsertSupportedChecker(),
+            new ShardingTableSupportedChecker(),
+            new ShardingMultipleTablesSupportedChecker());
+    
+    @HighFrequencyInvocation
     @Override
     public Collection<SupportedSQLChecker<?, ShardingRule>> getSupportedSQLCheckers() {
-        return Arrays.asList(
-                new ShardingAlterIndexSupportedChecker(),
-                new ShardingAlterTableSupportedChecker(),
-                new ShardingAlterViewSupportedChecker(),
-                new ShardingCreateFunctionSupportedChecker(),
-                new ShardingCreateIndexSupportedChecker(),
-                new ShardingCreateProcedureSupportedChecker(),
-                new ShardingCreateTableSupportedChecker(),
-                new ShardingCreateViewSupportedChecker(),
-                new ShardingDropIndexSupportedChecker(),
-                new ShardingDropTableSupportedChecker(),
-                new ShardingRenameTableSupportedChecker(),
-                new ShardingInsertSupportedChecker(),
-                new ShardingTableSupportedChecker(),
-                new ShardingMultipleTablesSupportedChecker());
+        return supportedSQLCheckers;
     }
     
     @Override

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.apache.shardingsphere.test.matcher.ShardingSphereAssertionMatchers.deepEqual;
+import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.deepEqual;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -37,13 +37,6 @@ class NativeSQLTranslatorTest {
     @Test
     void assertTranslateByType() {
         SQLTranslator sqlTranslator = TypedSPILoader.getService(SQLTranslator.class, "NATIVE");
-        assertThat(sqlTranslator.translate("SELECT 1", Collections.emptyList(), mock(QueryContext.class), mock(DatabaseType.class), mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)),
-                deepEqual(new SQLTranslatorContext("SELECT 1", Collections.emptyList())));
-    }
-    
-    @Test
-    void assertTranslateByDefault() {
-        SQLTranslator sqlTranslator = TypedSPILoader.getService(SQLTranslator.class, null);
         assertThat(sqlTranslator.translate("SELECT 1", Collections.emptyList(), mock(QueryContext.class), mock(DatabaseType.class), mock(ShardingSphereDatabase.class), mock(RuleMetaData.class)),
                 deepEqual(new SQLTranslatorContext("SELECT 1", Collections.emptyList())));
     }

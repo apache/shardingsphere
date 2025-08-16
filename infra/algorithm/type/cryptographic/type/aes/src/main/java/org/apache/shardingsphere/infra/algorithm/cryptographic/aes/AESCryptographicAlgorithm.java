@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.infra.algorithm.cryptographic.aes;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicAlgorithm;
-import org.apache.shardingsphere.infra.algorithm.cryptographic.core.CryptographicPropertiesProvider;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicAlgorithm;
+import org.apache.shardingsphere.infra.algorithm.cryptographic.spi.CryptographicPropertiesProvider;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import javax.crypto.Cipher;
@@ -41,6 +42,7 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         propsProvider = TypedSPILoader.getService(CryptographicPropertiesProvider.class, "DEFAULT", props);
     }
     
+    @HighFrequencyInvocation
     @SneakyThrows(GeneralSecurityException.class)
     @Override
     public String encrypt(final Object plainValue) {
@@ -51,10 +53,12 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         return encode(result);
     }
     
+    @HighFrequencyInvocation
     private String encode(final byte[] value) {
         return Base64.getEncoder().encodeToString(value);
     }
     
+    @HighFrequencyInvocation
     @SneakyThrows(GeneralSecurityException.class)
     @Override
     public Object decrypt(final Object cipherValue) {
@@ -65,10 +69,12 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
         return new String(result, StandardCharsets.UTF_8);
     }
     
+    @HighFrequencyInvocation
     private byte[] decode(final String value) {
         return Base64.getDecoder().decode(value);
     }
     
+    @HighFrequencyInvocation
     private Cipher getCipher(final int decryptMode) throws GeneralSecurityException {
         Cipher result = Cipher.getInstance(getType());
         result.init(decryptMode, new SecretKeySpec(propsProvider.getSecretKey(), getType()));

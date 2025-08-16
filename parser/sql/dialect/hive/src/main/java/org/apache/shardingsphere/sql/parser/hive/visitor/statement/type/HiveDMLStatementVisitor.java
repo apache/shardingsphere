@@ -66,6 +66,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunc
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitRowCountContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LockClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LockClauseListContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MatchExpressionContext;
@@ -187,9 +189,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadDataStatementContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LoadStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.hive.dml.HiveLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -1417,6 +1417,6 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new HiveLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
     }
 }

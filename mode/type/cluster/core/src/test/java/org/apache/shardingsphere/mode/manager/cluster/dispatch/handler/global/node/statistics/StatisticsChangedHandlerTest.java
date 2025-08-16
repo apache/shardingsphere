@@ -48,7 +48,7 @@ class StatisticsChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/statistics/databases")).findFirst().orElse(null);
+                .filter(each -> "/statistics/databases".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test
