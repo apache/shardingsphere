@@ -48,4 +48,5 @@
     <sql-case id="delete_returning_expressions" value="DELETE FROM t2 WHERE id = 2 RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
     <sql-case id="delete_with_table_hint" value="DELETE TOP(1) dbo.DatabaseLog WITH (READPAST) OUTPUT DELETED.* WHERE DatabaseLogID = 7;" db-types="SQLServer"/>
     <sql-case id="delete_rowset_function" value="DELETE FROM OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department WHERE DepartmentID = 17;" db-types="SQLServer" />
+    <sql-case id="delete_from_clause" value="DELETE Production.ProductProductPhoto OUTPUT DELETED.ProductID, DELETED.ProductPhotoID INTO @MyTableVar FROM Production.ProductProductPhoto AS ph;" db-types="SQLServer" />
 </sql-cases>

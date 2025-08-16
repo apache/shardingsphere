@@ -262,7 +262,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Rol
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingSetsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.GroupingExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExpressionListContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.PredictFunctionContext;
 
 import java.util.Collection;
@@ -1592,11 +1591,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
         if (null != ctx.outputTableName()) {
             if (null != ctx.outputTableName().tableName()) {
                 result.setTable((SimpleTableSegment) visit(ctx.outputTableName().tableName()));
-            } else if (null != ctx.outputTableName().variableName()) {
-                VariableNameContext variableNameCtx = ctx.outputTableName().variableName();
-                SimpleTableSegment tableSegment =
-                        new SimpleTableSegment(new TableNameSegment(variableNameCtx.start.getStartIndex(), variableNameCtx.stop.getStopIndex(), new IdentifierValue(variableNameCtx.getText())));
-                result.setTable(tableSegment);
             }
             if (null != ctx.columnNames()) {
                 ColumnNamesContext columnNames = ctx.columnNames();

@@ -322,7 +322,7 @@ outputWithAaterisk
     ;
 
 outputTableName
-    : tableName | variableName
+    : tableName
     ;
 
 queryHint
