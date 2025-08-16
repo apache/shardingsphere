@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.plugin.PluginTypeAndClassMapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
