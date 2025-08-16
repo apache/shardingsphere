@@ -15,28 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.type.ordered;
-
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+package org.apache.shardingsphere.infra.spi;
 
 /**
- * Ordered SPI.
- * 
- * @param <T> type
+ * ShardingSphere SPI.
  */
-public interface OrderedSPI<T> extends ShardingSphereSPI {
-    
-    /**
-     * Get order of load.
-     *
-     * @return load order
-     */
-    int getOrder();
-    
-    /**
-     * Get type class.
-     *
-     * @return type class
-     */
-    Class<T> getTypeClass();
+public interface ShardingSphereSPI {
 }

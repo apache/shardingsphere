@@ -19,6 +19,7 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource;
 
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
  * @param <T> type of rule
  */
 @SingletonSPI
-public interface StorageUnitDefinitionProcessor<T extends ShardingSphereRule> {
+public interface StorageUnitDefinitionProcessor<T extends ShardingSphereRule> extends ShardingSphereSPI {
     
     /**
      * Whether to ignore rule usage checking when unregister storage unit.
