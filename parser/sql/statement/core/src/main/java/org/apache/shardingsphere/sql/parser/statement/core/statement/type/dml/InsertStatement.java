@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Builder;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -43,6 +44,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -85,6 +87,9 @@ public final class InsertStatement extends DMLStatement {
     private final Collection<InsertValuesSegment> values = new LinkedList<>();
     
     private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
+    
+    @Getter
+    private final List<InsertClause> insertClauses = new LinkedList<>();
     
     public InsertStatement(final DatabaseType databaseType) {
         super(databaseType);
@@ -234,8 +239,41 @@ public final class InsertStatement extends DMLStatement {
         return Optional.ofNullable(rowSetFunction);
     }
     
+    /**
+     * Add an INSERT clause for multiple INSERT statements.
+     *
+     * @param clause INSERT clause to add
+     */
+    public void addInsertClause(final InsertClause clause) {
+        insertClauses.add(clause);
+    }
+    
     @Override
     public SQLStatementAttributes getAttributes() {
         return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
+    }
+    
+    /**
+     * Insert clause for multiple INSERT statements.
+     * Each clause represents one INSERT statement in the FROM ... INSERT ... syntax.
+     */
+    @Getter
+    @Setter
+    @Builder
+    public static final class InsertClause {
+        
+        private SimpleTableSegment targetTable;
+        
+        private InsertColumnsSegment columns;
+        
+        private SubquerySegment select;
+        
+        private WhereSegment where;
+        
+        private List<String> partitionColumns;
+        
+        private boolean isOverwrite;
+        
+        private boolean ifNotExists;
     }
 }
