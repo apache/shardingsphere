@@ -27,7 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <seata.version>2.3.0</seata.version>
+        <seata.version>2.5.0</seata.version>
         <commons-lang.version>2.6</commons-lang.version>
         <httpcore5.version>5.3.4</httpcore5.version>
     </properties>

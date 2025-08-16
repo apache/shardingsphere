@@ -118,7 +118,7 @@ jobs:
         run: |
           ./test/native/src/test/resources/test-native/ps1/uninstall-docker-engine-for-wcow.ps1
           winget install --id jazzdelightsme.WingetPathUpdater --source winget
-          winget install --id SUSE.RancherDesktop --source winget
+          winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
           rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
           ./test/native/src/test/resources/test-native/ps1/wait-for-rancher-desktop-backend.ps1
           "PATH=$env:PATH" >> $env:GITHUB_ENV

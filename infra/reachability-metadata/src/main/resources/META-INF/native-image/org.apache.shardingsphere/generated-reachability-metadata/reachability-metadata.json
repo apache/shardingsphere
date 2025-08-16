@@ -1581,12 +1581,6 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.authority.rule.AuthorityRule"
       },
-      "type": "org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegeProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.authority.rule.AuthorityRule"
-      },
       "type": "org.apache.shardingsphere.authority.provider.simple.AllPermittedPrivilegeProvider"
     },
     {
@@ -2611,54 +2605,6 @@
         "typeReached": "org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader"
       },
       "type": "org.apache.shardingsphere.encrypt.checker.config.EncryptRuleConfigurationChecker"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.executor.engine.DriverExecuteExecutor"
-      },
-      "type": "org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
-      },
-      "type": "org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
-      },
-      "type": "org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
-      },
-      "type": "org.apache.shardingsphere.encrypt.checker.sql.EncryptSupportedSQLCheckersBuilder"
     },
     {
       "condition": {
@@ -8909,54 +8855,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.executor.engine.DriverExecuteExecutor"
-      },
-      "type": "org.apache.shardingsphere.sharding.checker.sql.ShardingSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
-      },
-      "type": "org.apache.shardingsphere.sharding.checker.sql.ShardingSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
-      },
-      "type": "org.apache.shardingsphere.sharding.checker.sql.ShardingSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.sharding.checker.sql.ShardingSupportedSQLCheckersBuilder"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
-      },
-      "type": "org.apache.shardingsphere.sharding.checker.sql.ShardingSupportedSQLCheckersBuilder"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine"
       },
       "type": "org.apache.shardingsphere.sharding.decider.ShardingSQLFederationDecider"
@@ -9922,54 +9820,6 @@
         "typeReached": "org.apache.shardingsphere.infra.util.yaml.YamlEngine"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfigurationCustomizer"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.executor.engine.DriverExecuteExecutor"
-      },
-      "type": "org.apache.shardingsphere.single.checker.sql.SingleSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
-      },
-      "type": "org.apache.shardingsphere.single.checker.sql.SingleSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector"
-      },
-      "type": "org.apache.shardingsphere.single.checker.sql.SingleSupportedSQLCheckersBuilder",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
-      },
-      "type": "org.apache.shardingsphere.single.checker.sql.SingleSupportedSQLCheckersBuilder"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal"
-      },
-      "type": "org.apache.shardingsphere.single.checker.sql.SingleSupportedSQLCheckersBuilder"
     },
     {
       "condition": {
@@ -11630,12 +11480,6 @@
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
       "type": "org.apache.shardingsphere.sqltranslator.distsql.parser.facade.SQLTranslatorDistSQLParserFacade"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule"
-      },
-      "type": "org.apache.shardingsphere.sqltranslator.natived.NativeSQLTranslator"
     },
     {
       "condition": {

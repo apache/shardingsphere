@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockedMysqlDataSource;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,7 +53,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -68,6 +71,8 @@ class SeataATShardingSphereTransactionManagerTest {
     
     private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.ds_0";
     
+    private static ExecutorService executorService;
+    
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
     private final Queue<Object> requestQueue = MOCK_SEATA_SERVER.getMessageHandler().getRequestQueue();
@@ -76,7 +81,8 @@ class SeataATShardingSphereTransactionManagerTest {
     
     @BeforeAll
     static void before() {
-        Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
+        executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(MOCK_SEATA_SERVER::start);
         while (true) {
             if (MOCK_SEATA_SERVER.getInitialized().get()) {
                 return;
@@ -87,6 +93,8 @@ class SeataATShardingSphereTransactionManagerTest {
     @AfterAll
     static void after() {
         MOCK_SEATA_SERVER.shutdown();
+        executorService.shutdown();
+        Awaitility.await().atMost(1L, TimeUnit.MINUTES).until(() -> executorService.isTerminated());
     }
     
     @BeforeEach

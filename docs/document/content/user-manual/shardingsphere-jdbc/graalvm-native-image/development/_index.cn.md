@@ -261,8 +261,9 @@ class SolutionTest {
 ### 单元测试的已知问题
 
 受 https://github.com/apache/shardingsphere/issues/35052 影响，
-`org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` 的单元测试无法在通过 Windows 11 Home 24H2 编译的 GraalVM Native Image 下运行。
+`org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` 的单元测试无法在通过 `Windows 11 Home 24H2` 编译的 GraalVM Native Image 下运行。
 
+受 https://github.com/apache/incubator-seata/issues/7523 影响，
 `org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` 已被禁用，
 因为在 Github Actions Runner 执行此单元测试将导致其他单元测试出现 JDBC 连接泄露。
 

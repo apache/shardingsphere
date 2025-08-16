@@ -271,10 +271,11 @@ class SolutionTest {
 ### Known issues with unit testing
 
 Affected by https://github.com/apache/shardingsphere/issues/35052 , 
-the unit test of `org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` cannot be run under GraalVM Native Image compiled by Windows 11 Home 24H2.
+the unit test of `org.apache.shardingsphere.test.natived.jdbc.modes.cluster.EtcdTest` cannot be run under GraalVM Native Image compiled by `Windows 11 Home 24H2`.
 
-`org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` has been disabled
-because executing this unit test in Github Actions Runner will cause JDBC connection leaks in other unit tests.
+Due to https://github.com/apache/incubator-seata/issues/7523 , 
+`org.apache.shardingsphere.test.natived.proxy.transactions.base.SeataTest` has been disabled.
+This is because executing this unit test in the Github Actions Runner will cause JDBC connection leaks in other unit tests.
 
 ### `CodeCachePoolMXBean` limitation
 
