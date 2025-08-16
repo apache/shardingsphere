@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -30,7 +31,7 @@ import java.util.List;
  * Advanced proxy SQL executor.
  */
 @SingletonSPI
-public interface AdvancedProxySQLExecutor {
+public interface AdvancedProxySQLExecutor extends ShardingSphereSPI {
     
     /**
      * Execute.

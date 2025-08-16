@@ -57,7 +57,7 @@ class DatabaseListenerChangedHandlerTest {
         when(contextManager.getPersistServiceFacade().getRepository()).thenReturn(repository);
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/states/database_listener_coordinator")).findFirst().orElse(null);
+                .filter(each -> "/states/database_listener_coordinator".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test

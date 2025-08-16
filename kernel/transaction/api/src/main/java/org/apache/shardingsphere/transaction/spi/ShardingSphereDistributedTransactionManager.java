@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * ShardingSphere distributed transaction manager.
  */
-public interface ShardingSphereDistributedTransactionManager extends TypedSPI, AutoCloseable, TransactionManager {
+public interface ShardingSphereDistributedTransactionManager extends TypedSPI, TransactionManager, AutoCloseable {
     
     /**
      * Initialize distributed transaction manager.

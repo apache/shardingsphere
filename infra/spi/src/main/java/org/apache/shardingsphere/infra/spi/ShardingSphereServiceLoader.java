@@ -38,18 +38,18 @@ public final class ShardingSphereServiceLoader {
      * Get service instances.
      *
      * @param serviceInterface service interface
-     * @param <T> type of service interface
+     * @param <T> type of ShardingSphere SPI
      * @return service instances
      */
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
+    public static <T extends ShardingSphereSPI> Collection<T> getServiceInstances(final Class<T> serviceInterface) {
         return (Collection<T>) getRegisteredSPI(serviceInterface).getServiceInstances();
     }
     
     /*
      * @see <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>
      */
-    private static <T> RegisteredShardingSphereSPI<?> getRegisteredSPI(final Class<T> serviceInterface) {
+    private static <T extends ShardingSphereSPI> RegisteredShardingSphereSPI<?> getRegisteredSPI(final Class<T> serviceInterface) {
         RegisteredShardingSphereSPI<?> result = REGISTERED_SERVICES.get(serviceInterface);
         if (null != result) {
             return result;

@@ -46,7 +46,7 @@ class ComputeNodeLabelChangedHandlerTest {
     @BeforeEach
     void setUp() {
         handler = ShardingSphereServiceLoader.getServiceInstances(GlobalDataChangedEventHandler.class).stream()
-                .filter(each -> NodePathGenerator.toPath(each.getSubscribedNodePath()).equals("/nodes/compute_nodes/labels")).findFirst().orElse(null);
+                .filter(each -> "/nodes/compute_nodes/labels".equals(NodePathGenerator.toPath(each.getSubscribedNodePath()))).findFirst().orElse(null);
     }
     
     @Test

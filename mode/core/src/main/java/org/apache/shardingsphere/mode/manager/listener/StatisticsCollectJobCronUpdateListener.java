@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.listener;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+
 /**
  * Statistics collect job cron update listener.
  */
-public interface StatisticsCollectJobCronUpdateListener {
+public interface StatisticsCollectJobCronUpdateListener extends ShardingSphereSPI {
     
     /**
      * Updated.

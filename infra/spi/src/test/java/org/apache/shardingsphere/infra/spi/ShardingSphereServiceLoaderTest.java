@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.spi;
 
+import org.apache.shardingsphere.infra.spi.fixture.empty.EmptySPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.multiton.MultitonSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.multiton.impl.MultitonSPIFixtureImpl;
 import org.apache.shardingsphere.infra.spi.fixture.singleton.SingletonSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.singleton.impl.SingletonSPIFixtureImpl;
-import org.apache.shardingsphere.infra.spi.fixture.empty.EmptySPIFixture;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -38,11 +38,6 @@ class ShardingSphereServiceLoaderTest {
     @Test
     void assertGetServiceInstancesWithNullValue() {
         assertThrows(NullPointerException.class, () -> ShardingSphereServiceLoader.getServiceInstances(null));
-    }
-    
-    @Test
-    void assertGetServiceInstancesWithNoInterface() {
-        assertThrows(IllegalArgumentException.class, () -> ShardingSphereServiceLoader.getServiceInstances(Object.class));
     }
     
     @Test
