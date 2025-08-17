@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.rule.attribute;
+package org.apache.shardingsphere.infra.rule.attribute.resoure;
 
-import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageUnitDefinitionProcessorRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 
 /**
- * Single storage unit definition processor rule attribute.
+ * Unregister storage unit rule attribute.
  */
-public final class SingleStorageUnitDefinitionProcessorRuleAttribute implements StorageUnitDefinitionProcessorRuleAttribute {
+public interface UnregisterStorageUnitRuleAttribute extends RuleAttribute {
     
-    @Override
-    public boolean ignoreUsageCheckOnUnregister(final boolean ignoreSingleTables, final boolean ignoreBroadcastTables) {
-        return ignoreSingleTables;
-    }
+    /**
+     * Whether to ignore rule usage checking when unregister storage unit.
+     *
+     * @param ignoreSingleTables ignore single tables
+     * @param ignoreBroadcastTables ignore broadcast tables
+     * @return ignored or not
+     */
+    boolean ignoreUsageCheck(boolean ignoreSingleTables, boolean ignoreBroadcastTables);
 }

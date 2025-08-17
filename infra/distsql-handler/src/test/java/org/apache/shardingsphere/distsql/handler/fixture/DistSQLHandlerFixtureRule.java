@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageUnitDefinitionProcessorRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.UnregisterStorageUnitRuleAttribute;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -54,9 +54,9 @@ public final class DistSQLHandlerFixtureRule implements ShardingSphereRule {
         return result;
     }
     
-    private StorageUnitDefinitionProcessorRuleAttribute mockStorageUnitDefinitionProcessorRuleAttribute() {
-        StorageUnitDefinitionProcessorRuleAttribute result = mock(StorageUnitDefinitionProcessorRuleAttribute.class);
-        when(result.ignoreUsageCheckOnUnregister(true, false)).thenReturn(true);
+    private UnregisterStorageUnitRuleAttribute mockStorageUnitDefinitionProcessorRuleAttribute() {
+        UnregisterStorageUnitRuleAttribute result = mock(UnregisterStorageUnitRuleAttribute.class);
+        when(result.ignoreUsageCheck(true, false)).thenReturn(true);
         return result;
     }
     

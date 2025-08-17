@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.broadcast.rule.attribute;
 
-import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageUnitDefinitionProcessorRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.UnregisterStorageUnitRuleAttribute;
 
 /**
- * Broadcast storage unit definition processor rule attribute.
+ * Broadcast unregister storage unit rule attribute.
  */
-public final class BroadcastStorageUnitDefinitionProcessorRuleAttribute implements StorageUnitDefinitionProcessorRuleAttribute {
+public final class BroadcastUnregisterStorageUnitRuleAttribute implements UnregisterStorageUnitRuleAttribute {
     
     @Override
-    public boolean ignoreUsageCheckOnUnregister(final boolean ignoreSingleTables, final boolean ignoreBroadcastTables) {
+    public boolean ignoreUsageCheck(final boolean ignoreSingleTables, final boolean ignoreBroadcastTables) {
         return ignoreBroadcastTables;
     }
 }
