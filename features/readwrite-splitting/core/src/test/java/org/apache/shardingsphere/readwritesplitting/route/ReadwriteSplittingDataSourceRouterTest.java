@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
@@ -66,10 +65,11 @@ class ReadwriteSplittingDataSourceRouterTest {
     
     @Test
     void assertRouteWithStandardRouters() {
+        when(rule.getDisabledDataSourceNames()).thenReturn(Collections.emptyList());
+        when(rule.getReadwriteSplittingGroup().getReadDataSources()).thenReturn(Collections.emptyList());
         when(rule.getLoadBalancer().getTargetName(any(), any())).thenReturn("standard_ds");
         ReadwriteSplittingDataSourceRouter router = new ReadwriteSplittingDataSourceRouter(rule, mock(ConnectionContext.class));
         setQualifiedRouters(router, mock(QualifiedReadwriteSplittingDataSourceRouter.class));
-        when(ShardingSphereServiceLoader.getServiceInstances(ReadDataSourcesFilter.class)).thenReturn(Collections.emptyList());
         assertThat(router.route(sqlStatementContext, hintValueContext), is("standard_ds"));
     }
     

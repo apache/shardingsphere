@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
+package org.apache.shardingsphere.readwritesplitting.route.standard.filter.type;
 
+import org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
 import java.util.LinkedList;
