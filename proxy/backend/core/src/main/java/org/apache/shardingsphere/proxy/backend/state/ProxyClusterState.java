@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.state;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
  * Proxy cluster state.
  */
+@SingletonSPI
 public interface ProxyClusterState extends TypedSPI {
     
     /**

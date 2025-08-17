@@ -19,10 +19,12 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
  * Table data consistency checker.
  */
+@SingletonSPI
 public interface TableDataConsistencyChecker extends ShardingSphereAlgorithm, DatabaseSupportedTypedSPI, AutoCloseable {
     
     /**

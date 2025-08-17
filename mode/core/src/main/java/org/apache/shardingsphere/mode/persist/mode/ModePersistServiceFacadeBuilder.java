@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.persist.mode;
 
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 /**
  * Mode persist service facade builder.
  */
+@SingletonSPI
 public interface ModePersistServiceFacadeBuilder extends TypedSPI {
     
     /**
