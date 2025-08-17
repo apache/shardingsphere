@@ -30,9 +30,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class MemoryPipelineChannelCreatorTest {
     
@@ -41,7 +41,7 @@ class MemoryPipelineChannelCreatorTest {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "2000")));
         assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(2000));
         PipelineChannel channel = creator.newInstance(1000, new InventoryTaskAckCallback(new AtomicReference<>()));
-        assertInstanceOf(ArrayBlockingQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
+        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel), instanceOf(ArrayBlockingQueue.class));
     }
     
     @Test
@@ -49,7 +49,7 @@ class MemoryPipelineChannelCreatorTest {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "0")));
         assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("queueSize"), creator), is(0));
         PipelineChannel channel = creator.newInstance(1000, new InventoryTaskAckCallback(new AtomicReference<>()));
-        assertInstanceOf(SynchronousQueue.class, Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel));
+        assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannel.class.getDeclaredField("queue"), channel), instanceOf(SynchronousQueue.class));
     }
     
     @Test

@@ -44,7 +44,6 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -243,9 +242,9 @@ class MppdbDecodingPluginTest {
         }
         assertThat(expectedEvent.size(), is(4));
         AbstractWALEvent actualFirstEvent = expectedEvent.get(0);
-        assertInstanceOf(BeginTXEvent.class, actualFirstEvent);
+        assertThat(actualFirstEvent, instanceOf(BeginTXEvent.class));
         AbstractWALEvent actualLastEvent = expectedEvent.get(expectedEvent.size() - 1);
-        assertInstanceOf(CommitTXEvent.class, actualLastEvent);
+        assertThat(actualLastEvent, instanceOf(CommitTXEvent.class));
         assertThat(((CommitTXEvent) actualLastEvent).getCsn(), is(3468L));
         assertThat(((CommitTXEvent) actualLastEvent).getXid(), is(1L));
     }
@@ -265,7 +264,7 @@ class MppdbDecodingPluginTest {
             actual.add(mppdbDecodingPlugin.decode(ByteBuffer.wrap(each.getBytes()), logSequenceNumber));
         }
         assertThat(actual.size(), is(4));
-        assertInstanceOf(BeginTXEvent.class, actual.get(0));
+        assertThat(actual.get(0), instanceOf(BeginTXEvent.class));
         assertThat(((BeginTXEvent) actual.get(0)).getCsn(), is(951909L));
         assertThat(((WriteRowEvent) actual.get(1)).getAfterRow().get(0).toString(), is("7D"));
         assertThat(((WriteRowEvent) actual.get(2)).getAfterRow().get(0).toString(), is("7D"));
