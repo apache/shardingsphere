@@ -253,10 +253,6 @@ public final class InsertStatement extends DMLStatement {
         return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     
-    /**
-     * Insert clause for multiple INSERT statements.
-     * Each clause represents one INSERT statement in the FROM ... INSERT ... syntax.
-     */
     @Getter
     @Setter
     @Builder
