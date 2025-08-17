@@ -3374,6 +3374,10 @@ JAR
     : J A R
     ;
 
+CONNECTOR
+    : C O N N E C T O R
+    ;
+
 CONNECTORS
     : C O N N E C T O R S
     ;
@@ -3404,4 +3408,16 @@ STATE
 
 COMPACTIONID
     : C O M P A C T I O N I D
+    ;
+
+ELEM_
+    : E L E M
+    ;
+
+KEY_
+    : K E Y
+    ;
+
+VALUE_
+    : V A L U E
     ;

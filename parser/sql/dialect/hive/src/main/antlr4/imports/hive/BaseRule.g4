@@ -648,6 +648,10 @@ columnName
     : identifier
     ;
 
+connectorName
+    : identifier
+    ;
+
 indexName
     : identifier
     ;
