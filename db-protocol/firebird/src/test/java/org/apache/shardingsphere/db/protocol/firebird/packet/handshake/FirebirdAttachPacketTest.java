@@ -27,7 +27,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,7 +61,7 @@ class FirebirdAttachPacketTest {
         when(slice4.toString(java.nio.charset.StandardCharsets.UTF_8)).thenReturn("passwd");
         when(dpb.readSlice(anyInt())).thenReturn(slice1, slice2, slice3, slice4);
         FirebirdAttachPacket packet = new FirebirdAttachPacket(payload);
-        assertEquals(100, packet.getId());
+        assertThat(packet.getId(), is(100));
         assertThat(packet.getDatabase(), is("db"));
         assertThat(packet.getEncoding(), is("UTF8"));
         assertThat(packet.getAuthData(), is("ad"));

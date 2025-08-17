@@ -35,7 +35,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,12 +75,9 @@ class FirebirdConnectPacketTest {
         when(specBuf1.toString(StandardCharsets.US_ASCII)).thenReturn("A");
         when(specBuf2.readUnsignedByte()).thenReturn((short) 1);
         when(specBuf2.toString(StandardCharsets.US_ASCII)).thenReturn("B");
-        when(protocolBuf.readInt()).thenReturn(
-                FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode(),
-                FirebirdArchType.ARCH_GENERIC.getCode(),
-                0, 5, 1);
+        when(protocolBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
         FirebirdConnectPacket packet = new FirebirdConnectPacket(payload);
-        assertEquals(FirebirdCommandPacketType.CONNECT, packet.getOpCode());
+        assertThat(packet.getOpCode(), is(FirebirdCommandPacketType.CONNECT));
         assertThat(packet.getConnectVersion(), is(1));
         assertThat(packet.getArchType(), is(FirebirdArchType.ARCH_GENERIC));
         assertThat(packet.getDatabase(), is("db"));
