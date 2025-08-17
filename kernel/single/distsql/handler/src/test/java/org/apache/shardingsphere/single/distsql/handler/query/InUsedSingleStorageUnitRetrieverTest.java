@@ -22,8 +22,8 @@ import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRu
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.single.rule.SingleDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.rule.attribute.SingleDataNodeRuleAttribute;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
