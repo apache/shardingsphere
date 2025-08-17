@@ -18,18 +18,12 @@
 package org.apache.shardingsphere.single.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.single.rule.SingleRule;
 
 /**
  * Storage unit definition processor for single rule.
  */
 public final class StorageUnitSingleDefinitionProcessor implements StorageUnitDefinitionProcessor<SingleRule> {
-    
-    @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreSingleTables();
-    }
     
     @Override
     public Class<SingleRule> getRuleClass() {

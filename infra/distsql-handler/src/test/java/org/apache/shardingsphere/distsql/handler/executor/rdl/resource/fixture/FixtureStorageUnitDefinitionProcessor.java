@@ -19,14 +19,8 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource.fixture;
 
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
 import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 
 public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitDefinitionProcessor<DistSQLHandlerFixtureRule> {
-    
-    @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreSingleTables();
-    }
     
     @Override
     public Class<DistSQLHandlerFixtureRule> getRuleClass() {

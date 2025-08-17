@@ -19,17 +19,11 @@ package org.apache.shardingsphere.broadcast.distsql.handler.update;
 
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
 
 /**
  * Storage unit definition processor for broadcast rule.
  */
 public final class StorageUnitBroadcastDefinitionProcessor implements StorageUnitDefinitionProcessor<BroadcastRule> {
-    
-    @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreBroadcastTables();
-    }
     
     @Override
     public Class<BroadcastRule> getRuleClass() {
