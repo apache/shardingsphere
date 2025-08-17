@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.resoure.StorageUnitDefinitionProcessorRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.UnregisterStorageUnitRuleAttribute;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Collection;
@@ -82,8 +82,8 @@ public final class UnregisterStorageUnitExecutor implements DistSQLUpdateExecuto
     private Collection<Class<? extends ShardingSphereRule>> getIgnoreUsageCheckRules(final UnregisterStorageUnitStatement sqlStatement) {
         Collection<Class<? extends ShardingSphereRule>> result = new LinkedList<>();
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            Optional<StorageUnitDefinitionProcessorRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(StorageUnitDefinitionProcessorRuleAttribute.class);
-            if (ruleAttribute.isPresent() && ruleAttribute.get().ignoreUsageCheckOnUnregister(sqlStatement.isIgnoreSingleTables(), sqlStatement.isIgnoreBroadcastTables())) {
+            Optional<UnregisterStorageUnitRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(UnregisterStorageUnitRuleAttribute.class);
+            if (ruleAttribute.isPresent() && ruleAttribute.get().ignoreUsageCheck(sqlStatement.isIgnoreSingleTables(), sqlStatement.isIgnoreBroadcastTables())) {
                 result.add(each.getClass());
             }
         }

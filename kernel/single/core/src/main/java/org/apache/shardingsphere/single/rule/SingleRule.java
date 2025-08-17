@@ -38,8 +38,8 @@ import org.apache.shardingsphere.single.datanode.SingleTableDataNodeLoader;
 import org.apache.shardingsphere.single.rule.attribute.SingleDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.rule.attribute.SingleExportableRuleAttribute;
 import org.apache.shardingsphere.single.rule.attribute.SingleMutableDataNodeRuleAttribute;
-import org.apache.shardingsphere.single.rule.attribute.SingleStorageUnitDefinitionProcessorRuleAttribute;
 import org.apache.shardingsphere.single.rule.attribute.SingleTableMapperRuleAttribute;
+import org.apache.shardingsphere.single.rule.attribute.SingleUnregisterStorageUnitRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
@@ -86,7 +86,7 @@ public final class SingleRule implements DatabaseRule {
         mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
         attributes = new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
                 new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources),
-                new SingleStorageUnitDefinitionProcessorRuleAttribute());
+                new SingleUnregisterStorageUnitRuleAttribute());
     }
     
     /**
