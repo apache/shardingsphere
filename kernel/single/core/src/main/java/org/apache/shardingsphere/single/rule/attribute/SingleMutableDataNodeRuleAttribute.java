@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.rule;
+package org.apache.shardingsphere.single.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 
 import javax.sql.DataSource;
@@ -50,6 +51,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     
     private final SingleTableMapperRuleAttribute tableMapperRuleAttribute;
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Override
     public void put(final String dataSourceName, final String schemaName, final String tableName) {
         if (dataSourceNames.contains(dataSourceName)) {
@@ -99,6 +101,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
         }
     }
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Override
     public Optional<DataNode> findTableDataNode(final String schemaName, final String tableName) {
         Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName.toLowerCase(), new LinkedHashSet<>());

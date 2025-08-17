@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.rule;
+package org.apache.shardingsphere.single.rule.attribute;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.datanode.DataNode;
