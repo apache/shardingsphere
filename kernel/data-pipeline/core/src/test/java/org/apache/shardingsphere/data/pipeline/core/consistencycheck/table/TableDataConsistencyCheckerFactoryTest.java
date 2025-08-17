@@ -21,17 +21,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 class TableDataConsistencyCheckerFactoryTest {
     
     @Test
     void assertNewInstanceTypeMatched() {
-        assertInstanceOf(DataMatchTableDataConsistencyChecker.class, TableDataConsistencyCheckerFactory.newInstance(null, new Properties()));
-        assertInstanceOf(DataMatchTableDataConsistencyChecker.class, TableDataConsistencyCheckerFactory.newInstance("DATA_MATCH", new Properties()));
-        assertInstanceOf(CRC32MatchTableDataConsistencyChecker.class, TableDataConsistencyCheckerFactory.newInstance("CRC32_MATCH", new Properties()));
+        assertThat(TableDataConsistencyCheckerFactory.newInstance(null, new Properties()), instanceOf(DataMatchTableDataConsistencyChecker.class));
+        assertThat(TableDataConsistencyCheckerFactory.newInstance("DATA_MATCH", new Properties()), instanceOf(DataMatchTableDataConsistencyChecker.class));
+        assertThat(TableDataConsistencyCheckerFactory.newInstance("CRC32_MATCH", new Properties()), instanceOf(CRC32MatchTableDataConsistencyChecker.class));
     }
     
     @Test
