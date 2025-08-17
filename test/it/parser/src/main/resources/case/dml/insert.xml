@@ -4537,7 +4537,6 @@
     </insert>
 
     <insert sql-case-id="from_two_insert_overwrite_and_one_into_basic">
-        <!-- First INSERT: customer_backup -->
         <table name="customer_backup" start-index="37" stop-index="50" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4563,8 +4562,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Second INSERT: vip_customer -->
         <table name="vip_customer" start-index="98" stop-index="109" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4590,8 +4587,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Third INSERT: new_customer -->
         <table name="new_customer" start-index="200" stop-index="211" />
         <columns start-index="182" stop-index="182" />
         <select>
@@ -4647,7 +4642,6 @@
     </insert>
 
     <insert sql-case-id="from_two_insert_overwrite_partition">
-        <!-- First INSERT: order_summary -->
         <table name="order_summary" start-index="37" stop-index="48" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4671,8 +4665,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Second INSERT: order_archive -->
         <table name="order_archive" start-index="159" stop-index="171" />
         <columns start-index="136" stop-index="136" />
         <select>
@@ -4699,7 +4691,6 @@
     </insert>
 
     <insert sql-case-id="from_two_insert_overwrite_and_one_into_with_partition">
-        <!-- First INSERT: sales_partition -->
         <table name="sales_partition" start-index="37" stop-index="49" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4711,8 +4702,6 @@
                 <column-projection name="amount_date" start-index="102" stop-index="104" />
             </projections>
         </select>
-
-        <!-- Second INSERT: sales_archive -->
         <table name="sales_archive" start-index="106" stop-index="117" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4738,8 +4727,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Third INSERT: sales_analytics -->
         <table name="sales_analytics" start-index="292" stop-index="306" />
         <columns start-index="274" stop-index="274" />
         <select>
@@ -4769,7 +4756,6 @@
     </insert>
 
     <insert sql-case-id="from_two_insert_into_and_one_overwrite_basic">
-        <!-- First INSERT: active_users -->
         <table name="active_users" start-index="37" stop-index="48" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4795,8 +4781,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Second INSERT: new_users -->
         <table name="new_users" start-index="102" stop-index="111" />
         <columns start-index="14" stop-index="14" />
         <select>
@@ -4821,8 +4805,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Third INSERT: all_users -->
         <table name="all_users" start-index="202" stop-index="210" />
         <columns start-index="179" stop-index="179" />
         <select>
@@ -4864,7 +4846,6 @@
     </insert>
 
     <insert sql-case-id="from_two_insert_into_with_partition">
-        <!-- First INSERT: order -->
         <table name="orders" start-index="44" stop-index="48" />
         <columns start-index="21" stop-index="21" />
         <select>
@@ -4885,8 +4866,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Second INSERT: order_2023 -->
         <table name="order_2023" start-index="138" stop-index="147" />
         <columns start-index="120" stop-index="120" />
         <select>
@@ -4913,7 +4892,6 @@
     </insert>
 
     <insert sql-case-id="from_two_insert_into_and_one_overwrite_with_partition">
-        <!-- First INSERT: monthly_sales -->
         <table name="monthly_sales" start-index="44" stop-index="55" />
         <columns start-index="21" stop-index="21" />
         <select>
@@ -4938,8 +4916,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Second INSERT: top_products -->
         <table name="top_products" start-index="147" stop-index="158" />
         <columns start-index="21" stop-index="21" />
         <select>
@@ -4961,8 +4937,6 @@
                 </expr>
             </where>
         </select>
-
-        <!-- Third INSERT: sales_archive -->
         <table name="sales_archive" start-index="307" stop-index="319" />
         <columns start-index="284" stop-index="284" />
         <select>
