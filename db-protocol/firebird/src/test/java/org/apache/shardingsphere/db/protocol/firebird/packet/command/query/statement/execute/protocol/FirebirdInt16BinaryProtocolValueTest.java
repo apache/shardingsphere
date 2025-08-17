@@ -28,7 +28,6 @@ import java.math.BigDecimal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,6 +63,6 @@ class FirebirdInt16BinaryProtocolValueTest {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         new FirebirdInt16BinaryProtocolValue().write(payload, BigDecimal.ONE);
         verify(byteBuf).writeZero(15);
-        verify(byteBuf).writeBytes(eq(new byte[]{1}));
+        verify(byteBuf).writeBytes(new byte[]{1});
     }
 }
