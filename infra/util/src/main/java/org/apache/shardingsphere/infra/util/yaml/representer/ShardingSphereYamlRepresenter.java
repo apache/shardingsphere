@@ -50,7 +50,7 @@ public final class ShardingSphereYamlRepresenter extends Representer {
     @Override
     protected NodeTuple representJavaBeanProperty(final Object javaBean, final Property property, final Object propertyValue, final Tag customTag) {
         NodeTuple nodeTuple = super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
-        return TypedSPILoader.findService(ShardingSphereYamlTupleProcessor.class, property.getType())
+        return TypedSPILoader.findService(ShardingSphereYamlTupleProcessor.class, property.getName())
                 .map(optional -> optional.process(nodeTuple)).orElse(new DefaultYamlTupleProcessor().process(nodeTuple));
     }
     
