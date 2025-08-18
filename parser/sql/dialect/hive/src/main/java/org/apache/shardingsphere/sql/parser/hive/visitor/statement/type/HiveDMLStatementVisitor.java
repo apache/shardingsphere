@@ -125,6 +125,9 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveMult
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveInsertStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertIntoSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -206,7 +209,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -883,7 +885,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -904,31 +908,21 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitStandardSyntax(final StandardSyntaxContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex(), Collections.emptyList()));
-        result.setInsertSelect(createInsertSelectSegment(ctx.select()));
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        return createHiveInsertStatement(ctx.tableName(), ctx.select(), ctx.start.getStartIndex());
     }
     
     @Override
     public ASTNode visitMultipleInserts(final MultipleInsertsContext ctx) {
-        SimpleTableSegment sourceTable = null;
+        TableSegment sourceTable = null;
         if (null != ctx.fromClause()) {
-            sourceTable = (SimpleTableSegment) visit(ctx.fromClause());
+            sourceTable = (TableSegment) visit(ctx.fromClause());
         }
         return visitHiveMultipleInserts(ctx.hiveMultipleInserts(), sourceTable);
     }
     
     @Override
     public ASTNode visitDynamicPartitionInserts(final DynamicPartitionInsertsContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex(), Collections.emptyList()));
-        result.setInsertSelect(createInsertSelectSegment(ctx.select()));
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        return createHiveInsertStatement(ctx.tableName(), ctx.select(), ctx.start.getStartIndex());
     }
     
     @Override
@@ -936,44 +930,45 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         return visitHiveMultipleInserts(ctx, null);
     }
     
-    private ASTNode visitHiveMultipleInserts(final HiveMultipleInsertsContext ctx, final SimpleTableSegment sourceTable) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+    private ASTNode visitHiveMultipleInserts(final HiveMultipleInsertsContext ctx, final TableSegment sourceTable) {
         List<HiveInsertStatementContext> insertStatements = ctx.hiveInsertStatement();
-        List<InsertStatement> parsedStatements = insertStatements.stream()
-                .map(each -> (InsertStatement) visit(each))
-                .collect(Collectors.toList());
-        parsedStatements.forEach(insertStmt -> {
-            InsertStatement.InsertClause clause = InsertStatement.InsertClause.builder()
-                    .targetTable(insertStmt.getTable().orElse(null))
-                    .columns(insertStmt.getInsertColumns().orElse(null))
-                    .select(insertStmt.getInsertSelect().orElse(null))
-                    .build();
-            result.addInsertClause(clause);
-        });
-        if (!parsedStatements.isEmpty()) {
-            InsertStatement lastStmt = parsedStatements.get(parsedStatements.size() - 1);
-            lastStmt.getTable().ifPresent(result::setTable);
-            lastStmt.getInsertColumns().ifPresent(result::setInsertColumns);
-            lastStmt.getInsertSelect().ifPresent(result::setInsertSelect);
+        if (1 == insertStatements.size()) {
+            InsertStatement single = (InsertStatement) visit(insertStatements.get(0));
+            if (null != sourceTable) {
+                single.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
+            }
+            single.addParameterMarkers(getParameterMarkerSegments());
+            return single;
         }
-        if (sourceTable != null) {
-            setFromForAllSelects(result, sourceTable);
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setMultiTableInsertType(MultiTableInsertType.ALL);
+        MultiTableInsertIntoSegment multiTableInsertInto = new MultiTableInsertIntoSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (HiveInsertStatementContext each : insertStatements) {
+            InsertStatement insertStmt = (InsertStatement) visit(each);
+            if (null != sourceTable) {
+                insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
+            }
+            insertStmt.addParameterMarkers(getParameterMarkerSegments());
+            multiTableInsertInto.getInsertStatements().add(insertStmt);
         }
-        
+        result.setMultiTableInsertInto(multiTableInsertInto);
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
-    private void setFromForAllSelects(final InsertStatement result, final SimpleTableSegment sourceTable) {
-        result.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
-        result.getInsertClauses().stream()
-                .map(InsertStatement.InsertClause::getSelect)
-                .filter(Objects::nonNull)
-                .forEach(subquery -> setFromForSelect(subquery, sourceTable));
-    }
-    
-    private void setFromForSelect(final SubquerySegment subquery, final SimpleTableSegment sourceTable) {
+    private void setFromForSelect(final SubquerySegment subquery, final TableSegment sourceTable) {
         Optional.ofNullable(subquery.getSelect())
                 .ifPresent(selectStmt -> selectStmt.setFrom(sourceTable));
+    }
+    
+    private InsertStatement createHiveInsertStatement(final TableNameContext tableName, final SelectContext select, final int startIndex) {
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(tableName));
+        result.setInsertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList()));
+        result.setInsertSelect(createInsertSelectSegment(select));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     @Override
