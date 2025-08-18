@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class QualifiedTableTest {
     
@@ -53,10 +53,10 @@ class QualifiedTableTest {
     void assertEqualsFalse() {
         QualifiedTable actual = new QualifiedTable("schema", "t_order");
         QualifiedTable expected = new QualifiedTable(null, "t_order");
-        assertNotEquals(actual, expected);
+        assertThat(actual, not(expected));
         actual = new QualifiedTable("schema", "t_order");
         expected = new QualifiedTable("schema", null);
-        assertNotEquals(actual, expected);
+        assertThat(actual, not(expected));
     }
     
     @Test
