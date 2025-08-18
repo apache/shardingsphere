@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.List;
 /**
  * SQL translator.
  */
-@SingletonSPI
 public interface SQLTranslator extends ShardingSphereAlgorithm {
     
     /**
