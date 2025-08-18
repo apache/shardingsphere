@@ -17,20 +17,16 @@
 
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.yaml.snakeyaml.constructor.Construct;
 
 /**
  * ShardingSphere YAML construct.
  */
 @SingletonSPI
-public interface ShardingSphereYamlConstruct extends Construct, ShardingSphereSPI {
+public interface ShardingSphereYamlConstruct extends Construct, TypedSPI {
     
-    /**
-     * Get type.
-     *
-     * @return type
-     */
+    @Override
     Class<?> getType();
 }
