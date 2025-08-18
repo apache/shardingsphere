@@ -24,17 +24,17 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,8 +63,8 @@ class FirebirdAllocateStatementCommandExecutorTest {
     void assertExecute() throws SQLException {
         FirebirdAllocateStatementCommandExecutor executor = new FirebirdAllocateStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertEquals(1, actual.size());
+        assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
-        assertEquals(1, ((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle());
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(1));
     }
 }
