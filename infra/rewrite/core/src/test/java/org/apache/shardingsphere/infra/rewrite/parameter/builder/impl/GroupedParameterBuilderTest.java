@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.rewrite.parameter.builder.impl;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -31,30 +32,30 @@ class GroupedParameterBuilderTest {
     
     @Test
     void assertGetParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), new LinkedList<>());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), Collections.emptyList(), new LinkedList<>());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6)));
     }
     
     @Test
     void assertGetParametersWithGenericParameters() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), Collections.emptyList(), createGenericParameters());
         assertThat(actual.getParameters(), is(Arrays.<Object>asList(3, 4, 5, 6, 7, 8)));
-        assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
+        assertThat(actual.getAfterGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(7, 8)));
     }
     
     @Test
     void assertGetGenericParametersWithModify() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), createGenericParameters());
-        actual.getGenericParameterBuilder().addReplacedParameters(0, 77);
-        actual.getGenericParameterBuilder().addReplacedParameters(1, 88);
-        actual.getGenericParameterBuilder().addAddedParameters(0, Arrays.asList(66, -1));
-        actual.getGenericParameterBuilder().addAddedParameters(2, Arrays.asList(99, 110));
-        assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(77, 66, -1, 88, 99, 110)));
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(new LinkedList<>(), Collections.emptyList(), createGenericParameters());
+        actual.getAfterGenericParameterBuilder().addReplacedParameters(0, 77);
+        actual.getAfterGenericParameterBuilder().addReplacedParameters(1, 88);
+        actual.getAfterGenericParameterBuilder().addAddedParameters(0, Arrays.asList(66, -1));
+        actual.getAfterGenericParameterBuilder().addAddedParameters(2, Arrays.asList(99, 110));
+        assertThat(actual.getAfterGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(77, 66, -1, 88, 99, 110)));
     }
     
     @Test
     void assertGetDerivedColumnName() {
-        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), createGenericParameters());
+        GroupedParameterBuilder actual = new GroupedParameterBuilder(createGroupedParameters(), Collections.emptyList(), createGenericParameters());
         String derivedColumnName = "derivedColumnName";
         actual.setDerivedColumnName(derivedColumnName);
         assertThat(actual.getDerivedColumnName(), is(Optional.of(derivedColumnName)));

@@ -96,6 +96,8 @@ class SQLRewriteContextTest {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);
+        when(statementContext.getGroupedParameters()).thenReturn(Collections.emptyList());
+        when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
         when(queryContext.getSql()).thenReturn("INSERT INTO tbl VALUES (?)");

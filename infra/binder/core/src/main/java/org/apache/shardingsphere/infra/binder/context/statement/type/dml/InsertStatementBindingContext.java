@@ -135,9 +135,6 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
         for (InsertValueContext each : insertValueContexts) {
             result.add(each.getParameters());
         }
-        if (null != insertSelectContext && !insertSelectContext.getParameters().isEmpty()) {
-            result.add(insertSelectContext.getParameters());
-        }
         return result;
     }
     
