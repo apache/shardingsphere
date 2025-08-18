@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -133,6 +134,9 @@ public final class RouteSQLRewriteEngine {
     }
     
     private List<Object> getParameters(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final RouteUnit routeUnit) {
+        if (sqlRewriteContext.getParameters().isEmpty()) {
+            return Collections.emptyList();
+        }
         ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
         if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
@@ -143,7 +147,7 @@ public final class RouteSQLRewriteEngine {
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
-        List<Object> result = new LinkedList<>();
+        List<Object> result = new LinkedList<>(paramBuilder.getBeforeGenericParameterBuilder().getParameters());
         int count = 0;
         for (Collection<DataNode> each : routeContext.getOriginalDataNodes()) {
             if (isInSameDataNode(each, routeUnit)) {
@@ -151,7 +155,7 @@ public final class RouteSQLRewriteEngine {
             }
             count++;
         }
-        result.addAll(paramBuilder.getGenericParameterBuilder().getParameters());
+        result.addAll(paramBuilder.getAfterGenericParameterBuilder().getParameters());
         return result;
     }
     

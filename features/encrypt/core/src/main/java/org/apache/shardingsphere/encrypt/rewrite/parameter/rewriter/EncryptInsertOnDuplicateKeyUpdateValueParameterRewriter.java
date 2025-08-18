@@ -68,13 +68,13 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
             }
             EncryptColumn encryptColumn = rule.getEncryptTable(tableName).getEncryptColumn(logicColumnName);
             Object cipherColumnValue = encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, logicColumnName, plainValue);
-            groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
+            groupedParamBuilder.getAfterGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
             Collection<Object> addedParams = buildAddedParams(schemaName, tableName, encryptColumn, logicColumnName, plainValue);
             if (!addedParams.isEmpty()) {
-                if (!groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(index)) {
-                    groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(index, new LinkedList<>());
+                if (!groupedParamBuilder.getAfterGenericParameterBuilder().getAddedIndexAndParameters().containsKey(index)) {
+                    groupedParamBuilder.getAfterGenericParameterBuilder().getAddedIndexAndParameters().put(index, new LinkedList<>());
                 }
-                groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(index).addAll(addedParams);
+                groupedParamBuilder.getAfterGenericParameterBuilder().getAddedIndexAndParameters().get(index).addAll(addedParams);
             }
         }
     }

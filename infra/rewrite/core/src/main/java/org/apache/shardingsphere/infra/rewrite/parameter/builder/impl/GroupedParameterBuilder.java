@@ -35,26 +35,39 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     private final List<StandardParameterBuilder> parameterBuilders;
     
     @Getter
-    private final StandardParameterBuilder genericParameterBuilder;
+    private final StandardParameterBuilder beforeGenericParameterBuilder;
+    
+    @Getter
+    private final StandardParameterBuilder afterGenericParameterBuilder;
     
     @Setter
     private String derivedColumnName;
     
-    public GroupedParameterBuilder(final List<List<Object>> groupedParams, final List<Object> genericParams) {
+    @Getter
+    private boolean containsGroupedParams;
+    
+    @Getter
+    private int afterGenericParameterOffset;
+    
+    public GroupedParameterBuilder(final List<List<Object>> groupedParams, final List<Object> beforeGenericParams, final List<Object> afterGenericParams) {
         parameterBuilders = new ArrayList<>(groupedParams.size());
+        afterGenericParameterOffset += beforeGenericParams.size();
         for (List<Object> each : groupedParams) {
             parameterBuilders.add(new StandardParameterBuilder(each));
+            containsGroupedParams = containsGroupedParams || !each.isEmpty();
+            afterGenericParameterOffset += each.size();
         }
-        genericParameterBuilder = new StandardParameterBuilder(genericParams);
+        beforeGenericParameterBuilder = new StandardParameterBuilder(beforeGenericParams);
+        afterGenericParameterBuilder = new StandardParameterBuilder(afterGenericParams);
     }
     
     @Override
     public List<Object> getParameters() {
-        List<Object> result = new LinkedList<>();
+        List<Object> result = new LinkedList<>(beforeGenericParameterBuilder.getParameters());
         for (int i = 0; i < parameterBuilders.size(); i++) {
             result.addAll(getParameters(i));
         }
-        result.addAll(genericParameterBuilder.getParameters());
+        result.addAll(afterGenericParameterBuilder.getParameters());
         return result;
     }
     
