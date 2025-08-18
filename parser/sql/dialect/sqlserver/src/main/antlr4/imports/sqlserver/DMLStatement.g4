@@ -342,7 +342,7 @@ queryHint
     | MAXDOP INT_NUM_
     | MAXRECURSION NUMBER_
     | NO_PERFORMANCE_SPOOL
-    | OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_
+    | OPTIMIZE FOR LP_ optimizeForParameter (COMMA_ optimizeForParameter)* RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
     | QUERYTRACEON INT_NUM_
@@ -351,6 +351,10 @@ queryHint
     | USE HINT LP_ useHitName* RP_
     | USE PLAN NCHAR_TEXT
     | LABEL EQ_ stringLiterals
+    ;
+
+optimizeForParameter
+    : variableName (UNKNOWN | EQ_ literals)
     ;
 
 useHitName
