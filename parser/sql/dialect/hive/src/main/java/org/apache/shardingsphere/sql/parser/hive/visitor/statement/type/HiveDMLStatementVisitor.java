@@ -885,9 +885,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.onDuplicateKeyClause()) {
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
-        if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        }
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
