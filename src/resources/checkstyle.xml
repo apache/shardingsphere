@@ -139,7 +139,7 @@
         <!-- Imports -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.jupiter.api.Assertions.*,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.*" />
+            <property name="excludes" value="org.junit.jupiter.api.Assertions.assertTrue,org.junit.jupiter.api.Assertions.assertFalse,org.junit.jupiter.api.Assertions.assertNull,org.junit.jupiter.api.Assertions.assertNotNull,org.junit.jupiter.api.Assertions.assertSame,org.junit.jupiter.api.Assertions.assertNotSame,org.junit.jupiter.api.Assertions.assertArrayEquals,org.junit.jupiter.api.Assertions.assertThrows,org.junit.jupiter.api.Assertions.assertDoesNotThrow,org.junit.jupiter.api.Assertions.assertTimeout,org.junit.jupiter.api.Assertions.fail,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.*" />
         </module>
         <module name="IllegalImport" />
         <module name="RedundantImport" />
