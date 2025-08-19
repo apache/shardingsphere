@@ -348,7 +348,7 @@ queryHint
     | QUERYTRACEON INT_NUM_
     | RECOMPILE
     | ROBUST PLAN
-    | USE HINT LP_ useHitName* RP_
+    | USE HINT LP_ useHitName (COMMA_ useHitName)* RP_
     | USE PLAN NCHAR_TEXT
     | LABEL EQ_ stringLiterals
     ;
@@ -376,6 +376,7 @@ useHitName
     | SQ_ FORCE_LEGACY_CARDINALITY_ESTIMATION SQ_
     | SQ_ QUERY_OPTIMIZER_COMPATIBILITY_LEVEL_n SQ_
     | SQ_ QUERY_PLAN_PROFILE SQ_
+    | stringLiterals
     ;
 
 forClause
