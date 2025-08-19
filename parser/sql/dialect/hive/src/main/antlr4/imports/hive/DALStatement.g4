@@ -154,5 +154,5 @@ columnOptions
 
 columnOption
     : DOT_ identifier
-    | DOT_ SQ_ DOLLAR_ (ELEM_ | KEY_ | VALUE_) DOLLAR_ SQ_
+    | DOT_ string_
     ;

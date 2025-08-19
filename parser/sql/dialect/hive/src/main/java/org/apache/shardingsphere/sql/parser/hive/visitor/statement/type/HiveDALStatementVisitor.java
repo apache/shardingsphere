@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.hive.visitor.statement.type;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLikeContext;
@@ -41,10 +42,12 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTran
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowCompactionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DescribeDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DescribeConnectorContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DescribeTableContext;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -68,8 +71,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQL
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.column.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.hive.dal.describe.HiveDescribeDatabaseStatement;
-import org.apache.shardingsphere.sql.parser.statement.hive.dal.describe.HiveDescribeConnectorStatement;
+import org.apache.shardingsphere.sql.parser.statement.hive.dal.HiveDescribeStatement;
 
 /**
  * DAL statement visitor for Hive.
@@ -162,12 +164,17 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowIndex(final ShowIndexContext ctx) {
         FromDatabaseSegment fromDatabase = null;
         if (null != ctx.showFrom()) {
-            ASTNode showFromNode = visit(ctx.showFrom());
-            if (showFromNode instanceof DatabaseSegment) {
-                fromDatabase = new FromDatabaseSegment(ctx.showFrom().getStart().getStartIndex(), (DatabaseSegment) showFromNode);
-            }
+            fromDatabase = createFromDatabaseSegment(ctx.showFrom());
         }
         return new MySQLShowIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), fromDatabase);
+    }
+    
+    private FromDatabaseSegment createFromDatabaseSegment(final HiveStatementParser.ShowFromContext showFromContext) {
+        ASTNode showFromNode = visit(showFromContext);
+        if (showFromNode instanceof DatabaseSegment) {
+            return new FromDatabaseSegment(showFromContext.getStart().getStartIndex(), (DatabaseSegment) showFromNode);
+        }
+        return null;
     }
     
     @Override
@@ -178,10 +185,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
         }
         FromDatabaseSegment fromDatabase = null;
         if (null != ctx.showFrom()) {
-            ASTNode showFromNode = visit(ctx.showFrom());
-            if (showFromNode instanceof DatabaseSegment) {
-                fromDatabase = new FromDatabaseSegment(ctx.showFrom().getStart().getStartIndex(), (DatabaseSegment) showFromNode);
-            }
+            fromDatabase = createFromDatabaseSegment(ctx.showFrom());
         }
         ShowFilterSegment filter = null;
         if (null != ctx.showLike()) {
@@ -195,39 +199,49 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
         return new HiveShowFunctionsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowGrantedRolesAndPrivileges(final ShowGrantedRolesAndPrivilegesContext ctx) {
         return new MySQLShowGrantsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowLocks(final ShowLocksContext ctx) {
         return new HiveShowLocksStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowConf(final ShowConfContext ctx) {
         return new HiveShowConfStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowTransactions(final ShowTransactionsContext ctx) {
         return new HiveShowTransactionsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitShowCompactions(final ShowCompactionsContext ctx) {
         return new HiveShowCompactionsStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitDescribeDatabase(final DescribeDatabaseContext ctx) {
-        return new HiveDescribeDatabaseStatement(getDatabaseType());
+        return new HiveDescribeStatement(getDatabaseType());
     }
-
+    
     @Override
     public ASTNode visitDescribeConnector(final DescribeConnectorContext ctx) {
-        return new HiveDescribeConnectorStatement(getDatabaseType());
+        return new HiveDescribeStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDescribeTable(final DescribeTableContext ctx) {
+        SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+        ColumnSegment columnWildcard = null;
+        if (null != ctx.columnClause()) {
+            columnWildcard = (ColumnSegment) visit(ctx.columnClause().columnName());
+        }
+        return new MySQLDescribeStatement(getDatabaseType(), table, columnWildcard);
     }
 }

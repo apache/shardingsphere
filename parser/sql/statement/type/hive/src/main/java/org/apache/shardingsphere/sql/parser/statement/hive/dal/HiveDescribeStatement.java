@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.hive.dal.describe;
+package org.apache.shardingsphere.sql.parser.statement.hive.dal;
 
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Hive describe database statement.
+ * Hive describe statement.
  */
-public final class HiveDescribeDatabaseStatement extends DALStatement {
+public final class HiveDescribeStatement extends DALStatement {
     
-    public HiveDescribeDatabaseStatement(final DatabaseType databaseType) {
+    public HiveDescribeStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }
