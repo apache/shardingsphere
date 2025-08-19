@@ -110,8 +110,11 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private boolean containsAllTargets(final RangeShardingValue<Comparable<?>> shardingValue) {
-        return !shardingValue.getValueRange().hasUpperBound() || shardingValue.getValueRange().hasLowerBound()
-                && getBigInteger(shardingValue.getValueRange().upperEndpoint()).subtract(getBigInteger(shardingValue.getValueRange().lowerEndpoint())).intValue() >= shardingCount - 1;
+        if (!shardingValue.getValueRange().hasUpperBound() || !shardingValue.getValueRange().hasLowerBound()) {
+            return true;
+        }
+        return getBigInteger(shardingValue.getValueRange().upperEndpoint()).subtract(getBigInteger(shardingValue.getValueRange().lowerEndpoint()))
+                .compareTo(BigInteger.valueOf(shardingCount - 1)) >= 0;
     }
     
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
