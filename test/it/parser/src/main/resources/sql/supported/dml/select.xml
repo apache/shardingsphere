@@ -371,4 +371,5 @@
     <sql-case id="select_window_clause" value="SELECT user_id, ROW_NUMBER() OVER w AS 'row_number', RANK() OVER w AS 'rank', DENSE_RANK() OVER w AS 'dense_rank' FROM t_order WHERE order_id = ? WINDOW w AS (ORDER BY user_id)" db-types="SQLServer"/>
     <sql-case id="select_maxrecursion_hint" value="SELECT * FROM Person OPTION (MAXRECURSION 2);" db-types="SQLServer"/>
     <sql-case id="select_optimize_for_hint" value="SELECT * FROM Person OPTION ( OPTIMIZE FOR (@city_name = 'Seattle', @postal_code UNKNOWN) );" db-types="SQLServer"/>
+    <sql-case id="select_fast_hint" value="SELECT * FROM Person OPTION (HASH GROUP, FAST 10);" db-types="SQLServer"/>
 </sql-cases>
