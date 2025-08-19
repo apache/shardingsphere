@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.hive.visitor.statement.type;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.UseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowLikeContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowFromContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowConnectorsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ShowViewsContext;
@@ -169,7 +169,7 @@ public final class HiveDALStatementVisitor extends HiveStatementVisitor implemen
         return new MySQLShowIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), fromDatabase);
     }
     
-    private FromDatabaseSegment createFromDatabaseSegment(final HiveStatementParser.ShowFromContext showFromContext) {
+    private FromDatabaseSegment createFromDatabaseSegment(final ShowFromContext showFromContext) {
         ASTNode showFromNode = visit(showFromContext);
         if (showFromNode instanceof DatabaseSegment) {
             return new FromDatabaseSegment(showFromContext.getStart().getStartIndex(), (DatabaseSegment) showFromNode);
