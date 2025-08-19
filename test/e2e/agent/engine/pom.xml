@@ -64,11 +64,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin-stdlib.version}</version>
-        </dependency>
     </dependencies>
     
     <build>
