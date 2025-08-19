@@ -21,17 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
-import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Update SQL statement context.
@@ -39,43 +34,34 @@ import java.util.LinkedList;
 @Getter
 public final class UpdateStatementContext implements SQLStatementContext, WhereContextAvailable {
     
-    private final UpdateStatement sqlStatement;
-    
-    private final TablesContext tablesContext;
-    
-    private final Collection<WhereSegment> whereSegments;
-    
-    private final Collection<ColumnSegment> columnSegments;
-    
-    private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
+    private final UpdateStatementBaseContext baseContext;
     
     public UpdateStatementContext(final UpdateStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-        tablesContext = new TablesContext(getAllSimpleTableSegments());
-        whereSegments = createWhereSegments(sqlStatement);
-        columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
-        ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
-    }
-    
-    private Collection<WhereSegment> createWhereSegments(final UpdateStatement updateStatement) {
-        Collection<WhereSegment> result = new LinkedList<>();
-        updateStatement.getWhere().ifPresent(result::add);
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
-        TableExtractor tableExtractor = new TableExtractor();
-        tableExtractor.extractTablesFromUpdate(sqlStatement);
-        return tableExtractor.getRewriteTables();
+        baseContext = new UpdateStatementBaseContext(sqlStatement);
     }
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
-        return whereSegments;
+        return baseContext.getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
-        return columnSegments;
+        return baseContext.getColumnSegments();
+    }
+    
+    @Override
+    public Collection<BinaryOperationExpression> getJoinConditions() {
+        return baseContext.getJoinConditions();
+    }
+    
+    @Override
+    public UpdateStatement getSqlStatement() {
+        return baseContext.getSqlStatement();
+    }
+    
+    @Override
+    public TablesContext getTablesContext() {
+        return baseContext.getTablesContext();
     }
 }
