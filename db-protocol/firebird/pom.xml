@@ -32,6 +32,11 @@
             <artifactId>shardingsphere-db-protocol-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         
         <dependency>
             <groupId>org.firebirdsql.jdbc</groupId>
