@@ -133,10 +133,6 @@
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
         
-        <prometheus-simpleclient.version>0.11.0</prometheus-simpleclient.version>
-        <prometheus-jmx.version>0.16.1</prometheus-jmx.version>
-        <opentelemetry.version>1.41.0</opentelemetry.version>
-        <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
         <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
         <junit.version>5.13.4</junit.version>
