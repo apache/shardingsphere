@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.event;
+package org.apache.shardingsphere.proxy.frontend.netty;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+
+import java.nio.charset.Charset;
 
 /**
- * Write complete event.
+ * Channel attributes initializer.
  */
-public final class WriteCompleteEvent {
+public final class ChannelAttrInitializer extends ChannelInboundHandlerAdapter {
+    
+    @Override
+    public void channelActive(final ChannelHandlerContext ctx) {
+        ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).setIfAbsent(Charset.defaultCharset());
+        ctx.fireChannelActive();
+    }
 }

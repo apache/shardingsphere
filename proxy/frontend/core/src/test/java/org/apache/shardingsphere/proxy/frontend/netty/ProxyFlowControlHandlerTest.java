@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.netty;
+package org.apache.shardingsphere.proxy.frontend.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.embedded.EmbeddedChannel;
-import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
+import org.apache.shardingsphere.proxy.frontend.event.WriteCompleteEvent;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;

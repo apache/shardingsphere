@@ -49,9 +49,9 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLCo
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.proxy.frontend.netty.ChannelAttrInitializer;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -372,7 +372,7 @@ public final class MySQLBinlogClient {
                 } catch (final RuntimeException ex) {
                     // CHECKSTYLE:ON
                     log.error("Reconnect failed, reconnect times: {}, lastBinlogEvent: {}", reconnectTimes, JsonUtils.toJsonString(lastBinlogEvent.get()), ex);
-                    this.wait(1000L << reconnectTimes);
+                    wait(1000L << reconnectTimes);
                 }
             }
         }
