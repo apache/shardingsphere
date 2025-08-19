@@ -107,7 +107,6 @@
         
         <grpc.version>1.65.1</grpc.version>
         <protobuf.version>3.25.8</protobuf.version>
-        <okhttp.version>4.12.0</okhttp.version>
         
         <elasticjob.version>3.0.4</elasticjob.version>
         
@@ -132,8 +131,6 @@
         <jaybird.version>5.0.6.java8</jaybird.version>
         
         <hikari-cp.version>4.0.3</hikari-cp.version>
-        
-        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
         
         <junit.version>5.13.4</junit.version>
         <hamcrest.version>3.0</hamcrest.version>

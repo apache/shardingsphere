@@ -29,6 +29,8 @@
     <properties>
         <opentelemetry.version>1.41.0</opentelemetry.version>
         <opentelemetry-semconv.version>1.27.0-alpha</opentelemetry-semconv.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <kotlin-stdlib.version>1.9.10</kotlin-stdlib.version>
     </properties>
     
     <dependencyManagement>
