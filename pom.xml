@@ -32,8 +32,8 @@
     
     <modules>
         <module>infra</module>
+        <module>database</module>
         <module>parser</module>
-        <module>db-protocol</module>
         <module>mode</module>
         <module>kernel</module>
         

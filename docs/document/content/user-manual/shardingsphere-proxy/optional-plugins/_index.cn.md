@@ -13,7 +13,7 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`，集群模式配置信息持久化定义的 etcd 实现
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`，集群模式配置信息持久化定义的 zookeeper 实现
 - `org.apache.shardingsphere:shardingsphere-jdbc`， JDBC 模块
-- `org.apache.shardingsphere:shardingsphere-db-protocol-core`，数据库协议核心
+- `org.apache.shardingsphere:shardingsphere-database-protocol-core`，数据库协议核心
 - `org.apache.shardingsphere:shardingsphere-mysql-protocol`，数据库协议的 MySQL 实现
 - `org.apache.shardingsphere:shardingsphere-postgresql-protocol`，数据库协议的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-opengauss-protocol`，数据库协议的 OpenGauss 实现
