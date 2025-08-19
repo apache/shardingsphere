@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
+            <artifactId>shardingsphere-infra-database-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         
