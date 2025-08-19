@@ -91,7 +91,7 @@
 
     <describe sql-case-id="describe_array_element">
         <simple-table name="order_table" start-index="9" stop-index="19" />
-        <column-wild name="items" start-index="21" stop-index="25" />
+        <column-wild name="user_info" start-index="21" stop-index="29" />
     </describe>
 
     <describe sql-case-id="describe_map_key">

@@ -37,7 +37,7 @@
     <sql-case id="describe_formatted_table" value="DESCRIBE FORMATTED user_table;" db-types="Hive" />
     <sql-case id="describe_table_partition" value="DESCRIBE user_table PARTITION (region='Asia');" db-types="Hive" />
     <sql-case id="describe_struct_field" value="DESCRIBE profile_table user_info.name;" db-types="Hive" />
-    <sql-case id="describe_array_element" value="DESCRIBE order_table items.'$elem$';" db-types="Hive" />
+    <sql-case id="describe_array_element" value="DESCRIBE order_table user_info.'$elem$';" db-types="Hive" />
     <sql-case id="describe_map_key" value="DESCRIBE product_table attributes.'$key$';" db-types="Hive" />
     <sql-case id="describe_map_value" value="DESCRIBE event_log params.'$value$';" db-types="Hive" />
     <sql-case id="describe_nested_struct_in_array" value="DESCRIBE posts comments.'$elem$'.author;" db-types="Hive" />

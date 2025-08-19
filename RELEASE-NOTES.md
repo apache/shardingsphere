@@ -80,6 +80,7 @@
 1. SQL Parser: Support Hive SHOW INDEX & SHOW COLUMNS & SHOW FUNCTIONS statement parse - [#36284](https://github.com/apache/shardingsphere/pull/36284)
 1. SQL Parser: Support Hive Show Granted Roles and Privileges & SHOW LOCKS & SHOW CONF statement parse - [#36300](https://github.com/apache/shardingsphere/pull/36300)
 1. SQL Parser: Support Hive SHOW TRANSACTIONS & SHOW COMPACTIONS statement parse - [#36301](https://github.com/apache/shardingsphere/pull/36301)
+1. SQL Parser: Support Hive DESCRIBE statement parse - [#36350](https://github.com/apache/shardingsphere/pull/36350)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
 1. SQL Parser: Support SQL Server CHANGETABLE function parse - [#35920](https://github.com/apache/shardingsphere/pull/35920)
 1. SQL Parser: Support SQL Server AI_GENERATE_EMBEDDINGS function parse - [#35922](https://github.com/apache/shardingsphere/pull/35922)

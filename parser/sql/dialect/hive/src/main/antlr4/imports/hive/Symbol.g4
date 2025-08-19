@@ -61,4 +61,3 @@ ASSIGNMENT_:         ':=';
 JSON_SEPARATOR:      '->';
 JSON_UNQUOTED_SEPARATOR:      '->>';
 UL_:                 '_';
-DOLLAR_:             '$';

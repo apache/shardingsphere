@@ -232,7 +232,6 @@ identifierKeywordsUnambiguous
     | GET_MASTER_PUBLIC_KEY
     | GRANTS
     | GROUP_REPLICATION
-    | ITEMS
     | HASH
     | HISTOGRAM
     | HISTORY
