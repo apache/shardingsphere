@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
+package org.apache.shardingsphere.broadcast.rule.attribute;
 
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.UnregisterStorageUnitRuleAttribute;
 
 /**
- * Disabled read data sources filter.
+ * Broadcast unregister storage unit rule attribute.
  */
-public final class DisabledReadDataSourcesFilter implements ReadDataSourcesFilter {
+public final class BroadcastUnregisterStorageUnitRuleAttribute implements UnregisterStorageUnitRuleAttribute {
     
     @Override
-    public List<String> filter(final ReadwriteSplittingDataSourceGroupRule rule, final List<String> toBeFilteredReadDataSources) {
-        List<String> result = new LinkedList<>(toBeFilteredReadDataSources);
-        result.removeIf(rule.getDisabledDataSourceNames()::contains);
-        return result;
+    public boolean ignoreUsageCheck(final boolean ignoreSingleTables, final boolean ignoreBroadcastTables) {
+        return ignoreBroadcastTables;
     }
 }

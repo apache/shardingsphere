@@ -232,7 +232,7 @@ class IntervalShardingAlgorithmTest {
                 "SQL Date values do not have a time component.");
         assertThat(createAlgorithm("yyyy-MM-dd", "2021-06-01",
                 "2021-07-31", "yyyyMMdd", stepAmount, null)
-                        .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
+                .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
                 is(expectSize));
         final RangeShardingValue<Comparable<?>> shardingValueAsString = createShardingValue(
                 DateTimeFormatterFactory.getStandardFormatter().format(lower),
@@ -252,8 +252,8 @@ class IntervalShardingAlgorithmTest {
         }
         Collection<String> actualAsLocalDate = createAlgorithm("yyyy-MM-dd", "2021-06-01",
                 "2021-07-31", "yyyyMMdd", stepAmount, null)
-                        .doSharding(availableTargetNames,
-                                createShardingValue(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31)));
+                .doSharding(availableTargetNames,
+                        createShardingValue(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31)));
         assertThat(actualAsLocalDate.size(), is(24));
     }
     
@@ -283,7 +283,7 @@ class IntervalShardingAlgorithmTest {
         }
         Collection<String> actual = createAlgorithm("yyyy", "2000",
                 "2022", "yyyy", 2, "Years")
-                        .doSharding(availableTargetNames, createShardingValue(Year.of(2001), Year.of(2013)));
+                .doSharding(availableTargetNames, createShardingValue(Year.of(2001), Year.of(2013)));
         assertThat(actual.size(), is(7));
     }
     
@@ -297,8 +297,8 @@ class IntervalShardingAlgorithmTest {
         }
         Collection<String> actualAsYearMonth = createAlgorithm("yyyy-MM", "2016-01",
                 "2021-12", "yyyyMM", 2, "Years")
-                        .doSharding(availableTargetNames,
-                                createShardingValue(YearMonth.of(2016, 1), YearMonth.of(2020, 1)));
+                .doSharding(availableTargetNames,
+                        createShardingValue(YearMonth.of(2016, 1), YearMonth.of(2020, 1)));
         assertThat(actualAsYearMonth.size(), is(3));
     }
     

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
+import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastUnregisterStorageUnitRuleAttribute;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -56,7 +57,7 @@ public final class BroadcastRule implements DatabaseRule {
         dataSourceNames = new CaseInsensitiveSet<>(aggregatedDataSources.keySet());
         tables = new CaseInsensitiveSet<>(ruleConfig.getTables());
         attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables),
-                new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
+                new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources), new BroadcastUnregisterStorageUnitRuleAttribute());
     }
     
     /**

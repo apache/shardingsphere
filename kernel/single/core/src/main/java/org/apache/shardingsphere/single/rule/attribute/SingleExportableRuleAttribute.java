@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.executor.rdl.resource.fixture;
+package org.apache.shardingsphere.single.rule.attribute;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.handler.fixture.DistSQLHandlerFixtureRule;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.attribute.exportable.ExportableRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
 
-public final class FixtureStorageUnitDefinitionProcessor implements StorageUnitDefinitionProcessor<DistSQLHandlerFixtureRule> {
+import java.util.Collections;
+import java.util.Map;
+
+/**
+ * Single exportable rule attribute.
+ */
+@RequiredArgsConstructor
+public final class SingleExportableRuleAttribute implements ExportableRuleAttribute {
+    
+    private final SingleTableMapperRuleAttribute tableMapperRuleAttribute;
     
     @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreSingleTables();
-    }
-    
-    @Override
-    public Class<DistSQLHandlerFixtureRule> getRuleClass() {
-        return DistSQLHandlerFixtureRule.class;
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableMapperRuleAttribute.getLogicTableNames());
     }
 }

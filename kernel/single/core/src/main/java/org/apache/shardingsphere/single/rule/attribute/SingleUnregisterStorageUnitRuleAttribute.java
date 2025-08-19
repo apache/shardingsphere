@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.broadcast.distsql.handler.update;
+package org.apache.shardingsphere.single.rule.attribute;
 
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.infra.rule.attribute.resoure.UnregisterStorageUnitRuleAttribute;
 
 /**
- * Storage unit definition processor for broadcast rule.
+ * Single unregister storage unit rule attribute.
  */
-public final class StorageUnitBroadcastDefinitionProcessor implements StorageUnitDefinitionProcessor<BroadcastRule> {
+public final class SingleUnregisterStorageUnitRuleAttribute implements UnregisterStorageUnitRuleAttribute {
     
     @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreBroadcastTables();
-    }
-    
-    @Override
-    public Class<BroadcastRule> getRuleClass() {
-        return BroadcastRule.class;
+    public boolean ignoreUsageCheck(final boolean ignoreSingleTables, final boolean ignoreBroadcastTables) {
+        return ignoreSingleTables;
     }
 }

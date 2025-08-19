@@ -21,21 +21,21 @@ import org.apache.shardingsphere.db.protocol.firebird.packet.command.query.trans
 import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
 import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +70,7 @@ class FirebirdStartTransactionCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         DatabasePacket first = actual.iterator().next();
         assertThat(first, instanceOf(FirebirdGenericResponsePacket.class));
-        assertEquals(1, ((FirebirdGenericResponsePacket) first).getHandle());
+        assertThat(((FirebirdGenericResponsePacket) first).getHandle(), is(1));
         verify(connectionSession).setAutoCommit(true);
         verify(connectionSession).setReadOnly(true);
         verify(connectionSession).setIsolationLevel(TransactionIsolationLevel.SERIALIZABLE);

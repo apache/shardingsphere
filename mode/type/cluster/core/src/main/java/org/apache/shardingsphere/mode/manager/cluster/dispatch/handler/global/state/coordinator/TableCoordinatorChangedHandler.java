@@ -80,7 +80,7 @@ public final class TableCoordinatorChangedHandler implements GlobalDataChangedEv
                         final CoordinatorType type) {
         switch (type) {
             case CREATE:
-                handleCreatedOrAltered(contextManager, databaseName, schemaName, tableName, tableContent);
+                handleCreatedOrAltered(contextManager, databaseName, schemaName, tableContent);
                 break;
             case DROP:
                 handleDropped(contextManager, databaseName, schemaName, tableName);
@@ -90,7 +90,7 @@ public final class TableCoordinatorChangedHandler implements GlobalDataChangedEv
         }
     }
     
-    private void handleCreatedOrAltered(final ContextManager contextManager, final String databaseName, final String schemaName, final String tableName, final String tableContent) {
+    private void handleCreatedOrAltered(final ContextManager contextManager, final String databaseName, final String schemaName, final String tableContent) {
         ShardingSphereTable alteredTable = swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
         contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, alteredTable);
         new StatisticsRefreshEngine(contextManager).asyncRefresh();

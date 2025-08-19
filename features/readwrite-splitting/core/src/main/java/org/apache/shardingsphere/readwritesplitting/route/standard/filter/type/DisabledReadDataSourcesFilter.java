@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.distsql.handler.update;
+package org.apache.shardingsphere.readwritesplitting.route.standard.filter.type;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.resource.StorageUnitDefinitionProcessor;
-import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
-import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.readwritesplitting.route.standard.filter.ReadDataSourcesFilter;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Storage unit definition processor for single rule.
+ * Disabled read data sources filter.
  */
-public final class StorageUnitSingleDefinitionProcessor implements StorageUnitDefinitionProcessor<SingleRule> {
+public final class DisabledReadDataSourcesFilter implements ReadDataSourcesFilter {
     
     @Override
-    public boolean ignoreUsageCheckOnUnregister(final UnregisterStorageUnitStatement sqlStatement) {
-        return sqlStatement.isIgnoreSingleTables();
-    }
-    
-    @Override
-    public Class<SingleRule> getRuleClass() {
-        return SingleRule.class;
+    public List<String> filter(final ReadwriteSplittingDataSourceGroupRule rule, final List<String> toBeFilteredReadDataSources) {
+        List<String> result = new LinkedList<>(toBeFilteredReadDataSources);
+        result.removeIf(rule.getDisabledDataSourceNames()::contains);
+        return result;
     }
 }

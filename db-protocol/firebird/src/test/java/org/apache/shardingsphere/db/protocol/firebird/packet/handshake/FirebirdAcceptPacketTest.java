@@ -30,12 +30,11 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,18 +53,18 @@ class FirebirdAcceptPacketTest {
         when(byteBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
         ByteBuf buf2 = mock(ByteBuf.class);
         when(buf2.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 2);
-        List<FirebirdProtocol> list = new ArrayList<>();
+        List<FirebirdProtocol> list = new LinkedList<>();
         list.add(new FirebirdProtocol(byteBuf));
         list.add(new FirebirdProtocol(buf2));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
-        assertEquals(FirebirdCommandPacketType.ACCEPT, packet.getOpCode());
+        assertThat(packet.getOpCode(), is(FirebirdCommandPacketType.ACCEPT));
         assertThat(packet.getProtocol().getWeight(), is(2));
     }
     
     @Test
     void assertWriteWithAcceptDataPacket() {
         when(byteBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
-        List<FirebirdProtocol> list = new ArrayList<>();
+        List<FirebirdProtocol> list = new LinkedList<>();
         list.add(new FirebirdProtocol(byteBuf));
         FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
         packet.setAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");

@@ -148,8 +148,7 @@ class InsertStatementContextTest {
         InsertStatementContext actual = createInsertStatementContext(Collections.singletonList("param"), insertStatement);
         actual.setUpParameters(Collections.singletonList("param"));
         assertThat(actual.getInsertSelectContext().getSelectStatementContext().getSqlStatement().getParameterCount(), is(1));
-        assertThat(actual.getGroupedParameters().size(), is(1));
-        assertThat(actual.getGroupedParameters().iterator().next(), is(Collections.singletonList("param")));
+        assertThat(actual.getGroupedParameters().size(), is(0));
     }
     
     @Test

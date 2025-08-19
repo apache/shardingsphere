@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import java.util.Optional;
 /**
  * Sharding diialect DAL result merger.
  */
+@SingletonSPI
 public interface DialectShardingDALResultMerger extends DatabaseTypedSPI {
     
     /**

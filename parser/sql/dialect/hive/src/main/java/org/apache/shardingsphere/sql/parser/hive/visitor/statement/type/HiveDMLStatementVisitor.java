@@ -117,11 +117,23 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WhereCla
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertDataIntoTablesFromQueriesContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.StandardSyntaxContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MultipleInsertsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionInsertsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveMultipleInsertsContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveInsertStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertIntoSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -197,6 +209,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -857,6 +870,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
+        if (null != ctx.insertDataIntoTablesFromQueries()) {
+            return visit(ctx.insertDataIntoTablesFromQueries());
+        }
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
             result = (InsertStatement) visit(ctx.insertValuesClause());
@@ -875,6 +891,116 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     }
     
     @Override
+    public ASTNode visitInsertDataIntoTablesFromQueries(final InsertDataIntoTablesFromQueriesContext ctx) {
+        if (null != ctx.standardSyntax()) {
+            return visit(ctx.standardSyntax());
+        }
+        if (null != ctx.multipleInserts()) {
+            return visit(ctx.multipleInserts());
+        }
+        if (null != ctx.dynamicPartitionInserts()) {
+            return visit(ctx.dynamicPartitionInserts());
+        }
+        throw new IllegalStateException("InsertDataIntoTablesFromQueriesContext must have standardSyntax, multipleInserts or dynamicPartitionInserts.");
+    }
+    
+    @Override
+    public ASTNode visitStandardSyntax(final StandardSyntaxContext ctx) {
+        return createHiveInsertStatement(ctx.tableName(), ctx.select(), ctx.start.getStartIndex());
+    }
+    
+    @Override
+    public ASTNode visitMultipleInserts(final MultipleInsertsContext ctx) {
+        TableSegment sourceTable = null;
+        if (null != ctx.fromClause()) {
+            sourceTable = (TableSegment) visit(ctx.fromClause());
+        }
+        return visitHiveMultipleInserts(ctx.hiveMultipleInserts(), sourceTable);
+    }
+    
+    @Override
+    public ASTNode visitDynamicPartitionInserts(final DynamicPartitionInsertsContext ctx) {
+        return createHiveInsertStatement(ctx.tableName(), ctx.select(), ctx.start.getStartIndex());
+    }
+    
+    @Override
+    public ASTNode visitHiveMultipleInserts(final HiveMultipleInsertsContext ctx) {
+        return visitHiveMultipleInserts(ctx, null);
+    }
+    
+    private ASTNode visitHiveMultipleInserts(final HiveMultipleInsertsContext ctx, final TableSegment sourceTable) {
+        List<HiveInsertStatementContext> insertStatements = ctx.hiveInsertStatement();
+        if (1 == insertStatements.size()) {
+            InsertStatement single = (InsertStatement) visit(insertStatements.get(0));
+            if (null != sourceTable) {
+                single.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
+            }
+            single.addParameterMarkers(getParameterMarkerSegments());
+            return single;
+        }
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setMultiTableInsertType(MultiTableInsertType.ALL);
+        MultiTableInsertIntoSegment multiTableInsertInto = new MultiTableInsertIntoSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (HiveInsertStatementContext each : insertStatements) {
+            InsertStatement insertStmt = (InsertStatement) visit(each);
+            if (null != sourceTable) {
+                insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
+            }
+            insertStmt.addParameterMarkers(getParameterMarkerSegments());
+            multiTableInsertInto.getInsertStatements().add(insertStmt);
+        }
+        result.setMultiTableInsertInto(multiTableInsertInto);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    private void setFromForSelect(final SubquerySegment subquery, final TableSegment sourceTable) {
+        Optional.ofNullable(subquery.getSelect())
+                .ifPresent(selectStmt -> selectStmt.setFrom(sourceTable));
+    }
+    
+    private InsertStatement createHiveInsertStatement(final TableNameContext tableName, final SelectContext select, final int startIndex) {
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(tableName));
+        result.setInsertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList()));
+        result.setInsertSelect(createInsertSelectSegment(select));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitHiveInsertStatement(final HiveInsertStatementContext ctx) {
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex(), Collections.emptyList()));
+        if (null != ctx.select()) {
+            result.setInsertSelect(createInsertSelectSegment(ctx.select()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDynamicPartitionClause(final DynamicPartitionClauseContext ctx) {
+        return new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue("partition"));
+    }
+    
+    @Override
+    public ASTNode visitDynamicPartitionKey(final DynamicPartitionKeyContext ctx) {
+        return new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
+    }
+    
+    private SubquerySegment createInsertSelectSegment(final SelectContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx);
+        return new SubquerySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), selectStatement, getOriginalText(ctx));
+    }
+    
+    private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
+    }
+    
+    @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         InsertStatement result = new InsertStatement(getDatabaseType());
         if (null != ctx.LP_()) {
@@ -888,11 +1014,6 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         result.setInsertSelect(createInsertSelectSegment(ctx));
         return result;
-    }
-    
-    private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
-        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
-        return new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
     }
     
     @Override

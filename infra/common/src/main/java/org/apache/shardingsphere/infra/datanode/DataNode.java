@@ -129,10 +129,6 @@ public final class DataNode {
         return tier == segments.size();
     }
     
-    private boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
-        return isValidDataNode(actualDataNodes, 3);
-    }
-    
     /**
      * Validates the data node format based on its structure.
      *

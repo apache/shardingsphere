@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.single.rule;
+package org.apache.shardingsphere.infra.rule.attribute.resoure;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.attribute.exportable.ExportableRuleAttribute;
-import org.apache.shardingsphere.infra.rule.attribute.exportable.constant.ExportableConstants;
-
-import java.util.Collections;
-import java.util.Map;
+import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 
 /**
- * Single exportable rule attribute.
+ * Unregister storage unit rule attribute.
  */
-@RequiredArgsConstructor
-public final class SingleExportableRuleAttribute implements ExportableRuleAttribute {
+public interface UnregisterStorageUnitRuleAttribute extends RuleAttribute {
     
-    private final SingleTableMapperRuleAttribute tableMapperRuleAttribute;
-    
-    @Override
-    public Map<String, Object> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableMapperRuleAttribute.getLogicTableNames());
-    }
+    /**
+     * Whether to ignore rule usage checking when unregister storage unit.
+     *
+     * @param ignoreSingleTables ignore single tables
+     * @param ignoreBroadcastTables ignore broadcast tables
+     * @return ignored or not
+     */
+    boolean ignoreUsageCheck(boolean ignoreSingleTables, boolean ignoreBroadcastTables);
 }

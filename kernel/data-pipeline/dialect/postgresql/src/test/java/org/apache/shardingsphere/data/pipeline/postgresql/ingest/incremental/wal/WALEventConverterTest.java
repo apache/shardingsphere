@@ -64,7 +64,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WALEventConverterTest {
@@ -152,7 +151,7 @@ class WALEventConverterTest {
         BeginTXEvent beginTXEvent = new BeginTXEvent(100L, null);
         beginTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(beginTXEvent);
-        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(record, instanceOf(PlaceholderRecord.class));
         assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
@@ -161,7 +160,7 @@ class WALEventConverterTest {
         CommitTXEvent commitTXEvent = new CommitTXEvent(1L, 3468L);
         commitTXEvent.setLogSequenceNumber(new PostgreSQLLogSequenceNumber(logSequenceNumber));
         Record record = walEventConverter.convert(commitTXEvent);
-        assertInstanceOf(PlaceholderRecord.class, record);
+        assertThat(record, instanceOf(PlaceholderRecord.class));
         assertThat(((WALPosition) record.getPosition()).getLogSequenceNumber().asString(), is(logSequenceNumber.asString()));
     }
     
@@ -194,7 +193,7 @@ class WALEventConverterTest {
     
     @Test
     void assertUnknownTable() {
-        assertInstanceOf(PlaceholderRecord.class, walEventConverter.convert(mockUnknownTableEvent()));
+        assertThat(walEventConverter.convert(mockUnknownTableEvent()), instanceOf(PlaceholderRecord.class));
     }
     
     @Test

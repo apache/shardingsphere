@@ -330,7 +330,7 @@ queryHint
     | (CONCAT | HASH | MERGE) UNION
     | (LOOP | MERGE | HASH) JOIN
     | EXPAND VIEWS
-    | FAST INT_NUM_
+    | FAST NUMBER_
     | FORCE ORDER
     | (FORCE | DISABLE) EXTERNALPUSHDOWN
     | (FORCE | DISABLE) SCALEOUTEXECUTION
@@ -340,9 +340,9 @@ queryHint
     | MAX_GRANT_PERCENT EQ_ DECIMAL_NUM_
     | MIN_GRANT_PERCENT EQ_ DECIMAL_NUM_
     | MAXDOP INT_NUM_
-    | MAXRECURSION INT_NUM_
+    | MAXRECURSION NUMBER_
     | NO_PERFORMANCE_SPOOL
-    | OPTIMIZE FOR LP_ variableName (UNKNOWN | EQ_ literals)* RP_
+    | OPTIMIZE FOR LP_ optimizeForParameter (COMMA_ optimizeForParameter)* RP_
     | OPTIMIZE FOR UNKNOWN
     | PARAMETERIZATION (SIMPLE | FORCED)
     | QUERYTRACEON INT_NUM_
@@ -351,6 +351,10 @@ queryHint
     | USE HINT LP_ useHitName* RP_
     | USE PLAN NCHAR_TEXT
     | LABEL EQ_ stringLiterals
+    ;
+
+optimizeForParameter
+    : variableName (UNKNOWN | EQ_ literals)
     ;
 
 useHitName
