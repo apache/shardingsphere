@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.netty;
+package org.apache.shardingsphere.proxy.frontend.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;

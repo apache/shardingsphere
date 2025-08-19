@@ -25,9 +25,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.embedded.EmbeddedChannel;
-import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.netty.ProxyFlowControlHandler;
+import org.apache.shardingsphere.proxy.frontend.event.WriteCompleteEvent;
+import org.apache.shardingsphere.proxy.frontend.netty.ProxyFlowControlHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
