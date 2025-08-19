@@ -21,6 +21,7 @@ import BaseRule;
 
 insert
     : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
+    | insertDataIntoTablesFromQueries
     ;
 
 insertSpecification
@@ -345,4 +346,44 @@ partitionSpec
 
 partitionKeyValue
     : identifier EQ_ (string_ | numberLiterals)
+    ;
+
+insertDataIntoTablesFromQueries
+    : standardSyntax
+    | multipleInserts
+    | dynamicPartitionInserts
+    ;
+
+standardSyntax
+    : INSERT OVERWRITE TABLE tableName partitionClause? select
+    | INSERT INTO TABLE tableName partitionSpec? select
+    ;
+
+multipleInserts
+    : fromClause hiveMultipleInserts
+    ;
+
+dynamicPartitionInserts
+    : INSERT (OVERWRITE | INTO) TABLE tableName dynamicPartitionClause select
+    ;
+
+hiveMultipleInserts
+    : hiveInsertStatement (hiveInsertStatement)*
+    ;
+
+hiveInsertStatement
+    : INSERT OVERWRITE TABLE tableName partitionClause? select
+    | INSERT INTO TABLE tableName partitionSpec? select
+    ;
+
+dynamicPartitionClause
+    : PARTITION LP_ dynamicPartitionKey (COMMA_ dynamicPartitionKey)* RP_
+    ;
+
+dynamicPartitionKey
+    : identifier (EQ_ (string_ | numberLiterals))?
+    ;
+
+partitionClause
+    : partitionSpec ifNotExists?
     ;
