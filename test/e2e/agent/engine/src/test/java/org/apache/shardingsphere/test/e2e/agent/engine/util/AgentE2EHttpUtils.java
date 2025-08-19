@@ -17,36 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.agent.engine.util;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.stream.Collectors;
 
 /**
  * Agent E2E HTTP utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AgentE2EHttpUtils {
-    
-    private static final AgentE2EHttpUtils OK_HTTP_UTILS = new AgentE2EHttpUtils();
-    
-    private final OkHttpClient client;
-    
-    private AgentE2EHttpUtils() {
-        client = new OkHttpClient.Builder().connectTimeout(10L, TimeUnit.SECONDS).readTimeout(10L, TimeUnit.SECONDS).writeTimeout(10L, TimeUnit.SECONDS).build();
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return instance
-     */
-    public static AgentE2EHttpUtils getInstance() {
-        return OK_HTTP_UTILS;
-    }
     
     /**
      * Query response.
@@ -55,11 +40,23 @@ public final class AgentE2EHttpUtils {
      * @return response
      * @throws IOException IO exception
      */
-    public String query(final String url) throws IOException {
-        Request request = new Request.Builder().url(url).build();
-        try (Response response = client.newCall(request).execute()) {
-            assertNotNull(response.body());
-            return response.body().string();
+    public static String query(final String url) throws IOException {
+        HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
+        try {
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setConnectTimeout(10 * 1000);
+            if (200 == urlConnection.getResponseCode()) {
+                try (
+                        InputStreamReader inputStreamReader = new InputStreamReader(urlConnection.getInputStream());
+                        BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                    return bufferedReader.lines().collect(Collectors.joining());
+                }
+            }
+        } finally {
+            if (null != urlConnection) {
+                urlConnection.disconnect();
+            }
         }
+        return "";
     }
 }

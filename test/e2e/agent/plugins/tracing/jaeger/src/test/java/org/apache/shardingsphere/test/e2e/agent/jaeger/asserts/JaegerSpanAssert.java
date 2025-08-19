@@ -79,6 +79,6 @@ public final class JaegerSpanAssert {
     
     @SneakyThrows(IOException.class)
     private static Collection<JaegerTraceResponseData> queryTraceResponses(final String queryURL) {
-        return JsonUtils.fromJsonString(AgentE2EHttpUtils.getInstance().query(queryURL), JaegerTraceResponse.class).getData();
+        return JsonUtils.fromJsonString(AgentE2EHttpUtils.query(queryURL), JaegerTraceResponse.class).getData();
     }
 }
