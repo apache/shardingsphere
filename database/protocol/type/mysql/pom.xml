@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-protocol</artifactId>
+        <artifactId>shardingsphere-database-protocol-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-firebird-protocol</artifactId>
+    <artifactId>shardingsphere-mysql-protocol</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -32,16 +32,23 @@
             <artifactId>shardingsphere-database-protocol-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-exception-dialect-core</artifactId>
+            <artifactId>shardingsphere-mysql-dialect-exception</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
-            <groupId>org.firebirdsql.jdbc</groupId>
-            <artifactId>jaybird</artifactId>
-            <scope>compile</scope>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-proxy-frontend-core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

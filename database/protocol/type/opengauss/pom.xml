@@ -20,16 +20,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-protocol</artifactId>
+        <artifactId>shardingsphere-database-protocol-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-postgresql-protocol</artifactId>
+    <artifactId>shardingsphere-opengauss-protocol</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-protocol-core</artifactId>
+            <artifactId>shardingsphere-postgresql-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -39,14 +39,14 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-postgresql</artifactId>
+            <artifactId>shardingsphere-infra-database-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>compile</scope>
+            <groupId>org.opengauss</groupId>
+            <artifactId>opengauss-jdbc</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -20,15 +20,33 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database</artifactId>
+        <artifactId>shardingsphere-database-protocol-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-database-protocol</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-postgresql-protocol</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>core</module>
-        <module>type</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-database-protocol-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-postgresql-dialect-exception</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-database-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>
