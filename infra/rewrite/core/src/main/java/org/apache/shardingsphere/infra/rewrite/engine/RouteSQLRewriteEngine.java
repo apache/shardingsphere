@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilde
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.GroupedParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.RouteSQLBuilder;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.ParameterFilterable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -40,14 +42,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Route SQL rewrite engine.
@@ -139,11 +136,53 @@ public final class RouteSQLRewriteEngine {
         }
         ParameterBuilder parameterBuilder = sqlRewriteContext.getParameterBuilder();
         if (parameterBuilder instanceof StandardParameterBuilder) {
-            return parameterBuilder.getParameters();
+            return filterParametersIfNeeded(sqlRewriteContext, parameterBuilder.getParameters(), routeUnit);
         }
         return routeContext.getOriginalDataNodes().isEmpty()
                 ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
                 : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
+    }
+
+    private List<Object> filterParametersIfNeeded(final SQLRewriteContext sqlRewriteContext,
+                                                  final List<Object> originalParameters,
+                                                  final RouteUnit routeUnit) {
+
+        List<ParameterFilterable> filterableTokens = findParameterFilterableTokens(sqlRewriteContext.getSqlTokens());
+
+        if (filterableTokens.isEmpty()) {
+            return originalParameters;
+        }
+
+        return applyParameterFiltering(originalParameters, filterableTokens, routeUnit);
+    }
+
+    private List<ParameterFilterable> findParameterFilterableTokens(final List<SQLToken> sqlTokens) {
+        return sqlTokens.stream()
+                .filter(token -> token instanceof ParameterFilterable)
+                .map(token -> (ParameterFilterable) token)
+                .filter(ParameterFilterable::isParameterFilterable)
+                .collect(Collectors.toList());
+    }
+
+    private List<Object> applyParameterFiltering(final List<Object> originalParameters,
+                                                 final List<ParameterFilterable> filterableTokens,
+                                                 final RouteUnit routeUnit) {
+
+        Set<Integer> allRemovedIndices = new TreeSet<>(Collections.reverseOrder());
+
+        for (ParameterFilterable filterable : filterableTokens) {
+            Set<Integer> removedIndices = filterable.getRemovedParameterIndices(routeUnit);
+            allRemovedIndices.addAll(removedIndices);
+        }
+
+        List<Object> result = new ArrayList<>(originalParameters);
+        for (Integer index : allRemovedIndices) {
+            if (index >= 0 && index < result.size()) {
+                result.remove(index.intValue());
+            }
+        }
+
+        return result;
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
