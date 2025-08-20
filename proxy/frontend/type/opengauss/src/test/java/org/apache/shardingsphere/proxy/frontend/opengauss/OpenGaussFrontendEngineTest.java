@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss;
 
-import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.OpenGaussCommandExecuteEngine;

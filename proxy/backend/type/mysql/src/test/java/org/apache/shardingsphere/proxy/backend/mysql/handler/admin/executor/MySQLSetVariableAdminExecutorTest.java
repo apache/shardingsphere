@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.mysql.exception.ErrorGlobalVariableException;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownSystemVariableException;

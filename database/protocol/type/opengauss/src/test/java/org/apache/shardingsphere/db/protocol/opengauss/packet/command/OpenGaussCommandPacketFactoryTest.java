@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketFactory;
+import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;

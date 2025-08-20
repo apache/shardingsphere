@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
+import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;

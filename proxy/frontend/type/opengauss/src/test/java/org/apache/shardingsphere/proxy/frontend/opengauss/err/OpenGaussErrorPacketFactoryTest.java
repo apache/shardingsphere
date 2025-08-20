@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss.err;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
+import org.apache.shardingsphere.database.protocol.opengauss.packet.command.generic.OpenGaussErrorResponsePacket;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.opengauss.util.PSQLException;

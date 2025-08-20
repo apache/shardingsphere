@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.impl;
 
-import org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.firebird.packet.handshake.FirebirdSRPAuthenticationData;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
+import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdSRPAuthenticationData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticator;
 import org.firebirdsql.util.ByteArrayHelper;

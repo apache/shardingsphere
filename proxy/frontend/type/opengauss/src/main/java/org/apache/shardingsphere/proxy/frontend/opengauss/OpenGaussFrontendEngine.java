@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
