@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingC
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingCursorTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingDistinctProjectionPrefixTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingFetchDirectionTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInPredicateTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingIndexTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOffsetTokenGenerator;
@@ -78,6 +79,9 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
         addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingFetchDirectionTokenGenerator());
+        
+        // Add the IN predicate to optimize the Token generator
+        addSQLTokenGenerator(result, new ShardingInPredicateTokenGenerator(rule));
         return result;
     }
     
