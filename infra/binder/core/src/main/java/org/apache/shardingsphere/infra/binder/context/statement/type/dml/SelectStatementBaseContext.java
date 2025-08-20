@@ -107,14 +107,13 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     
     private boolean needAggregateRewrite;
     
-    public SelectStatementBaseContext(final SelectStatement sqlStatement,
-                                      final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
+    public SelectStatementBaseContext(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
         this.sqlStatement = sqlStatement;
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
         ExpressionExtractor.extractJoinConditions(joinConditions, whereSegments);
-        subqueryContexts = createSubqueryContexts(params, metaData, currentDatabaseName, tableSegments);
+        subqueryContexts = createSubqueryContexts(metaData, currentDatabaseName, tableSegments);
         tablesContext = new TablesContext(tableSegments, subqueryContexts);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine(sqlStatement.getDatabaseType()).createOrderBy(sqlStatement, groupByContext);
@@ -181,12 +180,11 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
         return database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final List<Object> params, final ShardingSphereMetaData metaData,
-                                                                        final String currentDatabaseName, final Collection<TableSegment> tableSegments) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> tableSegments) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractor.extractSubquerySegments(sqlStatement, false);
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1F);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(each.getSelect(), params, metaData, currentDatabaseName, tableSegments);
+            SelectStatementContext subqueryContext = new SelectStatementContext(each.getSelect(), metaData, currentDatabaseName, tableSegments);
             each.getSelect().getSubqueryType().ifPresent(subqueryContext::setSubqueryType);
             result.put(each.getStartIndex(), subqueryContext);
         }

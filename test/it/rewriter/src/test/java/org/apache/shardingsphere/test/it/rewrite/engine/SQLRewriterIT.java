@@ -140,9 +140,9 @@ public abstract class SQLRewriterIT {
     
     private SQLStatementContext bind(final SQLRewriteEngineTestParameters testParams, final ShardingSphereMetaData metaData, final String databaseName,
                                      final HintValueContext hintValueContext, final SQLStatement sqlStatement, final SQLParserEngine sqlParserEngine) {
-        SQLStatementContext result = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
+        SQLStatementContext result = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement);
         if (result instanceof ParameterAware) {
-            ((ParameterAware) result).setUpParameters(testParams.getInputParameters());
+            ((ParameterAware) result).bindParameters(testParams.getInputParameters());
         }
         if (result instanceof CursorHeldSQLStatementContext) {
             ((CursorHeldSQLStatementContext) result).setCursorStatementContext(createCursorDefinition(databaseName, metaData, sqlParserEngine));
@@ -152,7 +152,7 @@ public abstract class SQLRewriterIT {
     
     private CursorStatementContext createCursorDefinition(final String schemaName, final ShardingSphereMetaData metaData, final SQLParserEngine sqlParserEngine) {
         SQLStatement sqlStatement = sqlParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false);
-        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement, Collections.emptyList());
+        return (CursorStatementContext) new SQLBindEngine(metaData, schemaName, new HintValueContext()).bind(sqlStatement);
     }
     
     private ConnectionContext createConnectionContext(final String databaseName) {

@@ -89,7 +89,7 @@ public final class Portal {
         String databaseName = databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(params);
+            ((ParameterAware) sqlStatementContext).bindParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getContextManager().getDatabase(databaseName).getProtocolType();
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(),

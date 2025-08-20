@@ -107,15 +107,19 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext createSQLStatementContext(final List<Object> params, final HintValueContext hintValueContext) {
-        return new SQLBindEngine(
-                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement(), params);
+        SQLStatementContext result =
+                new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), hintValueContext).bind(preparedStatement.getSqlStatementContext().getSqlStatement());
+        if (result instanceof ParameterAware) {
+            ((ParameterAware) result).bindParameters(params);
+        }
+        return result;
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         while (paramSetsIterator.hasNext()) {
             List<Object> eachGroupOfParam = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
-                ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParam);
+                ((ParameterAware) sqlStatementContext).bindParameters(eachGroupOfParam);
             }
             ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam, hintValueContext));
             for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {

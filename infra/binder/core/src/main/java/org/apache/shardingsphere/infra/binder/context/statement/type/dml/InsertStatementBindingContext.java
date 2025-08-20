@@ -87,7 +87,8 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
             return Optional.empty();
         }
         SubquerySegment insertSelectSegment = baseContext.getSqlStatement().getInsertSelect().get();
-        SelectStatementContext selectStatementContext = new SelectStatementContext(insertSelectSegment.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(insertSelectSegment.getSelect(), metaData, currentDatabaseName, Collections.emptyList());
+        selectStatementContext.bindParameters(params);
         selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
         setCombineSelectSubqueryType(selectStatementContext);
         setProjectionSelectSubqueryType(selectStatementContext);
