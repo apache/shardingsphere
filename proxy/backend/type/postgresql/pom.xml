@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-postgresql-protocol</artifactId>
+            <artifactId>shardingsphere-protocol-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

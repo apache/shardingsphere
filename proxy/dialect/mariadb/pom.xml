@@ -59,7 +59,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mysql-protocol</artifactId>
+            <artifactId>shardingsphere-protocol-mysql</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

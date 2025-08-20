@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-firebird-protocol</artifactId>
+            <artifactId>shardingsphere-protocol-firebird</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

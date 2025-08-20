@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-opengauss-protocol</artifactId>
+            <artifactId>shardingsphere-protocol-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
