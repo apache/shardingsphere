@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
+package org.apache.shardingsphere.database.protocol.opengauss.packet.command.packet.command;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketFactory;

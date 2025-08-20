@@ -2251,49 +2251,49 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"
       },
-      "type": "org.apache.shardingsphere.db.protocol.codec.PacketCodec"
+      "type": "org.apache.shardingsphere.database.protocol.codec.PacketCodec"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"
+        "typeReached": "org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo"
       },
-      "type": "org.apache.shardingsphere.db.protocol.firebird.constant.FirebirdProtocolDefaultVersionProvider"
+      "type": "org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdProtocolDefaultVersionProvider"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"
+        "typeReached": "org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo"
       },
-      "type": "org.apache.shardingsphere.db.protocol.mysql.constant.MySQLProtocolDefaultVersionProvider"
+      "type": "org.apache.shardingsphere.database.protocol.mysql.constant.MySQLProtocolDefaultVersionProvider"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.MySQLFrontendEngine"
       },
-      "type": "org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler"
+      "type": "org.apache.shardingsphere.database.protocol.mysql.netty.MySQLSequenceIdInboundHandler"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"
       },
-      "type": "org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer"
+      "type": "org.apache.shardingsphere.database.protocol.netty.ChannelAttrInitializer"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer"
       },
-      "type": "org.apache.shardingsphere.db.protocol.netty.ProxyFlowControlHandler"
+      "type": "org.apache.shardingsphere.database.protocol.netty.ProxyFlowControlHandler"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"
+        "typeReached": "org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo"
       },
-      "type": "org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolDefaultVersionProvider"
+      "type": "org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussProtocolDefaultVersionProvider"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"
+        "typeReached": "org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo"
       },
-      "type": "org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLProtocolDefaultVersionProvider"
+      "type": "org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLProtocolDefaultVersionProvider"
     },
     {
       "condition": {
@@ -12470,7 +12470,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet"
+        "typeReached": "org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSet"
       },
       "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
     },
@@ -12578,9 +12578,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo"
+        "typeReached": "org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolDefaultVersionProvider"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolDefaultVersionProvider"
     },
     {
       "condition": {
