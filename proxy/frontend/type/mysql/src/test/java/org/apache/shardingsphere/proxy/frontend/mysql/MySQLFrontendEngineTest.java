@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.Channel;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.database.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**

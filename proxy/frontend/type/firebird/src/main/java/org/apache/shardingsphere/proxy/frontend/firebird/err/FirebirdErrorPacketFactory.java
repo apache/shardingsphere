@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.err;
 
-import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-import org.apache.shardingsphere.db.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.db.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

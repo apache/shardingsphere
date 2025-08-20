@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl;
 
-import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussMacCalculator;
+import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussAuthenticationMethod;
+import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussMacCalculator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.OpenGaussAuthenticator;
 

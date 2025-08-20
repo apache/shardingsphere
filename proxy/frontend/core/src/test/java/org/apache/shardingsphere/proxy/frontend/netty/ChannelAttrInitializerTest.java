@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.netty;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.Charset;

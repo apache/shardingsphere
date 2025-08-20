@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss.authentication.authenticator.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
 import org.junit.jupiter.api.Test;

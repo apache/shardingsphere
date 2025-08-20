@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticator;
 

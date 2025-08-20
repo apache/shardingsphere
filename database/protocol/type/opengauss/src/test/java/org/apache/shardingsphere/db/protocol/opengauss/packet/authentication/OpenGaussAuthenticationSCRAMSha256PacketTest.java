@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
-import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussProtocolVersion;
+import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
+import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
+import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
