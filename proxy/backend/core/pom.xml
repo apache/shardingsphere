@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-core</artifactId>
+            <artifactId>shardingsphere-database-protocol-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

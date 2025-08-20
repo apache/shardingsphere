@@ -13,7 +13,7 @@ All the built-in plugins for ShardingSphere-Proxy are listed below in the form o
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, etcd implementation of persistent definition of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, the zookeeper implementation of the persistent definition of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-jdbc`, JDBC module
-- `org.apache.shardingsphere:shardingsphere-db-protocol-core`, database protocol core
+- `org.apache.shardingsphere:shardingsphere-database-protocol-core`, database protocol core
 - `org.apache.shardingsphere:shardingsphere-mysql-protocol`, the MySQL implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-postgresql-protocol`, the PostgreSQL implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-opengauss-protocol`, the OpenGauss implementation of the database protocol
