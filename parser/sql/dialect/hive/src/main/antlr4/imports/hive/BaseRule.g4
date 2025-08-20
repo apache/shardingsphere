@@ -1332,3 +1332,48 @@ noWriteToBinLog
 channelOption
     : FOR CHANNEL string_
     ;
+
+propertyListCommonClause
+    : LP_ propertyList RP_
+    ;
+
+propertyList
+    : property (COMMA_ property)*
+    ;
+
+property
+    : string_ EQ_ string_
+    ;
+
+rowFormat
+    : ROW FORMAT rowFormatType
+    ;
+
+rowFormatType
+    : DELIMITED rowFormatDelimited
+    | SERDE string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
+    ;
+
+rowFormatDelimited
+    : (COLUMNS TERMINATED BY string_ (ESCAPED BY string_)?)?
+      (COLLECTION ITEMS TERMINATED BY string_)?
+      (MAP KEYS TERMINATED BY string_)?
+      (LINES TERMINATED BY string_)?
+      (NULL DEFINED AS string_)?
+    ;
+
+storedClause
+    : STORED AS fileFormat
+    | STORED BY string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
+    ;
+
+fileFormat
+    : SEQUENCEFILE
+    | TEXTFILE
+    | RCFILE
+    | ORC
+    | PARQUET
+    | AVRO
+    | JSONFILE
+    | INPUTFORMAT string_ OUTPUTFORMAT string_
+    ;
