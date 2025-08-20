@@ -10,17 +10,19 @@ SPI and existing implementation classes of SPI corresponding to all plugins can 
 
 All the built-in plugins for ShardingSphere-Proxy are listed below in the form of 'groupId:artifactId'.
 
-- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, etcd implementation of persistent definition of cluster mode configuration information
-- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, the zookeeper implementation of the persistent definition of cluster mode configuration information
+- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`, the ZooKeeper implementation of the persistent definition of cluster mode configuration information
+- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`, Etcd implementation of persistent definition of cluster mode configuration information
 - `org.apache.shardingsphere:shardingsphere-jdbc`, JDBC module
 - `org.apache.shardingsphere:shardingsphere-database-protocol-core`, database protocol core
-- `org.apache.shardingsphere:shardingsphere-mysql-protocol`, the MySQL implementation of the database protocol
-- `org.apache.shardingsphere:shardingsphere-postgresql-protocol`, the PostgreSQL implementation of the database protocol
-- `org.apache.shardingsphere:shardingsphere-opengauss-protocol`, the OpenGauss implementation of the database protocol
+- `org.apache.shardingsphere:shardingsphere-protocol-mysql`, the MySQL implementation of the database protocol
+- `org.apache.shardingsphere:shardingsphere-protocol-postgresql`, the PostgreSQL implementation of the database protocol
+- `org.apache.shardingsphere:shardingsphere-protocol-opengauss`, the OpenGauss implementation of the database protocol
+- `org.apache.shardingsphere:shardingsphere-protocol-firebird`, the Firebird implementation of the database protocol
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-core`, used by ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-mysql`, a MySQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`, a PostgreSQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`, an openGauss implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
+- `org.apache.shardingsphere:shardingsphere-proxy-frontend-firebird`, an Firebird implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-backend-core`, the backend core for ShardingSphere Proxy
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-core`, the persistence definition core of single-machine mode configuration information
 

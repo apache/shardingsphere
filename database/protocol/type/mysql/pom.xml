@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-database-protocol-type</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-mysql-protocol</artifactId>
+    <artifactId>shardingsphere-protocol-mysql</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
