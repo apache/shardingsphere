@@ -88,7 +88,7 @@ class ShardingRemoveTokenGeneratorTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         return new SelectStatementContext(
-                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
     private ProjectionsSegment createProjectionsSegment() {

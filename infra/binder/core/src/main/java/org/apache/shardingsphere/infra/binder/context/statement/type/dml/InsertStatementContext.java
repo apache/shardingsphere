@@ -48,19 +48,9 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
     
     private InsertStatementBindingContext bindingContext;
     
-    public InsertStatementContext(final InsertStatement sqlStatement, final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+    public InsertStatementContext(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         baseContext = new InsertStatementBaseContext(sqlStatement, metaData, currentDatabaseName);
-        bindingContext = new InsertStatementBindingContext(baseContext, params, metaData, currentDatabaseName);
-    }
-    
-    public InsertStatementContext(final InsertStatementBaseContext baseContext, final ShardingSphereMetaData metaData, final List<Object> params, final String currentDatabaseName) {
-        this.baseContext = baseContext;
-        bindingContext = new InsertStatementBindingContext(baseContext, params, metaData, currentDatabaseName);
-    }
-    
-    public InsertStatementContext(final InsertStatementBaseContext baseContext, final InsertStatementBindingContext bindingContext) {
-        this.baseContext = baseContext;
-        this.bindingContext = bindingContext;
+        bindingContext = new InsertStatementBindingContext(baseContext, Collections.emptyList(), metaData, currentDatabaseName);
     }
     
     /**
@@ -137,7 +127,7 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
     }
     
     @Override
-    public void setUpParameters(final List<Object> params) {
+    public void bindParameters(final List<Object> params) {
         bindingContext = new InsertStatementBindingContext(baseContext, params, baseContext.getMetaData(), baseContext.getCurrentDatabaseName());
     }
     

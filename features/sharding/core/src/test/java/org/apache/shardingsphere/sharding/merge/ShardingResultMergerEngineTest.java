@@ -64,7 +64,7 @@ class ShardingResultMergerEngineTest {
         when(database.getName()).thenReturn("foo_db");
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext sqlStatementContext = new SelectStatementContext(
-                selectStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
+                selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, new ConfigurationProperties(new Properties()), sqlStatementContext),
                 instanceOf(ShardingDQLResultMerger.class));
     }
@@ -92,7 +92,7 @@ class ShardingResultMergerEngineTest {
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new InsertStatementContext(insertStatement, Collections.emptyList(), new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
+        return new InsertStatementContext(insertStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
     }
     
     @Test

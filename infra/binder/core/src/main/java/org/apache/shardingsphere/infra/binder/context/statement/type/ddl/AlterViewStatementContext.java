@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -50,8 +49,7 @@ public final class AlterViewStatementContext implements SQLStatementContext, Whe
     
     private final SelectStatementContext selectStatementContext;
     
-    public AlterViewStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                     final AlterViewStatement sqlStatement, final String currentDatabaseName) {
+    public AlterViewStatementContext(final ShardingSphereMetaData metaData, final AlterViewStatement sqlStatement, final String currentDatabaseName) {
         this.sqlStatement = sqlStatement;
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         tables.add(sqlStatement.getView());
@@ -59,12 +57,11 @@ public final class AlterViewStatementContext implements SQLStatementContext, Whe
         selectStatement.ifPresent(optional -> extractTables(optional, tables));
         sqlStatement.getRenameView().ifPresent(tables::add);
         tablesContext = new TablesContext(tables);
-        selectStatementContext = selectStatement.map(optional -> createSelectStatementContext(metaData, params, optional, currentDatabaseName)).orElse(null);
+        selectStatementContext = selectStatement.map(optional -> createSelectStatementContext(metaData, optional, currentDatabaseName)).orElse(null);
     }
     
-    private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                                                final SelectStatement selectStatement, final String currentDatabaseName) {
-        SelectStatementContext result = new SelectStatementContext(selectStatement, params, metaData, currentDatabaseName, Collections.emptyList());
+    private SelectStatementContext createSelectStatementContext(final ShardingSphereMetaData metaData, final SelectStatement selectStatement, final String currentDatabaseName) {
+        SelectStatementContext result = new SelectStatementContext(selectStatement, metaData, currentDatabaseName, Collections.emptyList());
         result.setSubqueryType(SubqueryType.VIEW_DEFINITION);
         return result;
     }

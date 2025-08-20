@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Create view statement context.
@@ -46,12 +45,12 @@ public final class CreateViewStatementContext implements SQLStatementContext, Wh
     
     private final SelectStatementContext selectStatementContext;
     
-    public CreateViewStatementContext(final ShardingSphereMetaData metaData, final List<Object> params, final CreateViewStatement sqlStatement, final String currentDatabaseName) {
+    public CreateViewStatementContext(final ShardingSphereMetaData metaData, final CreateViewStatement sqlStatement, final String currentDatabaseName) {
         this.sqlStatement = sqlStatement;
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables());
-        selectStatementContext = new SelectStatementContext(sqlStatement.getSelect(), params, metaData, currentDatabaseName, Collections.emptyList());
+        selectStatementContext = new SelectStatementContext(sqlStatement.getSelect(), metaData, currentDatabaseName, Collections.emptyList());
         selectStatementContext.setSubqueryType(SubqueryType.VIEW_DEFINITION);
     }
     

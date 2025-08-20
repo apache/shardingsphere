@@ -106,7 +106,7 @@ class FetchStreamMergedResultTest {
         CursorStatement cursorStatement = new CursorStatement(DATABASE_TYPE, null, selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), Collections.emptyList(), cursorStatement, "foo_db");
+        return new CursorStatementContext(new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), cursorStatement, "foo_db");
     }
     
     private static SelectStatement mockSelectStatement() {

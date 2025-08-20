@@ -83,7 +83,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         try {
             connectionSession.setCurrentDatabaseName(databaseName);
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-            SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement, Collections.emptyList());
+            SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
             databaseConnector = databaseConnectorFactory.newInstance(new QueryContext(
                     sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connectionSession.getConnectionContext(), metaData), connectionSession.getDatabaseConnectionManager(), false);
             responseHeader = databaseConnector.execute();

@@ -108,7 +108,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true);
         SQLStatementContext sqlStatementContext = new SQLBindEngine(
-                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement, Collections.emptyList());
+                metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(getStatementId(), serverPreparedStatement);
         return createResponse(sqlStatementContext, metaDataContexts);
