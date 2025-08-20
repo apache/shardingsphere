@@ -26,7 +26,7 @@
     <artifactId>shardingsphere-database</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-
+    
     <modules>
         <module>protocol</module>
     </modules>
