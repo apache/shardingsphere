@@ -17,7 +17,7 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-protocol-mysql`，数据库协议的 MySQL 实现
 - `org.apache.shardingsphere:shardingsphere-protocol-postgresql`，数据库协议的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-protocol-opengauss`，数据库协议的 openGauss 实现
-- `org.apache.shardingsphere:shardingsphere-firebird-protocol`，数据库协议的 Firebird 实现
+- `org.apache.shardingsphere:shardingsphere-protocol-firebird`，数据库协议的 Firebird 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-core`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-mysql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 MySQL 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 PostgreSQL 实现
