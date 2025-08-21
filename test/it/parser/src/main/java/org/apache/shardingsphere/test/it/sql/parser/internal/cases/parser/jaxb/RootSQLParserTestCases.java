@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLDelimiterStatementTestCase;
@@ -1763,6 +1764,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "reload-function")
     private final List<ReloadFunctionStatementTestCase> reloadFunctionStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "abort")
+    private final List<HiveAbortStatementTestCase> hiveAbortStatementTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

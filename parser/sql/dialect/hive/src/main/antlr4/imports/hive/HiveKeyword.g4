@@ -3409,3 +3409,7 @@ STATE
 COMPACTIONID
     : C O M P A C T I O N I D
     ;
+
+ABORT
+    : A B O R T
+    ;
