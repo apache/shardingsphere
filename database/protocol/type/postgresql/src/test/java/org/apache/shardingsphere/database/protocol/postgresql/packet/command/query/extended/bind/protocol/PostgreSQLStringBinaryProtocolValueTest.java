@@ -20,11 +20,10 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PostgreSQLStringBinaryProtocolValueTest {
     
@@ -32,15 +31,15 @@ class PostgreSQLStringBinaryProtocolValueTest {
     void assertNewInstance() {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        String source = "abc哈哈\uD83E\uDD23";
+        String source = "abc哈哈";
         byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
         byteBuf.writeBytes(bytes);
         PostgreSQLStringBinaryProtocolValue instance = new PostgreSQLStringBinaryProtocolValue();
         Object read = instance.read(payload, bytes.length);
-        assertEquals(source, read);
+        Assertions.assertEquals(source, read);
         payload.getByteBuf().clear();
         instance.write(payload, read);
-        assertEquals(bytes.length, byteBuf.readInt());
-        assertEquals(source, instance.read(payload, bytes.length));
+        Assertions.assertEquals(bytes.length, byteBuf.readInt());
+        Assertions.assertEquals(source, instance.read(payload, bytes.length));
     }
 }

@@ -22,12 +22,12 @@ import java.nio.charset.Charset;
 
 public class Int8ArrayDecoder extends AbstractObjectArrayDecoder<Long> {
     
-    public Int8ArrayDecoder(Class<?> baseClazz) {
+    public Int8ArrayDecoder() {
         super(Long.class);
     }
     
     @Override
-    public Long parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Long parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         return bytes.getLong();
     }
 }

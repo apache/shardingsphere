@@ -27,7 +27,7 @@ public class Float8ArrayDecoder extends AbstractObjectArrayDecoder<Double> {
     }
     
     @Override
-    public Double parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Double parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         return bytes.getDouble();
     }
 }

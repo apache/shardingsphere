@@ -20,13 +20,36 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+/**
+ * postgresql array decoder.
+ * @param <A> base type for decode
+ */
 public interface ArrayDecoder<A> {
     
+    /**
+     * Creates an array of the specified size.
+     *
+     * @param size The length of the array to be created.
+     * @return An array of type A with the specified size. The specific type of array depends on the implementation of this interface.
+     */
     A createArray(int size);
     
+    /**
+     * Creates a multi-dimensional array with the specified sizes for each dimension.
+     *
+     * @param sizes An array of integers, where each value specifies the size of a corresponding dimension in the multi-dimensional array.
+     * @return A multi-dimensional array where each dimension has the specified size. The specific type of array depends on the implementation of this interface.
+     */
     Object[] createMultiDimensionalArray(int[] sizes);
     
+    /**
+     * Populates the provided array with data from a binary source.
+     *
+     * @param array The array to be populated.
+     * @param index The starting index in the array where data should be placed.
+     * @param count The number of elements to populate from the binary source.
+     * @param bytes A ByteBuffer containing the binary data to be decoded.
+     * @param charset The charset to be used for decoding string data from the binary source.
+     */
     void fromBinary(A array, int index, int count, ByteBuffer bytes, Charset charset);
-    
-    Object parseValue(int length, ByteBuffer buffer, Charset charset);
 }

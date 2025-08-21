@@ -19,33 +19,31 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import lombok.SneakyThrows;
 import org.postgresql.core.Oid;
-import org.postgresql.jdbc.PgResultSet;
 import org.postgresql.util.ByteConverter;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLNumericBinaryProtocolValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-import static org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLNumericBinaryProtocolValue.*;
-
 /**
- * process BigDecimal
+ * process BigDecimal.
  * NaN and   ±Infinity cant convert to  BigDecimal
  * in pg jdbc it will convert to double
  * so we use Number
  */
-public class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
+public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
     
     public static final NumericArrayEncoder INSTANCE = new NumericArrayEncoder();
     
-    public NumericArrayEncoder() {
+    private NumericArrayEncoder() {
         super(Oid.NUMERIC);
     }
     
     @SneakyThrows(IOException.class)
     @Override
-    public void write(Number item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Number item, final ByteArrayOutputStream baos, final Charset charset) {
         byte[] numericBytes;
         
         if (item instanceof BigDecimal) {
@@ -66,24 +64,35 @@ public class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
         baos.write(numericBytes);
     }
     
-    public static byte[] buildSpecialNumericBytes(double d) {
-        if (Double.isNaN(d)) {
-            return buildSpecialNumericBytes(NUMERIC_NAN);
-        } else if (Double.isInfinite(d)) {
-            return buildSpecialNumericBytes(d > 0 ? NUMERIC_PINF : NUMERIC_NINF);
-        }
-        throw new IllegalArgumentException(d + " is not special numeric");
-    }
-    
     @Override
-    public String toString(Number item) {
+    public String toString(final Number item) {
         if (item == null) {
             return "NULL";
         }
         return item.toString();
     }
     
-    private static byte[] buildSpecialNumericBytes(int sign) {
+    /**
+     * buildSpecialNumericBytes.
+     * @param d NaN or Infinite double value
+     * @return binary result
+     * @throws IllegalArgumentException if d is not special numeric
+     */
+    public static byte[] buildSpecialNumericBytes(final double d) {
+        if (Double.isNaN(d)) {
+            return buildSpecialNumericBytes(PostgreSQLNumericBinaryProtocolValue.NUMERIC_NAN);
+        } else if (Double.isInfinite(d)) {
+            return buildSpecialNumericBytes(d > 0 ? PostgreSQLNumericBinaryProtocolValue.NUMERIC_PINF : PostgreSQLNumericBinaryProtocolValue.NUMERIC_NINF);
+        }
+        throw new IllegalArgumentException(d + " is not special numeric");
+    }
+    
+    /**
+     * buildSpecialNumericBytes.
+     * @param sign sign
+     * @return binary value
+     */
+    private static byte[] buildSpecialNumericBytes(final int sign) {
         byte[] bytes = new byte[8];
         ByteConverter.int2(bytes, 4, sign);
         return bytes;

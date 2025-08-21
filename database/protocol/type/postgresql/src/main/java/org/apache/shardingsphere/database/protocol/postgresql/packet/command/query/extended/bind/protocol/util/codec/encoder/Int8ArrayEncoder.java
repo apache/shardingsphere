@@ -22,7 +22,7 @@ import org.postgresql.core.Oid;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
-public class Int8ArrayEncoder extends AbstractArrayEncoder<Long> {
+public final class Int8ArrayEncoder extends AbstractArrayEncoder<Long> {
     
     public static final Int8ArrayEncoder INSTANCE = new Int8ArrayEncoder();
     
@@ -31,7 +31,7 @@ public class Int8ArrayEncoder extends AbstractArrayEncoder<Long> {
     }
     
     @Override
-    public void write(Long item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Long item, final ByteArrayOutputStream baos, final Charset charset) {
         baos.write(0);
         baos.write(0);
         baos.write(0);
@@ -48,10 +48,10 @@ public class Int8ArrayEncoder extends AbstractArrayEncoder<Long> {
     }
     
     @Override
-    public String toString(Long item) {
+    public String toString(final Long item) {
         if (item == null) {
             return "NULL";
         }
         return "\"" + item + "\"";
     }
-};
+}

@@ -23,25 +23,25 @@ import java.nio.charset.Charset;
 
 public abstract class AbstractObjectArrayDecoder<A> implements ArrayDecoder<A[]> {
     
-    final Class<?> baseClazz;
+    private final Class<?> baseClazz;
     
-    public AbstractObjectArrayDecoder(Class<?> baseClazz) {
+    public AbstractObjectArrayDecoder(final Class<?> baseClazz) {
         this.baseClazz = baseClazz;
     }
     
     @SuppressWarnings("unchecked")
     @Override
-    public A[] createArray(int size) {
+    public A[] createArray(final int size) {
         return (A[]) Array.newInstance(baseClazz, size);
     }
     
     @Override
-    public Object[] createMultiDimensionalArray(int[] sizes) {
+    public Object[] createMultiDimensionalArray(final int[] sizes) {
         return (Object[]) Array.newInstance(baseClazz, sizes);
     }
     
     @Override
-    public void fromBinary(A[] array, int index, int count, ByteBuffer bytes, Charset charset) {
+    public void fromBinary(final A[] array, final int index, final int count, final ByteBuffer bytes, final Charset charset) {
         
         // skip through to the requested index
         for (int i = 0; i < index; i++) {
@@ -62,5 +62,12 @@ public abstract class AbstractObjectArrayDecoder<A> implements ArrayDecoder<A[]>
         }
     }
     
+    /**
+     * decode value.
+     * @param length params length
+     * @param bytes source bytes
+     * @param charset charset used
+     * @return decode obj
+     */
     public abstract A parseValue(int length, ByteBuffer bytes, Charset charset);
 }

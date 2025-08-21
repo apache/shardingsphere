@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.sql.Timestamp;
+
 /**
  * Binary protocol value for time for PostgreSQL.
  */

@@ -26,6 +26,8 @@ import org.postgresql.util.ByteConverter;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.TimeZone;
 
 class PostgreSQLTimeStampBinaryProtocolValueTest {
     
@@ -33,7 +35,7 @@ class PostgreSQLTimeStampBinaryProtocolValueTest {
     void test() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufAllocator.DEFAULT.buffer(), StandardCharsets.UTF_8);
         PostgreSQLTimeStampBinaryProtocolValue actual = new PostgreSQLTimeStampBinaryProtocolValue();
-        Timestamp timestamp = new Timestamp(946656000000L);
+        Timestamp timestamp = new Timestamp(new Date(100, 0, 1).getTime());
         actual.write(payload, timestamp);
         
         PgBinaryObj read = (PgBinaryObj) actual.read(payload, 8);

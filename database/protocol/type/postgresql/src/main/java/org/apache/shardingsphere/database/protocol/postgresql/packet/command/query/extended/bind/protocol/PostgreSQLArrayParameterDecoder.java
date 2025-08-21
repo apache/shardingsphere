@@ -19,27 +19,32 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.postgresql.core.Parser;
+import org.postgresql.util.internal.Nullness;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.*;
-
-import static org.postgresql.util.internal.Nullness.castNonNull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * PostgreSQL array parameter decoder.
  */
 public final class PostgreSQLArrayParameterDecoder {
     
-    public Object decodeNumberArray(String parameterValue) {
+    /**
+     * decode numberArray String to a array.
+     * @param parameterValue arrayString
+     * @return  array
+     */
+    public Object decodeNumberArray(final String parameterValue) {
         
         PgDimensionsArrayList list = decodeFromString(parameterValue, ',');
         int dims = list.dimensionsCount;
         final int[] dimensionLengths = new int[dims];
         dimensionLengths[0] = list.size();
+        List tmpList = (List) list.get(0);
         for (int i = 1; i < dims; i++) {
-            List tmpList = (List) list.get(0);
-            dimensionLengths[i] = castNonNull(tmpList, "first element of adjustedList is null").size();
+            dimensionLengths[i] = Nullness.castNonNull(tmpList, "first element of adjustedList is null").size();
             if (i != dims - 1) {
                 tmpList = (List) tmpList.get(0);
             }
@@ -53,11 +58,18 @@ public final class PostgreSQLArrayParameterDecoder {
         return array;
     }
     
-    private static void storeStringValues(Object[] array, List list, int[] dimensionLengths,
-                                          int dim) {
+    /**
+     * decode and copy to result.
+     * @param array result
+     * @param list source String array
+     * @param dimensionLengths  dimensionLengths
+     * @param dim dim
+     */
+    private static void storeStringValues(final Object[] array, final List list, final int[] dimensionLengths,
+                                          final int dim) {
         
         for (int i = 0; i < dimensionLengths[dim]; i++) {
-            Object element = castNonNull(list.get(i), "list.get(i)");
+            Object element = Nullness.castNonNull(list.get(i), "list.get(i)");
             if (dim == dimensionLengths.length - 2) {
                 parserNumber((Number[]) array[i], (List) element);
             } else {
@@ -66,7 +78,12 @@ public final class PostgreSQLArrayParameterDecoder {
         }
     }
     
-    private static void parserNumber(Number[] target, List source) {
+    /**
+     * parse a String list to Number[].
+     * @param target  Number[]
+     * @param source String list
+     */
+    private static void parserNumber(final Number[] target, final List source) {
         for (int i = 0; i < target.length; i++) {
             Object o = source.get(i);
             if (o == null) {
@@ -76,34 +93,35 @@ public final class PostgreSQLArrayParameterDecoder {
         }
     }
     
-    private static Number parseNumber(String each) {
-        if (each.startsWith("\"") && each.endsWith("\"") && each.length() > 2) {
-            each = each.substring(1, each.length() - 1);
+    /**
+     * parse String to Number.
+     * @param each String
+     * @return BigDecimal or Double
+     */
+    private static Number parseNumber(final String each) {
+        String value = each;
+        if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 2) {
+            value = each.substring(1, value.length() - 1);
         }
-        if (Double.toString(Double.NaN).equals(each)) {
+        if (Double.toString(Double.NaN).equals(value)) {
             return Double.NaN;
         }
-        if (Double.toString(Double.POSITIVE_INFINITY).equals(each)) {
+        if (Double.toString(Double.POSITIVE_INFINITY).equals(value)) {
             return Double.POSITIVE_INFINITY;
         }
-        if (Double.toString(Double.NEGATIVE_INFINITY).equals(each)) {
+        if (Double.toString(Double.NEGATIVE_INFINITY).equals(value)) {
             return Double.POSITIVE_INFINITY;
         }
-        return new BigDecimal(each);
+        return new BigDecimal(value);
     }
     
-    static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {
-        
-        private static final long serialVersionUID = 1L;
-        
-        /**
-         * How many dimensions.
-         */
-        int dimensionsCount = 1;
-        
-    }
-    
-    public PgDimensionsArrayList decodeFromString(String fieldString, char delim) {
+    /**
+     * decode String array.
+     * @param fieldString string result
+     * @param delim delim
+     * @return PgDimensionsArrayList
+     */
+    public PgDimensionsArrayList decodeFromString(final String fieldString, final char delim) {
         
         final PgDimensionsArrayList arrayList = new PgDimensionsArrayList();
         
@@ -135,16 +153,15 @@ public final class PostgreSQLArrayParameterDecoder {
         // index. I'm not sure what a client would like
         // to see, so we just retain the old behavior.
         int startOffset = 0;
-        {
-            if (chars[0] == '[') {
-                while (chars[startOffset] != '=') {
-                    startOffset++;
-                }
-                startOffset++; // skip =
-            }
-        }
         
-        for (int i = startOffset; i < chars.length; i++) {
+        if (chars[0] == '[') {
+            while (chars[startOffset] != '=') {
+                startOffset++;
+            }
+            startOffset++;
+        }
+        int i = startOffset;
+        while (i < chars.length) {
             
             // escape character that we need to skip
             if (chars[i] == '\\') {
@@ -162,29 +179,31 @@ public final class PostgreSQLArrayParameterDecoder {
                 curArray = dims.get(dims.size() - 1);
                 
                 // number of dimensions
-                {
-                    for (int t = i + 1; t < chars.length; t++) {
-                        if (Character.isWhitespace(chars[t])) {
-                            continue;
-                        } else if (chars[t] == '{') {
-                            curArray.dimensionsCount++;
-                        } else {
-                            break;
-                        }
+                
+                for (int t = i + 1; t < chars.length; t++) {
+                    if (Character.isWhitespace(chars[t])) {
+                        continue;
+                    } else if (chars[t] == '{') {
+                        curArray.dimensionsCount++;
+                    } else {
+                        break;
                     }
                 }
                 
                 buffer = new StringBuilder();
+                i++;
                 continue;
             } else if (chars[i] == '"') {
                 // quoted element
                 insideString = !insideString;
                 wasInsideString = true;
+                i++;
                 continue;
             } else if (!insideString && Parser.isArrayWhiteSpace(chars[i])) {
                 // white space
+                i++;
                 continue;
-            } else if ((!insideString && (chars[i] == delim || chars[i] == '}')) || i == chars.length - 1) {
+            } else if (!insideString && (chars[i] == delim || chars[i] == '}') || i == chars.length - 1) {
                 // array end or element end
                 // when character that is a part of array element
                 if (chars[i] != '"' && chars[i] != '}' && chars[i] != delim && buffer != null) {
@@ -202,24 +221,38 @@ public final class PostgreSQLArrayParameterDecoder {
                 buffer = new StringBuilder();
                 
                 // when end of an array
-                if (chars[i] == '}') {
-                    dims.remove(dims.size() - 1);
-                    
-                    // when multi-dimension
-                    if (!dims.isEmpty()) {
-                        curArray = dims.get(dims.size() - 1);
-                    }
-                    
-                    buffer = null;
+                if (chars[i] != '?') {
+                    i++;
+                    continue;
                 }
                 
+                dims.remove(dims.size() - 1);
+                // when multi-dimension
+                if (!dims.isEmpty()) {
+                    curArray = dims.get(dims.size() - 1);
+                }
+                
+                buffer = null;
+                i++;
                 continue;
             }
             
             if (buffer != null) {
                 buffer.append(chars[i]);
             }
+            i++;
         }
         return arrayList;
+    }
+    
+    static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {
+        
+        private static final long serialVersionUID = 1L;
+        
+        /**
+         * How many dimensions.
+         */
+        private int dimensionsCount = 1;
+        
     }
 }

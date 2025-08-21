@@ -31,7 +31,7 @@ public class Float8ArrayEncoder extends AbstractArrayEncoder<Double> {
     }
     
     @Override
-    public void write(Double item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Double item, final ByteArrayOutputStream baos, final Charset charset) {
         long l = Double.doubleToRawLongBits(item);
         baos.write(0);
         baos.write(0);
@@ -48,7 +48,7 @@ public class Float8ArrayEncoder extends AbstractArrayEncoder<Double> {
     }
     
     @Override
-    public String toString(Double item) {
+    public String toString(final Double item) {
         if (item == null) {
             return "NULL";
         }

@@ -31,7 +31,7 @@ public class BooleanArrayEncoder extends AbstractArrayEncoder<Boolean> {
     }
     
     @Override
-    public void write(Boolean item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Boolean item, final ByteArrayOutputStream baos, final Charset charset) {
         baos.write(0);
         baos.write(0);
         baos.write(0);
@@ -40,7 +40,7 @@ public class BooleanArrayEncoder extends AbstractArrayEncoder<Boolean> {
     }
     
     @Override
-    public String toString(Boolean item) {
+    public String toString(final Boolean item) {
         if (item == null) {
             return "NULL";
         }

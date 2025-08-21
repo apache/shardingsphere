@@ -34,7 +34,7 @@ public class TimestampArrayEncoder extends AbstractArrayEncoder<Timestamp> {
     }
     
     @Override
-    public void write(Timestamp item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Timestamp item, final ByteArrayOutputStream baos, final Charset charset) {
         baos.write(0);
         baos.write(0);
         baos.write(0);
@@ -51,7 +51,7 @@ public class TimestampArrayEncoder extends AbstractArrayEncoder<Timestamp> {
     }
     
     @Override
-    public String toString(Timestamp item) {
+    public String toString(final Timestamp item) {
         if (item == null) {
             return "NULL";
         }

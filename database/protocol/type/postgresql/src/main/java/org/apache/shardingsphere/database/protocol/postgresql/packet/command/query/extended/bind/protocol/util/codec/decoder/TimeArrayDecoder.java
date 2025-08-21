@@ -27,13 +27,13 @@ import java.sql.Time;
 
 public class TimeArrayDecoder extends AbstractObjectArrayDecoder<Time> {
     
-    public TimeArrayDecoder(Class<?> baseClazz) {
-        super(baseClazz);
+    public TimeArrayDecoder() {
+        super(Time.class);
     }
     
     @SneakyThrows(SQLException.class)
     @Override
-    public Time parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Time parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         byte[] data = new byte[length];
         return new TimestampUtils(false, null).toTimeBin(null, data);
         

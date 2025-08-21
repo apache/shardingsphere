@@ -29,21 +29,38 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     private final int oid;
     
-    public AbstractArrayEncoder(int oid) {
+    public AbstractArrayEncoder(final int oid) {
         this.oid = oid;
     }
     
+    /**
+     * encode item to baos.
+     * @param item item
+     * @param baos baos
+     * @param charset charset
+     */
     public abstract void write(D item, ByteArrayOutputStream baos, Charset charset);
     
+    /**
+     * get item String value.
+     * @param item item toString
+     * @return string value
+     */
     public abstract String toString(D item);
     
-    public void toSingleDimensionBinaryRepresentation(D[] array, ByteArrayOutputStream baos, Charset charset) {
+    /**
+     * encode data without meeta data header.
+     * @param array array to encode
+     * @param baos output stream
+     * @param charset charset
+     */
+    public void toSingleDimensionBinaryRepresentation(final D[] array, final ByteArrayOutputStream baos, final Charset charset) {
         writeBytes(array, baos, charset);
     }
     
     @SneakyThrows(IOException.class)
     @Override
-    public void toBinaryRepresentation(D[] array, int oid, ByteArrayOutputStream baos, Charset charset) {
+    public void toBinaryRepresentation(final D[] array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
         
         final byte[] buffer = new byte[4];
         
@@ -68,11 +85,11 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     }
     
     /**
+     * getTypeOID.
      * @param arrayOid The array oid to get base oid type for.
-     * @return The base oid type for the given array oid type given to
-     * {@link #toBinaryRepresentation}.
+     * @return The base oid type for the given array oid type given to.
      */
-    int getTypeOID(@SuppressWarnings("unused") int arrayOid) {
+    int getTypeOID(@SuppressWarnings("unused") final int arrayOid) {
         return oid;
     }
     
@@ -82,7 +99,7 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
      * @param array The array to count {@code null} elements in.
      * @return The number of {@code null} elements in <i>array</i>.
      */
-    int countNulls(D[] array) {
+    int countNulls(final D[] array) {
         int nulls = 0;
         for (int i = 0; i < array.length; i++) {
             if (array[i] == null) {
@@ -92,8 +109,14 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
         return nulls;
     }
     
-    @SneakyThrows({IOException.class})
-    private void writeBytes(final D[] array, ByteArrayOutputStream baos, Charset charset) {
+    /**
+     * decode array.
+     * @param array array to decode
+     * @param baos output stream
+     * @param charset charset
+     */
+    @SneakyThrows(IOException.class)
+    private void writeBytes(final D[] array, final ByteArrayOutputStream baos, final Charset charset) {
         
         byte[] buffer = new byte[4];
         int length = Array.getLength(array);

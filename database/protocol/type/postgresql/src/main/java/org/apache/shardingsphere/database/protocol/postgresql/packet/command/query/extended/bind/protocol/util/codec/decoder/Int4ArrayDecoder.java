@@ -27,7 +27,7 @@ public class Int4ArrayDecoder extends AbstractObjectArrayDecoder<Integer> {
     }
     
     @Override
-    public Integer parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Integer parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         return bytes.getInt();
     }
 }

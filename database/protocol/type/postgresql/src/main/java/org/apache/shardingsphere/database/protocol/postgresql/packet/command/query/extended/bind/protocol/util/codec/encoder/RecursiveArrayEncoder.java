@@ -26,22 +26,27 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 
+/**
+ * Decode multi-level nested array.
+ * @param <A> base type
+ */
 public class RecursiveArrayEncoder<A> implements ArrayEncoder {
     
     private final AbstractArrayEncoder<A> support;
+    
     private final @Positive int dimensions;
     
     /**
+     * RecursiveArrayEncoder.
      * @param support The instance providing support for the base array type.
      */
-    RecursiveArrayEncoder(AbstractArrayEncoder<A> support, @Positive int dimensions) {
-        super();
+    RecursiveArrayEncoder(final AbstractArrayEncoder<A> support, final @Positive int dimensions) {
         this.support = support;
         this.dimensions = dimensions;
         assert dimensions >= 2;
     }
     
-    private boolean hasNulls(Object array, int depth) {
+    private boolean hasNulls(final Object array, final int depth) {
         if (depth > 1) {
             for (int i = 0, j = Array.getLength(array); i < j; i++) {
                 if (hasNulls(Array.get(array, i), depth - 1)) {
@@ -54,15 +59,17 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
         int length = Array.getLength(array);
         for (int i = 0; i < length; i++) {
             Object item = Array.get(array, i);
-            if (item == null)
+            if (item == null) {
                 return true;
+            }
+            
         }
         return false;
     }
     
     @SneakyThrows(IOException.class)
     @Override
-    public void toBinaryRepresentation(Object array, int oid, ByteArrayOutputStream baos, Charset charset) {
+    public void toBinaryRepresentation(final Object array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
         
         final boolean hasNulls = hasNulls(array, dimensions);
         
@@ -90,8 +97,8 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
     }
     
     @SneakyThrows(IOException.class)
-    private void writeArray(byte[] buffer, ByteArrayOutputStream baos,
-                            Object array, int depth, boolean first, Charset charset) {
+    private void writeArray(final byte[] buffer, final ByteArrayOutputStream baos,
+                            final Object array, final int depth, final boolean first, final Charset charset) {
         final int length = Array.getLength(array);
         
         if (first) {

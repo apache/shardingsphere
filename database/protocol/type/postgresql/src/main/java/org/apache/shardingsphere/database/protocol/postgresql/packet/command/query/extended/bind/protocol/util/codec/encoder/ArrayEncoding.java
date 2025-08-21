@@ -22,7 +22,9 @@ import org.postgresql.util.PSQLException;
 import org.postgresql.util.PSQLState;
 
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +45,7 @@ import java.util.Map;
  * <li>data in depth first element order corresponding number and length of dimensions</li>
  * <ul>
  * <li>4 bytes describing length of element, {@code 0xFFFFFFFF} ({@code -1}) means {@code null}</li>
- * <li>binary representation of element (iff not {@code null}).
+ * <li>binary representation of element (iff not {@code null}).</li>
  * </ul>
  * </ul>
  * </p>
@@ -59,16 +61,16 @@ public final class ArrayEncoding {
     static {
         
         // todo override getTypeOID to support more oid type use same encoder
-        ARRAY_CLASS_TO_ENCODER.put(Long.class, Int8ArrayEncoder.INSTANCE); // int8
-        ARRAY_CLASS_TO_ENCODER.put(Integer.class, Int4ArrayEncoder.INSTANCE); // int4
-        ARRAY_CLASS_TO_ENCODER.put(Short.class, Int2ArrayEncoder.INSTANCE); // int2
-        ARRAY_CLASS_TO_ENCODER.put(Double.class, Float8ArrayEncoder.INSTANCE); // float8
-        ARRAY_CLASS_TO_ENCODER.put(Float.class, Float4ArrayEncoder.INSTANCE); // float4
-        ARRAY_CLASS_TO_ENCODER.put(Boolean.class, BooleanArrayEncoder.INSTANCE); // bool
-        ARRAY_CLASS_TO_ENCODER.put(String.class, StringArrayEncoder.INSTANCE); // varchar,text
-        ARRAY_CLASS_TO_ENCODER.put(Date.class, DateArrayEncoder.INSTANCE); // date
-        ARRAY_CLASS_TO_ENCODER.put(BigDecimal.class, NumericArrayEncoder.INSTANCE); // numeric
-        ARRAY_CLASS_TO_ENCODER.put(Number.class, NumericArrayEncoder.INSTANCE); // numeric
+        ARRAY_CLASS_TO_ENCODER.put(Long.class, Int8ArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Integer.class, Int4ArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Short.class, Int2ArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Double.class, Float8ArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Float.class, Float4ArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Boolean.class, BooleanArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(String.class, StringArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Date.class, DateArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(BigDecimal.class, NumericArrayEncoder.INSTANCE);
+        ARRAY_CLASS_TO_ENCODER.put(Number.class, NumericArrayEncoder.INSTANCE);
         ARRAY_CLASS_TO_ENCODER.put(Time.class, TimeArrayEncoder.INSTANCE);
         ARRAY_CLASS_TO_ENCODER.put(byte[].class, ByteaArrayEncoder.INSTANCE);
         ARRAY_CLASS_TO_ENCODER.put(Timestamp.class, TimestampArrayEncoder.INSTANCE);
@@ -80,13 +82,14 @@ public final class ArrayEncoding {
      *
      * @param array
      *          The array to encode. Must not be {@code null}.
+     * @param <A> base type
      * @return An instance capable of encoding <i>array</i> as a {@code String} at
      *         minimum. Some types may support binary encoding.
      * @throws PSQLException
      *           if <i>array</i> is not a supported type.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <A> ArrayEncoder<A[]> getArrayEncoder(Object array) throws PSQLException {
+    public static <A> ArrayEncoder<A[]> getArrayEncoder(final Object array) throws PSQLException {
         final Class<?> arrayClazz = array.getClass();
         Class<?> subClazz = arrayClazz.getComponentType();
         if (subClazz == null) {
@@ -112,8 +115,6 @@ public final class ArrayEncoding {
                 return new RecursiveArrayEncoder(support, dimensions);
             }
             subSubClazz = subClazz.getComponentType();
-            if (subSubClazz == null) {
-            }
             ++dimensions;
             subClazz = subSubClazz;
         }

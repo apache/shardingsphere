@@ -27,7 +27,7 @@ public class Int2ArrayDecoder extends AbstractObjectArrayDecoder<Short> {
     }
     
     @Override
-    public Short parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Short parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         return bytes.getShort();
     }
 }

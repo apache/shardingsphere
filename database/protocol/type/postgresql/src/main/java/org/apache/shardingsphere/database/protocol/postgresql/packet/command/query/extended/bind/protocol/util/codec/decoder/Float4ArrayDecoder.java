@@ -27,7 +27,7 @@ public class Float4ArrayDecoder extends AbstractObjectArrayDecoder<Float> {
     }
     
     @Override
-    public Float parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Float parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         return bytes.getFloat();
     }
 }

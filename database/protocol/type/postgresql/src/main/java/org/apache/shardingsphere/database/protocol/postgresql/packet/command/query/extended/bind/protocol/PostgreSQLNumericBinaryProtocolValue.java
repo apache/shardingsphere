@@ -31,11 +31,13 @@ import java.math.BigDecimal;
 public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     public static final short NUMERIC_NAN = (short) 0xC000;
+    
     public static final short NUMERIC_PINF = (short) 0xD000;
+    
     public static final short NUMERIC_NINF = (short) 0xF000;
     
     @Override
-    public int getColumnLength(PostgreSQLPacketPayload payload, final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         //
         if (value instanceof BigDecimal) {
             return ByteConverter.numeric((BigDecimal) value).length;
@@ -87,10 +89,17 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
         throw new UnsupportedSQLOperationException("PostgreSQLNumericBinaryProtocolValue.getColumnLength()");
     }
     
-    /** Helper to write NaN or Infinity as PostgreSQL numeric binary format */
-    private void writeSpecialNumeric(PostgreSQLPacketPayload payload, int sign) {
-        payload.writeInt4(0); // len and weight
-        payload.writeInt2(sign); // sign
-        payload.writeInt2(0); // scale
+    /**
+     * writeSpecialNumeric.
+     * @param payload payload
+     * @param sign sign
+     */
+    private void writeSpecialNumeric(final PostgreSQLPacketPayload payload, final int sign) {
+        // len and weight
+        payload.writeInt4(0);
+        // sign
+        payload.writeInt2(sign);
+        // scale
+        payload.writeInt2(0);
     }
 }

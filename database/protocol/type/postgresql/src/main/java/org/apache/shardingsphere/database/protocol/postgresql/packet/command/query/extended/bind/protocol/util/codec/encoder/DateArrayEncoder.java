@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Date;
 
-public class DateArrayEncoder extends AbstractArrayEncoder<Date> {
+public final class DateArrayEncoder extends AbstractArrayEncoder<Date> {
     
     public static final DateArrayEncoder INSTANCE = new DateArrayEncoder();
     
@@ -37,18 +37,18 @@ public class DateArrayEncoder extends AbstractArrayEncoder<Date> {
     
     @SneakyThrows({PSQLException.class, IOException.class})
     @Override
-    public void write(Date item, ByteArrayOutputStream baos, Charset charset) {
-        byte[] binaryDate = new byte[4];
+    public void write(final Date item, final ByteArrayOutputStream baos, final Charset charset) {
         baos.write(0);
         baos.write(0);
         baos.write(0);
         baos.write(4);
+        byte[] binaryDate = new byte[4];
         new TimestampUtils(false, null).toBinDate(null, binaryDate, item);
         baos.write(binaryDate);
     }
     
     @Override
-    public String toString(Date item) {
+    public String toString(final Date item) {
         if (item == null) {
             return "NULL";
         }

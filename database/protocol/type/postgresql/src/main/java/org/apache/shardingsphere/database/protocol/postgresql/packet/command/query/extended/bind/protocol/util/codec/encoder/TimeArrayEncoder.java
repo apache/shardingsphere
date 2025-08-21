@@ -34,7 +34,7 @@ public class TimeArrayEncoder extends AbstractArrayEncoder<Time> {
     }
     
     @Override
-    public void write(Time item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Time item, final ByteArrayOutputStream baos, final Charset charset) {
         baos.write(0);
         baos.write(0);
         baos.write(0);
@@ -51,7 +51,7 @@ public class TimeArrayEncoder extends AbstractArrayEncoder<Time> {
     }
     
     @Override
-    public String toString(Time item) {
+    public String toString(final Time item) {
         if (item == null) {
             return "NULL";
         }

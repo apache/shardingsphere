@@ -29,7 +29,7 @@ public class NumericArrayDecoder extends AbstractObjectArrayDecoder<Number> {
     }
     
     @Override
-    public Number parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Number parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         final byte[] array = new byte[length];
         bytes.get(array);
         return ByteConverter.numeric(array);

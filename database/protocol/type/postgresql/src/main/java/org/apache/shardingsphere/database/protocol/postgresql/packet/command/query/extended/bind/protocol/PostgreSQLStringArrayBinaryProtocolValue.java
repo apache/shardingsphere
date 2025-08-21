@@ -28,7 +28,7 @@ import org.postgresql.jdbc.ShardingSpherePgArrayUtils;
 public final class PostgreSQLStringArrayBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     @Override
-    public int getColumnLength(PostgreSQLPacketPayload payload, final Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         return -1;
     }
     

@@ -30,9 +30,10 @@ public class TimestampArrayDecoder extends AbstractObjectArrayDecoder<Timestamp>
     public TimestampArrayDecoder() {
         super(Timestamp.class);
     }
+    
     @SneakyThrows(SQLException.class)
     @Override
-    public Timestamp parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Timestamp parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         byte[] data = new byte[length];
         return new TimestampUtils(false, null).toTimestampBin(null, data, false);
     }

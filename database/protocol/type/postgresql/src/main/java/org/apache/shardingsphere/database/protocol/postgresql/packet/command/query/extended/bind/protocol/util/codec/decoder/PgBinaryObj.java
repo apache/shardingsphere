@@ -27,12 +27,12 @@ public class PgBinaryObj extends PGobject implements PGBinaryObject {
     
     private byte[] bytes;
     
-    public PgBinaryObj(byte[] value) {
+    public PgBinaryObj(final byte[] value) {
         this.bytes = value;
     }
     
     @Override
-    public void setByteValue(byte[] value, int offset) throws SQLException {
+    public void setByteValue(final byte[] value, final int offset) throws SQLException {
         if (value == null) {
             this.bytes = new byte[0];
         } else {
@@ -49,7 +49,7 @@ public class PgBinaryObj extends PGobject implements PGBinaryObject {
     }
     
     @Override
-    public void toBytes(byte[] target, int offset) {
+    public void toBytes(final byte[] target, final int offset) {
         if (target == null) {
             throw new IllegalArgumentException("Target array cannot be null");
         }

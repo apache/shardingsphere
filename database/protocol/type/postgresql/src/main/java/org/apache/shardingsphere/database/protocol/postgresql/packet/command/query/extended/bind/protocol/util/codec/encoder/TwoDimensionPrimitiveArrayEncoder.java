@@ -25,20 +25,25 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 
+/**
+ * Decode two-dimensional array.
+ * @param <A> baseType
+ */
 public class TwoDimensionPrimitiveArrayEncoder<A> implements ArrayEncoder<A[][]> {
     
     private final AbstractArrayEncoder<A> support;
     
     /**
+     * TwoDimensionPrimitiveArrayEncoder.
      * @param support The instance providing support for the base array type.
      */
-    TwoDimensionPrimitiveArrayEncoder(AbstractArrayEncoder<A> support) {
+    TwoDimensionPrimitiveArrayEncoder(final AbstractArrayEncoder<A> support) {
         this.support = support;
     }
     
     @SneakyThrows(IOException.class)
     @Override
-    public void toBinaryRepresentation(A[][] array, int oid, ByteArrayOutputStream baos, Charset charset) {
+    public void toBinaryRepresentation(final A[][] array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
         final byte[] buffer = new byte[4];
         
         boolean hasNulls = false;

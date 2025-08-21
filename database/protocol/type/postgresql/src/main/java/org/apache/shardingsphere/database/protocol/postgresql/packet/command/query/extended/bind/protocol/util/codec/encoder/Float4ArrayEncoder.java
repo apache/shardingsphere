@@ -31,7 +31,7 @@ public class Float4ArrayEncoder extends AbstractArrayEncoder<Float> {
     }
     
     @Override
-    public void write(Float item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final Float item, final ByteArrayOutputStream baos, final Charset charset) {
         int i = Float.floatToRawIntBits(item);
         baos.write(0);
         baos.write(0);
@@ -44,7 +44,7 @@ public class Float4ArrayEncoder extends AbstractArrayEncoder<Float> {
     }
     
     @Override
-    public String toString(Float item) {
+    public String toString(final Float item) {
         if (item == null) {
             return "NULL";
         }

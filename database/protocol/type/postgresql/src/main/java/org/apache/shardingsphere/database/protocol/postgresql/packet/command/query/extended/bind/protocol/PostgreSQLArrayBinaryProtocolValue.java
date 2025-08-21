@@ -26,55 +26,56 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
+public final class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
-    private static final Map<Integer, String> oidTypeName = new HashMap<>();
+    public static final PostgreSQLArrayBinaryProtocolValue INSTANCE = new PostgreSQLArrayBinaryProtocolValue();
+    
+    private static final Map<Integer, String> OID_TYPE_NAME = new HashMap<>();
     
     static {
-        oidTypeName.put(Oid.BOOL, "bool[]");
-        oidTypeName.put(Oid.BYTEA, "bytea[]");
+        OID_TYPE_NAME.put(Oid.BOOL, "bool[]");
+        OID_TYPE_NAME.put(Oid.BYTEA, "bytea[]");
         // oidTypeName.put(Oid.CHAR_ARRAY, "char[]");
         // oidTypeName.put(Oid.NAME_ARRAY, "name[]");
-        oidTypeName.put(Oid.INT2, "int2[]");
-        oidTypeName.put(Oid.INT4, "int4[]");
-        oidTypeName.put(Oid.INT8, "int8[]");
-        oidTypeName.put(Oid.FLOAT4, "float4[]");
-        oidTypeName.put(Oid.FLOAT8, "float8[]");
-        oidTypeName.put(Oid.TEXT, "text[]");
-        oidTypeName.put(Oid.VARCHAR, "varchar[]");
-        oidTypeName.put(Oid.DATE, "date[]");
-        oidTypeName.put(Oid.TIMESTAMP, "timestamp[]");
+        OID_TYPE_NAME.put(Oid.INT2, "int2[]");
+        OID_TYPE_NAME.put(Oid.INT4, "int4[]");
+        OID_TYPE_NAME.put(Oid.INT8, "int8[]");
+        OID_TYPE_NAME.put(Oid.FLOAT4, "float4[]");
+        OID_TYPE_NAME.put(Oid.FLOAT8, "float8[]");
+        OID_TYPE_NAME.put(Oid.TEXT, "text[]");
+        OID_TYPE_NAME.put(Oid.VARCHAR, "varchar[]");
+        OID_TYPE_NAME.put(Oid.DATE, "date[]");
+        OID_TYPE_NAME.put(Oid.TIMESTAMP, "timestamp[]");
         // oidTypeName.put(Oid.TIMESTAMPTZ_ARRAY, "timestamptz[]");
-        oidTypeName.put(Oid.TIME, "time[]");
+        OID_TYPE_NAME.put(Oid.TIME, "time[]");
         // oidTypeName.put(Oid.TIMETZ_ARRAY, "timetz[]");
-        oidTypeName.put(Oid.NUMERIC, "numeric[]");
+        OID_TYPE_NAME.put(Oid.NUMERIC, "numeric[]");
         // oidTypeName.put(Oid.UUID_ARRAY, "uuid[]");
     }
     
     private PostgreSQLArrayBinaryProtocolValue() {
         
     }
-    public static final PostgreSQLArrayBinaryProtocolValue instance = new PostgreSQLArrayBinaryProtocolValue();
     
     @Override
-    public int getColumnLength(PostgreSQLPacketPayload payload, Object value) {
+    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
         return -1;
     }
     
     @Override
-    public Object read(PostgreSQLPacketPayload payload, int parameterValueLength) {
+    public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         int oid = buf.getInt(8);
-        String typeName = oidTypeName.get(oid);
+        String typeName = OID_TYPE_NAME.get(oid);
         PgBinaryObj pgBinaryObj = new PgBinaryObj(bytes);
         pgBinaryObj.setType(typeName);
         return pgBinaryObj;
     }
     
     @Override
-    public void write(PostgreSQLPacketPayload payload, Object value) {
+    public void write(final PostgreSQLPacketPayload payload, final Object value) {
         byte[] result = ShardingSpherePgArrayUtils.getBinaryBytes(value, payload.getCharset());
         payload.writeInt4(result.length);
         payload.writeBytes(result);

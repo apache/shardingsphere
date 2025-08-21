@@ -23,7 +23,6 @@ import org.postgresql.util.GT;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,8 +52,15 @@ public final class ArrayDecoding {
         
     }
     
+    /**
+     * getDecoder byOid.
+     * @param oid oid
+     * @param <A> base data type
+     * @return ArrayDecoder
+     * @throws UnsupportedOperationException Invalid oid
+     */
     @SuppressWarnings("unchecked")
-    private static <A extends Object> ArrayDecoder<A> getDecoder(int oid) {
+    private static <A> ArrayDecoder<A> getDecoder(final int oid) {
         final Integer key = oid;
         @SuppressWarnings("rawtypes")
         final ArrayDecoder decoder = OID_TO_DECODER.get(key);
@@ -64,13 +70,27 @@ public final class ArrayDecoding {
         throw new UnsupportedOperationException(GT.tr("Invalid decoder key {0}", key));
     }
     
+    /**
+     * Reads binary representation of array into object model.
+     *
+     * @param index
+     *          1 based index of where to start on outermost array.
+     * @param count
+     *          The number of items to return from outermost array (beginning at
+     *          <i>index</i>).
+     * @param bytes
+     *          The binary representation of the array.
+     * @param charset charset
+     * @return The parsed array.
+     */
     @SuppressWarnings("unchecked")
-    public static Object readBinaryArray(int index, int count, byte[] bytes, Charset charset) {
+    public static Object readBinaryArray(final int index, final int count, final byte[] bytes, final Charset charset) {
         final ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.order(ByteOrder.BIG_ENDIAN);
         final int dimensions = buffer.getInt();
-        @SuppressWarnings("unused")
-        final boolean hasNulls = buffer.getInt() != 0;
+        // @SuppressWarnings("unused")
+        // final boolean hasNulls = buffer.getInt() != 0;
+        buffer.getInt();
         final int elementOid = buffer.getInt();
         
         @SuppressWarnings("rawtypes")
@@ -106,18 +126,25 @@ public final class ArrayDecoding {
         
         final Object[] array = decoder.createMultiDimensionalArray(dimensionLengths);
         
-        // TODO: in certain circumstances (no nulls, fixed size data types)
-        // if adjustedSkipIndex is > 0, we could advance through the buffer rather than
-        // parse our way through throwing away the results
-        
         storeValues(array, decoder, buffer, adjustedSkipIndex, dimensionLengths, 0, charset);
         
         return array;
     }
     
+    /**
+     * decode from bytes and storeValues.
+     * @param array target array
+     * @param decoder decoder
+     * @param bytes source data
+     * @param skip skip
+     * @param dimensionLengths dimensionLengths
+     * @param dim dim
+     * @param charset charset
+     * @param <A> base type
+     */
     @SuppressWarnings("unchecked")
-    private static <A extends Object> void storeValues(Object[] array, ArrayDecoder<A> decoder, ByteBuffer bytes,
-                                                       int skip, int[] dimensionLengths, int dim, Charset charset) {
+    private static <A> void storeValues(final Object[] array, final ArrayDecoder<A> decoder, final ByteBuffer bytes,
+                                        final int skip, final int[] dimensionLengths, final int dim, final Charset charset) {
         assert dim <= dimensionLengths.length - 2;
         
         for (int i = 0; i < skip; i++) {

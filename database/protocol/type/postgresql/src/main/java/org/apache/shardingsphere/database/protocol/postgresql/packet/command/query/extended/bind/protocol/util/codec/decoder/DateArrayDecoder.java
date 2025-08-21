@@ -19,10 +19,10 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import lombok.SneakyThrows;
 import org.postgresql.jdbc.TimestampUtils;
+import org.postgresql.util.PSQLException;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.util.Date;
 
 public class DateArrayDecoder extends AbstractObjectArrayDecoder<Date> {
@@ -31,9 +31,9 @@ public class DateArrayDecoder extends AbstractObjectArrayDecoder<Date> {
         super(Date.class);
     }
     
-    @SneakyThrows({SQLException.class})
+    @SneakyThrows(PSQLException.class)
     @Override
-    public Date parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Date parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         byte[] data = new byte[length];
         bytes.get(data);
         return new TimestampUtils(false, null).toDateBin(null, data);

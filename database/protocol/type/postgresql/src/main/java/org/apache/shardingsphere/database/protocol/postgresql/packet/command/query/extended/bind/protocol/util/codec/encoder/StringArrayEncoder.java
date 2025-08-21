@@ -24,12 +24,16 @@ import org.postgresql.jdbc.PgArray;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
-public class StringArrayEncoder extends AbstractArrayEncoder<String> {
+public final class StringArrayEncoder extends AbstractArrayEncoder<String> {
     
     public static final StringArrayEncoder INSTANCE = new StringArrayEncoder(Oid.TEXT);
     
+    private StringArrayEncoder(final int oid) {
+        super(oid);
+    }
+    
     @Override
-    int getTypeOID(int arrayOid) {
+    int getTypeOID(final int arrayOid) {
         if (Oid.VARCHAR_ARRAY == arrayOid) {
             return Oid.VARCHAR;
         }
@@ -39,13 +43,9 @@ public class StringArrayEncoder extends AbstractArrayEncoder<String> {
         throw new IllegalArgumentException("unknown array type: " + arrayOid);
     }
     
-    private StringArrayEncoder(int oid) {
-        super(oid);
-    }
-    
     @SneakyThrows
     @Override
-    public void write(String item, ByteArrayOutputStream baos, Charset charset) {
+    public void write(final String item, final ByteArrayOutputStream baos, final Charset charset) {
         byte[] bytes = item.getBytes(charset);
         int length = bytes.length;
         baos.write((byte) (length >>> 24));
@@ -57,7 +57,7 @@ public class StringArrayEncoder extends AbstractArrayEncoder<String> {
     }
     
     @Override
-    public String toString(String item) {
+    public String toString(final String item) {
         StringBuilder sb = new StringBuilder();
         PgArray.escapeArrayElement(sb, item);
         return sb.toString();

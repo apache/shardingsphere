@@ -27,7 +27,7 @@ public class BooleanArrayDecoder extends AbstractObjectArrayDecoder<Boolean> {
     }
     
     @Override
-    public Boolean parseValue(int length, ByteBuffer bytes, Charset charset) {
+    public Boolean parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         return bytes.get() == 1;
     }
 }

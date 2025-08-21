@@ -17,8 +17,8 @@
 
 package org.postgresql.jdbc;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLArrayParameterDecoder;
-import org.apache.shardingsphere.infra.exception.generic.ServerSQLException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.encoder.ArrayEncoding;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.encoder.ArrayEncoder;
@@ -31,8 +31,15 @@ import java.sql.SQLException;
 
 public class ShardingSpherePgArrayUtils {
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static byte[] getBinaryBytes(Object array, Charset charset) throws ServerSQLException {
+    /**
+     * encode pgArray.
+     * @param array PgArrayObject
+     * @param charset charset
+     * @return binary bytes array
+     * @throws UnsupportedSQLOperationException if array is not PgArray
+     */
+    @SneakyThrows(SQLException.class)
+    public static byte[] getBinaryBytes(final Object array, final Charset charset) {
         PgArray pgArray;
         if (array instanceof PgArray) {
             pgArray = (PgArray) array;
@@ -45,24 +52,22 @@ public class ShardingSpherePgArrayUtils {
             return bytes;
         }
         BaseConnection connection = pgArray.connection;
-        try {
-            assert connection != null;
-            int pgType = connection.getTypeInfo().getPGArrayType(pgArray.getBaseTypeName());
-            
-            Object realArray;
-            if (pgType == Oid.NUMERIC_ARRAY) {
-                realArray = new PostgreSQLArrayParameterDecoder().decodeNumberArray(pgArray.fieldString);
-            } else {
-                realArray = pgArray.getArray();
-            }
-            
-            final ArrayEncoder arraySupport = ArrayEncoding.getArrayEncoder(realArray);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            arraySupport.toBinaryRepresentation(realArray, pgType, byteArrayOutputStream, charset);
-            return byteArrayOutputStream.toByteArray();
-        } catch (SQLException e) {
-            throw new ServerSQLException(e);
+        
+        assert connection != null;
+        int pgType = connection.getTypeInfo().getPGArrayType(pgArray.getBaseTypeName());
+        
+        Object realArray;
+        if (pgType == Oid.NUMERIC_ARRAY) {
+            realArray = new PostgreSQLArrayParameterDecoder().decodeNumberArray(pgArray.fieldString);
+        } else {
+            realArray = pgArray.getArray();
         }
+        
+        final ArrayEncoder arraySupport = ArrayEncoding.getArrayEncoder(realArray);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        arraySupport.toBinaryRepresentation(realArray, pgType, byteArrayOutputStream, charset);
+        return byteArrayOutputStream.toByteArray();
+        
     }
     
 }
