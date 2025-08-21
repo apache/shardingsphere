@@ -31,6 +31,9 @@ import org.postgresql.core.Oid;
 import org.postgresql.core.QueryExecutor;
 import org.postgresql.jdbc.PgConnection;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
  * Frontend engine for PostgreSQL.
  */
@@ -62,19 +65,26 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     }
     
     @Override
-    public void init(ConnectionSession connectionSession) {
-        connectionSession.getDatabaseConnectionManager().getAfterCreateConnectionPostProcessors().add(target -> {
-            PgConnection pgConnection = target.unwrap(PgConnection.class);
-            QueryExecutor queryExecutor = pgConnection.getQueryExecutor();
-            queryExecutor.addBinarySendOid(Oid.DATE);
-            queryExecutor.addBinarySendOid(Oid.BOOL_ARRAY);
-            queryExecutor.addBinarySendOid(Oid.DATE_ARRAY);
-            queryExecutor.addBinarySendOid(Oid.TIME);
-            queryExecutor.addBinarySendOid(Oid.TIME_ARRAY);
-            queryExecutor.addBinarySendOid(Oid.TIMESTAMP);
-            queryExecutor.addBinarySendOid(Oid.TIMESTAMP_ARRAY);
-            queryExecutor.addBinarySendOid(Oid.NUMERIC);
-            queryExecutor.addBinarySendOid(Oid.NUMERIC_ARRAY);
-        });
+    public void init(final ConnectionSession connectionSession) {
+        connectionSession.getDatabaseConnectionManager().getAfterCreateConnectionPostProcessors().add(this::initConnection);
+    }
+
+    /**
+     * init connection.
+     * @param target Connection to set
+     * @throws SQLException unwrap error
+     */
+    private void initConnection(final Connection target) throws SQLException {
+        PgConnection pgConnection = target.unwrap(PgConnection.class);
+        QueryExecutor queryExecutor = pgConnection.getQueryExecutor();
+        queryExecutor.addBinarySendOid(Oid.DATE);
+        queryExecutor.addBinarySendOid(Oid.BOOL_ARRAY);
+        queryExecutor.addBinarySendOid(Oid.DATE_ARRAY);
+        queryExecutor.addBinarySendOid(Oid.TIME);
+        queryExecutor.addBinarySendOid(Oid.TIME_ARRAY);
+        queryExecutor.addBinarySendOid(Oid.TIMESTAMP);
+        queryExecutor.addBinarySendOid(Oid.TIMESTAMP_ARRAY);
+        queryExecutor.addBinarySendOid(Oid.NUMERIC);
+        queryExecutor.addBinarySendOid(Oid.NUMERIC_ARRAY);
     }
 }

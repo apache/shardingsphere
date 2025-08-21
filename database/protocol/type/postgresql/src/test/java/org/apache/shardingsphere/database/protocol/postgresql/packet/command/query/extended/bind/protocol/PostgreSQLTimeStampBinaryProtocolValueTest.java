@@ -27,7 +27,6 @@ import org.postgresql.util.ByteConverter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.TimeZone;
 
 class PostgreSQLTimeStampBinaryProtocolValueTest {
     
