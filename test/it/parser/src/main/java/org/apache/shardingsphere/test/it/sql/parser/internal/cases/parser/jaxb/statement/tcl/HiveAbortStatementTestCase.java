@@ -15,43 +15,12 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl;
 
-import Comments, DMLStatement, DDLStatement, DALStatement, TCLStatement;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | loadStatement
-    | createDatabase
-    | dropDatabase
-    | alterDatabase
-    | use
-    | createTable
-    | dropTable
-    | truncateTable
-    | msckStatement
-    | alterTable
-    | createView
-    | dropView
-    | alterView
-    | createMaterializedView
-    | dropMaterializedView
-    | alterMaterializedView
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | createMacro
-    | dropMacro
-    | createFunction
-    | dropFunction
-    | reloadFunction
-    | show
-    | describe
-    | abort
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Hive abort statement test case.
+ */
+public final class HiveAbortStatementTestCase extends SQLParserTestCase {
+}

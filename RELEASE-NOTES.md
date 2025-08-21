@@ -81,6 +81,7 @@
 1. SQL Parser: Support Hive Show Granted Roles and Privileges & SHOW LOCKS & SHOW CONF statement parse - [#36300](https://github.com/apache/shardingsphere/pull/36300)
 1. SQL Parser: Support Hive SHOW TRANSACTIONS & SHOW COMPACTIONS statement parse - [#36301](https://github.com/apache/shardingsphere/pull/36301)
 1. SQL Parser: Support Hive DESCRIBE statement parse - [#36350](https://github.com/apache/shardingsphere/pull/36350)
+1. SQL Parser: Support Hive ABORT statement parse - [#36378](https://github.com/apache/shardingsphere/pull/36378)
 1. SQL Parser: Support Hive Inserting data into Hive Tables from queries statement parse - [#36320](https://github.com/apache/shardingsphere/pull/36320)
 1. SQL Parser: Support Hive Writing data into the filesystem from queries statement parse - [#36371](https://github.com/apache/shardingsphere/pull/36371)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatem
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveTCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
@@ -45,7 +46,7 @@ public final class HiveStatementVisitorFacade implements SQLStatementVisitorFaca
     
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
-        throw new UnsupportedOperationException("");
+        return HiveTCLStatementVisitor.class;
     }
     
     @Override
