@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-oracle</artifactId>
+            <artifactId>shardingsphere-database-connector-oracle</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

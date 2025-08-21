@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-mysql</artifactId>
+            <artifactId>shardingsphere-database-connector-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

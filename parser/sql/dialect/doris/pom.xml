@@ -33,7 +33,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-database-doris</artifactId>
+            <artifactId>shardingsphere-database-connector-doris</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
