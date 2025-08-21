@@ -22,6 +22,7 @@ import BaseRule;
 insert
     : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
     | insertDataIntoTablesFromQueries
+    | writingDataIntoFileSystem
     ;
 
 insertSpecification
@@ -368,7 +369,7 @@ dynamicPartitionInserts
     ;
 
 hiveMultipleInserts
-    : hiveInsertStatement (hiveInsertStatement)*
+    : hiveInsertStatement+
     ;
 
 hiveInsertStatement
@@ -386,4 +387,13 @@ dynamicPartitionKey
 
 partitionClause
     : partitionSpec ifNotExists?
+    ;
+
+writingDataIntoFileSystem
+    : insertOverwriteStandardSyntax
+    | fromClause insertOverwriteStandardSyntax+
+    ;
+
+insertOverwriteStandardSyntax
+    : INSERT OVERWRITE LOCAL? DIRECTORY string_ rowFormat? storedClause? select
     ;

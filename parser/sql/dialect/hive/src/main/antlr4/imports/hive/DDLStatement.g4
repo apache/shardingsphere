@@ -338,39 +338,6 @@ skewedValue
     | literals
     ;
 
-rowFormat
-    : ROW FORMAT rowFormatType
-    ;
-
-rowFormatType
-    : DELIMITED rowFormatDelimited
-    | SERDE string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
-    ;
-
-rowFormatDelimited
-    : (COLUMNS TERMINATED BY string_ (ESCAPED BY string_)?)?
-      (COLLECTION ITEMS TERMINATED BY string_)?
-      (MAP KEYS TERMINATED BY string_)?
-      (LINES TERMINATED BY string_)?
-      (NULL DEFINED AS string_)?
-    ;
-
-storedClause
-    : STORED AS fileFormat
-    | STORED BY string_ (WITH SERDEPROPERTIES propertyListCommonClause)?
-    ;
-
-fileFormat
-    : SEQUENCEFILE
-    | TEXTFILE
-    | RCFILE
-    | ORC
-    | PARQUET
-    | AVRO
-    | JSONFILE
-    | INPUTFORMAT string_ OUTPUTFORMAT string_
-    ;
-
 storageLocation
     : LOCATION string_
     ;
@@ -385,14 +352,6 @@ skewedLocationPair
 
 tblProperties
     : TBLPROPERTIES propertyListCommonClause
-    ;
-
-propertyList
-    : property (COMMA_ property)*
-    ;
-
-property
-    : string_ EQ_ string_
     ;
 
 addConstraint
@@ -493,10 +452,6 @@ indexTableName
 
 columnNamesCommonClause
     : LP_ columnNames RP_
-    ;
-
-propertyListCommonClause
-    : LP_ propertyList RP_
     ;
 
 macroParameterList

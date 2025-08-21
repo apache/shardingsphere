@@ -5123,4 +5123,174 @@
             </where>
         </select>
     </insert>
+
+    <insert sql-case-id="insert_overwrite_directory_basic">
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <from>
+                <simple-table name="employee" start-index="68" stop-index="75" />
+            </from>
+            <projections start-index="54" stop-index="61">
+                <column-projection name="id" start-index="54" stop-index="55" />
+                <column-projection name="name" start-index="58" stop-index="61" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_overwrite_local_directory">
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <from>
+                <simple-table name="sales" start-index="74" stop-index="78" />
+            </from>
+            <projections start-index="60" stop-index="67">
+                <column-projection name="order_id" start-index="60" stop-index="67" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_overwrite_directory_with_row_format">
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <from>
+                <simple-table name="products" start-index="121" stop-index="128" />
+            </from>
+            <projections start-index="95" stop-index="114">
+                <column-projection name="product_id" start-index="95" stop-index="104" />
+                <column-projection name="category" start-index="107" stop-index="114" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_overwrite_directory_with_file_format">
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <from>
+                <simple-table name="system_logs" start-index="91" stop-index="101" />
+            </from>
+            <projections start-index="68" stop-index="84">
+                <column-projection name="log_date" start-index="68" stop-index="75" />
+                <column-projection name="message" start-index="78" stop-index="84" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_overwrite_local_with_row_format_and_file_format">
+        <columns start-index="0" stop-index="0" />
+        <select>
+            <from>
+                <simple-table name="user_activity" start-index="135" stop-index="147" />
+            </from>
+            <projections start-index="119" stop-index="128">
+                <column-projection name="login_time" start-index="119" stop-index="128" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="single_insert_overwrite_directory">
+        <columns start-index="14" stop-index="14" />
+        <select>
+            <from>
+                <simple-table name="employee" start-index="5" stop-index="12" />
+            </from>
+            <projections start-index="72" stop-index="73">
+                <column-projection name="id" start-index="72" stop-index="73" />
+            </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="two_insert_overwrite_directory">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="0" stop-index="136" literal-start-index="0" literal-stop-index="136">
+            <insert-statement>
+                <columns start-index="14" stop-index="14" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="72" stop-index="73">
+                        <column-projection name="id" start-index="72" stop-index="73" />
+                    </projections>
+                </select>
+            </insert-statement>
+            <insert-statement>
+                <columns start-index="75" stop-index="75" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="133" stop-index="136">
+                        <column-projection name="name" start-index="133" stop-index="136" />
+                    </projections>
+                </select>
+            </insert-statement>
+        </multi-table-insert-into>
+    </insert>
+
+    <insert sql-case-id="two_insert_overwrite_directory_with_local">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="5" stop-index="148" literal-start-index="0" literal-stop-index="148">
+            <insert-statement>
+                <columns start-index="14" stop-index="14" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="78" stop-index="79">
+                        <column-projection name="id" start-index="78" stop-index="79" />
+                    </projections>
+                </select>
+            </insert-statement>
+            <insert-statement>
+                <columns start-index="81" stop-index="81" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="145" stop-index="148">
+                        <column-projection name="name" start-index="145" stop-index="148" />
+                    </projections>
+                </select>
+            </insert-statement>
+        </multi-table-insert-into>
+    </insert>
+
+    <insert sql-case-id="three_insert_overwrite_directory">
+        <multi-table-insert-type value="ALL" />
+        <multi-table-insert-into start-index="0" stop-index="199" literal-start-index="0" literal-stop-index="199">
+            <insert-statement>
+                <columns start-index="14" stop-index="14" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="72" stop-index="73">
+                        <column-projection name="id" start-index="72" stop-index="73" />
+                    </projections>
+                </select>
+            </insert-statement>
+            <insert-statement>
+                <columns start-index="75" stop-index="75" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="133" stop-index="136">
+                        <column-projection name="name" start-index="133" stop-index="136" />
+                    </projections>
+                </select>
+            </insert-statement>
+            <insert-statement>
+                <columns start-index="138" stop-index="138" />
+                <select>
+                    <from>
+                        <simple-table name="employee" start-index="5" stop-index="12" />
+                    </from>
+                    <projections start-index="196" stop-index="199">
+                        <column-projection name="user" start-index="196" stop-index="199" />
+                    </projections>
+                </select>
+            </insert-statement>
+        </multi-table-insert-into>
+    </insert>
 </sql-parser-test-cases>

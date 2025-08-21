@@ -180,4 +180,13 @@
     <sql-case id="dynamic_partition_into_basic" value="INSERT INTO TABLE sales PARTITION (region, year) select id FROM raw_sales;" db-types="Hive" />
     <sql-case id="dynamic_partition_into_mixed" value="INSERT INTO TABLE user_logs PARTITION (country='CN', province) select user_id FROM all_logs where country='CN';" db-types="Hive" />
     <sql-case id="dynamic_partition_into_filtered" value="INSERT INTO TABLE order_stats PARTITION (month='August', status='active') select order_id FROM order_details where amount > 100;" db-types="Hive" />
+    <sql-case id="insert_overwrite_directory_basic" value="INSERT OVERWRITE DIRECTORY '/user/hive/output' SELECT id, name FROM employee;" db-types="Hive" />
+    <sql-case id="insert_overwrite_local_directory" value="INSERT OVERWRITE LOCAL DIRECTORY '/tmp/local_output' SELECT order_id FROM sales;" db-types="Hive" />
+    <sql-case id="insert_overwrite_directory_with_row_format" value="INSERT OVERWRITE DIRECTORY '/data/export' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' SELECT product_id, category FROM products;" db-types="Hive" />
+    <sql-case id="insert_overwrite_directory_with_file_format" value="INSERT OVERWRITE DIRECTORY '/archive/logs' STORED AS PARQUET SELECT log_date, message FROM system_logs;" db-types="Hive" />
+    <sql-case id="insert_overwrite_local_with_row_format_and_file_format" value="INSERT OVERWRITE LOCAL DIRECTORY '/tmp/report' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE SELECT login_time FROM user_activity;" db-types="Hive" />
+    <sql-case id="single_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id;" db-types="Hive" />
+    <sql-case id="two_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT name;" db-types="Hive" />
+    <sql-case id="two_insert_overwrite_directory_with_local" value="FROM employee INSERT OVERWRITE LOCAL DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE LOCAL DIRECTORY '/user/output/emp_data' SELECT name;" db-types="Hive" />
+    <sql-case id="three_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT name INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT user;" db-types="Hive" />
 </sql-cases>

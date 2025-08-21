@@ -123,6 +123,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.Multiple
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionInsertsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveMultipleInsertsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HiveInsertStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WritingDataIntoFileSystemContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertOverwriteStandardSyntaxContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameContext;
@@ -873,6 +875,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.insertDataIntoTablesFromQueries()) {
             return visit(ctx.insertDataIntoTablesFromQueries());
         }
+        if (null != ctx.writingDataIntoFileSystem()) {
+            return visit(ctx.writingDataIntoFileSystem());
+        }
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
             result = (InsertStatement) visit(ctx.insertValuesClause());
@@ -988,6 +993,51 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitDynamicPartitionKey(final DynamicPartitionKeyContext ctx) {
         return new PartitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.identifier().getText()));
+    }
+    
+    @Override
+    public ASTNode visitWritingDataIntoFileSystem(final WritingDataIntoFileSystemContext ctx) {
+        List<InsertOverwriteStandardSyntaxContext> statements = ctx.insertOverwriteStandardSyntax();
+        if (1 == statements.size() && null == ctx.fromClause()) {
+            return visit(statements.get(0));
+        }
+        final TableSegment sourceTable = null != ctx.fromClause() ? (TableSegment) visit(ctx.fromClause()) : null;
+        if (1 == statements.size()) {
+            InsertStatement single = (InsertStatement) visit(statements.get(0));
+            if (null != sourceTable) {
+                single.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
+            }
+            single.addParameterMarkers(getParameterMarkerSegments());
+            return single;
+        }
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setMultiTableInsertType(MultiTableInsertType.ALL);
+        MultiTableInsertIntoSegment multiTableInsertInto = new MultiTableInsertIntoSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (InsertOverwriteStandardSyntaxContext each : statements) {
+            InsertStatement insertStmt = (InsertStatement) visit(each);
+            if (null != sourceTable) {
+                insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
+            }
+            insertStmt.addParameterMarkers(getParameterMarkerSegments());
+            multiTableInsertInto.getInsertStatements().add(insertStmt);
+        }
+        result.setMultiTableInsertInto(multiTableInsertInto);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertOverwriteStandardSyntax(final InsertOverwriteStandardSyntaxContext ctx) {
+        return createHiveInsertStatementForDirectory(ctx.select(), ctx.start.getStartIndex());
+    }
+    
+    private InsertStatement createHiveInsertStatementForDirectory(final SelectContext select, final int startIndex) {
+        InsertStatement result = new InsertStatement(getDatabaseType());
+        result.setInsertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList()));
+        result.setInsertSelect(createInsertSelectSegment(select));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     private SubquerySegment createInsertSelectSegment(final SelectContext ctx) {
