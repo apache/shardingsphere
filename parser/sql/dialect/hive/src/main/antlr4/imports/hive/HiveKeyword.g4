@@ -3374,6 +3374,10 @@ JAR
     : J A R
     ;
 
+CONNECTOR
+    : C O N N E C T O R
+    ;
+
 CONNECTORS
     : C O N N E C T O R S
     ;

@@ -15,42 +15,17 @@
  * limitations under the License.
  */
 
-grammar HiveStatement;
+package org.apache.shardingsphere.sql.parser.statement.hive.dal;
 
-import Comments, DMLStatement, DDLStatement, DALStatement;
+import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
-// TODO correct hive SQL parsing according to official documentation
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | loadStatement
-    | createDatabase
-    | dropDatabase
-    | alterDatabase
-    | use
-    | createTable
-    | dropTable
-    | truncateTable
-    | msckStatement
-    | alterTable
-    | createView
-    | dropView
-    | alterView
-    | createMaterializedView
-    | dropMaterializedView
-    | alterMaterializedView
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | createMacro
-    | dropMacro
-    | createFunction
-    | dropFunction
-    | reloadFunction
-    | show
-    | describe
-    ) (SEMI_ EOF? | EOF)
-    | EOF
-    ;
+/**
+ * Hive describe statement.
+ */
+public final class HiveDescribeStatement extends DALStatement {
+    
+    public HiveDescribeStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+}

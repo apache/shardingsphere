@@ -39,6 +39,12 @@ show
     | showCompactions
     ;
 
+describe
+    : describeDatabase
+    | describeConnector
+    | describeTable
+    ;
+
 showDatabases
     : SHOW (DATABASES|SCHEMAS) showLike?
     ;
@@ -124,4 +130,29 @@ showFrom
 
 showLike
     : LIKE stringLiterals
+    ;
+
+describeDatabase
+    : DESCRIBE (DATABASE | SCHEMA) EXTENDED? databaseName
+    ;
+
+describeConnector
+    : DESCRIBE CONNECTOR EXTENDED? connectorName
+    ;
+
+describeTable
+    : DESCRIBE (EXTENDED | FORMATTED)? tableName partitionSpec? columnClause?
+    ;
+
+columnClause
+    : columnName columnOptions
+    ;
+
+columnOptions
+    : columnOption*
+    ;
+
+columnOption
+    : DOT_ identifier
+    | DOT_ string_
     ;
