@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.handshake;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

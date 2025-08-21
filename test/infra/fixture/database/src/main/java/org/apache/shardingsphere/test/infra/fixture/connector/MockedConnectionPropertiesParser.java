@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.test.infra.fixture.connector;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.connector.StandardConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.connector.url.JdbcUrl;
+import org.apache.shardingsphere.database.connector.core.connector.url.StandardJdbcUrlParser;
 
 /**
  * Mocked connection properties parser.

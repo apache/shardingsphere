@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;

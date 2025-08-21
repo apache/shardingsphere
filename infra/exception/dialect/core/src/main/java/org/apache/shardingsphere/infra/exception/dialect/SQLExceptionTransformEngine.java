@@ -19,16 +19,16 @@ package org.apache.shardingsphere.infra.exception.dialect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.exception.generic.DatabaseProtocolSQLException;
-import org.apache.shardingsphere.infra.exception.generic.ServerSQLException;
-import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.infra.exception.dialect.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.infra.exception.generic.DatabaseProtocolSQLException;
+import org.apache.shardingsphere.infra.exception.generic.ServerSQLException;
+import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
 
 import java.sql.SQLException;
 import java.util.Optional;

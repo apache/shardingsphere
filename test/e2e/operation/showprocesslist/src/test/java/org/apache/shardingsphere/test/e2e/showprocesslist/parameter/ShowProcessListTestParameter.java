@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.showprocesslist.parameter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 @RequiredArgsConstructor
 @Getter

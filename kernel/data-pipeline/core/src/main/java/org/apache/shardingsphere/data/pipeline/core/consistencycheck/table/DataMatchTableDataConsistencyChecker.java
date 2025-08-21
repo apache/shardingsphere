@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calcu
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.SingleTableInventoryCalculator;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.StreamingRangeType;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
 

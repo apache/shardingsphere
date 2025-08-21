@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.distsql.parser.core;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlterMaskRuleContext;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementPars
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowPluginsStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.CountRuleStatement;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;

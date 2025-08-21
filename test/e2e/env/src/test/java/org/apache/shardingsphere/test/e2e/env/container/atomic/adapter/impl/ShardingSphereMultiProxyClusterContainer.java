@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ComboITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;

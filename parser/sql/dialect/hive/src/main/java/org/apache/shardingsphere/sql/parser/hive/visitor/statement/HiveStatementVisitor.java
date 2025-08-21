@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.BitExprContext;
@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.BooleanP
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnRefContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.HexadecimalLiteralsContext;
@@ -52,7 +53,6 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNam
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ViewNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;

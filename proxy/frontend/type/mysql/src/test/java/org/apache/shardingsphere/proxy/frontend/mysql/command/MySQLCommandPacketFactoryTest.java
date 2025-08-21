@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.admin.MySQLComResetConnectionPacket;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.te
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;

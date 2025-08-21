@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.natived.commons.algorithm.testcontainers;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 /**
  * Database type for Testcontainers.

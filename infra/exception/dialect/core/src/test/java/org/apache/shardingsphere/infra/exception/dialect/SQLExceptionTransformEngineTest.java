@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.dialect;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.variable.charset;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 

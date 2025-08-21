@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.function;
 
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**

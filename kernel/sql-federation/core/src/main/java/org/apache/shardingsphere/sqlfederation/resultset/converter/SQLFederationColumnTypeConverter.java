@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.resultset.converter;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**

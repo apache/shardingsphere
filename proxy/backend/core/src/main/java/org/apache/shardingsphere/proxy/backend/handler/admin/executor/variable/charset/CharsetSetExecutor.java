@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Map;
