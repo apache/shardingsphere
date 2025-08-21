@@ -17,7 +17,7 @@
 
 grammar HiveStatement;
 
-import Comments, DMLStatement, DDLStatement, DALStatement,TCLStatement;
+import Comments, DMLStatement, DDLStatement, DALStatement, TCLStatement;
 
 // TODO correct hive SQL parsing according to official documentation
 execute
