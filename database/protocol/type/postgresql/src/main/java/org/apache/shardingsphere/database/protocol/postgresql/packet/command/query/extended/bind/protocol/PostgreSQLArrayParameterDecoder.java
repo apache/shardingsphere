@@ -221,7 +221,7 @@ public final class PostgreSQLArrayParameterDecoder {
                 buffer = new StringBuilder();
                 
                 // when end of an array
-                if (chars[i] != '?') {
+                if (chars[i] != '}') {
                     i++;
                     continue;
                 }
