@@ -1,0 +1,115 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.encoder;
+
+import lombok.SneakyThrows;
+import org.checkerframework.checker.index.qual.Positive;
+import org.postgresql.util.ByteConverter;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+
+public class RecursiveArrayEncoder<A> implements ArrayEncoder {
+    
+    private final AbstractArrayEncoder<A> support;
+    private final @Positive int dimensions;
+    
+    /**
+     * @param support The instance providing support for the base array type.
+     */
+    RecursiveArrayEncoder(AbstractArrayEncoder<A> support, @Positive int dimensions) {
+        super();
+        this.support = support;
+        this.dimensions = dimensions;
+        assert dimensions >= 2;
+    }
+    
+    private boolean hasNulls(Object array, int depth) {
+        if (depth > 1) {
+            for (int i = 0, j = Array.getLength(array); i < j; i++) {
+                if (hasNulls(Array.get(array, i), depth - 1)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        int length = Array.getLength(array);
+        for (int i = 0; i < length; i++) {
+            Object item = Array.get(array, i);
+            if (item == null)
+                return true;
+        }
+        return false;
+    }
+    
+    @SneakyThrows(IOException.class)
+    @Override
+    public void toBinaryRepresentation(Object array, int oid, ByteArrayOutputStream baos, Charset charset) {
+        
+        final boolean hasNulls = hasNulls(array, dimensions);
+        
+        final byte[] buffer = new byte[4];
+        
+        // dimensions
+        ByteConverter.int4(buffer, 0, dimensions);
+        baos.write(buffer);
+        // nulls
+        ByteConverter.int4(buffer, 0, hasNulls ? 1 : 0);
+        baos.write(buffer);
+        // oid
+        ByteConverter.int4(buffer, 0, support.getTypeOID(oid));
+        baos.write(buffer);
+        
+        // length
+        ByteConverter.int4(buffer, 0, Array.getLength(array));
+        baos.write(buffer);
+        // postgresql uses 1 base by default
+        ByteConverter.int4(buffer, 0, 1);
+        baos.write(buffer);
+        
+        writeArray(buffer, baos, array, dimensions, true, charset);
+        
+    }
+    
+    @SneakyThrows(IOException.class)
+    private void writeArray(byte[] buffer, ByteArrayOutputStream baos,
+                            Object array, int depth, boolean first, Charset charset) {
+        final int length = Array.getLength(array);
+        
+        if (first) {
+            ByteConverter.int4(buffer, 0, length > 0 ? Array.getLength(Array.get(array, 0)) : 0);
+            baos.write(buffer);
+            // postgresql uses 1 base by default
+            ByteConverter.int4(buffer, 0, 1);
+            baos.write(buffer);
+        }
+        
+        for (int i = 0; i < length; i++) {
+            final Object subArray = Array.get(array, i);
+            if (depth > 2) {
+                writeArray(buffer, baos, subArray, depth - 1, i == 0, charset);
+            } else {
+                support.toSingleDimensionBinaryRepresentation((A[]) subArray, baos, charset);
+            }
+        }
+    }
+    
+}

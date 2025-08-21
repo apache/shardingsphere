@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLBinaryTimestampUtils;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.sql.Timestamp;
+import java.sql.Time;
+import java.util.TimeZone;
 
 /**
  * Binary protocol value for time for PostgreSQL.
@@ -34,11 +35,18 @@ public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinary
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
-        return payload.readInt8();
+        byte[] bytes = new byte[8];
+        payload.getByteBuf().readBytes(bytes);
+        PgBinaryObj pgBinaryObj = new PgBinaryObj(bytes);
+        pgBinaryObj.setType("time");
+        return pgBinaryObj;
+        
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime((Timestamp) value));
+        
+        long time = ((Time) value).getTime() * 1000 + TimeZone.getDefault().getRawOffset() * 1000L;
+        payload.writeInt8(time);
     }
 }

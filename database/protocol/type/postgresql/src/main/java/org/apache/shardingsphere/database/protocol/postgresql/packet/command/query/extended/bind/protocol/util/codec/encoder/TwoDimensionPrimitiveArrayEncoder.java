@@ -1,0 +1,80 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.encoder;
+
+import lombok.SneakyThrows;
+import org.postgresql.util.ByteConverter;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+
+public class TwoDimensionPrimitiveArrayEncoder<A> implements ArrayEncoder<A[][]> {
+    
+    private final AbstractArrayEncoder<A> support;
+    
+    /**
+     * @param support The instance providing support for the base array type.
+     */
+    TwoDimensionPrimitiveArrayEncoder(AbstractArrayEncoder<A> support) {
+        this.support = support;
+    }
+    
+    @SneakyThrows(IOException.class)
+    @Override
+    public void toBinaryRepresentation(A[][] array, int oid, ByteArrayOutputStream baos, Charset charset) {
+        final byte[] buffer = new byte[4];
+        
+        boolean hasNulls = false;
+        for (int i = 0; !hasNulls && i < array.length; i++) {
+            if (support.countNulls(array[i]) > 0) {
+                hasNulls = true;
+            }
+        }
+        
+        // 2 dimension
+        ByteConverter.int4(buffer, 0, 2);
+        baos.write(buffer);
+        // nulls
+        ByteConverter.int4(buffer, 0, hasNulls ? 1 : 0);
+        baos.write(buffer);
+        // oid
+        ByteConverter.int4(buffer, 0, support.getTypeOID(oid));
+        baos.write(buffer);
+        
+        // length
+        ByteConverter.int4(buffer, 0, array.length);
+        baos.write(buffer);
+        // postgres defaults to 1 based lower bound
+        ByteConverter.int4(buffer, 0, 1);
+        baos.write(buffer);
+        
+        ByteConverter.int4(buffer, 0, array.length > 0 ? Array.getLength(array[0]) : 0);
+        baos.write(buffer);
+        // postgresql uses 1 base by default
+        ByteConverter.int4(buffer, 0, 1);
+        baos.write(buffer);
+        
+        for (int i = 0; i < array.length; i++) {
+            support.toSingleDimensionBinaryRepresentation(array[i], baos, charset);
+        }
+        
+    }
+    
+}

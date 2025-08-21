@@ -17,30 +17,31 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.postgresql.util.ByteConverter;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-class PostgreSQLStringBinaryProtocolValueTest {
+class PostgreSQLTimeStampBinaryProtocolValueTest {
     
     @Test
-    void assertNewInstance() {
-        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
-        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        String source = "abc哈哈\uD83E\uDD23";
-        byte[] bytes = source.getBytes(StandardCharsets.UTF_8);
-        byteBuf.writeBytes(bytes);
-        PostgreSQLStringBinaryProtocolValue instance = new PostgreSQLStringBinaryProtocolValue();
-        Object read = instance.read(payload, bytes.length);
-        assertEquals(source, read);
-        payload.getByteBuf().clear();
-        instance.write(payload, read);
-        assertEquals(bytes.length, byteBuf.readInt());
-        assertEquals(source, instance.read(payload, bytes.length));
+    void test() {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufAllocator.DEFAULT.buffer(), StandardCharsets.UTF_8);
+        PostgreSQLTimeStampBinaryProtocolValue actual = new PostgreSQLTimeStampBinaryProtocolValue();
+        Timestamp timestamp = new Timestamp(946656000000L);
+        actual.write(payload, timestamp);
+        
+        PgBinaryObj read = (PgBinaryObj) actual.read(payload, 8);
+        Assertions.assertEquals("timestamp", read.getType());
+        byte[] target = new byte[8];
+        read.toBytes(target, 0);
+        long l = ByteConverter.int8(target, 0);
+        Assertions.assertEquals(0L, l);
+        payload.getByteBuf().release();
     }
 }

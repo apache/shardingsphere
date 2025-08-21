@@ -72,4 +72,8 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
      * @param exception exception
      */
     void handleException(ConnectionSession connectionSession, Exception exception);
+    
+    default void init(ConnectionSession connectionSession) {
+        
+    }
 }

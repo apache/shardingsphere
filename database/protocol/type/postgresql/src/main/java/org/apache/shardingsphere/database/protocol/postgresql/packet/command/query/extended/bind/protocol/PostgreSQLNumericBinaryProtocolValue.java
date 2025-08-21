@@ -17,31 +17,80 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.encoder.NumericArrayEncoder;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.postgresql.util.ByteConverter;
 
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Binary protocol value for numeric for PostgreSQL.
  */
 public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
+    public static final short NUMERIC_NAN = (short) 0xC000;
+    public static final short NUMERIC_PINF = (short) 0xD000;
+    public static final short NUMERIC_NINF = (short) 0xF000;
+    
     @Override
-    public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
-        return value instanceof BigDecimal ? ByteConverter.numeric((BigDecimal) value).length : value.toString().getBytes(StandardCharsets.UTF_8).length;
+    public int getColumnLength(PostgreSQLPacketPayload payload, final Object value) {
+        //
+        if (value instanceof BigDecimal) {
+            return ByteConverter.numeric((BigDecimal) value).length;
+        }
+        
+        if (value instanceof Double && (Double.isNaN((Double) value) || Double.isInfinite((Double) value))) {
+            return 8;
+        }
+        throw new UnsupportedSQLOperationException("PostgreSQLNumericBinaryProtocolValue.getColumnLength()");
     }
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
-        return ByteConverter.numeric(bytes);
+        Number numeric = ByteConverter.numeric(bytes);
+        if (numeric instanceof Double) {
+            Double d = (Double) numeric;
+            byte[] specialNumericBytes = NumericArrayEncoder.buildSpecialNumericBytes(d);
+            PgBinaryObj pgBinaryObj = new PgBinaryObj(specialNumericBytes);
+            pgBinaryObj.setType("numeric");
+            return pgBinaryObj;
+        }
+        return numeric;
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeBytes(value instanceof BigDecimal ? ByteConverter.numeric((BigDecimal) value) : value.toString().getBytes(StandardCharsets.UTF_8));
+        if (value instanceof BigDecimal) {
+            payload.writeBytes(ByteConverter.numeric((BigDecimal) value));
+            return;
+        }
+        
+        if (value instanceof Double) {
+            double d = (Double) value;
+            
+            if (Double.isNaN(d)) {
+                writeSpecialNumeric(payload, NUMERIC_NAN);
+                return;
+            }
+            
+            if (Double.isInfinite(d)) {
+                writeSpecialNumeric(payload, d > 0 ? NUMERIC_PINF : NUMERIC_NINF);
+                return;
+            }
+            
+        }
+        
+        throw new UnsupportedSQLOperationException("PostgreSQLNumericBinaryProtocolValue.getColumnLength()");
+    }
+    
+    /** Helper to write NaN or Infinity as PostgreSQL numeric binary format */
+    private void writeSpecialNumeric(PostgreSQLPacketPayload payload, int sign) {
+        payload.writeInt4(0); // len and weight
+        payload.writeInt2(sign); // sign
+        payload.writeInt2(0); // scale
     }
 }

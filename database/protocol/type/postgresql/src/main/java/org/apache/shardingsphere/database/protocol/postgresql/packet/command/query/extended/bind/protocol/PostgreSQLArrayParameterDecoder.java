@@ -17,174 +17,209 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.postgresql.core.Parser;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.util.*;
+
+import static org.postgresql.util.internal.Nullness.castNonNull;
 
 /**
  * PostgreSQL array parameter decoder.
  */
 public final class PostgreSQLArrayParameterDecoder {
     
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    
-    /**
-     * Decode int2 array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public short[] decodeInt2Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        short[] result = new short[parameterElements.size()];
-        int index = 0;
-        for (String each : parameterElements) {
-            result[index++] = Short.parseShort(each);
+    public Object decodeNumberArray(String parameterValue) {
+        
+        PgDimensionsArrayList list = decodeFromString(parameterValue, ',');
+        int dims = list.dimensionsCount;
+        final int[] dimensionLengths = new int[dims];
+        dimensionLengths[0] = list.size();
+        for (int i = 1; i < dims; i++) {
+            List tmpList = (List) list.get(0);
+            dimensionLengths[i] = castNonNull(tmpList, "first element of adjustedList is null").size();
+            if (i != dims - 1) {
+                tmpList = (List) tmpList.get(0);
+            }
         }
-        return result;
+        Object[] array = (Object[]) Array.newInstance(Number.class, dimensionLengths);
+        if (array instanceof Number[]) {
+            parserNumber((Number[]) array, list);
+        } else {
+            storeStringValues(array, list, dimensionLengths, 0);
+        }
+        return array;
     }
     
-    /**
-     * Decode int4 array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public int[] decodeInt4Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        int[] result = new int[parameterElements.size()];
-        int index = 0;
-        for (String each : parameterElements) {
-            result[index++] = Integer.parseInt(each);
+    private static void storeStringValues(Object[] array, List list, int[] dimensionLengths,
+                                          int dim) {
+        
+        for (int i = 0; i < dimensionLengths[dim]; i++) {
+            Object element = castNonNull(list.get(i), "list.get(i)");
+            if (dim == dimensionLengths.length - 2) {
+                parserNumber((Number[]) array[i], (List) element);
+            } else {
+                storeStringValues((Object[]) array[i], (List) element, dimensionLengths, dim + 1);
+            }
         }
-        return result;
     }
     
-    /**
-     * Decode int8 array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public long[] decodeInt8Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        long[] result = new long[parameterElements.size()];
-        int index = 0;
-        for (String each : parameterElements) {
-            result[index++] = Long.parseLong(each);
+    private static void parserNumber(Number[] target, List source) {
+        for (int i = 0; i < target.length; i++) {
+            Object o = source.get(i);
+            if (o == null) {
+                continue;
+            }
+            target[i] = parseNumber(o.toString());
         }
-        return result;
     }
     
-    /**
-     * Decode float4 array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public float[] decodeFloat4Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        float[] result = new float[parameterElements.size()];
-        int index = 0;
-        for (String each : parameterElements) {
-            result[index++] = Float.parseFloat(each);
+    private static Number parseNumber(String each) {
+        if (each.startsWith("\"") && each.endsWith("\"") && each.length() > 2) {
+            each = each.substring(1, each.length() - 1);
         }
-        return result;
+        if (Double.toString(Double.NaN).equals(each)) {
+            return Double.NaN;
+        }
+        if (Double.toString(Double.POSITIVE_INFINITY).equals(each)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        if (Double.toString(Double.NEGATIVE_INFINITY).equals(each)) {
+            return Double.POSITIVE_INFINITY;
+        }
+        return new BigDecimal(each);
     }
     
-    /**
-     * Decode float8 array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public double[] decodeFloat8Array(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        double[] result = new double[parameterElements.size()];
-        int index = 0;
-        for (String each : parameterElements) {
-            result[index++] = Double.parseDouble(each);
-        }
-        return result;
+    static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {
+        
+        private static final long serialVersionUID = 1L;
+        
+        /**
+         * How many dimensions.
+         */
+        int dimensionsCount = 1;
+        
     }
     
-    /**
-     * Decode bool array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public boolean[] decodeBoolArray(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        boolean[] result = new boolean[parameterElements.size()];
-        int index = 0;
-        for (String each : parameterElements) {
-            result[index++] = Boolean.parseBoolean(each);
+    public PgDimensionsArrayList decodeFromString(String fieldString, char delim) {
+        
+        final PgDimensionsArrayList arrayList = new PgDimensionsArrayList();
+        
+        if (fieldString == null) {
+            return arrayList;
         }
-        return result;
-    }
-    
-    /**
-     * Decode string array parameter.
-     *
-     * @param parameterBytes protocol parameter value
-     * @param isBinary whether parameter value is binary or not
-     * @return int array
-     */
-    public String[] decodeStringArray(final byte[] parameterBytes, final boolean isBinary) {
-        ShardingSpherePreconditions.checkState(!isBinary, () -> new UnsupportedSQLOperationException("binary mode"));
-        String parameterValue = new String(parameterBytes, StandardCharsets.UTF_8);
-        Collection<String> parameterElements = decodeText(parameterValue);
-        return parameterElements.toArray(EMPTY_STRING_ARRAY);
-    }
-    
-    /**
-     * Decode parameter in text mode.
-     *
-     * @param value protocol parameter value
-     * @return decoded parameter value elements
-     */
-    private Collection<String> decodeText(final String value) {
-        Preconditions.checkArgument(value.length() >= 2, "value length less than 2");
-        Preconditions.checkArgument('{' == value.charAt(0) && '}' == value.charAt(value.length() - 1), "value not start with '{' or not end with '}'");
-        String[] elements = value.substring(1, value.length() - 1).split(",");
-        return Arrays.stream(elements).map(each -> "NULL".equals(each) ? null : decodeElementText(each)).collect(Collectors.toList());
-    }
-    
-    private static String decodeElementText(final String element) {
-        String result = element;
-        if ('"' == result.charAt(0) && '"' == result.charAt(result.length() - 1)) {
-            result = result.substring(1, result.length() - 1);
+        
+        final char[] chars = fieldString.toCharArray();
+        StringBuilder buffer = null;
+        boolean insideString = false;
+        
+        // needed for checking if NULL value occurred
+        boolean wasInsideString = false;
+        
+        // array dimension arrays
+        final List<PgDimensionsArrayList> dims = new ArrayList<>();
+        
+        // currently processed array
+        PgDimensionsArrayList curArray = arrayList;
+        
+        // Starting with 8.0 non-standard (beginning index
+        // isn't 1) bounds the dimensions are returned in the
+        // data formatted like so "[0:3]={0,1,2,3,4}".
+        // Older versions simply do not return the bounds.
+        //
+        // Right now we ignore these bounds, but we could
+        // consider allowing these index values to be used
+        // even though the JDBC spec says 1 is the first
+        // index. I'm not sure what a client would like
+        // to see, so we just retain the old behavior.
+        int startOffset = 0;
+        {
+            if (chars[0] == '[') {
+                while (chars[startOffset] != '=') {
+                    startOffset++;
+                }
+                startOffset++; // skip =
+            }
         }
-        while (result.contains("\\\"")) {
-            result = result.replace("\\\"", "\"");
+        
+        for (int i = startOffset; i < chars.length; i++) {
+            
+            // escape character that we need to skip
+            if (chars[i] == '\\') {
+                i++;
+            } else if (!insideString && chars[i] == '{') {
+                // subarray start
+                if (dims.isEmpty()) {
+                    dims.add(arrayList);
+                } else {
+                    PgDimensionsArrayList a = new PgDimensionsArrayList();
+                    PgDimensionsArrayList p = dims.get(dims.size() - 1);
+                    p.add(a);
+                    dims.add(a);
+                }
+                curArray = dims.get(dims.size() - 1);
+                
+                // number of dimensions
+                {
+                    for (int t = i + 1; t < chars.length; t++) {
+                        if (Character.isWhitespace(chars[t])) {
+                            continue;
+                        } else if (chars[t] == '{') {
+                            curArray.dimensionsCount++;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                
+                buffer = new StringBuilder();
+                continue;
+            } else if (chars[i] == '"') {
+                // quoted element
+                insideString = !insideString;
+                wasInsideString = true;
+                continue;
+            } else if (!insideString && Parser.isArrayWhiteSpace(chars[i])) {
+                // white space
+                continue;
+            } else if ((!insideString && (chars[i] == delim || chars[i] == '}')) || i == chars.length - 1) {
+                // array end or element end
+                // when character that is a part of array element
+                if (chars[i] != '"' && chars[i] != '}' && chars[i] != delim && buffer != null) {
+                    buffer.append(chars[i]);
+                }
+                
+                String b = buffer == null ? null : buffer.toString();
+                
+                // add element to current array
+                if (b != null && (!b.isEmpty() || wasInsideString)) {
+                    curArray.add(!wasInsideString && "NULL".equals(b) ? null : b);
+                }
+                
+                wasInsideString = false;
+                buffer = new StringBuilder();
+                
+                // when end of an array
+                if (chars[i] == '}') {
+                    dims.remove(dims.size() - 1);
+                    
+                    // when multi-dimension
+                    if (!dims.isEmpty()) {
+                        curArray = dims.get(dims.size() - 1);
+                    }
+                    
+                    buffer = null;
+                }
+                
+                continue;
+            }
+            
+            if (buffer != null) {
+                buffer.append(chars[i]);
+            }
         }
-        while (result.contains("\\\\")) {
-            result = result.replace("\\\\", "\\");
-        }
-        return result;
+        return arrayList;
     }
 }
