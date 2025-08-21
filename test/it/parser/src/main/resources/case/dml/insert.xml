@@ -5187,7 +5187,6 @@
         </select>
     </insert>
 
-    <!-- Hive: writingDataIntoFileSystem multiple inserts with FROM -->
     <insert sql-case-id="single_insert_overwrite_directory">
         <columns start-index="14" stop-index="14" />
         <select>
