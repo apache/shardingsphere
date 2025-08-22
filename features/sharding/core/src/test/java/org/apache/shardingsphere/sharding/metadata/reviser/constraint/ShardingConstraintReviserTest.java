@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;

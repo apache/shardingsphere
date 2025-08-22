@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 import java.util.Arrays;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic;
 
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 

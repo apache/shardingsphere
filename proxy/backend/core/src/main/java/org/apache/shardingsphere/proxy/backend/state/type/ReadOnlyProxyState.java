@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.state.type;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
 import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;

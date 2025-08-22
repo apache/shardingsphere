@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import javax.sql.DataSource;

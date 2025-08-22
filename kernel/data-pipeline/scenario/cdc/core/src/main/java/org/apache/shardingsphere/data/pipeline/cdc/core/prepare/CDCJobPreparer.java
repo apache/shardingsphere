@@ -52,7 +52,7 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.splitter.
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.sql.SQLException;
 import java.util.Collection;

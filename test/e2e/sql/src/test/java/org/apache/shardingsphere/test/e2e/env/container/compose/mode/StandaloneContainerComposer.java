@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.compose.mode;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.config.ProxyStandaloneContainerConfigurationFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
@@ -30,6 +27,9 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
+import org.apache.shardingsphere.test.e2e.env.container.config.ProxyStandaloneContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment.Type;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.distsql.handler.executor.ral.plugin;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseSupportedTypedSPI;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseSupportedTypedSPI;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
