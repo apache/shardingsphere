@@ -16,9 +16,9 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-encrypt-core`，数据加密核心
 - `org.apache.shardingsphere:shardingsphere-infra-context`， Context 的内核运行与元数据刷新机制
 - `org.apache.shardingsphere:shardingsphere-mask-core`，数据脱敏核心
-- `org.apache.shardingsphere:shardingsphere-mysql-dialect-exception`， 数据库网关的 MySQL 实现
+- `org.apache.shardingsphere:shardingsphere-database-exception-mysql`， 数据库网关的 MySQL 实现
 - `org.apache.shardingsphere:shardingsphere-parser-core`， SQL 解析核心
-- `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`，数据库网关的 PostgreSQL 实现
+- `org.apache.shardingsphere:shardingsphere-database-exception-postgresql`，数据库网关的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-readwrite-splitting-core`，读写分离核心
 - `org.apache.shardingsphere:shardingsphere-shadow-core`，影子库核心
 - `org.apache.shardingsphere:shardingsphere-sharding-core`，数据分片核心

@@ -30,5 +30,6 @@
     <modules>
         <module>connector</module>
         <module>protocol</module>
+        <module>exception</module>
     </modules>
 </project>
