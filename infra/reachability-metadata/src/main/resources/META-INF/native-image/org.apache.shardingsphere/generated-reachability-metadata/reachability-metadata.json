@@ -3534,249 +3534,249 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "type": "org.apache.shardingsphere.infra.database.clickhouse.metadata.database.ClickHouseDatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.clickhouse.database.ClickHouseDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.clickhouse.type.ClickHouseDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.clickhouse.type.ClickHouseDatabaseType"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.doris.DorisDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.doris.DorisDatabaseType"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "type": "org.apache.shardingsphere.infra.database.firebird.metadata.database.FirebirdDatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.firebird.database.FirebirdDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
       },
-      "type": "org.apache.shardingsphere.infra.database.firebird.metadata.database.system.FirebirdSystemDatabase"
+      "type": "org.apache.shardingsphere.database.connector.firebird.database.system.FirebirdSystemDatabase"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.firebird.type.FirebirdDatabaseType"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
-      },
-      "type": "org.apache.shardingsphere.infra.database.h2.checker.H2DatabasePrivilegeChecker"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
-      },
-      "type": "org.apache.shardingsphere.infra.database.h2.metadata.data.loader.H2MetaDataLoader"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
-      },
-      "type": "org.apache.shardingsphere.infra.database.h2.metadata.database.H2DatabaseMetaData"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"
-      },
-      "type": "org.apache.shardingsphere.infra.database.h2.metadata.database.system.H2SystemDatabase"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
-      },
-      "type": "org.apache.shardingsphere.infra.database.h2.type.H2DatabaseType"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
-      },
-      "type": "org.apache.shardingsphere.infra.database.hive.metadata.data.loader.HiveMetaDataLoader"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
-      },
-      "type": "org.apache.shardingsphere.infra.database.hive.metadata.database.HiveDatabaseMetaData"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
-      },
-      "type": "org.apache.shardingsphere.infra.database.hive.type.HiveDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.firebird.type.FirebirdDatabaseType"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
       },
-      "type": "org.apache.shardingsphere.infra.database.mysql.checker.MySQLDatabasePrivilegeChecker"
+      "type": "org.apache.shardingsphere.database.connector.h2.checker.H2DatabasePrivilegeChecker"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
+      },
+      "type": "org.apache.shardingsphere.database.connector.h2.metadata.data.loader.H2MetaDataLoader"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+      },
+      "type": "org.apache.shardingsphere.database.connector.h2.metadata.database.H2DatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
+      },
+      "type": "org.apache.shardingsphere.database.connector.h2.metadata.database.system.H2SystemDatabase"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "type": "org.apache.shardingsphere.database.connector.h2.type.H2DatabaseType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
+      },
+      "type": "org.apache.shardingsphere.database.connector.hive.metadata.data.loader.HiveMetaDataLoader"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+      },
+      "type": "org.apache.shardingsphere.database.connector.hive.metadata.database.HiveDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "type": "org.apache.shardingsphere.database.connector.hive.type.HiveDatabaseType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
+      },
+      "type": "org.apache.shardingsphere.database.connector.mysql.checker.MySQLDatabasePrivilegeChecker"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"
       },
-      "type": "org.apache.shardingsphere.infra.database.mysql.keygen.MySQLGeneratedKeyColumnProvider"
+      "type": "org.apache.shardingsphere.database.connector.mysql.keygen.MySQLGeneratedKeyColumnProvider"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
-      "type": "org.apache.shardingsphere.infra.database.mysql.metadata.data.loader.MySQLMetaDataLoader"
+      "type": "org.apache.shardingsphere.database.connector.mysql.metadata.data.loader.MySQLMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "type": "org.apache.shardingsphere.infra.database.mysql.metadata.database.MySQLDatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.mysql.metadata.database.MySQLDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
       },
-      "type": "org.apache.shardingsphere.infra.database.mysql.metadata.database.system.MySQLSystemDatabase"
+      "type": "org.apache.shardingsphere.database.connector.mysql.metadata.database.system.MySQLSystemDatabase"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
-      },
-      "type": "org.apache.shardingsphere.infra.database.opengauss.checker.OpenGaussDatabasePrivilegeChecker"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
-      },
-      "type": "org.apache.shardingsphere.infra.database.opengauss.metadata.data.loader.OpenGaussMetaDataLoader"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
-      },
-      "type": "org.apache.shardingsphere.infra.database.opengauss.metadata.database.OpenGaussDatabaseMetaData"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"
-      },
-      "type": "org.apache.shardingsphere.infra.database.opengauss.metadata.database.system.OpenGaussSystemDatabase"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
-      },
-      "type": "org.apache.shardingsphere.infra.database.opengauss.type.OpenGaussDatabaseType"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
-      },
-      "type": "org.apache.shardingsphere.infra.database.oracle.metadata.data.loader.OracleMetaDataLoader"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
-      },
-      "type": "org.apache.shardingsphere.infra.database.oracle.metadata.database.OracleDatabaseMetaData"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
-      },
-      "type": "org.apache.shardingsphere.infra.database.oracle.type.OracleDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
       },
-      "type": "org.apache.shardingsphere.infra.database.postgresql.checker.PostgreSQLDatabasePrivilegeChecker"
+      "type": "org.apache.shardingsphere.database.connector.opengauss.checker.OpenGaussDatabasePrivilegeChecker"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
-      "type": "org.apache.shardingsphere.infra.database.postgresql.metadata.data.loader.PostgreSQLMetaDataLoader"
+      "type": "org.apache.shardingsphere.database.connector.opengauss.metadata.data.loader.OpenGaussMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "type": "org.apache.shardingsphere.infra.database.postgresql.metadata.database.PostgreSQLDatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.opengauss.metadata.database.OpenGaussDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
       },
-      "type": "org.apache.shardingsphere.infra.database.postgresql.metadata.database.system.PostgreSQLSystemDatabase"
+      "type": "org.apache.shardingsphere.database.connector.opengauss.metadata.database.system.OpenGaussSystemDatabase"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.postgresql.type.PostgreSQLDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
-      "type": "org.apache.shardingsphere.infra.database.presto.metadata.data.loader.PrestoMetaDataLoader"
+      "type": "org.apache.shardingsphere.database.connector.oracle.metadata.data.loader.OracleMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "type": "org.apache.shardingsphere.infra.database.presto.metadata.database.PrestoDatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.oracle.metadata.database.OracleDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.presto.type.PrestoDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.oracle.type.OracleDatabaseType"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
       },
-      "type": "org.apache.shardingsphere.infra.database.sql92.metadata.database.SQL92DatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.postgresql.checker.PostgreSQLDatabasePrivilegeChecker"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
-      "type": "org.apache.shardingsphere.infra.database.sql92.type.SQL92DatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.postgresql.metadata.data.loader.PostgreSQLMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "type": "org.apache.shardingsphere.infra.database.sqlserver.metadata.data.loader.SQLServerMetaDataLoader"
+      "type": "org.apache.shardingsphere.database.connector.postgresql.metadata.data.loader.PostgreSQLDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
       },
-      "type": "org.apache.shardingsphere.infra.database.sqlserver.metadata.database.SQLServerDatabaseMetaData"
+      "type": "org.apache.shardingsphere.database.connector.postgresql.metadata.database.system.PostgreSQLSystemDatabase"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "type": "org.apache.shardingsphere.infra.database.sqlserver.type.SQLServerDatabaseType"
+      "type": "org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
+      },
+      "type": "org.apache.shardingsphere.database.connector.presto.metadata.data.loader.PrestoMetaDataLoader"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+      },
+      "type": "org.apache.shardingsphere.database.connector.presto.metadata.database.PrestoDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "type": "org.apache.shardingsphere.database.connector.core.type.DatabaseType.PrestoDatabaseType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+      },
+      "type": "org.apache.shardingsphere.database.connector.sql92.metadata.database.SQL92DatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "type": "org.apache.shardingsphere.database.connector.sql92.type.SQL92DatabaseType"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
+      },
+      "type": "org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.data.loader.SQLServerMetaDataLoader"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
+      },
+      "type": "org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.SQLServerDatabaseMetaData"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
+      },
+      "type": "org.apache.shardingsphere.database.connector.sql92.sqlserver.type.SQLServerDatabaseType"
     },
     {
       "condition": {
@@ -5054,7 +5054,7 @@
         {
           "name": "setType",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType"
+            "org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType"
           ]
         }
       ]
@@ -5159,7 +5159,7 @@
         {
           "name": "setType",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.metadata.database.enums.TableType"
+            "org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType"
           ]
         }
       ]
@@ -10188,7 +10188,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10202,7 +10202,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10286,7 +10286,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10398,7 +10398,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10412,7 +10412,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10426,7 +10426,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10440,7 +10440,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10454,7 +10454,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10468,7 +10468,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10552,7 +10552,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10566,7 +10566,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10720,7 +10720,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10734,7 +10734,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10748,7 +10748,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10832,7 +10832,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10958,7 +10958,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -10972,7 +10972,7 @@
         {
           "name": "<init>",
           "parameterTypes": [
-            "org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+            "org.apache.shardingsphere.database.connector.core.type.DatabaseType"
           ]
         }
       ]
@@ -12628,37 +12628,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.database.core.checker.DialectDatabasePrivilegeChecker"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.checker.DialectDatabasePrivilegeChecker"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.keygen.GeneratedKeyColumnProvider"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.data.loader.MetaDataLoader"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.database.core.metadata.data.loader.DialectMetaDataLoader"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.metadata.data.loader.DialectMetaDataLoader"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.metadata.DialectDatabaseMetaData"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.metadata.database.system.SystemDatabase"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.database.core.metadata.database.system.DialectSystemDatabase"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase"
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory"
+        "typeReached": "org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory"
       },
-      "glob": "META-INF/services/org.apache.shardingsphere.infra.database.core.type.DatabaseType"
+      "glob": "META-INF/services/org.apache.shardingsphere.database.connector.core.type.DatabaseType"
     },
     {
       "condition": {
