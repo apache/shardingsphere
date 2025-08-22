@@ -68,7 +68,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     public void init(final ConnectionSession connectionSession) {
         connectionSession.getDatabaseConnectionManager().getAfterCreateConnectionPostProcessors().add(this::initConnection);
     }
-
+    
     /**
      * init connection.
      * @param target Connection to set
