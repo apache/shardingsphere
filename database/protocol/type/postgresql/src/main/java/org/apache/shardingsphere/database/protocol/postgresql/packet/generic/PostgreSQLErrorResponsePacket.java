@@ -19,11 +19,11 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.generic;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.database.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -28,6 +28,8 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.rule.builder.AuthorityRuleBuilder;
+import org.apache.shardingsphere.database.exception.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.database.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLSSLUnwillingPacket;
@@ -35,8 +37,6 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.P
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.EmptyUsernameException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;

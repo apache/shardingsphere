@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.generic;
 
+import org.apache.shardingsphere.database.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

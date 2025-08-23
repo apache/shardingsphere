@@ -27,6 +27,12 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResultBuild
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.postgresql.exception.authority.EmptyUsernameException;
+import org.apache.shardingsphere.database.exception.postgresql.exception.authority.InvalidPasswordException;
+import org.apache.shardingsphere.database.exception.postgresql.exception.authority.PrivilegeNotGrantedException;
+import org.apache.shardingsphere.database.exception.postgresql.exception.authority.UnknownUsernameException;
+import org.apache.shardingsphere.database.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussProtocolVersion;
@@ -47,12 +53,6 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.EmptyUsernameException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.InvalidPasswordException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.PrivilegeNotGrantedException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.UnknownUsernameException;
-import org.apache.shardingsphere.infra.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

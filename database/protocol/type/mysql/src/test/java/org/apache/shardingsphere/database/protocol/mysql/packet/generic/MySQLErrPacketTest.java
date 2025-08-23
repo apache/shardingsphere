@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.generic;
 
+import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
