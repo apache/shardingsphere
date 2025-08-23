@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.executor.engine.transaction;
 
+import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;

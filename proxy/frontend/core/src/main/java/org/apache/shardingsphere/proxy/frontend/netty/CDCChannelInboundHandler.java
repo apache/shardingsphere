@@ -43,11 +43,11 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.ServerGreetingResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
-import org.apache.shardingsphere.infra.exception.dialect.exception.connection.AccessDeniedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
-import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.internal.ShardingSphereInternalException;

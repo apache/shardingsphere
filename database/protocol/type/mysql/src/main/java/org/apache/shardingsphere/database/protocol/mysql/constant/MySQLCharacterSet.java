@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.exception.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.mysql.exception.UnknownCollationException;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

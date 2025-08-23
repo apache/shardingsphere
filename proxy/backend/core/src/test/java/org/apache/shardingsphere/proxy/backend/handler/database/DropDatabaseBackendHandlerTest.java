@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.database;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.DatabaseDropNotExistsException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseDropNotExistsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

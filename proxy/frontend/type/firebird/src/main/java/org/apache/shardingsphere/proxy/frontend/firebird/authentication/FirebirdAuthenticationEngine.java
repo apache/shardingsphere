@@ -24,6 +24,7 @@ import org.apache.shardingsphere.authentication.AuthenticatorType;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.Fir
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;

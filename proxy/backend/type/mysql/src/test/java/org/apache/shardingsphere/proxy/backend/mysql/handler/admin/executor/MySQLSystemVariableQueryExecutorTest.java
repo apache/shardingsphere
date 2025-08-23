@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.mysql.exception.IncorrectGlobalLocalVariableException;
+import org.apache.shardingsphere.database.exception.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;

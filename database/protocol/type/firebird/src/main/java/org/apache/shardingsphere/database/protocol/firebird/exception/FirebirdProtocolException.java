@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.exception;
 
-import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 
 /**
  * Firebird protocol exception.

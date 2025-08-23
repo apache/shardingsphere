@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.opengauss.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.exception.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQ
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.postgresql.vendor.PostgreSQLVendorError;
 
 import java.nio.charset.Charset;
 import java.util.LinkedList;

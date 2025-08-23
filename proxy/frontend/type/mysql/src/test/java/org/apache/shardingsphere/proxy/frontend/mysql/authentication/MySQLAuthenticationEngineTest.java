@@ -29,6 +29,11 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResultBuild
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.database.exception.mysql.exception.HandshakeException;
+import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConnectionPhase;
@@ -37,11 +42,6 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLErr
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.dialect.exception.connection.AccessDeniedException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
-import org.apache.shardingsphere.infra.exception.mysql.exception.DatabaseAccessDeniedException;
-import org.apache.shardingsphere.infra.exception.mysql.exception.HandshakeException;
-import org.apache.shardingsphere.infra.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
