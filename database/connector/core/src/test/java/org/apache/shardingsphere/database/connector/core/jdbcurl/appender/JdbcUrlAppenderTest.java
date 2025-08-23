@@ -27,7 +27,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class StandardJdbcUrlAppenderTest {
+class JdbcUrlAppenderTest {
     
     @Test
     void assertAppendQueryPropertiesWithoutToBeAppendedQueryProperties() {
