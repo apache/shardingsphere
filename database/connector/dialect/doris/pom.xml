@@ -20,21 +20,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-connector-type</artifactId>
+        <artifactId>shardingsphere-database-connector-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-database-connector-h2</artifactId>
+    <artifactId>shardingsphere-database-connector-doris</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-database-connector-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-connector-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

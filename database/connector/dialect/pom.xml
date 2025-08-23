@@ -20,32 +20,26 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-connector-type</artifactId>
+        <artifactId>shardingsphere-database-connector</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-database-connector-hive</artifactId>
+    <artifactId>shardingsphere-database-connector-dialect</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-connector-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-jdbc</artifactId>
-            <version>${hive-jdbc.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.github.linghengqian</groupId>
-            <artifactId>hive-server2-jdbc-driver-thin</artifactId>
-            <version>${hive-server2-jdbc-driver-thin.version}</version>
-            <scope>test</scope>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>mysql</module>
+        <module>mariadb</module>
+        <module>postgresql</module>
+        <module>opengauss</module>
+        <module>oracle</module>
+        <module>sqlserver</module>
+        <module>clickhouse</module>
+        <module>doris</module>
+        <module>hive</module>
+        <module>presto</module>
+        <module>firebird</module>
+        <module>h2</module>
+        <module>sql92</module>
+    </modules>
 </project>

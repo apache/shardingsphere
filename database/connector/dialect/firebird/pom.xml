@@ -20,10 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-connector-type</artifactId>
+        <artifactId>shardingsphere-database-connector-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-database-connector-presto</artifactId>
+    <artifactId>shardingsphere-database-connector-firebird</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -32,10 +32,12 @@
             <artifactId>shardingsphere-database-connector-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-jdbc</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.firebirdsql.jdbc</groupId>
+            <artifactId>jaybird</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

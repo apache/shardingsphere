@@ -20,21 +20,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-connector-type</artifactId>
+        <artifactId>shardingsphere-database-connector-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-database-connector-opengauss</artifactId>
+    <artifactId>shardingsphere-database-connector-sql92</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-database-connector-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-connector-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
