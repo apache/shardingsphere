@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.core.jdbcurl.judger;
 
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -27,22 +27,22 @@ class DatabaseInstanceJudgerTest {
     
     @Test
     void assertIsInSameDatabaseInstance() {
-        StandardConnectionProperties connectionProps1 = new StandardConnectionProperties("127.0.0.1", 9999, "foo", "foo");
-        StandardConnectionProperties connectionProps2 = new StandardConnectionProperties("127.0.0.1", 9999, "bar", "bar");
+        ConnectionProperties connectionProps1 = new ConnectionProperties("127.0.0.1", 9999, "foo", "foo");
+        ConnectionProperties connectionProps2 = new ConnectionProperties("127.0.0.1", 9999, "bar", "bar");
         assertTrue(DatabaseInstanceJudger.isInSameDatabaseInstance(connectionProps1, connectionProps2));
     }
     
     @Test
     void assertIsNotInSameDatabaseInstanceWithDifferentHostname() {
-        StandardConnectionProperties connectionProps1 = new StandardConnectionProperties("127.0.0.1", 9999, "foo", "foo");
-        StandardConnectionProperties connectionProps2 = new StandardConnectionProperties("127.0.0.2", 9999, "foo", "foo");
+        ConnectionProperties connectionProps1 = new ConnectionProperties("127.0.0.1", 9999, "foo", "foo");
+        ConnectionProperties connectionProps2 = new ConnectionProperties("127.0.0.2", 9999, "foo", "foo");
         assertFalse(DatabaseInstanceJudger.isInSameDatabaseInstance(connectionProps1, connectionProps2));
     }
     
     @Test
     void assertIsNotInSameDatabaseInstanceWithDifferentPort() {
-        StandardConnectionProperties connectionProps1 = new StandardConnectionProperties("127.0.0.1", 9999, "foo", "foo");
-        StandardConnectionProperties connectionProps2 = new StandardConnectionProperties("127.0.0.1", 8888, "foo", "foo");
+        ConnectionProperties connectionProps1 = new ConnectionProperties("127.0.0.1", 9999, "foo", "foo");
+        ConnectionProperties connectionProps2 = new ConnectionProperties("127.0.0.1", 8888, "foo", "foo");
         assertFalse(DatabaseInstanceJudger.isInSameDatabaseInstance(connectionProps1, connectionProps2));
     }
 }

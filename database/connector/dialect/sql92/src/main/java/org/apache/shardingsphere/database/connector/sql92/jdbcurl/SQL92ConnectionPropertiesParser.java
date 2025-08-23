@@ -20,7 +20,6 @@ package org.apache.shardingsphere.database.connector.sql92.jdbcurl;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;
@@ -39,7 +38,7 @@ public final class SQL92ConnectionPropertiesParser implements ConnectionProperti
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         Matcher matcher = URL_PATTERN.matcher(url);
         ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
-        return new StandardConnectionProperties("", DEFAULT_PORT, "", null);
+        return new ConnectionProperties("", DEFAULT_PORT, "", null);
     }
     
     @Override

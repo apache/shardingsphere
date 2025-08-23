@@ -24,7 +24,6 @@ import org.apache.hive.jdbc.Utils.JdbcConnectionParams;
 import org.apache.hive.jdbc.ZooKeeperHiveClientException;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 
 import java.sql.SQLException;
 import java.util.Properties;
@@ -47,7 +46,7 @@ public final class HiveConnectionPropertiesParser implements ConnectionPropertie
         queryProps.putAll(params.getSessionVars());
         queryProps.putAll(params.getHiveConfs());
         queryProps.putAll(params.getHiveVars());
-        return new StandardConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps, new Properties());
+        return new ConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps, new Properties());
     }
     
     @Override

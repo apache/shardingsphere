@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.infra.fixture.connector;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
 
@@ -32,8 +31,8 @@ public final class MockedConnectionPropertiesParser implements ConnectionPropert
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? standardJdbcUrl.getDatabase() : catalog,
-                standardJdbcUrl.getDatabase());
+        return new ConnectionProperties(
+                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getDatabase());
     }
     
     @Override
