@@ -44,9 +44,4 @@ public final class StandardConnectionProperties implements ConnectionProperties 
     public StandardConnectionProperties(final String hostname, final int port, final String catalog, final String schema) {
         this(hostname, port, catalog, schema, new Properties(), new Properties());
     }
-    
-    @Override
-    public boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps) {
-        return hostname.equals(connectionProps.getHostname()) && port == connectionProps.getPort();
-    }
 }

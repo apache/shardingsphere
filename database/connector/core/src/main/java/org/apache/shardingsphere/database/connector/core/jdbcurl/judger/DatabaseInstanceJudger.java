@@ -15,41 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.h2.jdbcurl;
+package org.apache.shardingsphere.database.connector.core.jdbcurl.judger;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 
-import java.util.Properties;
-
 /**
- * Connection properties for H2.
+ * Database instance judger.
  */
-@RequiredArgsConstructor
-@Getter
-public final class H2ConnectionProperties implements ConnectionProperties {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DatabaseInstanceJudger {
     
-    private final String hostname;
-    
-    private final int port;
-    
-    private final String catalog;
-    
-    private final String model;
-    
-    @Override
-    public String getSchema() {
-        return null;
-    }
-    
-    @Override
-    public Properties getQueryProperties() {
-        return new Properties();
-    }
-    
-    @Override
-    public Properties getDefaultQueryProperties() {
-        return new Properties();
+    /**
+     * Judge whether two of JDBC URLs are in the same database instance.
+     *
+     * @param connectionProps1 connection properties 1
+     * @param connectionProps2 connection properties 2
+     * @return JDBC URLs are in the same database instance or not
+     */
+    public static boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps1, final ConnectionProperties connectionProps2) {
+        return connectionProps1.getHostname().equals(connectionProps2.getHostname()) && connectionProps1.getPort() == connectionProps2.getPort();
     }
 }
