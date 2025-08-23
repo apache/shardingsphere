@@ -326,7 +326,7 @@
 ### Bug Fixes
 
 1. Kernel: Replace ThreadLocal with TransmittableThreadLocal in HintManager to support cross Thread usage
-1. Kernel: Use ConnectionPropertiesParser spi to parse jdbcUrl to solve oracle url parse error
+1. Kernel: Use ConnectionPropertiesParser spi to parse standardJdbcUrl to solve oracle url parse error
 1. Kernel: Fixes column count assert exception caused by postgresql system table judge
 1. Metadata: Keep in-used storage node when unregister storage unit
 1. Metadata: Fixes the generated key column name case insensitivity error
@@ -1167,7 +1167,7 @@
 1. Scaling: Fix resource leak caused by error occurred when creating DataSource in ShardingSphere-Scaling
 1. Scaling: Fix ShardingSphereDataSource creation ignoring other rules
 1. Scaling: Fix on preparation job could not be stopped
-1. Scaling: Fix data source property url and jdbcUrl compatibility
+1. Scaling: Fix data source property url and standardJdbcUrl compatibility
 1. Scaling: Fix openGauss logical replication slot creation, avoid possible incremental data loss
 1. Scaling: Update local job status before persisting job status to registry center, make sure it won't be overwritten later
 1. Scaling: Handling null value in TestDecodingPlugin for PostgreSQL
