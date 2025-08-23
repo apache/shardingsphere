@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.core.external.sql.vendor.VendorError;
+import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
 

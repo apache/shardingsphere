@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.infra.exception.dialect;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.external.server.ShardingSphereServerException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.infra.exception.external.server.ShardingSphereServerException;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 

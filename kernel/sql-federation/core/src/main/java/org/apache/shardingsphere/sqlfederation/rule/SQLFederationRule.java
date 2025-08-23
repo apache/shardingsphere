@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.sqlfederation.compiler.context.CompilerContext;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.revise;
 
 import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.LinkedList;

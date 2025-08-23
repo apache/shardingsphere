@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.exception;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * SQL AST visitor exception.

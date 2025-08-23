@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.ResourceDefinitionException;
 
 import java.util.Map;

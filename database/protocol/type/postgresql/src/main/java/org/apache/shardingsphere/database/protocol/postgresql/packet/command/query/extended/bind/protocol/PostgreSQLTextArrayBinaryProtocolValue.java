@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.postgresql.util.PGobject;
 

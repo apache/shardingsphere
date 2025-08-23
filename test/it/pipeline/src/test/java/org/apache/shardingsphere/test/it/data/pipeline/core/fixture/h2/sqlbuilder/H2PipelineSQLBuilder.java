@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.sqlbuild
 
 import org.apache.shardingsphere.data.pipeline.core.exception.job.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 
 import javax.sql.DataSource;
