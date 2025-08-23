@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.database.connector.h2.jdbcurl;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 
 import java.util.Properties;
 
@@ -38,11 +40,12 @@ public final class H2ConnectionProperties implements ConnectionProperties {
     
     private final String hostname;
     
-    private final String model;
-    
     private final int port;
     
     private final String catalog;
+    
+    @Getter(AccessLevel.NONE)
+    private final String model;
     
     @Override
     public String getSchema() {
@@ -67,7 +70,7 @@ public final class H2ConnectionProperties implements ConnectionProperties {
         if (!isSameModel(model, ((H2ConnectionProperties) connectionProps).model)) {
             return false;
         }
-        return hostname.equals(connectionProps.getHostname()) && port == connectionProps.getPort();
+        return new StandardConnectionProperties(hostname, port, catalog, null).isInSameDatabaseInstance(connectionProps);
     }
     
     private boolean isSameModel(final String model1, final String model2) {
