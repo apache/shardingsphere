@@ -20,28 +20,33 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-protocol-type</artifactId>
+        <artifactId>shardingsphere-database-protocol-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-protocol-firebird</artifactId>
+    <artifactId>shardingsphere-protocol-opengauss</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-protocol-core</artifactId>
+            <artifactId>shardingsphere-protocol-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-database-exception-core</artifactId>
+            <artifactId>shardingsphere-database-exception-postgresql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-database-connector-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
         
         <dependency>
-            <groupId>org.firebirdsql.jdbc</groupId>
-            <artifactId>jaybird</artifactId>
-            <scope>compile</scope>
+            <groupId>org.opengauss</groupId>
+            <artifactId>opengauss-jdbc</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
