@@ -43,24 +43,12 @@ public final class H2ConnectionPropertiesParser implements ConnectionPropertiesP
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         Matcher matcher = URL_PATTERN.matcher(url);
         ShardingSpherePreconditions.checkState(matcher.find(), () -> new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern()));
-        return new H2ConnectionProperties(getHostname(matcher), getModel(matcher), getPort(matcher), getCatalog(matcher));
+        return new H2ConnectionProperties(getHostname(matcher), getPort(matcher), getCatalog(matcher), getModel(matcher));
     }
     
     private String getHostname(final Matcher matcher) {
         String hostname = matcher.group("hostname");
         return null == hostname ? DEFAULT_HOST_NAME : hostname;
-    }
-    
-    private static String getModel(final Matcher matcher) {
-        String modelMem = matcher.group("modelMem");
-        if (null != modelMem) {
-            return modelMem;
-        }
-        String modelSslOrTcp = matcher.group("modelSslOrTcp");
-        if (null != modelSslOrTcp) {
-            return modelSslOrTcp;
-        }
-        return matcher.group("modelFile");
     }
     
     private int getPort(final Matcher matcher) {
@@ -78,6 +66,18 @@ public final class H2ConnectionPropertiesParser implements ConnectionPropertiesP
             return fileName;
         }
         return matcher.group("catalog");
+    }
+    
+    private static String getModel(final Matcher matcher) {
+        String modelMem = matcher.group("modelMem");
+        if (null != modelMem) {
+            return modelMem;
+        }
+        String modelSslOrTcp = matcher.group("modelSslOrTcp");
+        if (null != modelSslOrTcp) {
+            return modelSslOrTcp;
+        }
+        return matcher.group("modelFile");
     }
     
     @Override
