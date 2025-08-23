@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.compose;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.connector.url.JdbcUrlAppender;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.appender.JdbcUrlAppender;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;

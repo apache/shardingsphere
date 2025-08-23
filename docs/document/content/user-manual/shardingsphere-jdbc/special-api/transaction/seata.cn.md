@@ -223,19 +223,19 @@ dataSources:
    ds_0:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
+      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
       username: root
       password: example
    ds_1:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
+      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
       username: root
       password: example
    ds_2:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
+      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
       username: root
       password: example
 rules:

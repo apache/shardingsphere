@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.test.infra.fixture.connector;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.database.connector.core.connector.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
 
 /**
  * Mocked connection properties parser.
@@ -31,8 +31,8 @@ public final class MockedConnectionPropertiesParser implements ConnectionPropert
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? jdbcUrl.getDatabase() : catalog, jdbcUrl.getDatabase());
+        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
+        return new StandardConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getDatabase());
     }
     
     @Override
