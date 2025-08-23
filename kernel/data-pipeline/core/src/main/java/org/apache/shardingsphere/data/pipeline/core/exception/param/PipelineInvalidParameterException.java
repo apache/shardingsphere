@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.param;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 
 /**
  * Pipeline invalid parameter exception.

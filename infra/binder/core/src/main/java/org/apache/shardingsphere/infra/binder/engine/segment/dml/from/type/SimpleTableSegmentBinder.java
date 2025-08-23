@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ty
 import org.apache.shardingsphere.infra.binder.engine.segment.util.AlterTableMetadataCheckUtils;
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.table.TableExistsException;

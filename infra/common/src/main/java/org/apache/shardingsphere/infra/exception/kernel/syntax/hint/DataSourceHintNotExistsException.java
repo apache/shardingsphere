@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.syntax.hint;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Data source hint not exists exception.

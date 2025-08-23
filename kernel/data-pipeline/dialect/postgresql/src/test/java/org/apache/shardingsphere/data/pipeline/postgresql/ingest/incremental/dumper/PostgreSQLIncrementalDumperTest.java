@@ -31,7 +31,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.PostgreSQLIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.position.slot.PostgreSQLSlotNameGenerator;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;

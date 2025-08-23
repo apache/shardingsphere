@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lo
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.exception.NotLockedClusterException;

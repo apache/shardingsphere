@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.co
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.SetComputeNodeStateStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;

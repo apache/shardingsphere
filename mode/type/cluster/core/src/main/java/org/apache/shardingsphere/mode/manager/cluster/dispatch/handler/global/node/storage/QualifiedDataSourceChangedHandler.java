@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.dispatch.handler.global.node.storage;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;

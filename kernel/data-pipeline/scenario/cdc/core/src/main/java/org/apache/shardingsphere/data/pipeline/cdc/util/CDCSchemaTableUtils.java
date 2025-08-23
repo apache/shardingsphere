@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;

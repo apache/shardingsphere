@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.connector.core.connector.url;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Optional;
 import java.util.Properties;

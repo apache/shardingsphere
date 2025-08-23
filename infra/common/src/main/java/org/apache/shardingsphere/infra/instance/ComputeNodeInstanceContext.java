@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import com.google.errorprone.annotations.ThreadSafe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
-import com.google.errorprone.annotations.ThreadSafe;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.exception;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
  * Parse SQL exception.

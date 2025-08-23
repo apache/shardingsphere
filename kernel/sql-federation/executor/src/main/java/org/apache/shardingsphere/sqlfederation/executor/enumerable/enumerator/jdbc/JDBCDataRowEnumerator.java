@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.j
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
 import java.sql.Statement;

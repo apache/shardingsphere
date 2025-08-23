@@ -26,6 +26,7 @@ import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
@@ -43,8 +44,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.a
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.infra.exception.postgresql.exception.authority.InvalidPasswordException;

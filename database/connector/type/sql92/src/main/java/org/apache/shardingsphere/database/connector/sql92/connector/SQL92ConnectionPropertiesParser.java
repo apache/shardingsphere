@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.connector.ConnectionPro
 import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.database.connector.core.connector.StandardConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

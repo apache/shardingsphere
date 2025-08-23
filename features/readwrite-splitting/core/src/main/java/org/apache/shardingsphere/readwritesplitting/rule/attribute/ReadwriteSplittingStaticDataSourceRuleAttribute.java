@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckT
 import org.apache.shardingsphere.database.connector.core.exception.CheckDatabaseEnvironmentFailedException;
 import org.apache.shardingsphere.database.connector.core.exception.MissingRequiredPrivilegeException;
 import org.apache.shardingsphere.database.connector.core.exception.MissingRequiredUserException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.connector.core.exception;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported storage type exception. When this exception is thrown, it means that the relevant jdbcUrl lacks the corresponding {@link DatabaseType} SPI implementation.

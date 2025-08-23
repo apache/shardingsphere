@@ -34,7 +34,7 @@ import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.oracle.type.OracleDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;

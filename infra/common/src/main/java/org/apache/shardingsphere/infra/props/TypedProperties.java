@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.props;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertiesServerException;
 import org.apache.shardingsphere.infra.props.exception.TypedPropertyValueException;
 

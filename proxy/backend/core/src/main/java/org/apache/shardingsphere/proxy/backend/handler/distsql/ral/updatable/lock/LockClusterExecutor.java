@@ -21,8 +21,8 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.LockClusterStatement;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.identifier.SQLExceptionIdentifier;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;

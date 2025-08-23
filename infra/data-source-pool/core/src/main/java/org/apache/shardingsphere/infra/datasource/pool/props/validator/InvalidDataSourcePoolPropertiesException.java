@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
-import org.apache.shardingsphere.infra.exception.core.internal.ShardingSphereInternalException;
+import org.apache.shardingsphere.infra.exception.internal.ShardingSphereInternalException;
 
 /**
  * Invalid data source pool properties exception.
