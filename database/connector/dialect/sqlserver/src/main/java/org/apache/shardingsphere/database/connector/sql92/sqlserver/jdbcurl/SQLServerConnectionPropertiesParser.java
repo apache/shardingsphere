@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.sql92.sqlserver.connector;
+package org.apache.shardingsphere.database.connector.sql92.sqlserver.jdbcurl;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.connector.StandardConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.regex.Matcher;

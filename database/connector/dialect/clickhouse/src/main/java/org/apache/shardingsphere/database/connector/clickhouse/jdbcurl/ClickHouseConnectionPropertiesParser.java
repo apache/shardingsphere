@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.clickhouse.connector;
+package org.apache.shardingsphere.database.connector.clickhouse.jdbcurl;
 
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.connector.StandardConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.url.JdbcUrl;
-import org.apache.shardingsphere.database.connector.core.connector.url.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
 
 import java.util.Properties;
 
@@ -34,8 +34,8 @@ public final class ClickHouseConnectionPropertiesParser implements ConnectionPro
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        JdbcUrl jdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardConnectionProperties(jdbcUrl.getHostname(), jdbcUrl.getPort(DEFAULT_PORT), jdbcUrl.getDatabase(), null, jdbcUrl.getQueryProperties(), new Properties());
+        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
+        return new StandardConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), null, standardJdbcUrl.getQueryProperties(), new Properties());
     }
     
     @Override
