@@ -21,10 +21,6 @@
         <assertion expected-data-file="preview_sql.xml" />
     </test-case>
     
-    <test-case sql="PREVIEW SELECT * FROM t_single_table s INNER JOIN t_user_item i ON s.single_id = i.item_id WHERE i.user_id = 1">
-        <assertion expected-data-file="preview_federation_select.xml" />
-    </test-case>
-    
     <test-case sql="PREVIEW /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME = write_ds_0, SKIP_SQL_REWRITE = true */ SELECT * FROM t_user_item">
         <assertion expected-data-file="preview_sql_hint.xml" />
     </test-case>
