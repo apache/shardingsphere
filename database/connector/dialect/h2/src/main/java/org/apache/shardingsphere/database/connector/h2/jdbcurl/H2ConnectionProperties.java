@@ -64,7 +64,7 @@ public final class H2ConnectionProperties implements ConnectionProperties {
         if (!(connectionProps instanceof H2ConnectionProperties)) {
             return false;
         }
-        if (!isSameModel(getModel(), ((H2ConnectionProperties) connectionProps).getModel())) {
+        if (!isSameModel(model, ((H2ConnectionProperties) connectionProps).model)) {
             return false;
         }
         return hostname.equals(connectionProps.getHostname()) && port == connectionProps.getPort();

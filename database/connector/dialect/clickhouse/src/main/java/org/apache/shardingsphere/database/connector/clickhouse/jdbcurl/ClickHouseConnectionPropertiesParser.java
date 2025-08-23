@@ -35,7 +35,8 @@ public final class ClickHouseConnectionPropertiesParser implements ConnectionPro
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new StandardConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), null, standardJdbcUrl.getQueryProperties(), new Properties());
+        return new StandardConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), null, standardJdbcUrl.getQueryProperties(),
+                new Properties());
     }
     
     @Override
