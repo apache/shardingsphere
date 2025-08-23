@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-database-protocol-type</artifactId>
+        <artifactId>shardingsphere-database-protocol-dialect</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-protocol-mysql</artifactId>
