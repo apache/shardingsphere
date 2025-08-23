@@ -29,6 +29,5 @@
     
     <modules>
         <module>core</module>
-        <module>dialect</module>
     </modules>
 </project>

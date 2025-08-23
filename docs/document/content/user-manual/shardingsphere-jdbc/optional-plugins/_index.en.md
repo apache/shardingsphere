@@ -16,9 +16,9 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-encrypt-core`, data encryption core
 - `org.apache.shardingsphere:shardingsphere-infra-context`, the kernel operation and metadata refresh mechanism of Context
 - `org.apache.shardingsphere:shardingsphere-mask-core`, data masking core
-- `org.apache.shardingsphere:shardingsphere-mysql-dialect-exception`, MySQL implementation of database gateway
+- `org.apache.shardingsphere:shardingsphere-database-exception-mysql`, MySQL implementation of database gateway
 - `org.apache.shardingsphere:shardingsphere-parser-core`, SQL parsing core
-- `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`, PostgreSQL implementation of database
+- `org.apache.shardingsphere:shardingsphere-database-exception-postgresql`, PostgreSQL implementation of database
 - `org.apache.shardingsphere:shardingsphere-readwrite-splitting-core`, read-write splitting core
 - `org.apache.shardingsphere:shardingsphere-shadow-core`, shadow library core
 - `org.apache.shardingsphere:shardingsphere-sharding-core`, data sharding core
