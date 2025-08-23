@@ -34,13 +34,8 @@ public final class H2DatabaseInstanceJudger implements DialectDatabaseInstanceJu
     
     @Override
     public boolean isInSameDatabaseInstance(final ConnectionProperties connectionProps1, final ConnectionProperties connectionProps2) {
-        if (!(connectionProps2 instanceof H2ConnectionProperties)) {
-            return false;
-        }
-        if (!isSameModel(((H2ConnectionProperties) connectionProps1).getModel(), ((H2ConnectionProperties) connectionProps2).getModel())) {
-            return false;
-        }
-        return DatabaseInstanceJudger.isInSameDatabaseInstance(connectionProps1, connectionProps2);
+        return isSameModel(connectionProps1.getQueryProperties().getProperty("model"), connectionProps2.getQueryProperties().getProperty("model"))
+                && DatabaseInstanceJudger.isInSameDatabaseInstance(connectionProps1, connectionProps2);
     }
     
     private boolean isSameModel(final String model1, final String model2) {

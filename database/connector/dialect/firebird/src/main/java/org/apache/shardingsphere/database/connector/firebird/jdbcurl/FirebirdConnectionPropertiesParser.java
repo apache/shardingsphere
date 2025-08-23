@@ -20,7 +20,6 @@ package org.apache.shardingsphere.database.connector.firebird.jdbcurl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 import org.firebirdsql.gds.impl.DbAttachInfo;
 import org.firebirdsql.gds.impl.GDSFactory;
 import org.firebirdsql.gds.impl.GDSType;
@@ -43,7 +42,7 @@ public final class FirebirdConnectionPropertiesParser implements ConnectionPrope
         String databaseName = attachObjectName.contains("?") ? attachObjectName.split("\\?")[0] : attachObjectName;
         Properties queryProps = new Properties();
         queryProps.putAll(FBDriver.normalizeProperties(url, new Properties()));
-        return new StandardConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(), databaseName, null, queryProps, new Properties());
+        return new ConnectionProperties(dbAttachInfo.getServerName(), dbAttachInfo.getPortNumber(), databaseName, null, queryProps, new Properties());
     }
     
     @Override

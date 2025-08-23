@@ -17,52 +17,31 @@
 
 package org.apache.shardingsphere.database.connector.core.jdbcurl.parser;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Properties;
 
 /**
  * Connection properties.
  */
-public interface ConnectionProperties {
+@RequiredArgsConstructor
+@Getter
+public final class ConnectionProperties {
     
-    /**
-     * Get host name.
-     *
-     * @return host name
-     */
-    String getHostname();
+    private final String hostname;
     
-    /**
-     * Get port.
-     *
-     * @return port
-     */
-    int getPort();
+    private final int port;
     
-    /**
-     * Get catalog.
-     *
-     * @return catalog
-     */
-    String getCatalog();
+    private final String catalog;
     
-    /**
-     * Get schema.
-     *
-     * @return schema
-     */
-    String getSchema();
+    private final String schema;
     
-    /**
-     * Get query properties.
-     *
-     * @return query properties
-     */
-    Properties getQueryProperties();
+    private final Properties queryProperties;
     
-    /**
-     * Get default query properties.
-     *
-     * @return default query properties
-     */
-    Properties getDefaultQueryProperties();
+    private final Properties defaultQueryProperties;
+    
+    public ConnectionProperties(final String hostname, final int port, final String catalog, final String schema) {
+        this(hostname, port, catalog, schema, new Properties(), new Properties());
+    }
 }

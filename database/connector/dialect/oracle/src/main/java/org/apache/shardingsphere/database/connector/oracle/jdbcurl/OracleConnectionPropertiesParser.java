@@ -21,7 +21,6 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardConnectionProperties;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,12 +49,12 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
         return THIN_MATCH_GROUP_COUNT == groupCount ? getThinConnectionProperties(username, matcher) : getStandardConnectionProperties(username, matcher);
     }
     
-    private StandardConnectionProperties getThinConnectionProperties(final String username, final Matcher matcher) {
-        return new StandardConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username);
+    private ConnectionProperties getThinConnectionProperties(final String username, final Matcher matcher) {
+        return new ConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username);
     }
     
-    private StandardConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher) {
-        return new StandardConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username);
+    private ConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher) {
+        return new ConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username);
     }
     
     @Override
