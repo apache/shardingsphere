@@ -15,54 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.jdbcurl.parser;
+package org.apache.shardingsphere.database.connector.core.jdbcurl.judger;
 
-import java.util.Properties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Connection properties.
+ * Dialect database instance judger.
  */
-public interface ConnectionProperties {
+@SingletonSPI
+public interface DialectDatabaseInstanceJudger extends DatabaseTypedSPI {
     
     /**
-     * Get host name.
+     * Judge whether two of JDBC URLs are in the same database instance.
      *
-     * @return host name
+     * @param connectionProps1 connection properties 1
+     * @param connectionProps2 connection properties 2
+     * @return JDBC URLs are in the same database instance or not
      */
-    String getHostname();
-    
-    /**
-     * Get port.
-     *
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get catalog.
-     *
-     * @return catalog
-     */
-    String getCatalog();
-    
-    /**
-     * Get schema.
-     *
-     * @return schema
-     */
-    String getSchema();
-    
-    /**
-     * Get query properties.
-     *
-     * @return query properties
-     */
-    Properties getQueryProperties();
-    
-    /**
-     * Get default query properties.
-     *
-     * @return default query properties
-     */
-    Properties getDefaultQueryProperties();
+    boolean isInSameDatabaseInstance(ConnectionProperties connectionProps1, ConnectionProperties connectionProps2);
 }
