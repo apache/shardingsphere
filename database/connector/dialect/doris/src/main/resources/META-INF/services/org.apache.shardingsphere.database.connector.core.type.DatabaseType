@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.doris.DorisDatabaseType
+org.apache.shardingsphere.database.connector.doris.type.DorisDatabaseType
