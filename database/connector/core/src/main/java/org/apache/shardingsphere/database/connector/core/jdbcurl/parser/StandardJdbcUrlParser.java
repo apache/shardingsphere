@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard;
+package org.apache.shardingsphere.database.connector.core.jdbcurl.parser;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -67,7 +67,7 @@ public final class StandardJdbcUrlParser {
      * @param defaultPort default port
      * @return parsed JDBC URL
      */
-    public StandardJdbcUrl parse(final String jdbcUrl, final int defaultPort) {
+    public ConnectionProperties parse(final String jdbcUrl, final int defaultPort) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         ShardingSpherePreconditions.checkState(matcher.matches(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
         String authority = matcher.group(AUTHORITY_GROUP_KEY);
@@ -76,11 +76,11 @@ public final class StandardJdbcUrlParser {
         String database = matcher.group(PATH_GROUP_KEY);
         String schema = queryProperties.getProperty(SCHEMA_KEY);
         if (authority.isEmpty()) {
-            return new StandardJdbcUrl("", defaultPort, database, schema, queryProperties);
+            return new ConnectionProperties("", defaultPort, database, schema, queryProperties);
         }
         Matcher hostMatcher = HOST_PORT_PATTERN_PATTERN.matcher(authority);
         ShardingSpherePreconditions.checkState(hostMatcher.find(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-        return new StandardJdbcUrl(parseHostname(hostMatcher), parsePort(hostMatcher, defaultPort), database, schema, queryProperties);
+        return new ConnectionProperties(parseHostname(hostMatcher), parsePort(hostMatcher, defaultPort), database, schema, queryProperties);
     }
     
     private String parseHostname(final Matcher hostMatcher) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.connector.core.jdbcurl.parser.fixture
 
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardJdbcUrlParser;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;

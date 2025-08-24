@@ -19,8 +19,7 @@ package org.apache.shardingsphere.database.connector.clickhouse.jdbcurl;
 
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardJdbcUrlParser;
 
 /**
  * Connection properties parser of ClickHouse.
@@ -31,8 +30,7 @@ public final class ClickHouseConnectionPropertiesParser implements ConnectionPro
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url, DEFAULT_PORT);
-        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), standardJdbcUrl.getDatabase(), standardJdbcUrl.getSchema(), standardJdbcUrl.getQueryProperties());
+        return new StandardJdbcUrlParser().parse(url, DEFAULT_PORT);
     }
     
     @Override
