@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.engine.core.database.cache;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.engine.core.database.cache.ParseTreeCacheLoader;
 import org.apache.shardingsphere.sql.parser.engine.core.database.parser.SQLParserExecutor;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;

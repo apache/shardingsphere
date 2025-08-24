@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.engine.core;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.engine.core.database.parser.SQLParserExecutor;
 import org.junit.jupiter.api.Test;
 

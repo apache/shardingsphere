@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.engine.core;
 
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
