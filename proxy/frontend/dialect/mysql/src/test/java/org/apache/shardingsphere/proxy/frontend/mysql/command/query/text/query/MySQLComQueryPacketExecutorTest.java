@@ -66,9 +66,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -133,7 +133,7 @@ class MySQLComQueryPacketExecutorTest {
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
         Collection<DatabasePacket> actualPackets = actual.execute();
         assertThat(actualPackets.size(), is(1));
-        assertThat(actualPackets.iterator().next(), instanceOf(MySQLOKPacket.class));
+        assertThat(actualPackets.iterator().next(), isA(MySQLOKPacket.class));
     }
     
     @Test
@@ -154,8 +154,8 @@ class MySQLComQueryPacketExecutorTest {
         Collection<DatabasePacket> actualPackets = actual.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket> iterator = actualPackets.iterator();
-        assertThat(iterator.next(), instanceOf(MySQLOKPacket.class));
-        assertThat(iterator.next(), instanceOf(MySQLOKPacket.class));
+        assertThat(iterator.next(), isA(MySQLOKPacket.class));
+        assertThat(iterator.next(), isA(MySQLOKPacket.class));
     }
     
     private MetaDataContexts mockMetaDataContexts() {
@@ -187,7 +187,7 @@ class MySQLComQueryPacketExecutorTest {
     
     @Test
     void assertGetQueryRowPacket() throws SQLException {
-        assertThat(new MySQLComQueryPacketExecutor(packet, connectionSession).getQueryRowPacket(), instanceOf(MySQLTextResultSetRowPacket.class));
+        assertThat(new MySQLComQueryPacketExecutor(packet, connectionSession).getQueryRowPacket(), isA(MySQLTextResultSetRowPacket.class));
     }
     
     @Test

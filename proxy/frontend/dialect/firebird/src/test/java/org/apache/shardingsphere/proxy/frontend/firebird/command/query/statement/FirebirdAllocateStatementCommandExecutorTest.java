@@ -32,9 +32,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,7 +64,7 @@ class FirebirdAllocateStatementCommandExecutorTest {
         FirebirdAllocateStatementCommandExecutor executor = new FirebirdAllocateStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(1));
     }
 }

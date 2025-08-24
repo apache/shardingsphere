@@ -59,9 +59,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -131,7 +131,7 @@ class JDBCBackendDataSourceTest {
             try {
                 actual.addAll(each.get());
             } catch (final ExecutionException ex) {
-                assertThat(ex.getCause(), instanceOf(OverallConnectionNotEnoughException.class));
+                assertThat(ex.getCause(), isA(OverallConnectionNotEnoughException.class));
             }
         }
         assertTrue(actual.isEmpty());

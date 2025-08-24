@@ -20,14 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class FirebirdUnsupportedCommandExecutorTest {
     
     @Test
     void assertExecute() {
         FirebirdUnsupportedCommandExecutor executor = new FirebirdUnsupportedCommandExecutor();
-        assertThat(executor.execute().iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(executor.execute().iterator().next(), isA(FirebirdGenericResponsePacket.class));
     }
 }

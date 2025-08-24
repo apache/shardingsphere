@@ -29,15 +29,16 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,20 +49,18 @@ class FirebirdCommandPacketFactoryTest {
     
     @Test
     void assertNewInstanceWithInfoDatabase() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdInfoPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
     }
     
     @Test
     void assertNewInstanceWithTransaction() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.TRANSACTION, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdStartTransactionPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.TRANSACTION, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdStartTransactionPacket.class));
     }
     
     @Test
     void assertNewInstanceWithAllocateStatement() {
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdAllocateStatementPacket.class));
+                isA(FirebirdAllocateStatementPacket.class));
     }
     
     @Test
@@ -70,56 +69,47 @@ class FirebirdCommandPacketFactoryTest {
         when(payload.readString()).thenReturn("");
         when(payload.readBuffer()).thenReturn(org.mockito.Mockito.mock(io.netty.buffer.ByteBuf.class));
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PREPARE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdPrepareStatementPacket.class));
+                isA(FirebirdPrepareStatementPacket.class));
     }
     
     @Test
     void assertNewInstanceWithExecuteStatement() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXECUTE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdExecuteStatementPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXECUTE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdExecuteStatementPacket.class));
     }
     
     @Test
     void assertNewInstanceWithFetch() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.FETCH, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdFetchStatementPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.FETCH, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdFetchStatementPacket.class));
     }
     
     @Test
     void assertNewInstanceWithInfoSQL() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_SQL, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdInfoPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_SQL, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
     }
     
     @Test
     void assertNewInstanceWithCommit() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.COMMIT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdCommitTransactionPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.COMMIT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdCommitTransactionPacket.class));
     }
     
     @Test
     void assertNewInstanceWithRollback() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.ROLLBACK, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdRollbackTransactionPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.ROLLBACK, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdRollbackTransactionPacket.class));
     }
     
     @Test
     void assertNewInstanceWithFreeStatement() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.FREE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdFreeStatementPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.FREE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdFreeStatementPacket.class));
     }
     
     @Test
     void assertNewInstanceWithUnsupportedCommand() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.VOID, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                instanceOf(FirebirdUnsupportedCommandPacket.class));
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.VOID, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdUnsupportedCommandPacket.class));
     }
     
     @Test
     void assertIsValidLength() {
-        assertThat(FirebirdCommandPacketFactory.isValidLength(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload,
-                8, FirebirdProtocolVersion.PROTOCOL_VERSION13), CoreMatchers.is(true));
-        assertThat(FirebirdCommandPacketFactory.isValidLength(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload,
-                7, FirebirdProtocolVersion.PROTOCOL_VERSION13), CoreMatchers.is(false));
+        assertTrue(FirebirdCommandPacketFactory.isValidLength(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload, 8, FirebirdProtocolVersion.PROTOCOL_VERSION13));
+        assertFalse(FirebirdCommandPacketFactory.isValidLength(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload, 7, FirebirdProtocolVersion.PROTOCOL_VERSION13));
     }
 }

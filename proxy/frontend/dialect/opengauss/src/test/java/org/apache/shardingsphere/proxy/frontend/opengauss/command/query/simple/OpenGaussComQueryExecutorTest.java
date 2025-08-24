@@ -44,9 +44,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -84,7 +84,7 @@ class OpenGaussComQueryExecutorTest {
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+        assertThat(actual.iterator().next(), is(isA(PostgreSQLRowDescriptionPacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
         verify(queryResponseHeader).getQueryHeaders();
     }
@@ -96,7 +96,7 @@ class OpenGaussComQueryExecutorTest {
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+        assertThat(actual.iterator().next(), is(isA(PostgreSQLRowDescriptionPacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
         verify(queryResponseHeader).getQueryHeaders();
     }
@@ -106,7 +106,7 @@ class OpenGaussComQueryExecutorTest {
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
         Collection<DatabasePacket> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCommandCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(isA(PostgreSQLCommandCompletePacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
     }
     
@@ -121,6 +121,6 @@ class OpenGaussComQueryExecutorTest {
     void assertGetQueryRowPacket() throws SQLException {
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.emptyList()));
         PostgreSQLPacket actual = queryExecutor.getQueryRowPacket();
-        assertThat(actual, is(instanceOf(PostgreSQLDataRowPacket.class)));
+        assertThat(actual, is(isA(PostgreSQLDataRowPacket.class)));
     }
 }

@@ -30,8 +30,8 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,11 +44,11 @@ class OpenGaussCommandPacketFactoryTest {
     @Test
     void assertNewOpenGaussComBatchBindPacket() {
         when(payload.getByteBuf()).thenReturn(mock(ByteBuf.class));
-        assertThat(OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload), instanceOf(PostgreSQLAggregatedCommandPacket.class));
+        assertThat(OpenGaussCommandPacketFactory.newInstance(OpenGaussCommandPacketType.BATCH_BIND_COMMAND, payload), isA(PostgreSQLAggregatedCommandPacket.class));
     }
     
     @Test
     void assertNewPostgreSQLPacket() {
-        assertThat(OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload), instanceOf(PostgreSQLCommandPacket.class));
+        assertThat(OpenGaussCommandPacketFactory.newInstance(mock(PostgreSQLCommandPacketType.class), payload), isA(PostgreSQLCommandPacket.class));
     }
 }

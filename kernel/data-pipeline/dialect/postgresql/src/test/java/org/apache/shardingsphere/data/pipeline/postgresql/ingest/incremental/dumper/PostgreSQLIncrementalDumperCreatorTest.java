@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,6 +47,6 @@ class PostgreSQLIncrementalDumperCreatorTest {
         when(dumperContext.getCommonContext().getDataSourceConfig()).thenReturn(new StandardPipelineDataSourceConfiguration(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_ds")));
         WALPosition position = mock(WALPosition.class, RETURNS_DEEP_STUBS);
         CreateIncrementalDumperParameter param = new CreateIncrementalDumperParameter(dumperContext, position, null, null, null);
-        assertThat(creator.create(param), instanceOf(PostgreSQLIncrementalDumper.class));
+        assertThat(creator.create(param), isA(PostgreSQLIncrementalDumper.class));
     }
 }

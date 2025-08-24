@@ -55,9 +55,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -79,7 +79,7 @@ class MySQLMultiStatementsHandlerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
-        assertThat(actual, instanceOf(MultiStatementsUpdateResponseHeader.class));
+        assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         MultiStatementsUpdateResponseHeader actualHeader = (MultiStatementsUpdateResponseHeader) actual;
         assertThat(actualHeader.getUpdateResponseHeaders().size(), is(3));
         Iterator<UpdateResponseHeader> iterator = actualHeader.getUpdateResponseHeaders().iterator();
@@ -105,7 +105,7 @@ class MySQLMultiStatementsHandlerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
-        assertThat(actual, instanceOf(MultiStatementsUpdateResponseHeader.class));
+        assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         MultiStatementsUpdateResponseHeader actualHeader = (MultiStatementsUpdateResponseHeader) actual;
         assertThat(actualHeader.getUpdateResponseHeaders().size(), is(3));
         Iterator<UpdateResponseHeader> iterator = actualHeader.getUpdateResponseHeaders().iterator();
@@ -133,7 +133,7 @@ class MySQLMultiStatementsHandlerTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ResponseHeader actual = new MySQLMultiStatementsHandler(connectionSession, expectedStatement, sql).execute();
-        assertThat(actual, instanceOf(MultiStatementsUpdateResponseHeader.class));
+        assertThat(actual, isA(MultiStatementsUpdateResponseHeader.class));
         MultiStatementsUpdateResponseHeader actualHeader = (MultiStatementsUpdateResponseHeader) actual;
         assertThat(actualHeader.getUpdateResponseHeaders().size(), is(3));
         Iterator<UpdateResponseHeader> iterator = actualHeader.getUpdateResponseHeaders().iterator();

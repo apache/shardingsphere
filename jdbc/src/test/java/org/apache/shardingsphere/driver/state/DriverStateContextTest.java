@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,13 +35,13 @@ class DriverStateContextTest {
     @Test
     void assertGetConnectionWithOkState() {
         ContextManager contextManager = mockContextManager(InstanceState.OK);
-        assertThat(DriverStateContext.getConnection("foo_db", contextManager), instanceOf(ShardingSphereConnection.class));
+        assertThat(DriverStateContext.getConnection("foo_db", contextManager), isA(ShardingSphereConnection.class));
     }
     
     @Test
     void assertGetConnectionWithCircuitBreakState() {
         ContextManager contextManager = mockContextManager(InstanceState.CIRCUIT_BREAK);
-        assertThat(DriverStateContext.getConnection("foo_db", contextManager), instanceOf(CircuitBreakerConnection.class));
+        assertThat(DriverStateContext.getConnection("foo_db", contextManager), isA(CircuitBreakerConnection.class));
     }
     
     private ContextManager mockContextManager(final InstanceState instanceState) {

@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
@@ -37,7 +37,7 @@ class DatabaseRulesBuilderTest {
     void assertBuild() {
         Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build("foo_db", mock(),
                 new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration())), mock(), mock()).iterator();
-        assertThat(actual.next(), instanceOf(FixtureRule.class));
+        assertThat(actual.next(), isA(FixtureRule.class));
         assertFalse(actual.hasNext());
     }
 }

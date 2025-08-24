@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdBinaryProtocolValueFactoryTest {
@@ -29,85 +29,85 @@ class FirebirdBinaryProtocolValueFactoryTest {
     @Test
     void assertGetStringBinaryProtocolValueByVarying() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.VARYING);
-        assertThat(actual, instanceOf(FirebirdStringBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdStringBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetByteBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BLOB);
-        assertThat(actual, instanceOf(FirebirdByteBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdByteBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt16BinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.INT128);
-        assertThat(actual, instanceOf(FirebirdInt16BinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdInt16BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt8BinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.INT64);
-        assertThat(actual, instanceOf(FirebirdInt8BinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdInt8BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt4BinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG);
-        assertThat(actual, instanceOf(FirebirdInt4BinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdInt4BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt2BinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.SHORT);
-        assertThat(actual, instanceOf(FirebirdInt2BinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdInt2BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt1BinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.BOOLEAN);
-        assertThat(actual, instanceOf(FirebirdInt1BinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdInt1BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetDoubleBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.DOUBLE);
-        assertThat(actual, instanceOf(FirebirdDoubleBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdDoubleBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetFloatBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.FLOAT);
-        assertThat(actual, instanceOf(FirebirdFloatBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdFloatBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetDateBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.DATE);
-        assertThat(actual, instanceOf(FirebirdDateBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdDateBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetTimeBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIME);
-        assertThat(actual, instanceOf(FirebirdTimeBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdTimeBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetTimestampBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIMESTAMP);
-        assertThat(actual, instanceOf(FirebirdTimestampBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdTimestampBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetTimestampTZBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.TIMESTAMP_TZ);
-        assertThat(actual, instanceOf(FirebirdTimestampTZBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdTimestampTZBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetNullBinaryProtocolValue() {
         FirebirdBinaryProtocolValue actual = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.NULL);
-        assertThat(actual, instanceOf(FirebirdNullBinaryProtocolValue.class));
+        assertThat(actual, isA(FirebirdNullBinaryProtocolValue.class));
     }
     
     @Test

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.driver.state.circuit.datasource;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class CircuitBreakerDataSourceTest {
     
@@ -30,8 +30,8 @@ class CircuitBreakerDataSourceTest {
     
     @Test
     void assertGetConnection() {
-        assertThat(dataSource.getConnection(), instanceOf(CircuitBreakerConnection.class));
-        assertThat(dataSource.getConnection("", ""), instanceOf(CircuitBreakerConnection.class));
+        assertThat(dataSource.getConnection(), isA(CircuitBreakerConnection.class));
+        assertThat(dataSource.getConnection("", ""), isA(CircuitBreakerConnection.class));
     }
     
     @Test

@@ -32,38 +32,38 @@ import java.time.Month;
 import java.time.Year;
 import java.time.YearMonth;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class TemporalHandlerFactoryTest {
     
     @Test
     void assertNewInstanceWithLocalDate() {
-        assertThat(TemporalHandlerFactory.newInstance(LocalDate.now()), instanceOf(LocalDateTemporalHandler.class));
+        assertThat(TemporalHandlerFactory.newInstance(LocalDate.now()), isA(LocalDateTemporalHandler.class));
     }
     
     @Test
     void assertNewInstanceWithLocalTime() {
-        assertThat(TemporalHandlerFactory.newInstance(LocalTime.now()), instanceOf(LocalTimeTemporalHandler.class));
+        assertThat(TemporalHandlerFactory.newInstance(LocalTime.now()), isA(LocalTimeTemporalHandler.class));
     }
     
     @Test
     void assertNewInstanceWithLocalDateTime() {
-        assertThat(TemporalHandlerFactory.newInstance(LocalDateTime.now()), instanceOf(LocalDateTimeTemporalHandler.class));
+        assertThat(TemporalHandlerFactory.newInstance(LocalDateTime.now()), isA(LocalDateTimeTemporalHandler.class));
     }
     
     @Test
     void assertNewInstanceWithYearMonth() {
-        assertThat(TemporalHandlerFactory.newInstance(YearMonth.now()), instanceOf(YearMonthTemporalHandler.class));
+        assertThat(TemporalHandlerFactory.newInstance(YearMonth.now()), isA(YearMonthTemporalHandler.class));
     }
     
     @Test
     void assertNewInstanceWithYear() {
-        assertThat(TemporalHandlerFactory.newInstance(Year.now()), instanceOf(YearTemporalHandler.class));
+        assertThat(TemporalHandlerFactory.newInstance(Year.now()), isA(YearTemporalHandler.class));
     }
     
     @Test
     void assertNewInstanceWithMonth() {
-        assertThat(TemporalHandlerFactory.newInstance(Month.JANUARY), instanceOf(MonthTemporalHandler.class));
+        assertThat(TemporalHandlerFactory.newInstance(Month.JANUARY), isA(MonthTemporalHandler.class));
     }
 }

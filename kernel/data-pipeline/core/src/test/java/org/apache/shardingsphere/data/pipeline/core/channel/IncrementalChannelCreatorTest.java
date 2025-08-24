@@ -24,14 +24,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class IncrementalChannelCreatorTest {
     
     @Test
     void assertCreate() {
-        assertThat(IncrementalChannelCreator.create(new AlgorithmConfiguration("MEMORY", new Properties()), mock(IncrementalTaskProgress.class)), instanceOf(MemoryPipelineChannel.class));
+        assertThat(IncrementalChannelCreator.create(new AlgorithmConfiguration("MEMORY", new Properties()), mock(IncrementalTaskProgress.class)), isA(MemoryPipelineChannel.class));
     }
 }

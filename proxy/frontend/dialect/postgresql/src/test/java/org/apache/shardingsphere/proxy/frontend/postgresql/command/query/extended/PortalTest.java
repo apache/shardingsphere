@@ -78,9 +78,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -167,7 +167,7 @@ class PortalTest {
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
         portal.bind();
         PostgreSQLPacket portalDescription = portal.describe();
-        assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
+        assertThat(portalDescription, isA(PostgreSQLRowDescriptionPacket.class));
         Collection<PostgreSQLColumnDescription> columnDescriptions = (Collection<PostgreSQLColumnDescription>) Plugins.getMemberAccessor()
                 .get(PostgreSQLRowDescriptionPacket.class.getDeclaredField("columnDescriptions"), portalDescription);
         Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.iterator();
@@ -178,9 +178,9 @@ class PortalTest {
         List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLCommandCompletePacket.class));
     }
     
     @Test
@@ -201,13 +201,13 @@ class PortalTest {
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
         portal.bind();
-        assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
+        assertThat(portal.describe(), isA(PostgreSQLRowDescriptionPacket.class));
         List<DatabasePacket> actualPackets = portal.execute(2);
         assertThat(actualPackets.size(), is(3));
         Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLPortalSuspendedPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLPortalSuspendedPacket.class));
     }
     
     @Test
@@ -223,7 +223,7 @@ class PortalTest {
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<DatabasePacket> actualPackets = portal.execute(0);
-        assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLCommandCompletePacket.class));
+        assertThat(actualPackets.iterator().next(), isA(PostgreSQLCommandCompletePacket.class));
     }
     
     @Test
@@ -236,7 +236,7 @@ class PortalTest {
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<DatabasePacket> actualPackets = portal.execute(0);
-        assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLEmptyQueryResponsePacket.class));
+        assertThat(actualPackets.iterator().next(), isA(PostgreSQLEmptyQueryResponsePacket.class));
     }
     
     @Test
@@ -251,8 +251,8 @@ class PortalTest {
         portal.bind();
         List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(2));
-        assertThat(actualPackets.get(0), instanceOf(PostgreSQLCommandCompletePacket.class));
-        assertThat(actualPackets.get(1), instanceOf(PostgreSQLParameterStatusPacket.class));
+        assertThat(actualPackets.get(0), isA(PostgreSQLCommandCompletePacket.class));
+        assertThat(actualPackets.get(1), isA(PostgreSQLParameterStatusPacket.class));
     }
     
     @Test

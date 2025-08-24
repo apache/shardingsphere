@@ -21,15 +21,15 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryCol
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.value.integer.MySQLTinyBinlogProtocolValue;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLBinlogProtocolValueFactoryTest {
     
     @Test
     void assertGetBinlogProtocolValue() {
-        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
+        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.TINY), isA(MySQLTinyBinlogProtocolValue.class));
     }
     
     @Test

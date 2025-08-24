@@ -58,9 +58,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -118,14 +118,14 @@ class SeataATShardingSphereTransactionManagerTest {
     void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), instanceOf(DataSourceProxy.class));
+        assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), isA(DataSourceProxy.class));
         assertThat(seataTransactionManager.getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     void assertGetConnection() throws SQLException {
         Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
-        assertThat(actual, instanceOf(ConnectionProxy.class));
+        assertThat(actual, isA(ConnectionProxy.class));
     }
     
     @Test
@@ -181,15 +181,15 @@ class SeataATShardingSphereTransactionManagerTest {
             Object requestPackage = requestQueue.poll();
             Object responsePackage = responseQueue.poll();
             if (requestPackage instanceof RegisterTMRequest) {
-                assertThat(responsePackage, instanceOf(RegisterTMResponse.class));
+                assertThat(responsePackage, isA(RegisterTMResponse.class));
             } else if (requestPackage instanceof RegisterRMRequest) {
-                assertThat(responsePackage, instanceOf(RegisterRMResponse.class));
+                assertThat(responsePackage, isA(RegisterRMResponse.class));
             } else if (requestPackage instanceof GlobalBeginRequest) {
-                assertThat(responsePackage, instanceOf(GlobalBeginResponse.class));
+                assertThat(responsePackage, isA(GlobalBeginResponse.class));
             } else if (requestPackage instanceof GlobalCommitRequest) {
-                assertThat(responsePackage, instanceOf(GlobalCommitResponse.class));
+                assertThat(responsePackage, isA(GlobalCommitResponse.class));
             } else if (requestPackage instanceof GlobalRollbackRequest) {
-                assertThat(responsePackage, instanceOf(GlobalRollbackResponse.class));
+                assertThat(responsePackage, isA(GlobalRollbackResponse.class));
             } else {
                 fail("Request package type error");
             }

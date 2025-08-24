@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,7 +55,7 @@ class DataSourcePoolPropertiesTest {
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("root"));
         assertThat(actual.getAllLocalProperties().get("password").toString(), is("root"));
         assertNull(actual.getAllLocalProperties().get("loginTimeout"));
-        assertThat(actual.getAllLocalProperties().get("connectionInitSqls"), instanceOf(List.class));
+        assertThat(actual.getAllLocalProperties().get("connectionInitSqls"), isA(List.class));
         List<String> actualConnectionInitSql = (List<String>) actual.getAllLocalProperties().get("connectionInitSqls");
         assertThat(actualConnectionInitSql, hasItem("set names utf8mb4;"));
         assertThat(actualConnectionInitSql, hasItem("set names utf8;"));

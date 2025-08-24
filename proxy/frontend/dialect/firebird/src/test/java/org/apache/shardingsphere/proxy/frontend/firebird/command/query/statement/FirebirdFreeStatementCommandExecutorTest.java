@@ -32,8 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +57,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         when(packet.getStatementId()).thenReturn(1);
         FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         verify(registry).removePreparedStatement(1);
     }
     
@@ -68,7 +68,7 @@ class FirebirdFreeStatementCommandExecutorTest {
         when(packet.getStatementId()).thenReturn(1);
         FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         verify(registry).removePreparedStatement(1);
     }
     

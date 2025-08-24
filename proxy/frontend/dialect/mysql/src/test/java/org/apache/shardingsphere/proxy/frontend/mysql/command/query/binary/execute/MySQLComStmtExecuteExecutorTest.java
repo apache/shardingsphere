@@ -75,9 +75,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -164,13 +164,13 @@ class MySQLComStmtExecuteExecutorTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         Iterator<DatabasePacket> actual = executor.execute().iterator();
         assertThat(executor.getResponseType(), is(ResponseType.QUERY));
-        assertThat(actual.next(), instanceOf(MySQLFieldCountPacket.class));
-        assertThat(actual.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actual.next(), instanceOf(MySQLEofPacket.class));
+        assertThat(actual.next(), isA(MySQLFieldCountPacket.class));
+        assertThat(actual.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actual.next(), isA(MySQLEofPacket.class));
         assertFalse(actual.hasNext());
         assertTrue(executor.next());
         MySQLPacket actualQueryRowPacket = executor.getQueryRowPacket();
-        assertThat(actualQueryRowPacket, instanceOf(MySQLBinaryResultSetRowPacket.class));
+        assertThat(actualQueryRowPacket, isA(MySQLBinaryResultSetRowPacket.class));
         executor.close();
         verify(proxyBackendHandler).close();
     }
@@ -185,7 +185,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         Iterator<DatabasePacket> actual = executor.execute().iterator();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
-        assertThat(actual.next(), instanceOf(MySQLOKPacket.class));
+        assertThat(actual.next(), isA(MySQLOKPacket.class));
         assertFalse(actual.hasNext());
     }
     
@@ -199,7 +199,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Iterator<DatabasePacket> actual = executor.execute().iterator();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
-        assertThat(actual.next(), instanceOf(MySQLOKPacket.class));
+        assertThat(actual.next(), isA(MySQLOKPacket.class));
         assertFalse(actual.hasNext());
         executor.close();
         verify(proxyBackendHandler).close();

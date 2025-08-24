@@ -35,9 +35,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -58,7 +58,7 @@ class MySQLComResetConnectionExecutorTest {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement("", null, new HintValueContext(), Collections.emptyList()));
         Collection<DatabasePacket> actual = new MySQLComResetConnectionExecutor(connectionSession).execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
+        assertThat(actual.iterator().next(), isA(MySQLOKPacket.class));
         verify(connectionSession).setAutoCommit(true);
         verify(connectionSession).setDefaultIsolationLevel(null);
         verify(connectionSession).setIsolationLevel(null);

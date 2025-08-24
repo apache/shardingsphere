@@ -53,9 +53,9 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -226,7 +226,7 @@ class EtcdRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex, instanceOf(InterruptedException.class));
+            assertThat(ex, isA(InterruptedException.class));
         }
     }
     
@@ -238,7 +238,7 @@ class EtcdRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex, instanceOf(ExecutionException.class));
+            assertThat(ex, isA(ExecutionException.class));
         }
     }
     
@@ -250,7 +250,7 @@ class EtcdRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex, instanceOf(InterruptedException.class));
+            assertThat(ex, isA(InterruptedException.class));
         }
     }
     
@@ -262,7 +262,7 @@ class EtcdRepositoryTest {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertThat(ex, instanceOf(ExecutionException.class));
+            assertThat(ex, isA(ExecutionException.class));
         }
     }
     

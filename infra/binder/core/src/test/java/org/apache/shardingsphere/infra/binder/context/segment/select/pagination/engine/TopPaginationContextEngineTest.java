@@ -33,9 +33,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,7 +82,7 @@ class TopPaginationContextEngineTest {
                 new TopProjectionSegment(0, 10, null, name), Collections.singletonList(expression), Collections.singletonList(1));
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
-        assertThat(paginationValueSegment, instanceOf(ParameterMarkerRowNumberValueSegment.class));
+        assertThat(paginationValueSegment, isA(ParameterMarkerRowNumberValueSegment.class));
         ParameterMarkerRowNumberValueSegment parameterMarkerRowNumberValueSegment = (ParameterMarkerRowNumberValueSegment) paginationValueSegment;
         assertThat(parameterMarkerRowNumberValueSegment.getStartIndex(), is(0));
         assertThat(parameterMarkerRowNumberValueSegment.getStopIndex(), is(10));
@@ -99,7 +99,7 @@ class TopPaginationContextEngineTest {
                 new TopProjectionSegment(0, 10, null, name), Collections.singletonList(expression), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
         PaginationValueSegment paginationValueSegment = paginationContext.getOffsetSegment().get();
-        assertThat(paginationValueSegment, instanceOf(NumberLiteralRowNumberValueSegment.class));
+        assertThat(paginationValueSegment, isA(NumberLiteralRowNumberValueSegment.class));
         NumberLiteralRowNumberValueSegment numberLiteralRowNumberValueSegment = (NumberLiteralRowNumberValueSegment) paginationValueSegment;
         assertThat(numberLiteralRowNumberValueSegment.getStartIndex(), is(0));
         assertThat(numberLiteralRowNumberValueSegment.getStopIndex(), is(10));

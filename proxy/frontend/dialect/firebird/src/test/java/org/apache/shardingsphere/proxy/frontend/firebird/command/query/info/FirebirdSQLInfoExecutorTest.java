@@ -31,8 +31,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,8 +49,8 @@ class FirebirdSQLInfoExecutorTest {
         when(packet.getInfoItems()).thenReturn(Collections.emptyList());
         FirebirdSQLInfoExecutor executor = new FirebirdSQLInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();
-        assertThat(responsePacket.getData(), instanceOf(FirebirdSQLInfoReturnPacket.class));
+        assertThat(responsePacket.getData(), isA(FirebirdSQLInfoReturnPacket.class));
     }
 }

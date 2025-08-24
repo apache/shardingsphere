@@ -82,9 +82,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -273,7 +273,7 @@ class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt4(23);
         verify(mockPayload, times(2)).writeInt4(18);
         DatabasePacket actualRowDescriptionPacket = actualPacketsIterator.next();
-        assertThat(actualRowDescriptionPacket, is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
+        assertThat(actualRowDescriptionPacket, is(isA(PostgreSQLRowDescriptionPacket.class)));
         assertRowDescriptions((PostgreSQLRowDescriptionPacket) actualRowDescriptionPacket);
     }
     
@@ -349,7 +349,7 @@ class PostgreSQLComDescribeExecutorTest {
         assertThat(actual.size(), is(2));
         Iterator<DatabasePacket> actualPacketsIterator = actual.iterator();
         PostgreSQLParameterDescriptionPacket actualParameterDescription = (PostgreSQLParameterDescriptionPacket) actualPacketsIterator.next();
-        assertThat(actualParameterDescription, instanceOf(PostgreSQLParameterDescriptionPacket.class));
+        assertThat(actualParameterDescription, isA(PostgreSQLParameterDescriptionPacket.class));
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         actualParameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(1);

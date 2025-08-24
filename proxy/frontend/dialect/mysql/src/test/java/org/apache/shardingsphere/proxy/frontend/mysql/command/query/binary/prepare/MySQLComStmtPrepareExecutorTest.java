@@ -70,9 +70,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -117,16 +117,16 @@ class MySQLComStmtPrepareExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(SelectStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(SelectStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     
@@ -142,24 +142,24 @@ class MySQLComStmtPrepareExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
         DatabasePacket firstAgeColumnDefinitionPacket = actualIterator.next();
-        assertThat(firstAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(firstAgeColumnDefinitionPacket, isA(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) firstAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
         DatabasePacket idColumnDefinitionPacket = actualIterator.next();
-        assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(idColumnDefinitionPacket, isA(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
                 is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
         DatabasePacket secondAgeColumnDefinitionPacket = actualIterator.next();
-        assertThat(secondAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
+        assertThat(secondAgeColumnDefinitionPacket, isA(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) secondAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(InsertStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), isA(InsertStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(InsertStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
@@ -202,16 +202,16 @@ class MySQLComStmtPrepareExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-        assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
         MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(UpdateStatement.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), isA(UpdateStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(UpdateStatement.class));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     

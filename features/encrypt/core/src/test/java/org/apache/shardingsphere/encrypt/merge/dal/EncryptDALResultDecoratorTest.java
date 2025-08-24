@@ -40,8 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,7 +61,7 @@ class EncryptDALResultDecoratorTest {
     void assertMergedResultWithShowColumnsStatement() {
         sqlStatementContext = mockColumnInResultSetSQLStatementAttributeContext();
         EncryptDALResultDecorator decorator = new EncryptDALResultDecorator(mock(RuleMetaData.class));
-        assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(EncryptShowColumnsMergedResult.class));
+        assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), isA(EncryptShowColumnsMergedResult.class));
     }
     
     @Test
@@ -70,14 +70,14 @@ class EncryptDALResultDecoratorTest {
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         when(ruleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(mock(SQLParserRule.class));
         EncryptDALResultDecorator decorator = new EncryptDALResultDecorator(ruleMetaData);
-        assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(EncryptShowCreateTableMergedResult.class));
+        assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), isA(EncryptShowCreateTableMergedResult.class));
     }
     
     @Test
     void assertMergedResultWithOtherStatement() {
         sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         EncryptDALResultDecorator decorator = new EncryptDALResultDecorator(mock(RuleMetaData.class));
-        assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(MergedResult.class));
+        assertThat(decorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), isA(MergedResult.class));
     }
     
     private SQLStatementContext mockColumnInResultSetSQLStatementAttributeContext() {

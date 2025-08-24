@@ -33,9 +33,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -109,7 +109,7 @@ class TestDecodingPluginTest {
     @Test
     void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes(StandardCharsets.UTF_8));
-        assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
+        assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), isA(PlaceholderEvent.class));
     }
     
     @Test
@@ -131,7 +131,7 @@ class TestDecodingPluginTest {
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 col0[integer]:null col1[character varying]:null col2[character varying]:'nonnull'"
                 .getBytes(StandardCharsets.UTF_8));
         AbstractWALEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
-        assertThat(actual, instanceOf(WriteRowEvent.class));
+        assertThat(actual, isA(WriteRowEvent.class));
         WriteRowEvent actualWriteRowEvent = (WriteRowEvent) actual;
         assertThat(actualWriteRowEvent.getAfterRow().get(0), is(123));
         assertNull(actualWriteRowEvent.getAfterRow().get(1));
@@ -143,6 +143,6 @@ class TestDecodingPluginTest {
     void assertDecodeJsonValue() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 ".getBytes(StandardCharsets.UTF_8));
         AbstractWALEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
-        assertThat(actual, instanceOf(WriteRowEvent.class));
+        assertThat(actual, isA(WriteRowEvent.class));
     }
 }

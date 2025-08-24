@@ -38,9 +38,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -69,7 +69,7 @@ class MySQLDialectSaneQueryResultEngineTest {
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "unknown_variable"));
         Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException(""));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
+        assertThat(actual.get(), isA(RawMemoryQueryResult.class));
         RawMemoryQueryResult actualResult = (RawMemoryQueryResult) actual.get();
         assertThat(actualResult.getRowCount(), is(1L));
         assertTrue(actualResult.next());
@@ -89,14 +89,14 @@ class MySQLDialectSaneQueryResultEngineTest {
     void assertGetSaneQueryResultForSetStatement() {
         Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new SetStatement(databaseType, Collections.emptyList()), new SQLException(""));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(UpdateResult.class));
+        assertThat(actual.get(), isA(UpdateResult.class));
     }
     
     @Test
     void assertGetSaneQueryResultForShowOtherStatement() {
         Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new MySQLShowOtherStatement(databaseType), new SQLException(""));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
+        assertThat(actual.get(), isA(RawMemoryQueryResult.class));
         RawMemoryQueryResult actualResult = (RawMemoryQueryResult) actual.get();
         assertThat(actualResult.getRowCount(), is(1L));
         assertTrue(actualResult.next());

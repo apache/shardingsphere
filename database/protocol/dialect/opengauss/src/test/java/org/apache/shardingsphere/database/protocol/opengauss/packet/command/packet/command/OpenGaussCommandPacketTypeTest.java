@@ -22,9 +22,9 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacketT
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class OpenGaussCommandPacketTypeTest {
     
@@ -37,6 +37,6 @@ class OpenGaussCommandPacketTypeTest {
     @Test
     void assertValueOfPostgreSQLCommand() {
         CommandPacketType actual = OpenGaussCommandPacketType.valueOf('Q');
-        assertThat(actual, instanceOf(PostgreSQLCommandPacketType.class));
+        assertThat(actual, isA(PostgreSQLCommandPacketType.class));
     }
 }

@@ -37,9 +37,9 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.util.Date;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -88,8 +88,8 @@ class ResultSetUtilsTest {
         assertThat(ResultSetUtils.convertValue(timestamp, LocalDateTime.class), is(localDateTime));
         assertThat(ResultSetUtils.convertValue(timestamp, LocalDate.class), is(LocalDate.of(2021, Month.DECEMBER, 23)));
         assertThat(ResultSetUtils.convertValue(timestamp, LocalTime.class), is(LocalTime.of(19, 30)));
-        assertThat(ResultSetUtils.convertValue(timestamp, OffsetDateTime.class), instanceOf(OffsetDateTime.class));
-        assertThat(ResultSetUtils.convertValue(timestamp, String.class), instanceOf(String.class));
+        assertThat(ResultSetUtils.convertValue(timestamp, OffsetDateTime.class), isA(OffsetDateTime.class));
+        assertThat(ResultSetUtils.convertValue(timestamp, String.class), isA(String.class));
         assertThat(ResultSetUtils.convertValue(timestamp, Object.class), is(timestamp));
     }
     

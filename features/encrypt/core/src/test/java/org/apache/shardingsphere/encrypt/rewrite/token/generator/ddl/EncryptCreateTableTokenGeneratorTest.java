@@ -43,9 +43,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -89,7 +89,7 @@ class EncryptCreateTableTokenGeneratorTest {
         Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(createCreateTableStatement()));
         assertThat(actual.size(), is(1));
         SQLToken token = actual.iterator().next();
-        assertThat(token, instanceOf(SubstituteColumnDefinitionToken.class));
+        assertThat(token, isA(SubstituteColumnDefinitionToken.class));
         Collection<SQLToken> columnTokens = ((SubstituteColumnDefinitionToken) token).getColumnDefinitionTokens();
         Iterator<SQLToken> actualIterator = columnTokens.iterator();
         ColumnDefinitionToken cipherToken = (ColumnDefinitionToken) actualIterator.next();

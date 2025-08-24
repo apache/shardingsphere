@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class ShardingParameterRewritersRegistryTest {
@@ -37,7 +37,7 @@ class ShardingParameterRewritersRegistryTest {
     void assertGetParameterRewriters() {
         List<ParameterRewriter> actual = new ArrayList<>(new ShardingParameterRewritersRegistry(mock(RouteContext.class)).getParameterRewriters());
         assertThat(actual.size(), is(2));
-        assertThat(actual.get(0), instanceOf(GeneratedKeyInsertValueParameterRewriter.class));
-        assertThat(actual.get(1), instanceOf(ShardingPaginationParameterRewriter.class));
+        assertThat(actual.get(0), isA(GeneratedKeyInsertValueParameterRewriter.class));
+        assertThat(actual.get(1), isA(ShardingPaginationParameterRewriter.class));
     }
 }

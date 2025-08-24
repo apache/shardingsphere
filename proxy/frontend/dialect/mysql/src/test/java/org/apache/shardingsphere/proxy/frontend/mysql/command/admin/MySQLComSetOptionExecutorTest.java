@@ -32,9 +32,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +59,7 @@ class MySQLComSetOptionExecutorTest {
         when(connectionSession.getAttributeMap().attr(MySQLConstants.OPTION_MULTI_STATEMENTS_ATTRIBUTE_KEY)).thenReturn(attribute);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
+        assertThat(actual.iterator().next(), isA(MySQLOKPacket.class));
         verify(attribute).set(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);
     }
 }

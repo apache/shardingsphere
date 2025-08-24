@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -51,7 +51,7 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectDatCompatibilityExecutor.class));
+        assertThat(actual.get(), isA(OpenGaussSelectDatCompatibilityExecutor.class));
     }
     
     @Test
@@ -62,7 +62,7 @@ class OpenGaussSystemTableQueryExecutorCreatorTest {
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
     }
     
     private SQLStatementContext mockSelectStatementContext(final String schemaName, final String tableName, final String columnName) {
