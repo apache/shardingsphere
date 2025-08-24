@@ -13,7 +13,7 @@ chapter = true
 
 ### Definition
 
-Database typed SQL parser facade service definition
+Database typed SQL parser facade service definition 
 
 ### Implementation classes
 
