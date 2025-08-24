@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParserFacade
+org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseParserFacade

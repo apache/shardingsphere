@@ -24,5 +24,5 @@ options {
 }
 
 @header {
-    import org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussLexerBase;
+    import org.apache.shardingsphere.sql.parser.engine.opengauss.parser.OpenGaussLexerBase;
 }

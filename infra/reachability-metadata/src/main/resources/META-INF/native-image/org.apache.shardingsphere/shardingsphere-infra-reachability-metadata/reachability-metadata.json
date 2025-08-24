@@ -382,30 +382,30 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.type.HiveDMLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.type.HiveDMLStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor",
       "allPublicConstructors": true
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseLexer"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseLexer",
       "methods": [
         {
           "name": "<init>",
@@ -417,9 +417,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.parser.ClickHouseParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.parser.ClickHouseParser",
       "methods": [
         {
           "name": "<init>",
@@ -431,9 +431,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.type.ClickHouseDMLStatementVisitor",
       "allPublicConstructors": true
     },
     {
@@ -459,9 +459,9 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor"
+        "typeReached": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDMLStatementVisitor",
       "allPublicConstructors": true
     },
     {

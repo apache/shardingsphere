@@ -41,8 +41,8 @@ import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingAc
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
+import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

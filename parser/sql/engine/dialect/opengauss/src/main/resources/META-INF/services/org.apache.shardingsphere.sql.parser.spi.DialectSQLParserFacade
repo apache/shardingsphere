@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussParserFacade
+org.apache.shardingsphere.sql.parser.engine.opengauss.parser.OpenGaussParserFacade

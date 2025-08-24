@@ -24,5 +24,5 @@ options {
 }
 
 @header {
-    import org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexerBase;
+    import org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLLexerBase;
 }
