@@ -46,7 +46,7 @@ public final class HiveConnectionPropertiesParser implements ConnectionPropertie
         queryProps.putAll(params.getSessionVars());
         queryProps.putAll(params.getHiveConfs());
         queryProps.putAll(params.getHiveVars());
-        return new ConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps, new Properties());
+        return new ConnectionProperties(params.getHost(), params.getPort(), params.getDbName(), null, queryProps);
     }
     
     @Override

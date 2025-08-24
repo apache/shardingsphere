@@ -22,8 +22,6 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
 
-import java.util.Properties;
-
 /**
  * Connection properties parser of MySQL.
  */
@@ -34,27 +32,8 @@ public final class MySQLConnectionPropertiesParser implements ConnectionProperti
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT),
-                null == catalog ? standardJdbcUrl.getDatabase() : catalog, null, standardJdbcUrl.getQueryProperties(), buildDefaultQueryProperties());
-    }
-    
-    private Properties buildDefaultQueryProperties() {
-        Properties result = new Properties();
-        result.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
-        result.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        result.setProperty("prepStmtCacheSize", "8192");
-        result.setProperty("prepStmtCacheSqlLimit", "2048");
-        result.setProperty("useLocalSessionState", Boolean.TRUE.toString());
-        result.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
-        result.setProperty("cacheResultSetMetadata", Boolean.FALSE.toString());
-        result.setProperty("cacheServerConfiguration", Boolean.TRUE.toString());
-        result.setProperty("elideSetAutoCommits", Boolean.TRUE.toString());
-        result.setProperty("maintainTimeStats", Boolean.FALSE.toString());
-        result.setProperty("netTimeoutForStreamingResults", "0");
-        result.setProperty("tinyInt1isBit", Boolean.FALSE.toString());
-        result.setProperty("useSSL", Boolean.FALSE.toString());
-        result.setProperty("zeroDateTimeBehavior", "round");
-        return result;
+        return new ConnectionProperties(
+                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), null == catalog ? standardJdbcUrl.getDatabase() : catalog, null, standardJdbcUrl.getQueryProperties());
     }
     
     @Override

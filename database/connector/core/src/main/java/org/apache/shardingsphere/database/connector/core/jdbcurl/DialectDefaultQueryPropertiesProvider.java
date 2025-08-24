@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.jdbcurl.parser;
+package org.apache.shardingsphere.database.connector.core.jdbcurl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Properties;
 
 /**
- * Connection properties.
+ * Dialect default query properties provider.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ConnectionProperties {
+@SingletonSPI
+public interface DialectDefaultQueryPropertiesProvider extends DatabaseTypedSPI {
     
-    private final String hostname;
-    
-    private final int port;
-    
-    private final String catalog;
-    
-    private final String schema;
-    
-    private final Properties queryProperties;
+    /**
+     * Get default query properties.
+     *
+     * @return default query properties
+     */
+    Properties getDefaultQueryProperties();
 }
