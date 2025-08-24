@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class PlaceholderInventoryDataRecordPositionCreatorTest {

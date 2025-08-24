@@ -49,7 +49,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)

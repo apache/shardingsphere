@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PipelineDataSourceConfigurationFactoryTest {

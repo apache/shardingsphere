@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.Matchers.isA;
 
 class FirebirdUnsupportedCommandExecutorTest {
     

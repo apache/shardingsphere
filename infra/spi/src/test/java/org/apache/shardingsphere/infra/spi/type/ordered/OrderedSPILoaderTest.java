@@ -33,10 +33,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.Matchers.isA;
 
 class OrderedSPILoaderTest {
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     @AfterEach
     void cleanCache() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));

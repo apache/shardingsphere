@@ -22,7 +22,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.isA;
+import static org.hamcrest.Matchers.isA;
 
 class SkipBackendHandlerTest {
     
