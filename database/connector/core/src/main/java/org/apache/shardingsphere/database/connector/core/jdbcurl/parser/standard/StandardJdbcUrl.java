@@ -38,14 +38,4 @@ public final class StandardJdbcUrl {
     private final String schema;
     
     private final Properties queryProperties;
-    
-    /**
-     * Get port.
-     *
-     * @param defaultPort default port if absent
-     * @return port
-     */
-    public int getPort(final int defaultPort) {
-        return -1 == port ? defaultPort : port;
-    }
 }

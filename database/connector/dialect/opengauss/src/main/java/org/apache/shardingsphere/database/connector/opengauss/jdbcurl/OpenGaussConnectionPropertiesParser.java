@@ -31,9 +31,8 @@ public final class OpenGaussConnectionPropertiesParser implements ConnectionProp
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new ConnectionProperties(
-                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), standardJdbcUrl.getSchema(), standardJdbcUrl.getQueryProperties());
+        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url, DEFAULT_PORT);
+        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), standardJdbcUrl.getDatabase(), standardJdbcUrl.getSchema(), standardJdbcUrl.getQueryProperties());
     }
     
     @Override

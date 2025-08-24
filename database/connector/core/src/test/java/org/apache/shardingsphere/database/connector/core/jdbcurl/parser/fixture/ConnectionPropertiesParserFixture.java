@@ -30,7 +30,7 @@ public final class ConnectionPropertiesParserFixture implements ConnectionProper
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         ConnectionProperties result = mock(ConnectionProperties.class, RETURNS_DEEP_STUBS);
-        when(result.getQueryProperties()).thenReturn(new StandardJdbcUrlParser().parse(url).getQueryProperties());
+        when(result.getQueryProperties()).thenReturn(new StandardJdbcUrlParser().parse(url, -1).getQueryProperties());
         return result;
     }
     
