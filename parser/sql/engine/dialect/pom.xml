@@ -23,7 +23,7 @@
         <artifactId>shardingsphere-parser-sql-engine</artifactId>
         <version>5.5.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-parser-sql-dialect</artifactId>
+    <artifactId>shardingsphere-parser-sql-engine-dialect</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     

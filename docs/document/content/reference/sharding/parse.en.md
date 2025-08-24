@@ -74,7 +74,7 @@ Since V5.0.x, the architecture of the parsing engine has been restructured and a
 <!-- According to the needs, introduce the parsing module of the specified dialect (take MySQL as an example), you can add all the supported dialects, or just what you need -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
+    <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
     <version>${project.version}</version>
 </dependency>
 ```

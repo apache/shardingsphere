@@ -55,7 +55,7 @@ The following is an example of a possible configuration,
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-hive</artifactId>
+        <artifactId>shardingsphere-parser-sql-engine-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>
