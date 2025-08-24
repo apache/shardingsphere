@@ -71,7 +71,7 @@ class StandardJdbcUrlParserTest {
                     Arguments.arguments("testcontainers_Postgres", "jdbc:tc:postgresql:9.6.8:///foo_ds", "", -1, "foo_ds", null, new Properties()),
                     Arguments.arguments("testcontainers_PostGIS", "jdbc:tc:postgis:9.6-2.5:///foo_ds", "", -1, "foo_ds", null, new Properties()),
                     Arguments.arguments("testcontainers_TimescaleDB", "jdbc:tc:timescaledb:2.1.0-pg13:///foo_ds", "", -1, "foo_ds", null, new Properties()),
-                    Arguments.arguments("testcontainers_Trino", "jdbc:tc:trino:352://localhost/memory/default", "localhost", -1, "memory/default" , null, new Properties()),
+                    Arguments.arguments("testcontainers_Trino", "jdbc:tc:trino:352://localhost/memory/default", "localhost", -1, "memory/default", null, new Properties()),
                     Arguments.arguments("testcontainers_CockroachDB", "jdbc:tc:cockroach:v21.2.3:///foo_ds", "", -1, "foo_ds", null, new Properties()),
                     Arguments.arguments("testcontainers_TiDB", "jdbc:tc:tidb:v6.1.0:///foo_ds", "", -1, "foo_ds", null, new Properties()),
                     Arguments.arguments("testcontainers_INITSCRIPT_CLASSPATH", "jdbc:tc:mysql:5.7.34:///foo_ds?TC_INITSCRIPT=somepath/init_mysql.sql", "", -1, "foo_ds", null,
