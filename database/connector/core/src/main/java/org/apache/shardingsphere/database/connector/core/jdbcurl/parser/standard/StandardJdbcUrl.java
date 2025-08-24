@@ -35,6 +35,8 @@ public final class StandardJdbcUrl {
     
     private final String database;
     
+    private final String schema;
+    
     private final Properties queryProperties;
     
     /**

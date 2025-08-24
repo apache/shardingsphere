@@ -32,8 +32,8 @@ public final class MySQLConnectionPropertiesParser implements ConnectionProperti
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new ConnectionProperties(
-                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), null == catalog ? standardJdbcUrl.getDatabase() : catalog, null, standardJdbcUrl.getQueryProperties());
+        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT),
+                null == catalog ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getSchema(), standardJdbcUrl.getQueryProperties());
     }
     
     @Override

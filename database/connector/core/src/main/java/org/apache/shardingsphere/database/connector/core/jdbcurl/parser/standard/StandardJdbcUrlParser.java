@@ -58,6 +58,8 @@ public final class StandardJdbcUrlParser {
     
     private static final String PORT_GROUP_KEY = "port";
     
+    private static final String SCHEMA_KEY = "schema";
+    
     /**
      * Parse JDBC URL.
      *
@@ -69,12 +71,15 @@ public final class StandardJdbcUrlParser {
         ShardingSpherePreconditions.checkState(matcher.matches(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
         String authority = matcher.group(AUTHORITY_GROUP_KEY);
         ShardingSpherePreconditions.checkNotNull(authority, () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
+        Properties queryProperties = parseQueryProperties(matcher.group(QUERY_GROUP_KEY));
+        String database = matcher.group(PATH_GROUP_KEY);
+        String schema = queryProperties.getProperty(SCHEMA_KEY);
         if (authority.isEmpty()) {
-            return new StandardJdbcUrl("", -1, matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
+            return new StandardJdbcUrl("", -1, database, schema, queryProperties);
         }
         Matcher hostMatcher = HOST_PORT_PATTERN_PATTERN.matcher(authority);
         ShardingSpherePreconditions.checkState(hostMatcher.find(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-        return new StandardJdbcUrl(parseHostname(hostMatcher), parsePort(hostMatcher), matcher.group(PATH_GROUP_KEY), parseQueryProperties(matcher.group(QUERY_GROUP_KEY)));
+        return new StandardJdbcUrl(parseHostname(hostMatcher), parsePort(hostMatcher), database, schema, queryProperties);
     }
     
     private String parseHostname(final Matcher hostMatcher) {

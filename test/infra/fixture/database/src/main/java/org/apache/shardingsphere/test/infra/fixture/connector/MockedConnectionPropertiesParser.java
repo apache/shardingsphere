@@ -34,7 +34,7 @@ public final class MockedConnectionPropertiesParser implements ConnectionPropert
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
         return new ConnectionProperties(
-                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getDatabase(), new Properties());
+                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getSchema(), new Properties());
     }
     
     @Override

@@ -32,7 +32,8 @@ public final class PostgreSQLConnectionPropertiesParser implements ConnectionPro
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), null, standardJdbcUrl.getQueryProperties());
+        return new ConnectionProperties(
+                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), standardJdbcUrl.getSchema(), standardJdbcUrl.getQueryProperties());
     }
     
     @Override
