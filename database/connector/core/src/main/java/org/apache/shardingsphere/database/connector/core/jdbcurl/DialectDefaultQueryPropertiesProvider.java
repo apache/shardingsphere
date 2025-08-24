@@ -30,7 +30,7 @@ public interface DialectDefaultQueryPropertiesProvider extends DatabaseTypedSPI 
     
     /**
      * Get default query properties.
-     * 
+     *
      * @return default query properties
      */
     Properties getDefaultQueryProperties();
