@@ -64,9 +64,10 @@ public final class StandardJdbcUrlParser {
      * Parse JDBC URL.
      *
      * @param jdbcUrl JDBC URL to be parsed
+     * @param defaultPort default port
      * @return parsed JDBC URL
      */
-    public StandardJdbcUrl parse(final String jdbcUrl) {
+    public StandardJdbcUrl parse(final String jdbcUrl, final int defaultPort) {
         Matcher matcher = CONNECTION_URL_PATTERN.matcher(jdbcUrl);
         ShardingSpherePreconditions.checkState(matcher.matches(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
         String authority = matcher.group(AUTHORITY_GROUP_KEY);
@@ -75,19 +76,19 @@ public final class StandardJdbcUrlParser {
         String database = matcher.group(PATH_GROUP_KEY);
         String schema = queryProperties.getProperty(SCHEMA_KEY);
         if (authority.isEmpty()) {
-            return new StandardJdbcUrl("", -1, database, schema, queryProperties);
+            return new StandardJdbcUrl("", defaultPort, database, schema, queryProperties);
         }
         Matcher hostMatcher = HOST_PORT_PATTERN_PATTERN.matcher(authority);
         ShardingSpherePreconditions.checkState(hostMatcher.find(), () -> new UnrecognizedDatabaseURLException(jdbcUrl, CONNECTION_URL_PATTERN.pattern().replaceAll("%", "%%")));
-        return new StandardJdbcUrl(parseHostname(hostMatcher), parsePort(hostMatcher), database, schema, queryProperties);
+        return new StandardJdbcUrl(parseHostname(hostMatcher), parsePort(hostMatcher, defaultPort), database, schema, queryProperties);
     }
     
     private String parseHostname(final Matcher hostMatcher) {
         return Optional.ofNullable(hostMatcher.group(IPV6_HOSTNAME_GROUP_KEY)).orElse(hostMatcher.group(HOSTNAME_GROUP_KEY));
     }
     
-    private int parsePort(final Matcher hostMatcher) {
-        return Optional.ofNullable(hostMatcher.group(PORT_GROUP_KEY)).map(Integer::parseInt).orElse(-1);
+    private int parsePort(final Matcher hostMatcher, final int defaultPort) {
+        return Optional.ofNullable(hostMatcher.group(PORT_GROUP_KEY)).map(Integer::parseInt).orElse(defaultPort);
     }
     
     /**

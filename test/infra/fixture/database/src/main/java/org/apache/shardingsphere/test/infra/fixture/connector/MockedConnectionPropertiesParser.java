@@ -32,7 +32,7 @@ public final class MockedConnectionPropertiesParser implements ConnectionPropert
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
+        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url, -1);
         return new ConnectionProperties(
                 standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(), Strings.isNullOrEmpty(catalog) ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getSchema(), new Properties());
     }
