@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.hive.parser.HiveParserFacade
+org.apache.shardingsphere.sql.parser.engine.hive.parser.HiveParserFacade

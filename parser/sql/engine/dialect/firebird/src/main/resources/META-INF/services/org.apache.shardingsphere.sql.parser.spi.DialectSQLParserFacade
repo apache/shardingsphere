@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.firebird.parser.FirebirdParserFacade
+org.apache.shardingsphere.sql.parser.engine.firebird.parser.FirebirdParserFacade

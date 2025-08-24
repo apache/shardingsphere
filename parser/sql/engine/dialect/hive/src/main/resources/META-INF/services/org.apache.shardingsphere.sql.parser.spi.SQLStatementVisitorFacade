@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade
+org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.doris.parser.DorisParserFacade
+org.apache.shardingsphere.sql.parser.engine.doris.parser.DorisParserFacade

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.presto.parser.PrestoParserFacade
+org.apache.shardingsphere.sql.parser.engine.presto.parser.PrestoParserFacade

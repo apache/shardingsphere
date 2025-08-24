@@ -33,7 +33,7 @@ import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnection
 import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.Di
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade
+org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade

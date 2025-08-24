@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.parser.cache;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**

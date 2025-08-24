@@ -48,7 +48,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReference
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.timeservice.config.TimestampServiceRuleConfiguration;
