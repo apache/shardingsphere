@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,11 +51,11 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
     }
     
     private ConnectionProperties getThinConnectionProperties(final String username, final Matcher matcher) {
-        return new ConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username);
+        return new ConnectionProperties(matcher.group(3), Strings.isNullOrEmpty(matcher.group(4)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(4)), matcher.group(5), username, new Properties());
     }
     
     private ConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher) {
-        return new ConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username);
+        return new ConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username, new Properties());
     }
     
     @Override

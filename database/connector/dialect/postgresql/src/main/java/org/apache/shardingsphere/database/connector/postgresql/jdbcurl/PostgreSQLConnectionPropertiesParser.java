@@ -22,8 +22,6 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
 
-import java.util.Properties;
-
 /**
  * Connection properties parser of PostgreSQL.
  */
@@ -34,8 +32,7 @@ public final class PostgreSQLConnectionPropertiesParser implements ConnectionPro
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
         StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url);
-        return new ConnectionProperties(
-                standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), null, standardJdbcUrl.getQueryProperties(), new Properties());
+        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(DEFAULT_PORT), standardJdbcUrl.getDatabase(), null, standardJdbcUrl.getQueryProperties());
     }
     
     @Override
