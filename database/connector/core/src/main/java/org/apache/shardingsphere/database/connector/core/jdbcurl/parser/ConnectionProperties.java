@@ -38,4 +38,14 @@ public final class ConnectionProperties {
     private final String schema;
     
     private final Properties queryProperties;
+    
+    /**
+     * Change catalog.
+     *
+     * @param catalog to be changed catalog
+     * @return connection properties
+     */
+    public ConnectionProperties changeCatalog(final String catalog) {
+        return new ConnectionProperties(hostname, port, null == catalog ? this.catalog : catalog, schema, queryProperties);
+    }
 }

@@ -19,8 +19,7 @@ package org.apache.shardingsphere.database.connector.mysql.jdbcurl;
 
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrl;
-import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardJdbcUrlParser;
 
 /**
  * Connection properties parser of MySQL.
@@ -31,9 +30,7 @@ public final class MySQLConnectionPropertiesParser implements ConnectionProperti
     
     @Override
     public ConnectionProperties parse(final String url, final String username, final String catalog) {
-        StandardJdbcUrl standardJdbcUrl = new StandardJdbcUrlParser().parse(url, DEFAULT_PORT);
-        return new ConnectionProperties(standardJdbcUrl.getHostname(), standardJdbcUrl.getPort(),
-                null == catalog ? standardJdbcUrl.getDatabase() : catalog, standardJdbcUrl.getSchema(), standardJdbcUrl.getQueryProperties());
+        return new StandardJdbcUrlParser().parse(url, DEFAULT_PORT).changeCatalog(catalog);
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.jdbcurl.parser.standard;
+package org.apache.shardingsphere.database.connector.core.jdbcurl.parser;
 
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -41,10 +41,10 @@ class StandardJdbcUrlParserTest {
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertParse(final String name, final String actualURL, final int defaultPort,
                      final String expectedHostname, final int expectedPort, final String expectedDatabaseName, final String expectedSchemaName, final Properties expectedQueryProps) {
-        StandardJdbcUrl actual = new StandardJdbcUrlParser().parse(actualURL, defaultPort);
+        ConnectionProperties actual = new StandardJdbcUrlParser().parse(actualURL, defaultPort);
         assertThat(actual.getHostname(), is(expectedHostname));
         assertThat(actual.getPort(), is(expectedPort));
-        assertThat(actual.getDatabase(), is(expectedDatabaseName));
+        assertThat(actual.getCatalog(), is(expectedDatabaseName));
         assertThat(actual.getSchema(), is(expectedSchemaName));
         assertThat(actual.getQueryProperties(), is(expectedQueryProps));
     }
