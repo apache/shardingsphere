@@ -53,7 +53,7 @@ ShardingSphere 对 HiveServer2 JDBC Driver 的支持位于可选模块中。
     </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-parser-sql-hive</artifactId>
+        <artifactId>shardingsphere-parser-engine-sql-hive</artifactId>
         <version>${shardingsphere.version}</version>
     </dependency>
     <dependency>

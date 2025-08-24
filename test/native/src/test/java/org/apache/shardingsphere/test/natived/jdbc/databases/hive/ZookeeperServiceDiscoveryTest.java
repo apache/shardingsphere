@@ -179,7 +179,7 @@ class ZookeeperServiceDiscoveryTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-hive` module does not support `set`, `create table` statements yet,
+     * TODO `shardingsphere-parser-sql-engine-hive` module does not support `set`, `create table` statements yet,
      *  we always need to execute the following Hive Session-level SQL in the current {@link javax.sql.DataSource}.
      * Hive does not support `AUTO_INCREMENT`,
      * refer to <a href="https://issues.apache.org/jira/browse/HIVE-6905">HIVE-6905</a>.

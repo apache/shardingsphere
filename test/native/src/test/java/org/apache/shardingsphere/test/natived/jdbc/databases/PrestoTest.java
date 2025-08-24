@@ -115,7 +115,7 @@ class PrestoTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-presto` module does not support `create table` and `truncate table` statements yet.
+     * TODO `shardingsphere-parser-sql-engine-presto` module does not support `create table` and `truncate table` statements yet.
      * Presto Iceberg Connector does not support AUTO_INCREMENT columns.
      * Presto Iceberg Connector does not support Primary Key constraints.
      *

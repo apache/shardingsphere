@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-opengauss</artifactId>
             <version>${project.version}</version>
         </dependency>
         
