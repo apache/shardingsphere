@@ -42,8 +42,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,7 +69,7 @@ class DatabaseConnectorFactoryTest {
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
-        assertThat(engine, instanceOf(DatabaseConnector.class));
+        assertThat(engine, isA(DatabaseConnector.class));
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -93,7 +93,7 @@ class DatabaseConnectorFactoryTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertThat(DatabaseConnectorFactory.getInstance().newInstance(
                 new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), metaData), databaseConnectionManager, false),
-                instanceOf(DatabaseConnector.class));
+                isA(DatabaseConnector.class));
     }
     
     private ContextManager mockContextManager(final ShardingSphereDatabase database) {

@@ -33,8 +33,8 @@ import org.mockito.Mock;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -59,7 +59,7 @@ class CreateDatabaseBackendHandlerTest {
         when(statement.getDatabaseName()).thenReturn("bar_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
+        assertThat(handler.execute(), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -77,7 +77,7 @@ class CreateDatabaseBackendHandlerTest {
         when(statement.isIfNotExists()).thenReturn(true);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
+        assertThat(handler.execute(), isA(UpdateResponseHeader.class));
     }
     
     private ContextManager mockContextManager() {

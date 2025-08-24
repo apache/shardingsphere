@@ -36,9 +36,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,7 +53,7 @@ class ResponsePacketBuilderTest {
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
         Collection<DatabasePacket> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0);
         assertTrue(actual.stream().findAny().isPresent());
-        assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
+        assertThat(actual.stream().findAny().get(), anyOf(isA(MySQLFieldCountPacket.class), isA(MySQLColumnDefinition41Packet.class), isA(MySQLEofPacket.class)));
     }
     
     @Test
@@ -64,7 +64,7 @@ class ResponsePacketBuilderTest {
         Collection<DatabasePacket> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, 0);
         assertTrue(actual.stream().findAny().isPresent());
         MySQLOKPacket actualItem = (MySQLOKPacket) actual.stream().findAny().get();
-        assertThat(actualItem, instanceOf(MySQLOKPacket.class));
+        assertThat(actualItem, isA(MySQLOKPacket.class));
         assertThat(actualItem.getAffectedRows(), is(10L));
         assertThat(actualItem.getLastInsertId(), is(100L));
     }

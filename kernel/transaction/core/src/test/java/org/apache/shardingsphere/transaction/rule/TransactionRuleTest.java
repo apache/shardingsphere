@@ -41,8 +41,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -60,14 +60,14 @@ class TransactionRuleTest {
     void assertRefreshWithNotDatabaseChange() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyList());
         actual.refresh(Collections.singleton(createAddDatabase()), GlobalRuleChangedType.SCHEMA_CHANGED);
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
     void assertRefreshWithDatabaseChange() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.singleton(createDatabase()));
         actual.refresh(Collections.singleton(createAddDatabase()), GlobalRuleChangedType.DATABASE_CHANGED);
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
@@ -120,7 +120,7 @@ class TransactionRuleTest {
     void assertClose() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.singleton(createDatabase()));
         actual.close();
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
     }
     
     private ShardingSphereDatabase createDatabase() {

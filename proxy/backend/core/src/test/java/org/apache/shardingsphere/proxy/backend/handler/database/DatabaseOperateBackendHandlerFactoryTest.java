@@ -52,8 +52,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,7 +94,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
         when(sqlStatement.getDatabaseName()).thenReturn("new_db");
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        assertThat(response, isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -103,7 +103,7 @@ class DatabaseOperateBackendHandlerFactoryTest {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         setGovernanceMetaDataContexts(true);
         ResponseHeader response = DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        assertThat(response, isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -139,12 +139,12 @@ class DatabaseOperateBackendHandlerFactoryTest {
     
     @Test
     void assertDatabaseOperateBackendHandlerFactoryReturnCreateDatabaseBackendHandler() {
-        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), instanceOf(CreateDatabaseBackendHandler.class));
+        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), isA(CreateDatabaseBackendHandler.class));
     }
     
     @Test
     void assertDatabaseOperateBackendHandlerFactoryReturnDropDatabaseBackendHandler() {
-        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), instanceOf(DropDatabaseBackendHandler.class));
+        assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), isA(DropDatabaseBackendHandler.class));
     }
     
     @Test

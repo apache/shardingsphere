@@ -57,9 +57,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -105,6 +105,6 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertThat(returnPacket.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(preparedStatement.getSql(), is("SELECT 1"));
-        assertThat(preparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
+        assertThat(preparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
     }
 }

@@ -29,9 +29,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.XADataSource;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +52,7 @@ class DataSourceSwapperTest {
     }
     
     private void assertResult(final XADataSource xaDataSource) {
-        assertThat(xaDataSource, instanceOf(JdbcDataSource.class));
+        assertThat(xaDataSource, isA(JdbcDataSource.class));
         JdbcDataSource h2XADataSource = (JdbcDataSource) xaDataSource;
         assertThat(h2XADataSource.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(h2XADataSource.getUser(), is("root"));

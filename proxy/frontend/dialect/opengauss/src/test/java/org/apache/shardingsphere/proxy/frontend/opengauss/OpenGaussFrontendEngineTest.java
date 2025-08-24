@@ -29,8 +29,8 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -49,17 +49,17 @@ class OpenGaussFrontendEngineTest {
     
     @Test
     void assertGetCommandExecuteEngine() {
-        assertThat(openGaussFrontendEngine.getCommandExecuteEngine(), instanceOf(OpenGaussCommandExecuteEngine.class));
+        assertThat(openGaussFrontendEngine.getCommandExecuteEngine(), isA(OpenGaussCommandExecuteEngine.class));
     }
     
     @Test
     void assertGetCodecEngine() {
-        assertThat(openGaussFrontendEngine.getCodecEngine(), instanceOf(OpenGaussPacketCodecEngine.class));
+        assertThat(openGaussFrontendEngine.getCodecEngine(), isA(OpenGaussPacketCodecEngine.class));
     }
     
     @Test
     void assertGetAuthenticationEngine() {
-        assertThat(openGaussFrontendEngine.getAuthenticationEngine(), instanceOf(OpenGaussAuthenticationEngine.class));
+        assertThat(openGaussFrontendEngine.getAuthenticationEngine(), isA(OpenGaussAuthenticationEngine.class));
     }
     
     @Test

@@ -55,9 +55,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -119,7 +119,7 @@ class UnicastDatabaseBackendHandlerTest {
         ShardingSphereDatabase database = createDatabases().iterator().next();
         when(contextManager.getDatabase("db_0")).thenReturn(database);
         ResponseHeader actual = unicastDatabaseBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        assertThat(actual, isA(UpdateResponseHeader.class));
     }
     
     @Test

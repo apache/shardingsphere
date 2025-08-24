@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,7 +53,7 @@ class MySQLComStmtResetExecutorTest {
         MySQLComStmtResetExecutor executor = new MySQLComStmtResetExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
+        assertThat(actual.iterator().next(), isA(MySQLOKPacket.class));
         assertTrue(preparedStatement.getLongData().isEmpty());
     }
 }

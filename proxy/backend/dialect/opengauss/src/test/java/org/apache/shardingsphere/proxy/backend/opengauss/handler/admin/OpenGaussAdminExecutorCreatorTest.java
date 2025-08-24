@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -65,7 +65,7 @@ class OpenGaussAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_database", "datcompatibility");
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, databaseName, Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectDatCompatibilityExecutor.class));
+        assertThat(actual.get(), isA(OpenGaussSelectDatCompatibilityExecutor.class));
     }
     
     @Test
@@ -85,7 +85,7 @@ class OpenGaussAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mockSelectStatementContext("pg_catalog", "pg_type", null);
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
     }
     
     @Test
@@ -122,7 +122,7 @@ class OpenGaussAdminExecutorCreatorTest {
                 .thenReturn(Collections.singletonList(new ExpressionProjectionSegment(-1, -1, expression)));
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, sql, "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(type));
+        assertThat(actual.get(), isA(type));
     }
     
     private SelectStatementContext mockSelectStatementContext(final String schemaName, final String tableName, final String columnName) {

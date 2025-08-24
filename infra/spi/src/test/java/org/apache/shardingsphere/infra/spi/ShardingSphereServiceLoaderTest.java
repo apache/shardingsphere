@@ -26,10 +26,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,7 +50,7 @@ class ShardingSphereServiceLoaderTest {
         Collection<SingletonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(SingletonSPIFixture.class);
         assertThat(actual.size(), is(1));
         SingletonSPIFixture actualInstance = actual.iterator().next();
-        assertThat(actualInstance, instanceOf(SingletonSPIFixtureImpl.class));
+        assertThat(actualInstance, isA(SingletonSPIFixtureImpl.class));
         assertThat(actualInstance, is(ShardingSphereServiceLoader.getServiceInstances(SingletonSPIFixture.class).iterator().next()));
     }
     
@@ -59,7 +59,7 @@ class ShardingSphereServiceLoaderTest {
         Collection<MultitonSPIFixture> actual = ShardingSphereServiceLoader.getServiceInstances(MultitonSPIFixture.class);
         assertThat(actual.size(), is(1));
         MultitonSPIFixture actualInstance = actual.iterator().next();
-        assertThat(actualInstance, instanceOf(MultitonSPIFixtureImpl.class));
+        assertThat(actualInstance, isA(MultitonSPIFixtureImpl.class));
         assertThat(actualInstance, not(ShardingSphereServiceLoader.getServiceInstances(MultitonSPIFixture.class).iterator().next()));
     }
 }

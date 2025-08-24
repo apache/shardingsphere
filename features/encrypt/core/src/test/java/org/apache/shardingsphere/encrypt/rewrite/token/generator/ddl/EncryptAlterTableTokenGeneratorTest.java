@@ -48,9 +48,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -103,7 +103,7 @@ class EncryptAlterTableTokenGeneratorTest {
         Collection<SQLToken> actual = generator.generateSQLTokens(new CommonSQLStatementContext(createAddColumnStatement()));
         assertThat(actual.size(), is(4));
         Iterator<SQLToken> actualIterator = actual.iterator();
-        assertThat(actualIterator.next(), instanceOf(RemoveToken.class));
+        assertThat(actualIterator.next(), isA(RemoveToken.class));
         EncryptColumnToken cipherToken = (EncryptColumnToken) actualIterator.next();
         assertThat(cipherToken.toString(), is("cipher_certificate_number VARCHAR(4000)"));
         assertThat(cipherToken.getStartIndex(), is(68));

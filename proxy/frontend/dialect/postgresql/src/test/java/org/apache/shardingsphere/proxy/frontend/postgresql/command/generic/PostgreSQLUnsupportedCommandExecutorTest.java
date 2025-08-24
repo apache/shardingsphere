@@ -26,6 +26,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 
 class PostgreSQLUnsupportedCommandExecutorTest {
     
@@ -34,6 +35,6 @@ class PostgreSQLUnsupportedCommandExecutorTest {
         PostgreSQLUnsupportedCommandExecutor commandExecutor = new PostgreSQLUnsupportedCommandExecutor();
         Collection<DatabasePacket> actual = commandExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(PostgreSQLErrorResponsePacket.class));
+        assertThat(actual.iterator().next(), isA(PostgreSQLErrorResponsePacket.class));
     }
 }

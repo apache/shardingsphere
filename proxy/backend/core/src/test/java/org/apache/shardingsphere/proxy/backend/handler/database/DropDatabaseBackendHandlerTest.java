@@ -44,8 +44,8 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -111,7 +111,7 @@ class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabaseName(null);
-        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
+        assertThat(responseHeader, isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -121,7 +121,7 @@ class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession).setCurrentDatabaseName(null);
-        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
+        assertThat(responseHeader, isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -138,6 +138,6 @@ class DropDatabaseBackendHandlerTest {
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabaseName(null);
-        assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
+        assertThat(responseHeader, isA(UpdateResponseHeader.class));
     }
 }

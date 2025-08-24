@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -46,7 +46,7 @@ class OpenGaussSystemFunctionQueryExecutorCreatorTest {
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectVersionExecutor.class));
+        assertThat(actual.get(), isA(OpenGaussSelectVersionExecutor.class));
     }
     
     @Test
@@ -56,7 +56,7 @@ class OpenGaussSystemFunctionQueryExecutorCreatorTest {
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectPasswordDeadlineExecutor.class));
+        assertThat(actual.get(), isA(OpenGaussSelectPasswordDeadlineExecutor.class));
     }
     
     @Test
@@ -66,7 +66,7 @@ class OpenGaussSystemFunctionQueryExecutorCreatorTest {
         assertTrue(creator.accept());
         Optional<DatabaseAdminExecutor> actual = creator.create();
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectPasswordNotifyTimeExecutor.class));
+        assertThat(actual.get(), isA(OpenGaussSelectPasswordNotifyTimeExecutor.class));
     }
     
     private SQLStatementContext mockSQLStatementContext(final String functionName) {

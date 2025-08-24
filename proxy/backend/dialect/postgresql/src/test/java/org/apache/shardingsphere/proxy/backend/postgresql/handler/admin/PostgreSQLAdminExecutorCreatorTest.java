@@ -42,9 +42,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -94,7 +94,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     void assertCreateWithShowSQLStatement() {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(new ShowStatement(databaseType, "client_encoding")));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
+        assertThat(actual.get(), isA(PostgreSQLShowVariableExecutor.class));
     }
     
     @Test
@@ -151,7 +151,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SetStatement(databaseType, Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
+        assertThat(actual.get(), isA(PostgreSQLSetVariableAdminExecutor.class));
     }
     
     @Test
@@ -159,7 +159,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
                 .create(new CommonSQLStatementContext(new PostgreSQLResetParameterStatement(databaseType, "client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
+        assertThat(actual.get(), isA(PostgreSQLResetVariableAdminExecutor.class));
     }
     
     @Test

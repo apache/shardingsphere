@@ -27,9 +27,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -58,7 +58,7 @@ public final class CommentAssert {
     }
     
     private static void assertCorrectComment(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
-        assertThat(assertContext.getText("Comment should exist."), actual, instanceOf(SQLStatement.class));
+        assertThat(assertContext.getText("Comment should exist."), actual, isA(SQLStatement.class));
         assertThat(assertContext.getText("Comments size assertion error: "), actual.getComments().size(), is(expected.getComments().size()));
         Iterator<CommentSegment> actualIterator = actual.getComments().iterator();
         for (ExpectedComment each : expected.getComments()) {

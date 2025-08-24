@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -49,7 +50,7 @@ class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         byteBuf.readInt();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         Object actual = new PostgreSQLUnspecifiedBinaryProtocolValue().read(payload, timestampStr.length());
-        assertThat(actual, instanceOf(PostgreSQLTypeUnspecifiedSQLParameter.class));
+        assertThat(actual, isA(PostgreSQLTypeUnspecifiedSQLParameter.class));
         assertThat(actual.toString(), is(timestampStr));
         assertThat(byteBuf.readerIndex(), is(expectedLength));
     }

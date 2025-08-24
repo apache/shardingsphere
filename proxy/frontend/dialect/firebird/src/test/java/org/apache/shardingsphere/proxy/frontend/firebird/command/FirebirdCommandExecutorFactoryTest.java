@@ -48,8 +48,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,66 +60,64 @@ class FirebirdCommandExecutorFactoryTest {
     
     @Test
     void assertNewInstanceWithInfoDatabase() throws SQLException {
-        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, mock(FirebirdInfoPacket.class), connectionSession),
-                instanceOf(FirebirdDatabaseInfoExecutor.class));
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdDatabaseInfoExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithTransaction() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.TRANSACTION, mock(FirebirdStartTransactionPacket.class), connectionSession),
-                instanceOf(FirebirdStartTransactionCommandExecutor.class));
+                isA(FirebirdStartTransactionCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithAllocateStatement() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.ALLOCATE_STATEMENT, mock(FirebirdAllocateStatementPacket.class), connectionSession),
-                instanceOf(FirebirdAllocateStatementCommandExecutor.class));
+                isA(FirebirdAllocateStatementCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithPrepareStatement() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.PREPARE_STATEMENT, mock(FirebirdPrepareStatementPacket.class), connectionSession),
-                instanceOf(FirebirdPrepareStatementCommandExecutor.class));
+                isA(FirebirdPrepareStatementCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithExecuteStatement() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, mock(FirebirdExecuteStatementPacket.class), connectionSession),
-                instanceOf(FirebirdExecuteStatementCommandExecutor.class));
+                isA(FirebirdExecuteStatementCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithFetch() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.FETCH, mock(FirebirdFetchStatementPacket.class), connectionSession),
-                instanceOf(FirebirdFetchStatementCommandExecutor.class));
+                isA(FirebirdFetchStatementCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithInfoSQL() throws SQLException {
-        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_SQL, mock(FirebirdInfoPacket.class), connectionSession),
-                instanceOf(FirebirdSQLInfoExecutor.class));
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_SQL, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdSQLInfoExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithCommit() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.COMMIT, mock(FirebirdCommitTransactionPacket.class), connectionSession),
-                instanceOf(FirebirdCommitTransactionCommandExecutor.class));
+                isA(FirebirdCommitTransactionCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithRollback() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.ROLLBACK, mock(FirebirdRollbackTransactionPacket.class), connectionSession),
-                instanceOf(FirebirdRollbackTransactionCommandExecutor.class));
+                isA(FirebirdRollbackTransactionCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithFreeStatement() throws SQLException {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.FREE_STATEMENT, mock(FirebirdFreeStatementPacket.class), connectionSession),
-                instanceOf(FirebirdFreeStatementCommandExecutor.class));
+                isA(FirebirdFreeStatementCommandExecutor.class));
     }
     
     @Test
     void assertNewInstanceWithUnsupportedCommand() throws SQLException {
-        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.VOID, mock(CommandPacket.class), connectionSession), instanceOf(FirebirdUnsupportedCommandExecutor.class));
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.VOID, mock(CommandPacket.class), connectionSession), isA(FirebirdUnsupportedCommandExecutor.class));
     }
 }

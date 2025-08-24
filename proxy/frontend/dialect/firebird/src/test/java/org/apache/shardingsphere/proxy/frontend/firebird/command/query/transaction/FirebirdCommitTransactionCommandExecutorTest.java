@@ -32,8 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,7 +54,7 @@ class FirebirdCommitTransactionCommandExecutorTest {
         })) {
             FirebirdCommitTransactionCommandExecutor executor = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession);
             Collection<DatabasePacket> actual = executor.execute();
-            assertThat(actual.iterator().next(), instanceOf(FirebirdGenericResponsePacket.class));
+            assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).commit();
         }
     }

@@ -29,6 +29,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,7 +43,7 @@ class PostgreSQLJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
-        assertThat(actual, instanceOf(PostgreSQLJdbcQueryPropertiesExtension.class));
+        assertThat(actual, isA(PostgreSQLJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), is(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")));
         Properties props = new Properties();
         actual.extendQueryProperties(props);

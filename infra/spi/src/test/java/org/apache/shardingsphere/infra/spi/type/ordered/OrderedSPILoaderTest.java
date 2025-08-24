@@ -31,9 +31,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 
 class OrderedSPILoaderTest {
     
@@ -47,7 +47,7 @@ class OrderedSPILoaderTest {
     void assertGetServicesByClass() {
         Map<Class<?>, OrderedSPIFixture> actual = OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(OrderedInterfaceFixtureImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
+        assertThat(actual.get(OrderedInterfaceFixtureImpl.class), isA(OrderedSPIFixtureImpl.class));
     }
     
     @SuppressWarnings("rawtypes")
@@ -56,7 +56,7 @@ class OrderedSPILoaderTest {
         OrderedInterfaceFixtureImpl key = new OrderedInterfaceFixtureImpl();
         Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(key), instanceOf(OrderedSPIFixtureImpl.class));
+        assertThat(actual.get(key), isA(OrderedSPIFixtureImpl.class));
     }
     
     @Test

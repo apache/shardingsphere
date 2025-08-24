@@ -44,8 +44,8 @@ import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -104,7 +104,7 @@ class SQLRewriteContextTest {
         when(queryContext.getParameters()).thenReturn(Collections.singletonList(1));
         when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
-        assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(GroupedParameterBuilder.class));
+        assertThat(sqlRewriteContext.getParameterBuilder(), isA(GroupedParameterBuilder.class));
     }
     
     @Test
@@ -117,7 +117,7 @@ class SQLRewriteContextTest {
         when(queryContext.getParameters()).thenReturn(Collections.singletonList(1));
         when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
         SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
-        assertThat(sqlRewriteContext.getParameterBuilder(), instanceOf(StandardParameterBuilder.class));
+        assertThat(sqlRewriteContext.getParameterBuilder(), isA(StandardParameterBuilder.class));
     }
     
     @Test
@@ -131,7 +131,7 @@ class SQLRewriteContextTest {
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(optionalSQLTokenGenerator));
         sqlRewriteContext.generateSQLTokens();
         assertFalse(sqlRewriteContext.getSqlTokens().isEmpty());
-        assertThat(sqlRewriteContext.getSqlTokens().get(0), instanceOf(SQLToken.class));
+        assertThat(sqlRewriteContext.getSqlTokens().get(0), isA(SQLToken.class));
     }
     
     @Test
@@ -145,6 +145,6 @@ class SQLRewriteContextTest {
         sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(collectionSQLTokenGenerator));
         sqlRewriteContext.generateSQLTokens();
         assertFalse(sqlRewriteContext.getSqlTokens().isEmpty());
-        assertThat(sqlRewriteContext.getSqlTokens().get(0), instanceOf(SQLToken.class));
+        assertThat(sqlRewriteContext.getSqlTokens().get(0), isA(SQLToken.class));
     }
 }

@@ -71,9 +71,9 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -194,7 +194,7 @@ class ExportMetaDataExecutorTest {
     
     private void assertMetaData(final Object actual, final String expected) {
         assertNotNull(actual);
-        assertThat(actual, instanceOf(String.class));
+        assertThat(actual, isA(String.class));
         assertMetaData(convertToExportedClusterInfo((String) actual), convertToExportedClusterInfo(expected));
     }
     

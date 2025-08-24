@@ -21,8 +21,8 @@ import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.mock;
 
 class SQLParserFactoryTest {
@@ -31,6 +31,6 @@ class SQLParserFactoryTest {
     
     @Test
     void assertNewInstance() {
-        assertThat(SQLParserFactory.newInstance(SQL, mock(LexerFixture.class).getClass(), mock(ParserFixture.class).getClass()), instanceOf(ParserFixture.class));
+        assertThat(SQLParserFactory.newInstance(SQL, mock(LexerFixture.class).getClass(), mock(ParserFixture.class).getClass()), isA(ParserFixture.class));
     }
 }

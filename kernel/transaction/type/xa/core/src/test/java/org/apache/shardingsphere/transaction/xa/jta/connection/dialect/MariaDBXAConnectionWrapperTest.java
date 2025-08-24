@@ -35,8 +35,8 @@ import javax.sql.XADataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +47,7 @@ class MariaDBXAConnectionWrapperTest {
     @Test
     void assertWrap() throws SQLException {
         XAConnection actual = DatabaseTypedSPILoader.getService(XAConnectionWrapper.class, databaseType).wrap(createXADataSource(), mockConnection());
-        assertThat(actual.getXAResource(), instanceOf(MariaXaResource.class));
+        assertThat(actual.getXAResource(), isA(MariaXaResource.class));
     }
     
     private XADataSource createXADataSource() {

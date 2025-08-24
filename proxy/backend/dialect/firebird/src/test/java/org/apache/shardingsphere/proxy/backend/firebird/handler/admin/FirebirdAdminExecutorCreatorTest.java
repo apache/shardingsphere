@@ -36,9 +36,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,7 +57,7 @@ class FirebirdAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
                 new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(FirebirdShowVariableExecutor.class));
+        assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
     }
     
     @Test
@@ -72,7 +72,7 @@ class FirebirdAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SetStatement(databaseType, Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(sqlStatementContext, "SET NAMES utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(FirebirdSetVariableAdminExecutor.class));
+        assertThat(actual.get(), isA(FirebirdSetVariableAdminExecutor.class));
     }
     
     @Test

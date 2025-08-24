@@ -31,9 +31,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +57,7 @@ class PostgreSQLComCloseExecutorTest {
         PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(portalContext, packet, connectionSession);
         Collection<DatabasePacket> actual = closeExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCloseCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(isA(PostgreSQLCloseCompletePacket.class)));
     }
     
     @Test
@@ -68,7 +68,7 @@ class PostgreSQLComCloseExecutorTest {
         PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(portalContext, packet, connectionSession);
         Collection<DatabasePacket> actual = closeExecutor.execute();
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(instanceOf(PostgreSQLCloseCompletePacket.class)));
+        assertThat(actual.iterator().next(), is(isA(PostgreSQLCloseCompletePacket.class)));
         verify(portalContext).close(portalName);
     }
 }

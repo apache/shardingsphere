@@ -21,8 +21,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 
 class SkipBackendHandlerTest {
     
@@ -30,6 +30,6 @@ class SkipBackendHandlerTest {
     void assertExecuteSkipBackendHandler() {
         SkipBackendHandler skipBackendHandler = new SkipBackendHandler(null);
         ResponseHeader actual = skipBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        assertThat(actual, isA(UpdateResponseHeader.class));
     }
 }

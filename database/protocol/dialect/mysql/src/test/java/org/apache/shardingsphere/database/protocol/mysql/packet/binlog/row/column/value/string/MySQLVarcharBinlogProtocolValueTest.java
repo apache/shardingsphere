@@ -29,9 +29,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.Serializable;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,7 +62,7 @@ class MySQLVarcharBinlogProtocolValueTest {
         when(byteBuf.readUnsignedByte()).thenReturn((short) expected.length);
         when(payload.readStringFixByBytes(expected.length)).thenReturn(expected);
         Serializable actual = new MySQLVarcharBinlogProtocolValue().read(columnDef, payload);
-        assertThat(actual, instanceOf(MySQLBinaryString.class));
+        assertThat(actual, isA(MySQLBinaryString.class));
         assertThat(((MySQLBinaryString) actual).getBytes(), is(expected));
     }
     
@@ -78,7 +78,7 @@ class MySQLVarcharBinlogProtocolValueTest {
         when(byteBuf.readUnsignedShortLE()).thenReturn(expected.length);
         when(payload.readStringFixByBytes(expected.length)).thenReturn(expected);
         Serializable actual = new MySQLVarcharBinlogProtocolValue().read(columnDef, payload);
-        assertThat(actual, instanceOf(MySQLBinaryString.class));
+        assertThat(actual, isA(MySQLBinaryString.class));
         assertThat(((MySQLBinaryString) actual).getBytes(), is(expected));
     }
 }

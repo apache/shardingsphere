@@ -60,9 +60,9 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -95,7 +95,7 @@ class OpenGaussComBatchBindExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket> actualPacketsIterator = new OpenGaussComBatchBindExecutor(mockComBatchBindPacket(), connectionSession).execute().iterator();
         assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));
-        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLCommandCompletePacket.class));
         assertFalse(actualPacketsIterator.hasNext());
     }
     

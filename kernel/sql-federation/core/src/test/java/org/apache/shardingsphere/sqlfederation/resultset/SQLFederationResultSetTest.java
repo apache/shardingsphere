@@ -46,9 +46,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -446,14 +446,14 @@ class SQLFederationResultSetTest {
     void assertGetArrayWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getArray(1), instanceOf(Array.class));
+        assertThat(federationResultSet.getArray(1), isA(Array.class));
     }
     
     @Test
     void assertGetArrayWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getArray("order_id"), instanceOf(Array.class));
+        assertThat(federationResultSet.getArray("order_id"), isA(Array.class));
     }
     
     @Test

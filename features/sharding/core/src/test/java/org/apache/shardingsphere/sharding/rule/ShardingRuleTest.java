@@ -76,9 +76,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -104,8 +104,8 @@ class ShardingRuleTest {
         assertTrue(actual.getBindingTableRules().containsKey("logic_table"));
         assertTrue(actual.getBindingTableRules().containsKey("sub_logic_table"));
         assertThat(actual.getBindingTableRules().values().iterator().next().getShardingTables().size(), is(2));
-        assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(UUIDKeyGenerateAlgorithm.class));
-        assertThat(actual.getAuditors().get("audit_algorithm"), instanceOf(DMLShardingConditionsShardingAuditAlgorithm.class));
+        assertThat(actual.getDefaultKeyGenerateAlgorithm(), isA(UUIDKeyGenerateAlgorithm.class));
+        assertThat(actual.getAuditors().get("audit_algorithm"), isA(DMLShardingConditionsShardingAuditAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));
     }
     
@@ -114,7 +114,7 @@ class ShardingRuleTest {
         ShardingRule actual = createMinimumShardingRule();
         assertThat(actual.getShardingTables().size(), is(1));
         assertTrue(actual.getBindingTableRules().isEmpty());
-        assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(SnowflakeKeyGenerateAlgorithm.class));
+        assertThat(actual.getDefaultKeyGenerateAlgorithm(), isA(SnowflakeKeyGenerateAlgorithm.class));
         assertNull(actual.getDefaultShardingColumn());
     }
     
@@ -463,7 +463,7 @@ class ShardingRuleTest {
         when(generateContext.getTableName()).thenReturn("logic_table");
         Collection<? extends Comparable<?>> actual = createMinimumShardingRule().generateKeys(generateContext, 1);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(Long.class));
+        assertThat(actual.iterator().next(), isA(Long.class));
     }
     
     @Test
@@ -472,7 +472,7 @@ class ShardingRuleTest {
         when(generateContext.getTableName()).thenReturn("logic_table");
         Collection<? extends Comparable<?>> actual = createMaximumShardingRule().generateKeys(generateContext, 1);
         assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), instanceOf(String.class));
+        assertThat(actual.iterator().next(), isA(String.class));
     }
     
     @Test

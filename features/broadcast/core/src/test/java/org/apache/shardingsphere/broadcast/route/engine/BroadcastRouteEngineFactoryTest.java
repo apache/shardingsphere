@@ -51,8 +51,8 @@ import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,7 +81,7 @@ class BroadcastRouteEngineFactoryTest {
     @Test
     void assertNewInstanceWithTCLStatement() {
         when(queryContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastDatabaseBroadcastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastDatabaseBroadcastRouteEngine.class));
     }
     
     @Test
@@ -90,7 +90,7 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new CloseStatement(databaseType, mock(), false));
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastUnicastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastUnicastRouteEngine.class));
     }
     
     @Test
@@ -99,7 +99,7 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class, RETURNS_DEEP_STUBS));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(SQLStatementContextExtractor.getTableNames(database, sqlStatementContext)).thenReturn(Collections.singleton("foo_tbl"));
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastTableBroadcastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastTableBroadcastRouteEngine.class));
     }
     
     @Test
@@ -108,7 +108,7 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastTableBroadcastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastTableBroadcastRouteEngine.class));
     }
     
     @Test
@@ -117,7 +117,7 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DCLStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastTableBroadcastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastTableBroadcastRouteEngine.class));
     }
     
     @Test
@@ -126,7 +126,7 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastUnicastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastUnicastRouteEngine.class));
     }
     
     @Test
@@ -135,7 +135,7 @@ class BroadcastRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), instanceOf(BroadcastDatabaseBroadcastRouteEngine.class));
+        assertThat(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.emptyList()), isA(BroadcastDatabaseBroadcastRouteEngine.class));
     }
     
     private TablesContext createTablesContext() {

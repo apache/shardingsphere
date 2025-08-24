@@ -78,9 +78,9 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -98,7 +98,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowFunctionStatusStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowFunctionStatusExecutor.class));
+        assertThat(actual.get(), isA(ShowFunctionStatusExecutor.class));
     }
     
     @Test
@@ -106,7 +106,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowProcedureStatusStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowProcedureStatusExecutor.class));
+        assertThat(actual.get(), isA(ShowProcedureStatusExecutor.class));
     }
     
     @Test
@@ -114,7 +114,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowTablesStatement(databaseType, null, null, false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowTablesExecutor.class));
+        assertThat(actual.get(), isA(ShowTablesExecutor.class));
     }
     
     @Test
@@ -128,7 +128,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLUseStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(UseDatabaseExecutor.class));
+        assertThat(actual.get(), isA(UseDatabaseExecutor.class));
     }
     
     @Test
@@ -136,7 +136,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowDatabasesStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowDatabasesExecutor.class));
+        assertThat(actual.get(), isA(ShowDatabasesExecutor.class));
     }
     
     @Test
@@ -144,7 +144,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowProcessListStatement(databaseType, false));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowProcessListExecutor.class));
+        assertThat(actual.get(), isA(ShowProcessListExecutor.class));
     }
     
     @Test
@@ -152,7 +152,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new MySQLShowCreateDatabaseStatement(databaseType, null));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCreateDatabaseExecutor.class));
+        assertThat(actual.get(), isA(ShowCreateDatabaseExecutor.class));
     }
     
     @Test
@@ -160,7 +160,7 @@ class MySQLAdminExecutorCreatorTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SetStatement(databaseType, Collections.emptyList()));
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLSetVariableAdminExecutor.class));
+        assertThat(actual.get(), isA(MySQLSetVariableAdminExecutor.class));
     }
     
     @Test
@@ -174,7 +174,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select CONNECTION_ID()", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowConnectionIdExecutor.class));
+        assertThat(actual.get(), isA(ShowConnectionIdExecutor.class));
     }
     
     @Test
@@ -188,7 +188,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select version()", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowVersionExecutor.class));
+        assertThat(actual.get(), isA(ShowVersionExecutor.class));
     }
     
     @Test
@@ -202,7 +202,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select CURRENT_USER()", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCurrentUserExecutor.class));
+        assertThat(actual.get(), isA(ShowCurrentUserExecutor.class));
     }
     
     @Test
@@ -219,7 +219,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select @@session.transaction_read_only", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLSystemVariableQueryExecutor.class));
+        assertThat(actual.get(), isA(MySQLSystemVariableQueryExecutor.class));
     }
     
     @Test
@@ -235,7 +235,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select @@session.transaction_isolation", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLSystemVariableQueryExecutor.class));
+        assertThat(actual.get(), isA(MySQLSystemVariableQueryExecutor.class));
     }
     
     @Test
@@ -250,7 +250,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select DATABASE()", "", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCurrentDatabaseExecutor.class));
+        assertThat(actual.get(), isA(ShowCurrentDatabaseExecutor.class));
     }
     
     @Test
@@ -265,7 +265,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select CURRENT_DATE()", null, Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(NoResourceShowExecutor.class));
+        assertThat(actual.get(), isA(NoResourceShowExecutor.class));
     }
     
     @Test
@@ -302,7 +302,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select CURRENT_DATE()", null, Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(UnicastResourceShowExecutor.class));
+        assertThat(actual.get(), isA(UnicastResourceShowExecutor.class));
     }
     
     @Test
@@ -316,7 +316,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select ENGINE from ENGINES", "information_schema", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(DefaultDatabaseMetaDataExecutor.class));
+        assertThat(actual.get(), isA(DefaultDatabaseMetaDataExecutor.class));
     }
     
     @Test
@@ -330,7 +330,7 @@ class MySQLAdminExecutorCreatorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "information_schema", Collections.emptyList());
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(SelectInformationSchemataExecutor.class));
+        assertThat(actual.get(), isA(SelectInformationSchemataExecutor.class));
         when(ProxyContext.getInstance().getContextManager().getDatabase("information_schema").isComplete()).thenReturn(true);
         actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "information_schema", Collections.emptyList());
         assertFalse(actual.isPresent());

@@ -30,8 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdFetchStatementCommandExecutorTest {
@@ -46,6 +46,6 @@ class FirebirdFetchStatementCommandExecutorTest {
     void assertExecute() throws SQLException {
         FirebirdFetchStatementCommandExecutor executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
-        assertThat(actual.iterator().next(), instanceOf(FirebirdFetchResponsePacket.class));
+        assertThat(actual.iterator().next(), isA(FirebirdFetchResponsePacket.class));
     }
 }

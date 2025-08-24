@@ -41,9 +41,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -172,7 +172,7 @@ class MppdbDecodingPluginTest {
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj, instanceOf(byte[].class));
+        assertThat(byteaObj, isA(byte[].class));
         assertThat(byteaObj, is(new byte[]{(byte) 0xff, (byte) 0, (byte) 0xab}));
     }
     
@@ -189,14 +189,14 @@ class MppdbDecodingPluginTest {
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
         assertThat(actual.getTableName(), is("test"));
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj, instanceOf(PGobject.class));
+        assertThat(byteaObj, isA(PGobject.class));
         assertThat(byteaObj.toString(), is("7D"));
     }
     
     @Test
     void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
-        assertThat(new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
+        assertThat(new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber), isA(PlaceholderEvent.class));
     }
     
     @Test
@@ -242,9 +242,9 @@ class MppdbDecodingPluginTest {
         }
         assertThat(expectedEvent.size(), is(4));
         AbstractWALEvent actualFirstEvent = expectedEvent.get(0);
-        assertThat(actualFirstEvent, instanceOf(BeginTXEvent.class));
+        assertThat(actualFirstEvent, isA(BeginTXEvent.class));
         AbstractWALEvent actualLastEvent = expectedEvent.get(expectedEvent.size() - 1);
-        assertThat(actualLastEvent, instanceOf(CommitTXEvent.class));
+        assertThat(actualLastEvent, isA(CommitTXEvent.class));
         assertThat(((CommitTXEvent) actualLastEvent).getCsn(), is(3468L));
         assertThat(((CommitTXEvent) actualLastEvent).getXid(), is(1L));
     }
@@ -264,7 +264,7 @@ class MppdbDecodingPluginTest {
             actual.add(mppdbDecodingPlugin.decode(ByteBuffer.wrap(each.getBytes()), logSequenceNumber));
         }
         assertThat(actual.size(), is(4));
-        assertThat(actual.get(0), instanceOf(BeginTXEvent.class));
+        assertThat(actual.get(0), isA(BeginTXEvent.class));
         assertThat(((BeginTXEvent) actual.get(0)).getCsn(), is(951909L));
         assertThat(((WriteRowEvent) actual.get(1)).getAfterRow().get(0).toString(), is("7D"));
         assertThat(((WriteRowEvent) actual.get(2)).getAfterRow().get(0).toString(), is("7D"));
@@ -283,7 +283,7 @@ class MppdbDecodingPluginTest {
         ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj, instanceOf(PGobject.class));
+        assertThat(byteaObj, isA(PGobject.class));
         assertThat(byteaObj.toString(), is("[\"2020-01-01 00:00:00\",\"2021-01-01 00:00:00\")"));
     }
     
@@ -298,7 +298,7 @@ class MppdbDecodingPluginTest {
         ByteBuffer data = ByteBuffer.wrap(JsonUtils.toJsonString(tableData).getBytes());
         WriteRowEvent actual = (WriteRowEvent) new MppdbDecodingPlugin(null, false, false).decode(data, logSequenceNumber);
         Object byteaObj = actual.getAfterRow().get(0);
-        assertThat(byteaObj, instanceOf(PGobject.class));
+        assertThat(byteaObj, isA(PGobject.class));
         assertThat(byteaObj.toString(), is("[2020-01-02,2021-01-02)"));
     }
     
