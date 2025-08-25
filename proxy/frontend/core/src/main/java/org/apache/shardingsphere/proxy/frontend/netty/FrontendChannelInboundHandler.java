@@ -55,6 +55,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
         connectionSession = new ConnectionSession(databaseProtocolFrontendEngine.getType(), channel);
+        databaseProtocolFrontendEngine.init(connectionSession);
     }
     
     @Override
