@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -55,9 +55,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -119,7 +119,7 @@ class UnicastDatabaseBackendHandlerTest {
         ShardingSphereDatabase database = createDatabases().iterator().next();
         when(contextManager.getDatabase("db_0")).thenReturn(database);
         ResponseHeader actual = unicastDatabaseBackendHandler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        assertThat(actual, isA(UpdateResponseHeader.class));
     }
     
     @Test

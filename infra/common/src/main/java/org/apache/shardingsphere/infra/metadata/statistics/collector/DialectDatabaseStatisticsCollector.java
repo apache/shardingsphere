@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 

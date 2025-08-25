@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.Map;
 

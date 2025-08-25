@@ -188,12 +188,6 @@ rules:
           cipher:
             name: number_new_cipher
             encryptorName: aes_encryptor
-
-sqlFederation:
-  sqlFederationEnabled: true
-  executionPlanCache:
-    initialCapacity: 2000
-    maximumSize: 65535
     
 props:
   sql-show: true

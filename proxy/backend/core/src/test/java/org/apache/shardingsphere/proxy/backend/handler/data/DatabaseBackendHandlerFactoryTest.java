@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -46,8 +46,8 @@ import org.mockito.quality.Strictness;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,7 +68,7 @@ class DatabaseBackendHandlerFactoryTest {
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
-        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
     }
     
     private ConnectionContext mockConnectionContext() {
@@ -83,7 +83,7 @@ class DatabaseBackendHandlerFactoryTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SelectStatement(databaseType));
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
-        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
     }
     
     @Test
@@ -97,7 +97,7 @@ class DatabaseBackendHandlerFactoryTest {
                 DatabaseBackendHandlerFactory.newInstance(
                         new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
                         connectionSession, false);
-        assertThat(actual, instanceOf(StandardDatabaseConnector.class));
+        assertThat(actual, isA(StandardDatabaseConnector.class));
     }
     
     private SQLStatementContext mockSQLStatementContext() {

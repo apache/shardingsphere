@@ -31,7 +31,6 @@
         <module>annotation</module>
         <module>spi</module>
         <module>exception</module>
-        <module>database</module>
         <module>data-source-pool</module>
         <module>common</module>
         <module>context</module>

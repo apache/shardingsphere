@@ -48,9 +48,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -120,7 +120,7 @@ class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertFalse(decodedEvents.isEmpty());
         Object actual = decodedEvents.get(0);
-        assertThat(actual, instanceOf(MySQLQueryBinlogEvent.class));
+        assertThat(actual, isA(MySQLQueryBinlogEvent.class));
         assertThat(((MySQLQueryBinlogEvent) actual).getTimestamp(), is(1700193011L));
         assertThat(((MySQLQueryBinlogEvent) actual).getPosition(), is(168785090L));
     }
@@ -134,7 +134,7 @@ class MySQLBinlogEventPacketDecoderTest {
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(binlogContext.getTableMap().size(), is(1));
-        assertThat(binlogContext.getTableMap().get(123L), instanceOf(MySQLBinlogTableMapEventPacket.class));
+        assertThat(binlogContext.getTableMap().get(123L), isA(MySQLBinlogTableMapEventPacket.class));
     }
     
     @Test
@@ -149,7 +149,7 @@ class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
-        assertThat(actualEventList.get(0), instanceOf(MySQLWriteRowsBinlogEvent.class));
+        assertThat(actualEventList.get(0), isA(MySQLWriteRowsBinlogEvent.class));
         MySQLWriteRowsBinlogEvent actual = (MySQLWriteRowsBinlogEvent) actualEventList.get(0);
         assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
     }
@@ -167,7 +167,7 @@ class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
-        assertThat(actualEventList.get(0), instanceOf(MySQLUpdateRowsBinlogEvent.class));
+        assertThat(actualEventList.get(0), isA(MySQLUpdateRowsBinlogEvent.class));
         MySQLUpdateRowsBinlogEvent actual = (MySQLUpdateRowsBinlogEvent) actualEventList.get(0);
         assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
         assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("updated".getBytes()), null}));
@@ -185,8 +185,8 @@ class MySQLBinlogEventPacketDecoderTest {
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
         LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
-        assertThat(actualEventList.get(0), instanceOf(MySQLDeleteRowsBinlogEvent.class));
-        assertThat(actualEventList.get(1), instanceOf(MySQLXidBinlogEvent.class));
+        assertThat(actualEventList.get(0), isA(MySQLDeleteRowsBinlogEvent.class));
+        assertThat(actualEventList.get(1), isA(MySQLXidBinlogEvent.class));
         MySQLDeleteRowsBinlogEvent actual = (MySQLDeleteRowsBinlogEvent) actualEventList.get(0);
         assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
     }

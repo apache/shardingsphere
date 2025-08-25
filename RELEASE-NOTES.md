@@ -81,6 +81,7 @@
 1. SQL Parser: Support Hive Show Granted Roles and Privileges & SHOW LOCKS & SHOW CONF statement parse - [#36300](https://github.com/apache/shardingsphere/pull/36300)
 1. SQL Parser: Support Hive SHOW TRANSACTIONS & SHOW COMPACTIONS statement parse - [#36301](https://github.com/apache/shardingsphere/pull/36301)
 1. SQL Parser: Support Hive DESCRIBE statement parse - [#36350](https://github.com/apache/shardingsphere/pull/36350)
+1. SQL Parser: Support Hive ABORT statement parse - [#36378](https://github.com/apache/shardingsphere/pull/36378)
 1. SQL Parser: Support Hive Inserting data into Hive Tables from queries statement parse - [#36320](https://github.com/apache/shardingsphere/pull/36320)
 1. SQL Parser: Support Hive Writing data into the filesystem from queries statement parse - [#36371](https://github.com/apache/shardingsphere/pull/36371)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
@@ -162,7 +163,8 @@
 1. Proxy: Fix the connection leak caused by rollback failure in Proxy - [35867](https://github.com/apache/shardingsphere/pull/35867)
 1. Mode: Fixes issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Mode: Fixes the exception to missing renamed schema name when alter schema - [#34465](https://github.com/apache/shardingsphere/pull/34465)
-1. Encrypt: Resolve rewrite issue in nested concat function - [35815](https://github.com/apache/shardingsphere/pull/35815)
+1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
+1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 
 ### Change Logs
 
@@ -325,7 +327,7 @@
 ### Bug Fixes
 
 1. Kernel: Replace ThreadLocal with TransmittableThreadLocal in HintManager to support cross Thread usage
-1. Kernel: Use ConnectionPropertiesParser spi to parse jdbcUrl to solve oracle url parse error
+1. Kernel: Use ConnectionPropertiesParser spi to parse standardJdbcUrl to solve oracle url parse error
 1. Kernel: Fixes column count assert exception caused by postgresql system table judge
 1. Metadata: Keep in-used storage node when unregister storage unit
 1. Metadata: Fixes the generated key column name case insensitivity error
@@ -1166,7 +1168,7 @@
 1. Scaling: Fix resource leak caused by error occurred when creating DataSource in ShardingSphere-Scaling
 1. Scaling: Fix ShardingSphereDataSource creation ignoring other rules
 1. Scaling: Fix on preparation job could not be stopped
-1. Scaling: Fix data source property url and jdbcUrl compatibility
+1. Scaling: Fix data source property url and standardJdbcUrl compatibility
 1. Scaling: Fix openGauss logical replication slot creation, avoid possible incremental data loss
 1. Scaling: Update local job status before persisting job status to registry center, make sure it won't be overwritten later
 1. Scaling: Handling null value in TestDecodingPlugin for PostgreSQL

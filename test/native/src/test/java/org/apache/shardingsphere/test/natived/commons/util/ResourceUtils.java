@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.natived.commons.util;
 
+import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -58,7 +58,7 @@ public class ResourceUtils {
      *
      * @param dataSource        Usually {@link com.zaxxer.hikari.HikariDataSource}
      * @param logicDataBaseName The logical database name used in the shardingsphere metadata, if not set,
-     *                          it is {@link org.apache.shardingsphere.infra.database.core.DefaultDatabase#LOGIC_NAME}
+     *                          it is {@link DefaultDatabase#LOGIC_NAME}
      * @throws SQLException SQL exception
      */
     public static void closeJdbcDataSource(final DataSource dataSource, final String logicDataBaseName) throws SQLException {

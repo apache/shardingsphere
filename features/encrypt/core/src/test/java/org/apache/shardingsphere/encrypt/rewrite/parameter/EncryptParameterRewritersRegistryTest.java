@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,10 +46,10 @@ class EncryptParameterRewritersRegistryTest {
         when(sqlRewriteContext.getDatabase().getName()).thenReturn("foo_db");
         List<ParameterRewriter> actual = new ArrayList<>(new EncryptParameterRewritersRegistry(mock(EncryptRule.class), sqlRewriteContext, Collections.emptyList()).getParameterRewriters());
         assertThat(actual.size(), is(5));
-        assertThat(actual.get(0), instanceOf(EncryptAssignmentParameterRewriter.class));
-        assertThat(actual.get(1), instanceOf(EncryptPredicateParameterRewriter.class));
-        assertThat(actual.get(2), instanceOf(EncryptInsertPredicateParameterRewriter.class));
-        assertThat(actual.get(3), instanceOf(EncryptInsertValueParameterRewriter.class));
-        assertThat(actual.get(4), instanceOf(EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter.class));
+        assertThat(actual.get(0), isA(EncryptAssignmentParameterRewriter.class));
+        assertThat(actual.get(1), isA(EncryptPredicateParameterRewriter.class));
+        assertThat(actual.get(2), isA(EncryptInsertPredicateParameterRewriter.class));
+        assertThat(actual.get(3), isA(EncryptInsertValueParameterRewriter.class));
+        assertThat(actual.get(4), isA(EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter.class));
     }
 }

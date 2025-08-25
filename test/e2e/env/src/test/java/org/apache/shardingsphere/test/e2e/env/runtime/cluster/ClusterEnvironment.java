@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime.cluster;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 

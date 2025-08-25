@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-presto</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-presto</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

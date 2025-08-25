@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.tcl;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -37,8 +37,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,7 +59,7 @@ class TCLBackendHandlerTest {
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        assertThat(new TCLBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
+        assertThat(new TCLBackendHandler(mock(TCLStatement.class), TransactionOperationType.BEGIN, connectionSession).execute(), isA(UpdateResponseHeader.class));
     }
     
     private ContextManager mockContextManager() {

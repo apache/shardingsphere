@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ParameterMarkerProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -43,9 +43,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -65,7 +65,7 @@ class ProjectionEngineTest {
         shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("tbl")));
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(shorthandProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShorthandProjection.class));
+        assertThat(actual.get(), isA(ShorthandProjection.class));
     }
     
     @Test
@@ -74,7 +74,7 @@ class ProjectionEngineTest {
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(columnProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ColumnProjection.class));
+        assertThat(actual.get(), isA(ColumnProjection.class));
     }
     
     @Test
@@ -82,7 +82,7 @@ class ProjectionEngineTest {
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(expressionProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ExpressionProjection.class));
+        assertThat(actual.get(), isA(ExpressionProjection.class));
     }
     
     @Test
@@ -90,7 +90,7 @@ class ProjectionEngineTest {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression");
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
+        assertThat(actual.get(), isA(AggregationDistinctProjection.class));
     }
     
     @Test
@@ -98,7 +98,7 @@ class ProjectionEngineTest {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.COUNT, "COUNT(1)");
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(AggregationProjection.class));
+        assertThat(actual.get(), isA(AggregationProjection.class));
     }
     
     @Test
@@ -106,7 +106,7 @@ class ProjectionEngineTest {
         AggregationDistinctProjectionSegment aggregationDistinctProjectionSegment = new AggregationDistinctProjectionSegment(0, 10, AggregationType.AVG, "(1)", "distinctExpression");
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationDistinctProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(AggregationDistinctProjection.class));
+        assertThat(actual.get(), isA(AggregationDistinctProjection.class));
     }
     
     @Test
@@ -114,7 +114,7 @@ class ProjectionEngineTest {
         AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 10, AggregationType.AVG, "AVG(1)");
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(AggregationProjection.class));
+        assertThat(actual.get(), isA(AggregationProjection.class));
     }
     
     @Test
@@ -123,7 +123,7 @@ class ProjectionEngineTest {
         parameterMarkerExpressionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(parameterMarkerExpressionSegment);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ParameterMarkerProjection.class));
+        assertThat(actual.get(), isA(ParameterMarkerProjection.class));
         assertThat(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null), is("alias"));
     }
 }

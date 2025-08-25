@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.close;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;

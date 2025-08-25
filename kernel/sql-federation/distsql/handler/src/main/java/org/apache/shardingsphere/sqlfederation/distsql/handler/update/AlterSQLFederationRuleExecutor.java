@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sqlfederation.compiler.exception.InvalidExecutionPlanCacheConfigException;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.distsql.segment.CacheOptionSegment;
@@ -46,7 +48,15 @@ public final class AlterSQLFederationRuleExecutor implements GlobalRuleDefinitio
     private SQLFederationCacheOption createCacheOption(final SQLFederationCacheOption cacheOption, final CacheOptionSegment segment) {
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
-        return new SQLFederationCacheOption(initialCapacity, maximumSize);
+        SQLFederationCacheOption result = new SQLFederationCacheOption(initialCapacity, maximumSize);
+        checkExecutionPlanCacheConfig(result);
+        return result;
+    }
+    
+    private void checkExecutionPlanCacheConfig(final SQLFederationCacheOption executionPlanCache) {
+        ShardingSpherePreconditions.checkState(executionPlanCache.getInitialCapacity() > 0,
+                () -> new InvalidExecutionPlanCacheConfigException("initialCapacity", executionPlanCache.getInitialCapacity()));
+        ShardingSpherePreconditions.checkState(executionPlanCache.getMaximumSize() > 0, () -> new InvalidExecutionPlanCacheConfigException("maximumSize", executionPlanCache.getMaximumSize()));
     }
     
     @Override

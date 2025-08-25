@@ -28,38 +28,38 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class PrometheusMetricsCollectorFactoryTest {
     
     @Test
     void assertCreateCounterCollector() {
         MetricConfiguration config = new MetricConfiguration("test_counter", MetricCollectorType.COUNTER, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsCounterCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsCounterCollector.class));
     }
     
     @Test
     void assertCreateGaugeCollector() {
         MetricConfiguration config = new MetricConfiguration("test_gauge", MetricCollectorType.GAUGE, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsGaugeCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsGaugeCollector.class));
     }
     
     @Test
     void assertCreateHistogramCollector() {
         MetricConfiguration config = new MetricConfiguration("test_histogram", MetricCollectorType.HISTOGRAM, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsHistogramCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsHistogramCollector.class));
     }
     
     @Test
     void assertCreateSummaryCollector() {
         MetricConfiguration config = new MetricConfiguration("test_summary", MetricCollectorType.SUMMARY, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsSummaryCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsSummaryCollector.class));
     }
     
     @Test
     void assertCreateGaugeMetricFamilyCollector() {
         MetricConfiguration config = new MetricConfiguration("test_summary", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.emptyList(), Collections.emptyMap());
-        assertThat(new PrometheusMetricsCollectorFactory().create(config), instanceOf(PrometheusMetricsGaugeMetricFamilyCollector.class));
+        assertThat(new PrometheusMetricsCollectorFactory().create(config), isA(PrometheusMetricsGaugeMetricFamilyCollector.class));
     }
 }

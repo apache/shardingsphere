@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.isA;

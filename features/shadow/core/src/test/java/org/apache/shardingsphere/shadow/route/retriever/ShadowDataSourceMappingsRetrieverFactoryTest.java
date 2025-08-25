@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,16 +48,16 @@ class ShadowDataSourceMappingsRetrieverFactoryTest {
     void assertNewInstance() {
         ShadowDataSourceMappingsRetriever retriever = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(retriever, instanceOf(ShadowDMLStatementDataSourceMappingsRetriever.class));
+        assertThat(retriever, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
         ShadowDataSourceMappingsRetriever shadowUpdateRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowUpdateRouteEngine, instanceOf(ShadowDMLStatementDataSourceMappingsRetriever.class));
+        assertThat(shadowUpdateRouteEngine, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
         ShadowDataSourceMappingsRetriever shadowDeleteRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createDeleteSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowDeleteRouteEngine, instanceOf(ShadowDMLStatementDataSourceMappingsRetriever.class));
+        assertThat(shadowDeleteRouteEngine, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
         ShadowDataSourceMappingsRetriever shadowSelectRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
                 new QueryContext(createSelectSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowSelectRouteEngine, instanceOf(ShadowDMLStatementDataSourceMappingsRetriever.class));
+        assertThat(shadowSelectRouteEngine, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
     }
     
     private ConnectionContext mockConnectionContext() {

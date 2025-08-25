@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSour
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PipelineDataSourceConfigurationFactoryTest {
@@ -31,13 +31,13 @@ class PipelineDataSourceConfigurationFactoryTest {
     @Test
     void assertNewInstanceForStandardPipelineDataSourceConfiguration() {
         assertThat(PipelineDataSourceConfigurationFactory.newInstance(StandardPipelineDataSourceConfiguration.TYPE, "url: jdbc:mock://127.0.0.1/foo_db"),
-                instanceOf(StandardPipelineDataSourceConfiguration.class));
+                isA(StandardPipelineDataSourceConfiguration.class));
     }
     
     @Test
     void assertNewInstanceForShardingSpherePipelineDataSourceConfiguration() {
         assertThat(PipelineDataSourceConfigurationFactory.newInstance(ShardingSpherePipelineDataSourceConfiguration.TYPE, "dataSources:\n" + "  foo_ds:\n" + "    url: jdbc:mock://127.0.0.1/foo_db"),
-                instanceOf(ShardingSpherePipelineDataSourceConfiguration.class));
+                isA(ShardingSpherePipelineDataSourceConfiguration.class));
     }
     
     @Test

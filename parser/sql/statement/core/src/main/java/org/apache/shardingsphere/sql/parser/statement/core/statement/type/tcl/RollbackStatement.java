@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.Optional;
 

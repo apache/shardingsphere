@@ -120,7 +120,7 @@ class DorisFETest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-doris` module does not support `create table` statements yet.
+     * TODO `shardingsphere-parser-sql-engine-doris` module does not support `create table` statements yet.
      * Doris FE does not support the use of `PRIMARY KEY`.
      *
      * @param databaseName database name

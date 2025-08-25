@@ -37,9 +37,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +82,7 @@ class MySQLNegotiatePackageDecoderTest {
     
     private void assertHandshakePacket(final List<Object> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), instanceOf(MySQLHandshakePacket.class));
+        assertThat(actual.get(0), isA(MySQLHandshakePacket.class));
         MySQLHandshakePacket actualPacket = (MySQLHandshakePacket) actual.get(0);
         assertThat(actualPacket.getProtocolVersion(), is(0x0a));
         assertThat(actualPacket.getServerVersion(), is("5.7.21-log"));
@@ -127,6 +127,6 @@ class MySQLNegotiatePackageDecoderTest {
     
     private void assertPacketByType(final List<Object> actual, final Class<?> clazz) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), instanceOf(clazz));
+        assertThat(actual.get(0), isA(clazz));
     }
 }

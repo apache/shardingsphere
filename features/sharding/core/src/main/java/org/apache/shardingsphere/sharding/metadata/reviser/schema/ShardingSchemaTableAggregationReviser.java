@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.metadata.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.revise.SchemaTableMetaDataAggregator;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.revise.SchemaTableMetaDataAggregator;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaTableAggregationReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 

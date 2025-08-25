@@ -26,12 +26,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 class CircuitBreakerConnectionTest {
     
@@ -39,7 +39,7 @@ class CircuitBreakerConnectionTest {
     
     @Test
     void assertGetMetaData() {
-        assertThat(connection.getMetaData(), instanceOf(CircuitBreakerDatabaseMetaData.class));
+        assertThat(connection.getMetaData(), isA(CircuitBreakerDatabaseMetaData.class));
     }
     
     @Test
@@ -109,19 +109,19 @@ class CircuitBreakerConnectionTest {
     @Test
     void assertPrepareStatement() {
         String sql = "SELECT 1";
-        assertThat(connection.prepareStatement(sql), instanceOf(CircuitBreakerPreparedStatement.class));
-        assertThat(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), instanceOf(CircuitBreakerPreparedStatement.class));
-        assertThat(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT), instanceOf(CircuitBreakerPreparedStatement.class));
-        assertThat(connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS), instanceOf(CircuitBreakerPreparedStatement.class));
-        assertThat(connection.prepareStatement(sql, new int[]{0}), instanceOf(CircuitBreakerPreparedStatement.class));
-        assertThat(connection.prepareStatement(sql, new String[]{""}), instanceOf(CircuitBreakerPreparedStatement.class));
+        assertThat(connection.prepareStatement(sql), isA(CircuitBreakerPreparedStatement.class));
+        assertThat(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), isA(CircuitBreakerPreparedStatement.class));
+        assertThat(connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT), isA(CircuitBreakerPreparedStatement.class));
+        assertThat(connection.prepareStatement(sql, Statement.NO_GENERATED_KEYS), isA(CircuitBreakerPreparedStatement.class));
+        assertThat(connection.prepareStatement(sql, new int[]{0}), isA(CircuitBreakerPreparedStatement.class));
+        assertThat(connection.prepareStatement(sql, new String[]{""}), isA(CircuitBreakerPreparedStatement.class));
     }
     
     @Test
     void assertCreateStatement() {
-        assertThat(connection.createStatement(), instanceOf(CircuitBreakerStatement.class));
-        assertThat(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), instanceOf(CircuitBreakerStatement.class));
-        assertThat(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT), instanceOf(CircuitBreakerStatement.class));
+        assertThat(connection.createStatement(), isA(CircuitBreakerStatement.class));
+        assertThat(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY), isA(CircuitBreakerStatement.class));
+        assertThat(connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT), isA(CircuitBreakerStatement.class));
     }
     
     @Test

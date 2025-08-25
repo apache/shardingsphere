@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sqlfederation.resultset;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.rel.type.RelDataType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationSchema;
 import org.junit.jupiter.api.AfterEach;
@@ -46,9 +46,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -446,14 +446,14 @@ class SQLFederationResultSetTest {
     void assertGetArrayWithColumnIndex() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getArray(1), instanceOf(Array.class));
+        assertThat(federationResultSet.getArray(1), isA(Array.class));
     }
     
     @Test
     void assertGetArrayWithColumnLabel() throws SQLException {
         when(enumerator.current()).thenReturn(new Object[]{mock(Array.class), 1, "OK", 1});
         federationResultSet.next();
-        assertThat(federationResultSet.getArray("order_id"), instanceOf(Array.class));
+        assertThat(federationResultSet.getArray("order_id"), isA(Array.class));
     }
     
     @Test

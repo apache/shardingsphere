@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.exception.syntax;
 
 import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Unsupported encrypt SQL exception.

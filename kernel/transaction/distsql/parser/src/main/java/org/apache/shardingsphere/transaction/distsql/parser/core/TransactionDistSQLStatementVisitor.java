@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.distsql.parser.core;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.AlterTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.PropertiesDefinitionContext;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatem
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.ProviderDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.ShowTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.TransactionRuleDefinitionContext;
-import org.apache.shardingsphere.infra.database.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;

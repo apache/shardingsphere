@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.syntax;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.SyntaxSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.SyntaxSQLException;
 
 /**
  * Invalid variable value exception.

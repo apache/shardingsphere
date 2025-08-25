@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
@@ -44,8 +44,8 @@ import org.mockito.Mock;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -114,7 +114,7 @@ class DistSQLUpdateBackendHandlerTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         ResponseHeader actual = new DistSQLUpdateBackendHandler(new RefreshTableMetaDataStatement(), mockConnectionSession("foo_db")).execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+        assertThat(actual, isA(UpdateResponseHeader.class));
     }
     
     private ConnectionSession mockConnectionSession(final String databaseName) {

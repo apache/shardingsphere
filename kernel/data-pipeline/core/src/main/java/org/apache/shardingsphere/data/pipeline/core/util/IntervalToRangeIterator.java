@@ -46,7 +46,7 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
         }
         this.maximum = BigInteger.valueOf(maximum);
         this.interval = BigInteger.valueOf(interval);
-        this.current = BigInteger.valueOf(minimum);
+        current = BigInteger.valueOf(minimum);
     }
     
     @Override
@@ -60,12 +60,12 @@ public final class IntervalToRangeIterator implements Iterator<Range<Long>> {
             throw new NoSuchElementException("");
         }
         BigInteger upperLimit = min(maximum, current.add(interval));
-        Range<Long> result = Range.between(current.longValue(), upperLimit.longValue());
+        Range<Long> result = Range.of(current.longValue(), upperLimit.longValue());
         current = upperLimit.add(BigInteger.ONE);
         return result;
     }
     
-    private BigInteger min(final BigInteger one, final BigInteger another) {
-        return one.compareTo(another) < 0 ? one : another;
+    private BigInteger min(final BigInteger integer1, final BigInteger integer2) {
+        return integer1.compareTo(integer2) < 0 ? integer1 : integer2;
     }
 }

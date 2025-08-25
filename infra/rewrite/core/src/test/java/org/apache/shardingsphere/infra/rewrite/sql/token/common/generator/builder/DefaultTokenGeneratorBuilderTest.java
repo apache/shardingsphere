@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builder;
 
-import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.generic.RemoveTokenGenerator;
@@ -27,9 +27,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,6 +61,6 @@ class DefaultTokenGeneratorBuilderTest {
         assertThat(sqlTokenGenerators.size(), is(1));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator removeTokenGenerator = iterator.next();
-        assertThat(removeTokenGenerator, instanceOf(RemoveTokenGenerator.class));
+        assertThat(removeTokenGenerator, isA(RemoveTokenGenerator.class));
     }
 }

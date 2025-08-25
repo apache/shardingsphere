@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -44,10 +44,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -149,19 +149,19 @@ class InsertStatementBinderTest {
         assertThat(actualProjections.size(), is(3));
         Iterator<ProjectionSegment> projectionIterator = actualProjections.iterator();
         ProjectionSegment orderIdProjectionSegment = projectionIterator.next();
-        assertThat(orderIdProjectionSegment, instanceOf(ColumnProjectionSegment.class));
+        assertThat(orderIdProjectionSegment, isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) orderIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
         assertThat(((ColumnProjectionSegment) orderIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
         assertThat(((ColumnProjectionSegment) orderIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(((ColumnProjectionSegment) orderIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
         ProjectionSegment userIdProjectionSegment = projectionIterator.next();
-        assertThat(userIdProjectionSegment, instanceOf(ColumnProjectionSegment.class));
+        assertThat(userIdProjectionSegment, isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) userIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
         assertThat(((ColumnProjectionSegment) userIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
         assertThat(((ColumnProjectionSegment) userIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(((ColumnProjectionSegment) userIdProjectionSegment).getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
         ProjectionSegment statusProjectionSegment = projectionIterator.next();
-        assertThat(statusProjectionSegment, instanceOf(ColumnProjectionSegment.class));
+        assertThat(statusProjectionSegment, isA(ColumnProjectionSegment.class));
         assertThat(((ColumnProjectionSegment) statusProjectionSegment).getColumn().getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
         assertThat(((ColumnProjectionSegment) statusProjectionSegment).getColumn().getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
         assertThat(((ColumnProjectionSegment) statusProjectionSegment).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));

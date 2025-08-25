@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-doris</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-doris</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

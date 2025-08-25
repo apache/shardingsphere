@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-firebird</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-firebird</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

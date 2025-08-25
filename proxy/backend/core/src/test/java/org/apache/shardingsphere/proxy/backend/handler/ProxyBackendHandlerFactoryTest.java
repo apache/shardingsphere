@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.rule.builder.DefaultUser;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -74,8 +74,8 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -133,15 +133,15 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "set dist variable sql_show='true'";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DistSQLUpdateBackendHandler.class));
+        assertThat(actual, isA(DistSQLUpdateBackendHandler.class));
         sql = "show dist variable where name = sql_show";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
         sql = "show dist variables";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -149,7 +149,7 @@ class ProxyBackendHandlerFactoryTest {
     void assertNewInstanceWithTCL(final String sql) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(TCLBackendHandler.class));
+        assertThat(actual, isA(TCLBackendHandler.class));
     }
     
     @Test
@@ -157,19 +157,19 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "SHOW VARIABLES LIKE '%x%'";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
         sql = "SHOW VARIABLES WHERE Variable_name ='language'";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
         sql = "SHOW CHARACTER SET";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
         sql = "SHOW COLLATION";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
+        assertThat(actual, isA(UnicastDatabaseBackendHandler.class));
     }
     
     // TODO
@@ -182,18 +182,18 @@ class ProxyBackendHandlerFactoryTest {
         when(proxyContext.getContextManager().getDatabase("db").containsDataSource()).thenReturn(true);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DatabaseConnector.class));
+        assertThat(actual, isA(DatabaseConnector.class));
         sql = "SELECT * FROM information_schema.schemata LIMIT 1";
         sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
+        assertThat(actual, isA(DatabaseAdminQueryBackendHandler.class));
     }
     
     @Test
     void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, new EmptyStatement(databaseType), connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(SkipBackendHandler.class));
+        assertThat(actual, isA(SkipBackendHandler.class));
     }
     
     @Test
@@ -210,7 +210,7 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "SHOW TRANSACTION RULE;";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
     }
     
     @Test
@@ -219,7 +219,7 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
     }
     
     @Test
@@ -228,7 +228,7 @@ class ProxyBackendHandlerFactoryTest {
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, instanceOf(DistSQLQueryBackendHandler.class));
+        assertThat(actual, isA(DistSQLQueryBackendHandler.class));
     }
     
     private static class TCLTestCaseArgumentsProvider implements ArgumentsProvider {
