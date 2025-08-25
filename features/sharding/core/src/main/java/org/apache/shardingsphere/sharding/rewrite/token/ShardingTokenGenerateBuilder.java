@@ -28,19 +28,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.Genera
 import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.generator.GeneratedKeyInsertValuesTokenGenerator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingAggregationDistinctTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingConstraintTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingCursorTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingDistinctProjectionPrefixTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingFetchDirectionTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingIndexTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingInsertValuesTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOffsetTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingOrderByTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingProjectionsTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRowCountTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.*;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
@@ -78,6 +66,9 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
         addSQLTokenGenerator(result, new ShardingRemoveTokenGenerator());
         addSQLTokenGenerator(result, new ShardingCursorTokenGenerator(rule));
         addSQLTokenGenerator(result, new ShardingFetchDirectionTokenGenerator());
+
+        // Add the IN predicate to optimize the Token generator
+        addSQLTokenGenerator(result, new ShardingInPredicateTokenGenerator(rule));
         return result;
     }
     
