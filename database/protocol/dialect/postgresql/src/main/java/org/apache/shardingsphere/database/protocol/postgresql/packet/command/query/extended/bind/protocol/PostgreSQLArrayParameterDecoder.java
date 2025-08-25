@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.postgresql.core.Parser;
 import org.postgresql.util.internal.Nullness;
@@ -33,14 +30,14 @@ import java.util.List;
  * PostgreSQL array parameter decoder.
  */
 public final class PostgreSQLArrayParameterDecoder {
-
+    
     /**
      * decode numberArray String to a array.
      * @param parameterValue arrayString
      * @return  array
      */
     public Object decodeNumberArray(final String parameterValue) {
-
+        
         PgDimensionsArrayList list = decodeFromString(parameterValue, ',');
         int dims = list.dimensionsCount;
         final int[] dimensionLengths = new int[dims];
@@ -70,7 +67,7 @@ public final class PostgreSQLArrayParameterDecoder {
      */
     private static void storeStringValues(final Object[] array, final List list, final int[] dimensionLengths,
                                           final int dim) {
-
+        
         for (int i = 0; i < dimensionLengths[dim]; i++) {
             Object element = Nullness.castNonNull(list.get(i), "list.get(i)");
             if (dim == dimensionLengths.length - 2) {
@@ -125,26 +122,26 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return PgDimensionsArrayList
      */
     public PgDimensionsArrayList decodeFromString(final String fieldString, final char delim) {
-
+        
         final PgDimensionsArrayList arrayList = new PgDimensionsArrayList();
-
+        
         if (fieldString == null) {
             return arrayList;
         }
-
+        
         final char[] chars = fieldString.toCharArray();
         StringBuilder buffer = null;
         boolean insideString = false;
-
+        
         // needed for checking if NULL value occurred
         boolean wasInsideString = false;
-
+        
         // array dimension arrays
         final List<PgDimensionsArrayList> dims = new ArrayList<>();
-
+        
         // currently processed array
         PgDimensionsArrayList curArray = arrayList;
-
+        
         // Starting with 8.0 non-standard (beginning index
         // isn't 1) bounds the dimensions are returned in the
         // data formatted like so "[0:3]={0,1,2,3,4}".
@@ -156,7 +153,7 @@ public final class PostgreSQLArrayParameterDecoder {
         // index. I'm not sure what a client would like
         // to see, so we just retain the old behavior.
         int startOffset = 0;
-
+        
         if (chars[0] == '[') {
             while (chars[startOffset] != '=') {
                 startOffset++;
@@ -165,7 +162,7 @@ public final class PostgreSQLArrayParameterDecoder {
         }
         int i = startOffset;
         while (i < chars.length) {
-
+            
             // escape character that we need to skip
             if (chars[i] == '\\') {
                 i++;
@@ -180,9 +177,9 @@ public final class PostgreSQLArrayParameterDecoder {
                     dims.add(a);
                 }
                 curArray = dims.get(dims.size() - 1);
-
+                
                 // number of dimensions
-
+                
                 for (int t = i + 1; t < chars.length; t++) {
                     if (Character.isWhitespace(chars[t])) {
                         continue;
@@ -192,7 +189,7 @@ public final class PostgreSQLArrayParameterDecoder {
                         break;
                     }
                 }
-
+                
                 buffer = new StringBuilder();
                 i++;
                 continue;
@@ -212,34 +209,34 @@ public final class PostgreSQLArrayParameterDecoder {
                 if (chars[i] != '"' && chars[i] != '}' && chars[i] != delim && buffer != null) {
                     buffer.append(chars[i]);
                 }
-
+                
                 String b = buffer == null ? null : buffer.toString();
-
+                
                 // add element to current array
                 if (b != null && (!b.isEmpty() || wasInsideString)) {
                     curArray.add(!wasInsideString && "NULL".equals(b) ? null : b);
                 }
-
+                
                 wasInsideString = false;
                 buffer = new StringBuilder();
-
+                
                 // when end of an array
                 if (chars[i] != '}') {
                     i++;
                     continue;
                 }
-
+                
                 dims.remove(dims.size() - 1);
                 // when multi-dimension
                 if (!dims.isEmpty()) {
                     curArray = dims.get(dims.size() - 1);
                 }
-
+                
                 buffer = null;
                 i++;
                 continue;
             }
-
+            
             if (buffer != null) {
                 buffer.append(chars[i]);
             }
@@ -247,15 +244,15 @@ public final class PostgreSQLArrayParameterDecoder {
         }
         return arrayList;
     }
-
+    
     static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {
-
+        
         private static final long serialVersionUID = 1L;
-
+        
         /**
          * How many dimensions.
          */
         private int dimensionsCount = 1;
-
+        
     }
 }
