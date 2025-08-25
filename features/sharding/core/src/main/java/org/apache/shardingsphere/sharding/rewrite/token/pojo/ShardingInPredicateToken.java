@@ -196,7 +196,6 @@ public final class ShardingInPredicateToken extends SQLToken implements Substitu
      */
     private String buildOptimizedClauses(Map<String, List<ShardingInPredicateValue>> parameterMap) {
         return parameterMap.entrySet().stream()
-                .filter(entry -> !entry.getValue().isEmpty())
                 .map(entry -> buildInClause(entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(" AND "));
     }
