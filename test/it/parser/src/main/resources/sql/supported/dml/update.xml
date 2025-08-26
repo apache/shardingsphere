@@ -70,4 +70,8 @@
     <sql-case id="update_with_location_setXY" value="UPDATE Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
     <sql-case id="update_returning_expressions" value="UPDATE t_order SET status = status - ? WHERE order_id = ? AND user_id = ? RETURNING status" db-types="Firebird" />
     <sql-case id="update_with_option_label_hint" value="UPDATE DimProduct SET ProductSubcategoryKey = 2 WHERE ProductKey = 313 OPTION (LABEL = N'label1');" db-types="SQLServer"/>
+    <sql-case id="update_with_where" value="UPDATE employees SET salary = 5000 WHERE department = 'HR';" db-types="Hive" />
+    <sql-case id="update_multiple_cols" value="UPDATE customers SET email = 'new@example.com', status = 'active' WHERE customer_id = 1001;" db-types="Hive" />
+    <sql-case id="update_basic" value="UPDATE products SET stock = 0;" db-types="Hive" />
+    <sql-case id="update_with_null" value="UPDATE user_profiles SET last_login = NULL;" db-types="Hive" />
 </sql-cases>

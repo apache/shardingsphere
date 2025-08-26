@@ -5293,4 +5293,110 @@
             </insert-statement>
         </multi-table-insert-into>
     </insert>
+
+    <insert sql-case-id="insert_into_hive_basic">
+        <table name="students" start-index="18" stop-index="25" />
+        <columns start-index="26" stop-index="26" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="35" stop-index="35" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Alice" start-index="38" stop-index="44" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="20" start-index="47" stop-index="48" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_two_value">
+        <table name="students" start-index="18" stop-index="25" />
+        <columns start-index="26" stop-index="26" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="35" stop-index="35" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Alice" start-index="38" stop-index="44" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="2" start-index="49" stop-index="49" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Bob" start-index="52" stop-index="56" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_with_partition">
+        <table name="sales" start-index="18" stop-index="22" />
+        <columns start-index="49" stop-index="49" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1001" start-index="58" stop-index="61" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Laptop" start-index="64" stop-index="71" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="5999" start-index="74" stop-index="77" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_without_val1">
+        <table name="sales" start-index="18" stop-index="22" />
+        <columns start-index="42" stop-index="42" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1001" start-index="51" stop-index="54" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Laptop" start-index="57" stop-index="64" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="5999" start-index="67" stop-index="70" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_into_with_null">
+        <table name="user_info" start-index="18" stop-index="26" />
+        <columns start-index="27" stop-index="27" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="301" start-index="36" stop-index="38" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="41" stop-index="44" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="New York" start-index="47" stop-index="56" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <literal-expression value="302" start-index="61" stop-index="63" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="Charlie" start-index="66" stop-index="74" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="null" start-index="77" stop-index="80" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

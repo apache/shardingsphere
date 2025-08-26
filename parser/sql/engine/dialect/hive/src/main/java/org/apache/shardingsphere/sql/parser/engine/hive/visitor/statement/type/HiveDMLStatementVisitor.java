@@ -128,6 +128,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowCl
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WindowItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.WritingDataIntoFileSystemContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertingValuesIntoTablesContext;
 import org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
@@ -878,6 +879,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.writingDataIntoFileSystem()) {
             return visit(ctx.writingDataIntoFileSystem());
         }
+        if (null != ctx.insertingValuesIntoTables()) {
+            return visit(ctx.insertingValuesIntoTables());
+        }
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
             result = (InsertStatement) visit(ctx.insertValuesClause());
@@ -1036,6 +1040,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         InsertStatement result = new InsertStatement(getDatabaseType());
         result.setInsertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList()));
         result.setInsertSelect(createInsertSelectSegment(select));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertingValuesIntoTables(final InsertingValuesIntoTablesContext ctx) {
+        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
