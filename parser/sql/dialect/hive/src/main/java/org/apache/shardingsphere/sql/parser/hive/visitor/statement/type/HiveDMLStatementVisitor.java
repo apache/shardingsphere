@@ -128,6 +128,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertOv
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.DynamicPartitionKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.InsertingValuesIntoTablesContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertIntoSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableInsertType;
 import org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitor;
@@ -878,6 +879,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.writingDataIntoFileSystem()) {
             return visit(ctx.writingDataIntoFileSystem());
         }
+        if (null != ctx.insertingValuesIntoTables()) {
+            return visit(ctx.insertingValuesIntoTables());
+        }
         InsertStatement result;
         if (null != ctx.insertValuesClause()) {
             result = (InsertStatement) visit(ctx.insertValuesClause());
@@ -1079,6 +1083,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitInsertingValuesIntoTables(final InsertingValuesIntoTablesContext ctx) {
+        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
