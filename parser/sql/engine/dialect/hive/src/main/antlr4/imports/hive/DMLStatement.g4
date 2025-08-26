@@ -402,3 +402,21 @@ insertOverwriteStandardSyntax
 insertingValuesIntoTables
     : INSERT INTO TABLE tableName dynamicPartitionClause? insertValuesClause
     ;
+
+merge
+    : MERGE INTO tableName tableNameAs? USING (tableName | subquery) tableNameAs? ON expr mergeWhenClause+
+    ;
+
+mergeWhenClause
+    : mergeCommonClause UPDATE setAssignmentsClause
+    | mergeCommonClause DELETE
+    | mergeCommonClause INSERT insertValuesClause
+    ;
+
+mergeCommonClause
+    : WHEN NOT? MATCHED (AND expr)? THEN
+    ;
+
+tableNameAs
+    : AS? alias
+    ;
