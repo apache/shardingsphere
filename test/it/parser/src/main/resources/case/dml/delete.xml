@@ -849,4 +849,25 @@
             </expr>
         </where>
     </delete>
+
+    <delete sql-case-id="delete_hive_basic">
+        <table name="orders" start-index="12" stop-index="17" />
+    </delete>
+
+    <delete sql-case-id="delete_with_where">
+        <table name="orders" start-index="12" stop-index="17" />
+        <where start-index="19" stop-index="39">
+            <expr>
+                <binary-operation-expression start-index="25" stop-index="39">
+                    <left>
+                        <column name="order_id" start-index="25" stop-index="32" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="9527" start-index="36" stop-index="39" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </delete>
 </sql-parser-test-cases>

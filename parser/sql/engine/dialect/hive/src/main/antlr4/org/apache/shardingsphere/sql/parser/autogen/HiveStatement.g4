@@ -25,6 +25,7 @@ execute
     | insert
     | update
     | delete
+    | merge
     | loadStatement
     | createDatabase
     | dropDatabase

@@ -1431,6 +1431,10 @@ MATCH
     : M A T C H
     ;
 
+MATCHED
+    : M A T C H E D
+    ;
+
 MAXVALUE
     : M A X V A L U E
     ;
