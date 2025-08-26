@@ -69,10 +69,12 @@ public final class DistSQLUpdateExecuteEngine {
     
     @SuppressWarnings("rawtypes")
     private void executeRuleDefinitionUpdate() throws SQLException {
-        ShardingSphereDatabase database = contextManager.getDatabase(databaseName);
-        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = DatabaseRuleDefinitionExecutorFactory.findInstance(sqlStatement, database);
-        if (databaseExecutor.isPresent()) {
-            new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, database, databaseExecutor.get()).executeUpdate();
+        if (contextManager.getMetaDataContexts().getMetaData().containsDatabase(databaseName)) {
+            ShardingSphereDatabase database = contextManager.getDatabase(databaseName);
+            Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = DatabaseRuleDefinitionExecutorFactory.findInstance(sqlStatement, database);
+            if (databaseExecutor.isPresent()) {
+                new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, database, databaseExecutor.get()).executeUpdate();
+            }
         } else {
             GlobalRuleDefinitionExecutor globalExecutor = GlobalRuleDefinitionExecutorFactory.newInstance(sqlStatement, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
             new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, globalExecutor).executeUpdate();
