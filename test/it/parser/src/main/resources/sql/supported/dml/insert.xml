@@ -189,4 +189,9 @@
     <sql-case id="two_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT name;" db-types="Hive" />
     <sql-case id="two_insert_overwrite_directory_with_local" value="FROM employee INSERT OVERWRITE LOCAL DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE LOCAL DIRECTORY '/user/output/emp_data' SELECT name;" db-types="Hive" />
     <sql-case id="three_insert_overwrite_directory" value="FROM employee INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT id INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT name INSERT OVERWRITE DIRECTORY '/user/output/emp_data' SELECT user;" db-types="Hive" />
+    <sql-case id="insert_into_hive_basic" value="INSERT INTO TABLE students VALUES (1, 'Alice', 20);" db-types="Hive" />
+    <sql-case id="insert_into_two_value" value="INSERT INTO TABLE students VALUES (1, 'Alice'), (2, 'Bob');" db-types="Hive" />
+    <sql-case id="insert_into_with_partition" value="INSERT INTO TABLE sales PARTITION (region='Asia') VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
+    <sql-case id="insert_into_without_val1" value="INSERT INTO TABLE sales PARTITION (region) VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
+    <sql-case id="insert_into_with_null" value="INSERT INTO TABLE user_info VALUES (301, NULL, 'New York'), (302, 'Charlie', NULL);" db-types="Hive" />
 </sql-cases>

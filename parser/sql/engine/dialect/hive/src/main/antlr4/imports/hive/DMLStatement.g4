@@ -23,6 +23,7 @@ insert
     : INSERT insertSpecification INTO? tableName partitionNames? (insertValuesClause | setAssignmentsClause | insertSelectClause) onDuplicateKeyClause?
     | insertDataIntoTablesFromQueries
     | writingDataIntoFileSystem
+    | insertingValuesIntoTables
     ;
 
 insertSpecification
@@ -396,4 +397,8 @@ writingDataIntoFileSystem
 
 insertOverwriteStandardSyntax
     : INSERT OVERWRITE LOCAL? DIRECTORY string_ rowFormat? storedClause? select
+    ;
+
+insertingValuesIntoTables
+    : INSERT INTO TABLE tableName dynamicPartitionClause? insertValuesClause
     ;
