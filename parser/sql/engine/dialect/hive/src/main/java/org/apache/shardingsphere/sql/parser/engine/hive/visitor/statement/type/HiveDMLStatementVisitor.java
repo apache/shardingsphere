@@ -1174,12 +1174,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
         if (null != expr) {
-            ASTNode result = visit(expr);
-            if (result instanceof ColumnSegment) {
-                return result;
-            } else {
-                return result;
-            }
+            return visit(expr);
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
@@ -1217,16 +1212,13 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         TableSegment source;
         if (null != ctx.tableName(1)) {
             source = (TableSegment) visit(ctx.tableName(1));
-            if (null != ctx.tableNameAs(1)) {
-                source.setAlias((AliasSegment) visit(ctx.tableNameAs(1).alias()));
-            }
         } else {
             SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
             source = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
-            if (null != ctx.tableNameAs(1)) {
-                source.setAlias((AliasSegment) visit(ctx.tableNameAs(1).alias()));
-            }
+        }
+        if (null != ctx.tableNameAs(1)) {
+            source.setAlias((AliasSegment) visit(ctx.tableNameAs(1).alias()));
         }
         result.setSource(source);
         ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.expr().start.getStartIndex(), ctx.expr().stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
