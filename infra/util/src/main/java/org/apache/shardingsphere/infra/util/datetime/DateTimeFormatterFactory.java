@@ -63,21 +63,21 @@ public final class DateTimeFormatterFactory {
     }
     
     /**
-     * Get full time formatter.
-     *
-     * @return full time formatter
-     */
-    public static DateTimeFormatter getFullTimeFormatter() {
-        return FULL_TIME;
-    }
-    
-    /**
      * Get time formatter.
      *
      * @return time formatter
      */
     public static DateTimeFormatter getTimeFormatter() {
         return TIME;
+    }
+    
+    /**
+     * Get full time formatter.
+     *
+     * @return full time formatter
+     */
+    public static DateTimeFormatter getFullTimeFormatter() {
+        return FULL_TIME;
     }
     
     /**
