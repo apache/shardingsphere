@@ -187,10 +187,10 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
                     assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
                     Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1)
-                            ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
+                            ? actualResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter())
                             : actualValue;
                     Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)
-                            ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getStandardFormatter())
+                            ? expectedResultSet.getTimestamp(i + 1).toLocalDateTime().format(DateTimeFormatterFactory.getDatetimeFormatter())
                             : actualValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else if (expectedValue instanceof Clob) {

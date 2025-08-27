@@ -36,6 +36,6 @@ public final class MySQLTimestampBinlogProtocolValue implements MySQLBinlogProto
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int seconds = payload.readInt4();
-        return 0 == seconds ? MySQLTimeValueUtils.DATETIME_OF_ZERO : DateTimeFormatterFactory.getStandardFormatter().format(new Timestamp(seconds * 1000L).toLocalDateTime());
+        return 0 == seconds ? MySQLTimeValueUtils.DATETIME_OF_ZERO : DateTimeFormatterFactory.getDatetimeFormatter().format(new Timestamp(seconds * 1000L).toLocalDateTime());
     }
 }

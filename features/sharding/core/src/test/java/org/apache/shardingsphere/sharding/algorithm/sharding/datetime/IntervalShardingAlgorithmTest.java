@@ -235,8 +235,8 @@ class IntervalShardingAlgorithmTest {
                 .doSharding(availableTargetNames, shardingValueAsSqlDate).size(),
                 is(expectSize));
         final RangeShardingValue<Comparable<?>> shardingValueAsString = createShardingValue(
-                DateTimeFormatterFactory.getStandardFormatter().format(lower),
-                DateTimeFormatterFactory.getStandardFormatter().format(upper));
+                DateTimeFormatterFactory.getDatetimeFormatter().format(lower),
+                DateTimeFormatterFactory.getDatetimeFormatter().format(upper));
         assertThat(algorithm.doSharding(availableTargetNames, shardingValueAsString).size(), is(expectSize));
         assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources, shardingValueAsString).size(), is(expectSize));
     }
@@ -329,7 +329,7 @@ class IntervalShardingAlgorithmTest {
                 new Property("sharding-suffix-pattern", shardingSuffixPattern),
                 new Property("datetime-interval-amount", Integer.toString(datetimeIntervalAmount)));
         if (null != datetimeIntervalUnit) {
-            props.put("datetime-interval-unit", datetimeIntervalUnit);
+            props.setProperty("datetime-interval-unit", datetimeIntervalUnit);
         }
         return (IntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INTERVAL", props);
     }
