@@ -85,6 +85,7 @@
 1. SQL Parser: Support Hive Inserting data into Hive Tables from queries statement parse - [#36320](https://github.com/apache/shardingsphere/pull/36320)
 1. SQL Parser: Support Hive Writing data into the filesystem from queries statement parse - [#36371](https://github.com/apache/shardingsphere/pull/36371)
 1. SQL Parser: Support Hive Inserting values into tables from SQL & UPDATE statement parse - [#36415](https://github.com/apache/shardingsphere/pull/36415)
+1. SQL Parser: Support Hive DELETE & MERGE statement parse - [#36417](https://github.com/apache/shardingsphere/pull/36417)
 1. SQL Parser: Support SQL Server xml methods parse - [#35911](https://github.com/apache/shardingsphere/pull/35911)
 1. SQL Parser: Support SQL Server CHANGETABLE function parse - [#35920](https://github.com/apache/shardingsphere/pull/35920)
 1. SQL Parser: Support SQL Server AI_GENERATE_EMBEDDINGS function parse - [#35922](https://github.com/apache/shardingsphere/pull/35922)

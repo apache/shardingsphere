@@ -645,4 +645,207 @@
             </output-columns>
         </output>
     </merge>
+
+    <merge sql-case-id="merge_update">
+        <target>
+            <simple-table name="employees" alias="T" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="employee_updates" alias="S" start-index="32" stop-index="52" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="57" stop-index="67">
+                <left>
+                    <column name="id" start-index="57" stop-index="60">
+                        <owner name="T" start-index="57" stop-index="57" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="64" stop-index="67">
+                        <owner name="S" start-index="64" stop-index="64" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN UPDATE SET T.salary = S.new_salary" start-index="75" stop-index="120">
+            <update>
+                <set start-index="94" stop-index="120">
+                    <assignment>
+                        <columns name="salary" start-index="98" stop-index="105">
+                            <owner name="T" start-index="98" stop-index="98" />
+                        </columns>
+                        <assignment-value>
+                            <column name="new_salary" start-index="109" stop-index="120">
+                                <owner name="S" start-index="109" stop-index="109" />
+                            </column>
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_delete">
+        <target>
+            <simple-table name="orders" alias="t" start-index="11" stop-index="21" />
+        </target>
+        <source>
+            <simple-table name="invalid_orders" alias="s" start-index="29" stop-index="47" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="52" stop-index="74">
+                <left>
+                    <column name="order_id" start-index="52" stop-index="61">
+                        <owner name="t" start-index="52" stop-index="52" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="65" stop-index="74">
+                        <owner name="s" start-index="65" stop-index="65" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DELETE" start-index="75" stop-index="89">
+            <delete />
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_insert">
+        <target>
+            <simple-table name="employees" alias="T" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="employee_updates" alias="S" start-index="32" stop-index="52" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="57" stop-index="67">
+                <left>
+                    <column name="id" start-index="57" stop-index="60">
+                        <owner name="T" start-index="57" stop-index="57" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="64" stop-index="67">
+                        <owner name="S" start-index="64" stop-index="64" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED THEN INSERT VALUES (S.id,S.new_salary)" start-index="75" stop-index="122">
+            <insert>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <column name="id" start-index="106" stop-index="109">
+                                <owner name="S" start-index="106" stop-index="106" />
+                            </column>
+                        </assignment-value>
+                        <assignment-value>
+                            <column name="new_salary" start-index="111" stop-index="122">
+                                <owner name="S" start-index="111" stop-index="111" />
+                            </column>
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_delete_source_expression">
+        <target>
+            <simple-table name="orders" alias="t" start-index="11" stop-index="21" />
+        </target>
+        <source>
+            <subquery-table alias="s" start-index="29" stop-index="70">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="invalid_orders" start-index="51" stop-index="64" />
+                        </from>
+                        <projections start-index="37" stop-index="44">
+                            <column-projection name="order_id" start-index="37" stop-index="44" />
+                        </projections>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="75" stop-index="97">
+                <left>
+                    <column name="order_id" start-index="75" stop-index="84">
+                        <owner name="t" start-index="75" stop-index="75" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="order_id" start-index="88" stop-index="97">
+                        <owner name="s" start-index="88" stop-index="88" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN DELETE" start-index="75" stop-index="89">
+            <delete />
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_conditional">
+        <target>
+            <simple-table name="employees" alias="T" start-index="11" stop-index="24" />
+        </target>
+        <source>
+            <simple-table name="employee_updates" alias="S" start-index="32" stop-index="52" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="57" stop-index="67">
+                <left>
+                    <column name="id" start-index="57" stop-index="60">
+                        <owner name="T" start-index="57" stop-index="57" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="64" stop-index="67">
+                        <owner name="S" start-index="64" stop-index="64" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED AND S.is_active = true THEN UPDATE SET T.salary = S.new_salary" start-index="75" stop-index="143">
+            <update>
+                <set start-index="117" stop-index="143">
+                    <assignment>
+                        <columns name="salary" start-index="121" stop-index="128">
+                            <owner name="T" start-index="121" stop-index="121" />
+                        </columns>
+                        <assignment-value>
+                            <column name="new_salary" start-index="132" stop-index="143">
+                                <owner name="S" start-index="132" stop-index="132" />
+                            </column>
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+        <merge-items text="WHEN MATCHED AND S.is_active = false THEN DELETE" start-index="97" stop-index="120">
+            <delete />
+        </merge-items>
+        <merge-items text="WHEN NOT MATCHED AND S.new_salary &lt; 5000 THEN INSERT VALUES (S.id)" start-index="255" stop-index="258">
+            <insert>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <column name="id" start-index="255" stop-index="258">
+                                <owner name="S" start-index="255" stop-index="255" />
+                            </column>
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
 </sql-parser-test-cases>

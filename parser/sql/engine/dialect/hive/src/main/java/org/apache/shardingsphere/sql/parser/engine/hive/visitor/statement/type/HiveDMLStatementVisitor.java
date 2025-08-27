@@ -70,6 +70,8 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JoinSpec
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.JsonFunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.MergeWhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitOffsetContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.LimitRowCountContext;
@@ -151,6 +153,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Exis
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -195,6 +198,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
@@ -205,6 +209,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.StringLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.merge.MergeWhenAndThenSegment;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -1169,12 +1174,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
         if (null != expr) {
-            ASTNode result = visit(expr);
-            if (result instanceof ColumnSegment) {
-                return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
-            } else {
-                return result;
-            }
+            return visit(expr);
         }
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
     }
@@ -1196,6 +1196,50 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMerge(final MergeContext ctx) {
+        MergeStatement result = new MergeStatement(getDatabaseType());
+        TableSegment target = (TableSegment) visit(ctx.tableName(0));
+        if (null != ctx.tableNameAs(0)) {
+            target.setAlias((AliasSegment) visit(ctx.tableNameAs(0).alias()));
+        }
+        result.setTarget(target);
+        TableSegment source;
+        if (null != ctx.tableName(1)) {
+            source = (TableSegment) visit(ctx.tableName(1));
+        } else {
+            SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));
+            source = new SubqueryTableSegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquerySegment);
+        }
+        if (null != ctx.tableNameAs(1)) {
+            source.setAlias((AliasSegment) visit(ctx.tableNameAs(1).alias()));
+        }
+        result.setSource(source);
+        ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.expr().start.getStartIndex(), ctx.expr().stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
+        result.setExpression(onExpression);
+        for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
+            int start = each.getStart().getStartIndex();
+            int stop = each.getStop().getStopIndex();
+            MergeWhenAndThenSegment seg = new MergeWhenAndThenSegment(start, stop, getOriginalText(each));
+            if (null != each.UPDATE()) {
+                UpdateStatement upd = new UpdateStatement(getDatabaseType());
+                upd.setSetAssignment((SetAssignmentSegment) visit(each.setAssignmentsClause()));
+                seg.setUpdate(upd);
+            }
+            if (null != each.INSERT()) {
+                InsertStatement ins = new InsertStatement(getDatabaseType());
+                if (null != each.insertValuesClause().assignmentValues()) {
+                    ins.getValues().addAll(createInsertValuesSegments(each.insertValuesClause().assignmentValues()));
+                }
+                seg.setInsert(ins);
+            }
+            result.getWhenAndThens().add(seg);
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
