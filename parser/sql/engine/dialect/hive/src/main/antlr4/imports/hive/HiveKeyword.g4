@@ -3417,3 +3417,147 @@ COMPACTIONID
 ABORT
     : A B O R T
     ;
+
+WORKLOAD
+    : W O R K L O A D
+    ;
+
+AST
+    : A S T
+    ;
+
+BRANCH
+    : B R A N C H
+    ;
+
+CBO
+    : C B O
+    ;
+
+COST
+    : C O S T
+    ;
+
+CRON
+    : C R O N
+    ;
+
+DCPROPERTIES
+    : D C P R O P E R T I E S
+    ;
+
+DEBUG
+    : D E B U G
+    ;
+
+DISABLED
+    : D I S A B L E D
+    ;
+
+ENABLED
+    : E N A B L E D
+    ;
+
+EXECUTED
+    : E X E C U T E D
+    ;
+
+EXPIRE_SNAPSHOTS
+    : E X P I R E UL_ S N A P S H O T S
+    ;
+
+SNAPSHOTS
+    : S N A P S H O T S
+    ;
+
+SPEC
+    : S P E C
+    ;
+
+TAG
+    : T A G
+    ;
+
+TRANSACTIONAL
+    : T R A N S A C T I O N A L
+    ;
+
+DAYOFWEEK
+    : D A Y O F W E E K
+    ;
+
+DUMP
+    : D U M P
+    ;
+
+REPL
+    : R E P L
+    ;
+
+MERGE_DETAIL
+    : M E R G E UL_ D E T A I L
+    ;
+
+EXPRESSION
+    : E X P R E S S I O N
+    ;
+
+OPERATOR
+    : O P E R A T O R
+    ;
+
+SUMMARY
+    : S U M M A R Y
+    ;
+
+VECTORIZATION
+    : V E C T O R I Z A T I O N
+    ;
+
+ACTIVATE
+    : A C T I V A T E
+    ;
+
+ALLOC_FRACTION
+    : A L L O C UL_ F R A C T I O N
+    ;
+
+MANAGEMENT
+    : M A N A G E M E N T
+    ;
+
+MAPPING
+    : M A P P I N G
+    ;
+
+MOVE
+    : M O V E
+    ;
+
+PLANS
+    : P L A N S
+    ;
+
+QUERY_PARALLELISM
+    : Q U E R Y UL_ P A R A L L E L I S M
+    ;
+
+REOPTIMIZATION
+    : R E O P T I M I Z A T I O N
+    ;
+
+SCHEDULING_POLICY
+    : S C H E D U L I N G UL_ P O L I C Y
+    ;
+
+UNMANAGED
+    : U N M A N A G E D
+    ;
+
+AUTOCOMMIT
+    : A U T O C O M M I T
+    ;
+
+VALIDATE
+    : V A L I D A T E
+    ;
