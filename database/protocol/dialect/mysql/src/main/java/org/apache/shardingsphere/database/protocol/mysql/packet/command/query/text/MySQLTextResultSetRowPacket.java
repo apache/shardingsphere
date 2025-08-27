@@ -70,7 +70,7 @@ public final class MySQLTextResultSetRowPacket extends MySQLPacket {
         } else if (data instanceof Boolean) {
             payload.writeBytesLenenc((boolean) data ? new byte[]{1} : new byte[]{0});
         } else if (data instanceof LocalDateTime) {
-            payload.writeStringLenenc(DateTimeFormatterFactory.getStandardFormatter().format((LocalDateTime) data));
+            payload.writeStringLenenc(DateTimeFormatterFactory.getDatetimeFormatter().format((LocalDateTime) data));
         } else {
             payload.writeStringLenenc(data.toString());
         }

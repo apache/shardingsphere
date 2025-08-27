@@ -63,7 +63,7 @@ public abstract class AbstractPipelineLifecycleRunnable implements PipelineLifec
             return;
         }
         LocalDateTime startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeMillis), ZoneId.systemDefault());
-        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", this, startTime.format(DateTimeFormatterFactory.getStandardFormatter()), System.currentTimeMillis() - startTimeMillis);
+        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", this, startTime.format(DateTimeFormatterFactory.getDatetimeFormatter()), System.currentTimeMillis() - startTimeMillis);
         try {
             doStop();
             // CHECKSTYLE:OFF
