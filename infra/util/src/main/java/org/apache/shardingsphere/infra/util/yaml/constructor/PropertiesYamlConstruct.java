@@ -33,7 +33,7 @@ public final class PropertiesYamlConstruct implements ShardingSphereYamlConstruc
     public Object construct(final Node node) {
         Properties result = new Properties();
         for (NodeTuple each : ((MappingNode) node).getValue()) {
-            result.setProperty(((ScalarNode) each.getKeyNode()).getValue(), ((ScalarNode) each.getValueNode()).getValue()); 
+            result.setProperty(((ScalarNode) each.getKeyNode()).getValue(), ((ScalarNode) each.getValueNode()).getValue());
         }
         return result;
     }
