@@ -59,6 +59,7 @@ public final class Bootstrap {
      * @throws SQLException SQL exception
      */
     public static void main(final String[] args) throws IOException, SQLException {
+        log.error("======: /opt/shardingsphere-proxy/conf/logback.xml ======:" + new File("/opt/shardingsphere-proxy/conf/logback.xml").exists());
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
@@ -71,8 +72,6 @@ public final class Bootstrap {
         ShardingSphereProxy proxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(proxy::start);
         proxy.start(port, addresses);
-        
-        log.error("======: /opt/shardingsphere-proxy/conf/logback.xml ======:" + new File("/opt/shardingsphere-proxy/conf/logback.xml").exists());
     }
     
     private static void checkPort(final List<String> addresses, final int port) throws IOException {

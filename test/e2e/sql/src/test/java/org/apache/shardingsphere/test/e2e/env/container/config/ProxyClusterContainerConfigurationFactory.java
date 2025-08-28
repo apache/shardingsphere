@@ -19,14 +19,11 @@ package org.apache.shardingsphere.test.e2e.env.container.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,7 +33,6 @@ import java.util.Map;
  * Suite proxy cluster container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class ProxyClusterContainerConfigurationFactory {
     
     /**
@@ -56,10 +52,6 @@ public final class ProxyClusterContainerConfigurationFactory {
         result.put("/env/common/cluster/proxy/conf/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put(getGlobalYamlPath(scenario, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
-        
-        log.error("====== /env/common/cluster/proxy/conf/logback.xml ======:" + new File("/env/common/cluster/proxy/conf/logback.xml").exists());
-        log.error("====== SystemResourceFileUtils.getPath(\"env/common/cluster/proxy/conf/logback.xml\") ======:" + SystemResourceFileUtils.getPath("env/common/cluster/proxy/conf/logback.xml").toFile().exists());
-        log.error("====== SystemResourceFileUtils.getPath(\"env/common/cluster/proxy/conf/logback.xml\") path ======:" + SystemResourceFileUtils.getPath("env/common/cluster/proxy/conf/logback.xml").toFile().getAbsolutePath());
         return result;
     }
     
