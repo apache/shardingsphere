@@ -28,9 +28,9 @@
     private Map<String, AlgorithmConfiguration> createMaskAlgorithms() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties props = new Properties();
-        props.put("first-n", 3);
-        props.put("last-m", 4);
-        props.put("replace-char", "*");
+        props.setProperty("first-n", "3");
+        props.setProperty("last-m", "4");
+        props.setProperty("replace-char", "*");
         result.put("keep_first_n_last_m_mask", new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", props));
         return result;
     }
