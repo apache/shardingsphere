@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.arguments.BootstrapArguments;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -43,7 +41,6 @@ import java.util.Optional;
  * ShardingSphere-Proxy Bootstrap.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class Bootstrap {
     
     static {
@@ -59,7 +56,6 @@ public final class Bootstrap {
      * @throws SQLException SQL exception
      */
     public static void main(final String[] args) throws IOException, SQLException {
-        log.error("======: /opt/shardingsphere-proxy/conf/logback.xml ======:" + new File("/opt/shardingsphere-proxy/conf/logback.xml").exists());
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
