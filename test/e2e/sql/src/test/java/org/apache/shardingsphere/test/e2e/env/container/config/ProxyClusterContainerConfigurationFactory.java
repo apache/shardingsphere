@@ -58,8 +58,8 @@ public final class ProxyClusterContainerConfigurationFactory {
         result.put(getGlobalYamlPath(scenario, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         
         log.error("====== /env/common/cluster/proxy/conf/logback.xml ======:" + new File("/env/common/cluster/proxy/conf/logback.xml").exists());
-        log.error("====== SystemResourceFileUtils.getPath(\"/env/common/cluster/proxy/conf/logback.xml\") ======:" + SystemResourceFileUtils.getPath("/env/common/cluster/proxy/conf/logback.xml").toFile().exists());
-        log.error("====== SystemResourceFileUtils.getPath(\"/env/common/cluster/proxy/conf/logback.xml\") path ======:" + SystemResourceFileUtils.getPath("/env/common/cluster/proxy/conf/logback.xml").toFile().getAbsolutePath());
+        log.error("====== SystemResourceFileUtils.getPath(\"env/common/cluster/proxy/conf/logback.xml\") ======:" + SystemResourceFileUtils.getPath("env/common/cluster/proxy/conf/logback.xml").toFile().exists());
+        log.error("====== SystemResourceFileUtils.getPath(\"env/common/cluster/proxy/conf/logback.xml\") path ======:" + SystemResourceFileUtils.getPath("env/common/cluster/proxy/conf/logback.xml").toFile().getAbsolutePath());
         return result;
     }
     
