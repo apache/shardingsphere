@@ -56,7 +56,7 @@ public final class ProxyClusterContainerConfigurationFactory {
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put(getGlobalYamlPath(scenario, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         
-        log.error("====== /env/common/cluster/proxy/conf/logback.xml ======:", new File("/env/common/cluster/proxy/conf/logback.xml").exists());
+        log.error("====== /env/common/cluster/proxy/conf/logback.xml ======:" + new File("/env/common/cluster/proxy/conf/logback.xml").exists());
         return result;
     }
     

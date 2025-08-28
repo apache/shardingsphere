@@ -72,7 +72,7 @@ public final class Bootstrap {
         bootstrapArgs.getSocketPath().ifPresent(proxy::start);
         proxy.start(port, addresses);
         
-        log.error("======: /opt/shardingsphere-proxy/conf/logback.xml ======:", new File("/opt/shardingsphere-proxy/conf/logback.xml").exists());
+        log.error("======: /opt/shardingsphere-proxy/conf/logback.xml ======:" + new File("/opt/shardingsphere-proxy/conf/logback.xml").exists());
     }
     
     private static void checkPort(final List<String> addresses, final int port) throws IOException {
