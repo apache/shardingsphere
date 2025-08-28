@@ -49,7 +49,8 @@ class ShadowRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
                 PropertiesBuilder.build(new Property("regex", "[1]"), new Property("column", "user_id"), new Property("operation", "update"))));
         result.getShadowAlgorithms().put("user-id-select-match-algorithm", new AlgorithmConfiguration("REGEX_MATCH",
                 PropertiesBuilder.build(new Property("regex", "[1]"), new Property("column", "user_id"), new Property("operation", "select"))));
-        result.getShadowAlgorithms().put("sql-hint-algorithm", new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", true), new Property("foo", "bar"))));
+        result.getShadowAlgorithms().put("sql-hint-algorithm",
+                new AlgorithmConfiguration("SQL_HINT", PropertiesBuilder.build(new Property("shadow", Boolean.TRUE.toString()), new Property("foo", "bar"))));
         result.setDefaultShadowAlgorithmName("sql-hint-algorithm");
         return result;
     }

@@ -51,7 +51,7 @@ class MaskRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
                 Arrays.asList(new MaskColumnRuleConfiguration("telephone", "keep_first_n_last_m_mask"), new MaskColumnRuleConfiguration("password", "md5_mask"))));
         Map<String, AlgorithmConfiguration> maskAlgorithms = new LinkedHashMap<>(2, 1F);
         maskAlgorithms.put("keep_first_n_last_m_mask",
-                new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", 3), new Property("replace-char", "*"), new Property("last-m", 4))));
+                new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", PropertiesBuilder.build(new Property("first-n", "3"), new Property("replace-char", "*"), new Property("last-m", "4"))));
         maskAlgorithms.put("md5_mask", new AlgorithmConfiguration("MD5", new Properties()));
         return new MaskRuleConfiguration(tables, maskAlgorithms);
     }

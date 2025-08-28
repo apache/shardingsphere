@@ -15,42 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
 
 import java.util.Properties;
 
 /**
- * Properties builder.
+ * Properties YAML construct.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PropertiesBuilder {
+public final class PropertiesYamlConstruct implements ShardingSphereYamlConstruct {
     
-    /**
-     * Build properties.
-     *
-     * @param props to be built properties
-     * @return built properties
-     */
-    public static Properties build(final Property... props) {
+    @Override
+    public Object construct(final Node node) {
         Properties result = new Properties();
-        for (Property each : props) {
-            result.setProperty(each.key, each.value);
+        for (NodeTuple each : ((MappingNode) node).getValue()) {
+            result.setProperty(((ScalarNode) each.getKeyNode()).getValue(), ((ScalarNode) each.getValueNode()).getValue()); 
         }
         return result;
     }
     
-    /**
-     * Property.
-     */
-    @RequiredArgsConstructor
-    public static class Property {
-        
-        private final String key;
-        
-        private final String value;
+    @Override
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
+    
+    @Override
+    public Class<?> getType() {
+        return Properties.class;
     }
 }
