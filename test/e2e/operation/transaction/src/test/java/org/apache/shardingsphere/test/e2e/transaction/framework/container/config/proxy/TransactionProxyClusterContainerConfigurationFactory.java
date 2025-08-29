@@ -32,7 +32,7 @@ import java.util.Map;
  * Transaction proxy cluster container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyClusterContainerConfigurationFactory {
+public final class TransactionProxyClusterContainerConfigurationFactory {
     
     /**
      * Create instance of adaptor container configuration.
@@ -43,9 +43,7 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final List<String> portBindings) {
-        String containerCommand = "";
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(),
-                containerCommand);
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
     }
     
     private static String getProxyDatasourceName(final String scenario) {

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.ProxyClusterContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 
@@ -53,7 +52,6 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
         result.put(String.format("env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         result.put("env/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
