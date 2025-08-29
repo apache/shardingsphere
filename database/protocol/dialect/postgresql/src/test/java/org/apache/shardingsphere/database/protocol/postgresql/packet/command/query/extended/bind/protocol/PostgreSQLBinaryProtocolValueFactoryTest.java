@@ -83,7 +83,7 @@ class PostgreSQLBinaryProtocolValueFactoryTest {
     @Test
     void assertGetTimeBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.TIMESTAMP);
-        assertThat(binaryProtocolValue, isA(PostgreSQLTimeBinaryProtocolValue.class));
+        assertThat(binaryProtocolValue, isA(PostgreSQLTimeStampBinaryProtocolValue.class));
     }
     
     @Test
