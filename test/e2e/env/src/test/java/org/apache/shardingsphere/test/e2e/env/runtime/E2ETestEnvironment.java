@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.runtime;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
@@ -41,6 +42,8 @@ public final class E2ETestEnvironment {
     private final boolean runAdditionalTestCases;
     
     private final Collection<String> scenarios;
+    
+    private final String governanceCenter;
     
     private final ClusterEnvironment clusterEnvironment;
     
@@ -66,6 +69,7 @@ public final class E2ETestEnvironment {
         nativeStoragePort = props.getProperty("it.native.storage.port");
         nativeStorageUsername = props.getProperty("it.native.storage.username");
         nativeStoragePassword = props.getProperty("it.native.storage.password");
+        governanceCenter = Strings.isNullOrEmpty(props.getProperty("it.env.governance.center")) ? "ZooKeeper" : props.getProperty("it.env.governance.center");
     }
     
     @SuppressWarnings("AccessOfSystemProperties")
