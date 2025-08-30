@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
-import org.jetbrains.annotations.NotNull;
+import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -50,14 +50,16 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario, final String modeType, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        result.put(String.format("/env/common/%s/proxy/conf/logback.xml", modeType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
+        result.put("/env/common/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         result.put(String.format("/env/scenario/%s/proxy/conf/%s", scenario, databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put(getGlobalYamlPath(scenario, modeType, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         return result;
     }
     
-    @NotNull
     private static String getGlobalYamlPath(final String scenario, final String modeType, final DatabaseType databaseType) {
+        if (isGovernanceCenterGlobalYamlExists(scenario, modeType)) {
+            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase());
+        }
         if (isDialectScenarioGlobalYamlExists(scenario, modeType, databaseType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase());
         }
@@ -65,6 +67,12 @@ public final class SQLE2EProxyContainerConfigurationFactory {
             return String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
         }
         return String.format("/env/common/%s/proxy/conf/global.yaml", modeType);
+    }
+    
+    private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(
+                String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase()));
+        return null != url;
     }
     
     private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String modeType, final DatabaseType databaseType) {
