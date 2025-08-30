@@ -50,12 +50,7 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario, final String modeType, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        if ("cluster".equals(modeType)) {
-            String governanceCenter = E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase();
-            result.put(String.format("/env/common/%s/proxy/conf/%s/logback.xml", modeType, governanceCenter), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
-        } else {
-            result.put(String.format("/env/common/%s/proxy/conf/logback.xml", modeType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
-        }
+        result.put("/env/common/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         result.put(String.format("/env/scenario/%s/proxy/conf/%s", scenario, databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put(getGlobalYamlPath(scenario, modeType, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
         return result;
