@@ -64,7 +64,7 @@ public final class SQLE2EProxyContainerConfigurationFactory {
         if (isScenarioGlobalYamlExists(scenario, modeType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
         }
-        return String.format( "/env/common/%s/proxy/conf/global.yaml", modeType);
+        return String.format("/env/common/%s/proxy/conf/global.yaml", modeType);
     }
     
     private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String modeType, final DatabaseType databaseType) {
