@@ -15,45 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.config.proxy;
+package org.apache.shardingsphere.test.e2e.transaction.framework.container.config.proxy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
-import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Pipeline proxy cluster container configuration factory.
+ * Transaction proxy container configuration factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PipelineProxyClusterContainerConfigurationFactory {
+public final class TransactionProxyContainerConfigurationFactory {
     
     /**
      * Create instance of adaptor container configuration.
      *
+     * @param scenario scenario
      * @param databaseType database type
+     * @param portBindings port bindings
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), new LinkedList<>(), getMountedResource(databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType, final List<String> portBindings) {
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(scenario), portBindings, getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage(), "");
     }
     
-    private static String getProxyDatasourceName(final DatabaseType databaseType) {
-        return (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) ? "postgres" : "";
+    private static String getProxyDatasourceName(final String scenario) {
+        return "default".equals(scenario) ? "sharding_db" : scenario;
     }
     
-    private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
+    private static Map<String, String> getMountedResource(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put(String.format("env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
-        result.put("env/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
+        result.put(String.format("/env/%s/global.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
+        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }
 }
