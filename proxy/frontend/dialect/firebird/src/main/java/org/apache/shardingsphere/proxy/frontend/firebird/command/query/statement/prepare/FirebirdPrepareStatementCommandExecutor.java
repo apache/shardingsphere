@@ -217,14 +217,17 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final MetaDataContexts metaDataContexts, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                      final Collection<FirebirdSQLInfoPacketType> requestedItems) {
         String databaseName = connectionSession.getCurrentDatabaseName();
-        // String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
-        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("rdb");
+        String schemaName = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName);
+        ShardingSphereSchema schema = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName);
         Collection<Projection> projections = getProjections(sqlStatementContext, schema);
         int columnCount = 0;
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+                if (table == null) {
+                    table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("rdb").getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+                }
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
