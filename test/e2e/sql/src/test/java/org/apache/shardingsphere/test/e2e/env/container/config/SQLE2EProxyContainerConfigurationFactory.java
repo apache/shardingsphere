@@ -64,7 +64,9 @@ public final class SQLE2EProxyContainerConfigurationFactory {
             return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase());
         }
         if (isScenarioGlobalYamlExists(scenario, modeType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
+            return "cluster".equals(modeType)
+                    ? String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase())
+                    : String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
         }
         return String.format("/env/common/%s/proxy/conf/global.yaml", modeType);
     }
