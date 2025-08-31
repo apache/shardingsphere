@@ -65,9 +65,6 @@ public final class SQLE2EProxyContainerConfigurationFactory {
         if (isGovernanceCenterGlobalYamlExists(scenario, modeType, governanceCenterType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType);
         }
-        if (isScenarioGlobalYamlExists(scenario, modeType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
-        }
         return String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, governanceCenterType);
     }
     
@@ -87,11 +84,6 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     
     private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType));
-        return null != url;
-    }
-    
-    private static boolean isScenarioGlobalYamlExists(final String scenario, final String modeType) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType));
         return null != url;
     }
 }
