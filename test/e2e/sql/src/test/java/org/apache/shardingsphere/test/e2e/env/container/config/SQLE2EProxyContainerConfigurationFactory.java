@@ -50,15 +50,16 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario, final String modeType, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        result.put("/env/common/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
-        result.put(String.format("/env/scenario/%s/proxy/conf/%s", scenario, databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put(getGlobalYamlPath(scenario, modeType, databaseType), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "global.yaml");
+        result.put(String.format("/env/scenario/%s/proxy/conf/%s", scenario, databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        result.put("/env/common/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
     }
     
     private static String getGlobalYamlPath(final String scenario, final String modeType, final DatabaseType databaseType) {
-        if (isGovernanceCenterGlobalYamlExists(scenario, modeType)) {
-            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase());
+        String governanceCenterType = "cluster".equals(modeType) ? E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase() : "";
+        if (isGovernanceCenterGlobalYamlExists(scenario, modeType, governanceCenterType)) {
+            return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType);
         }
         if (isDialectScenarioGlobalYamlExists(scenario, modeType, databaseType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase());
@@ -67,13 +68,12 @@ public final class SQLE2EProxyContainerConfigurationFactory {
             return String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
         }
         return "cluster".equals(modeType)
-                ? String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase())
+                ? String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, governanceCenterType)
                 : String.format("/env/common/%s/proxy/conf/global.yaml", modeType);
     }
     
-    private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(
-                String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase()));
+    private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType));
         return null != url;
     }
     
