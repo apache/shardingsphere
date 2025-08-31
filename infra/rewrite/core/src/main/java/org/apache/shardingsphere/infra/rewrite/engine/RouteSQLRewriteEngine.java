@@ -41,9 +41,6 @@ import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sqltranslator.context.SQLTranslatorContext;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +60,7 @@ import java.util.stream.Collectors;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class RouteSQLRewriteEngine {
-
+    
     private final SQLTranslatorRule translatorRule;
     
     private final ShardingSphereDatabase database;
@@ -157,20 +154,17 @@ public final class RouteSQLRewriteEngine {
                 ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
                 : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
     }
-
+    
     private List<Object> filterParametersIfNeeded(final SQLRewriteContext sqlRewriteContext,
                                                   final List<Object> originalParameters,
                                                   final RouteUnit routeUnit) {
-
         List<ParameterFilterable> filterableTokens = findParameterFilterableTokens(sqlRewriteContext.getSqlTokens());
-
         if (filterableTokens.isEmpty()) {
             return originalParameters;
         }
-
         return applyParameterFiltering(originalParameters, filterableTokens, routeUnit);
     }
-
+    
     private List<ParameterFilterable> findParameterFilterableTokens(final List<SQLToken> sqlTokens) {
         return sqlTokens.stream()
                 .filter(token -> token instanceof ParameterFilterable)
@@ -178,13 +172,11 @@ public final class RouteSQLRewriteEngine {
                 .filter(ParameterFilterable::isParameterFilterable)
                 .collect(Collectors.toList());
     }
-
+    
     private List<Object> applyParameterFiltering(final List<Object> originalParameters,
                                                  final List<ParameterFilterable> filterableTokens,
                                                  final RouteUnit routeUnit) {
-
         Set<Integer> allRemovedIndices = new TreeSet<>(Collections.reverseOrder());
-
         for (ParameterFilterable filterable : filterableTokens) {
             Set<Integer> removedIndices = filterable.getRemovedParameterIndices(routeUnit);
             allRemovedIndices.addAll(removedIndices);
@@ -195,7 +187,6 @@ public final class RouteSQLRewriteEngine {
                 result.remove(index.intValue());
             }
         }
-
         return result;
     }
     

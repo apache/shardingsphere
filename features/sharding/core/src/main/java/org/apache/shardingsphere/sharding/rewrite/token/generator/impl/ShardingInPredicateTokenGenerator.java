@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,17 +67,21 @@ import java.util.stream.Stream;
  * Refactored for enhanced readability, maintainability, and performance with Java 8 compatibility.
  */
 @RequiredArgsConstructor
-public final class ShardingInPredicateTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>,
-        RouteContextAware, IgnoreForSingleRoute, ParametersAware {
-
+public final class ShardingInPredicateTokenGenerator
+        implements
+            CollectionSQLTokenGenerator<SQLStatementContext>,
+            RouteContextAware,
+            IgnoreForSingleRoute,
+            ParametersAware {
+    
     private final ShardingRule shardingRule;
-
+    
     @Setter
     private RouteContext routeContext;
-
+    
     @Setter
     private List<Object> parameters = Collections.emptyList();
-
+    
     /**
      * Check if SQL token generation is needed for the given statement context.
      */
@@ -85,7 +90,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         return sqlStatementContext instanceof SelectStatementContext
                 && hasOptimizableInConditions((SelectStatementContext) sqlStatementContext);
     }
-
+    
     /**
      * Generate SQL tokens for optimizing IN predicates in sharding scenarios.
      */
@@ -97,7 +102,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
-
+    
     /**
      * Check if there are optimizable IN conditions in the SELECT statement.
      *
@@ -107,7 +112,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
     private boolean hasOptimizableInConditions(final SelectStatementContext selectContext) {
         return !extractOptimizableInExpressions(selectContext).isEmpty();
     }
-
+    
     /**
      * Extract all IN expressions that can be optimized for sharding.
      *
@@ -115,24 +120,18 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
      * @return List of optimizable IN expressions
      */
     private List<InExpression> extractOptimizableInExpressions(final SelectStatementContext selectContext) {
-        return extractAllInExpressions(selectContext)
+        Collection<WhereSegment> whereSegments = selectContext.getWhereSegments();
+        if (whereSegments == null || whereSegments.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return whereSegments
+                .stream()
+                .flatMap(segment -> extractInExpressionsRecursively(segment.getExpr()))
                 .filter(this::isOptimizable)
                 .filter(inExpr -> isShardingRelated(inExpr, selectContext))
                 .collect(Collectors.toList());
     }
-
-    /**
-     * Extract all IN expressions from WHERE clauses recursively.
-     *
-     * @param selectContext Select statement context
-     * @return Stream of all IN expressions
-     */
-    private Stream<InExpression> extractAllInExpressions(final SelectStatementContext selectContext) {
-        return selectContext.getWhereSegments()
-                .stream()
-                .flatMap(segment -> extractInExpressionsRecursively(segment.getExpr()));
-    }
-
+    
     /**
      * Recursively extract IN expressions from nested binary operations.
      *
@@ -151,7 +150,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         }
         return Stream.empty();
     }
-
+    
     /**
      * Check if an IN expression is optimizable (has list with multiple items).
      *
@@ -165,7 +164,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         ListExpression listExpr = (ListExpression) inExpression.getRight();
         return listExpr.getItems().size() > 1;
     }
-
+    
     /**
      * Check if an IN expression is related to sharding (involves sharded table and column).
      *
@@ -180,7 +179,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 && shardingRule.isShardingTable(tableName)
                 && getShardingColumns(tableName).contains(columnName);
     }
-
+    
     /**
      * Create a sharding token for a single IN expression.
      *
@@ -191,18 +190,18 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
     private SQLToken createTokenForExpression(final InExpression inExpr, final SelectStatementContext selectContext) {
         String tableName = resolveTableName(inExpr, selectContext);
         String columnName = resolveColumnName(inExpr);
-
+        
         if (tableName == null || columnName == null) {
             return null;
         }
-
+        
         List<ShardingInPredicateValue> distributedValues = extractAndDistributeValues(inExpr, tableName, columnName);
         if (distributedValues.isEmpty()) {
             return null;
         }
         return new ShardingInPredicateToken(inExpr.getStartIndex(), inExpr.getStopIndex(), columnName, distributedValues);
     }
-
+    
     /**
      * Extract values from IN expression and distribute them across shards.
      *
@@ -216,7 +215,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         if (!(inExpr.getRight() instanceof ListExpression)) {
             return Collections.emptyList();
         }
-
+        
         ListExpression listExpr = (ListExpression) inExpr.getRight();
         return listExpr.getItems()
                 .stream()
@@ -224,7 +223,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
-
+    
     /**
      * Process a single expression item and determine its sharding distribution.
      *
@@ -241,7 +240,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         }
         return createShardingInPredicateValue(valueInfo, tableName, columnName);
     }
-
+    
     /**
      * Extract value information from literal or parameter marker expressions.
      *
@@ -263,7 +262,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         }
         return null;
     }
-
+    
     /**
      * Extract parameter value by index with bounds checking.
      *
@@ -277,7 +276,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         Object paramValue = parameters.get(index);
         return paramValue instanceof Comparable ? (Comparable<?>) paramValue : null;
     }
-
+    
     /**
      * Create sharding predicate value using appropriate strategy.
      *
@@ -292,16 +291,16 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         if (strategy == null) {
             return createDefaultValue(valueInfo);
         }
-
+        
         if (strategy instanceof StandardShardingStrategyConfiguration) {
             return processStandardStrategy(valueInfo, tableName, columnName, (StandardShardingStrategyConfiguration) strategy);
         } else if (strategy instanceof ComplexShardingStrategyConfiguration) {
             return processComplexStrategy(valueInfo, tableName, columnName, (ComplexShardingStrategyConfiguration) strategy);
         }
-
+        
         return createDefaultValue(valueInfo);
     }
-
+    
     /**
      * Process value using standard sharding strategy with single column.
      *
@@ -316,20 +315,20 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         if (!strategy.getShardingColumn().equals(columnName)) {
             return createDefaultValue(valueInfo);
         }
-
+        
         StandardShardingAlgorithm<Comparable<?>> algorithm = getStandardAlgorithm(strategy);
         if (algorithm == null) {
             return createDefaultValue(valueInfo);
         }
-
+        
         String targetTable = calculateTargetTable(tableName, columnName, valueInfo.value, algorithm);
         if (targetTable == null) {
             return ShardingInPredicateValue.createOrphan(valueInfo.parameterIndex, valueInfo.value, valueInfo.isParameter);
         }
-
+        
         return createValueWithRoutes(valueInfo, Collections.singleton(targetTable), tableName);
     }
-
+    
     /**
      * Process value using complex sharding strategy with multiple columns.
      *
@@ -345,20 +344,20 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         if (!shardingColumns.contains(columnName)) {
             return createDefaultValue(valueInfo);
         }
-
+        
         ComplexKeysShardingAlgorithm<Comparable<?>> algorithm = getComplexAlgorithm(strategy);
         if (algorithm == null) {
             return createDefaultValue(valueInfo);
         }
-
+        
         Collection<String> targetTables = calculateTargetTablesForComplex(tableName, columnName, valueInfo.value, algorithm);
         if (targetTables.isEmpty()) {
             return ShardingInPredicateValue.createOrphan(valueInfo.parameterIndex, valueInfo.value, valueInfo.isParameter);
         }
-
+        
         return createValueWithRoutes(valueInfo, targetTables, tableName);
     }
-
+    
     /**
      * Create predicate value with default distribution (all routes).
      *
@@ -369,7 +368,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         return new ShardingInPredicateValue(valueInfo.parameterIndex, valueInfo.value, valueInfo.isParameter,
                 new HashSet<>(routeContext.getRouteUnits()));
     }
-
+    
     /**
      * Create predicate value with specific target routes.
      *
@@ -386,10 +385,10 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                     return actualTable != null && targetTables.contains(actualTable);
                 })
                 .collect(Collectors.toSet());
-
+        
         return new ShardingInPredicateValue(valueInfo.parameterIndex, valueInfo.value, valueInfo.isParameter, targetRoutes);
     }
-
+    
     /**
      * Resolve table name from IN expression or context.
      *
@@ -401,15 +400,15 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         if (!(inExpression.getLeft() instanceof ColumnSegment)) {
             return null;
         }
-
+        
         ColumnSegment column = (ColumnSegment) inExpression.getLeft();
         if (column.getOwner().isPresent()) {
             return column.getOwner().get().getIdentifier().getValue();
         }
-
+        
         return findFirstShardingTable(selectContext);
     }
-
+    
     /**
      * Find the first sharding table in the context.
      *
@@ -424,7 +423,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .findFirst()
                 .orElse(null);
     }
-
+    
     /**
      * Resolve column name from IN expression.
      *
@@ -437,7 +436,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         }
         return ((ColumnSegment) inExpression.getLeft()).getIdentifier().getValue();
     }
-
+    
     /**
      * Get sharding strategy configuration for the given table.
      *
@@ -449,7 +448,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .map(shardingRule::getTableShardingStrategyConfiguration)
                 .orElse(null);
     }
-
+    
     /**
      * Get standard sharding algorithm from strategy configuration.
      *
@@ -461,7 +460,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         Object algorithm = shardingRule.getShardingAlgorithms().get(strategy.getShardingAlgorithmName());
         return algorithm instanceof StandardShardingAlgorithm ? (StandardShardingAlgorithm<Comparable<?>>) algorithm : null;
     }
-
+    
     /**
      * Get complex sharding algorithm from strategy configuration.
      *
@@ -473,7 +472,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         Object algorithm = shardingRule.getShardingAlgorithms().get(strategy.getShardingAlgorithmName());
         return algorithm instanceof ComplexKeysShardingAlgorithm ? (ComplexKeysShardingAlgorithm<Comparable<?>>) algorithm : null;
     }
-
+    
     /**
      * Calculate target table using standard sharding algorithm.
      *
@@ -488,7 +487,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         return algorithm.doSharding(getAvailableTargets(tableName),
                 new PreciseShardingValue<>(tableName, columnName, new DataNodeInfo("", 1, (char) 0), value));
     }
-
+    
     /**
      * Calculate target tables using complex sharding algorithm.
      *
@@ -504,7 +503,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         return algorithm.doSharding(getAvailableTargets(tableName),
                 new ComplexKeysShardingValue<>(tableName, shardingValues, Collections.emptyMap()));
     }
-
+    
     /**
      * Get all available target tables for the given logical table.
      *
@@ -517,7 +516,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .map(nodes -> nodes.stream().map(DataNode::getTableName).collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
     }
-
+    
     /**
      * Get actual table name from route unit for the given logical table.
      *
@@ -533,7 +532,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .findFirst()
                 .orElse(null);
     }
-
+    
     /**
      * Parse comma-separated column names into a set.
      *
@@ -545,7 +544,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .map(String::trim)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
+    
     /**
      * Get all sharding columns for the given table.
      *
@@ -558,7 +557,7 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
                 .map(this::extractShardingColumns)
                 .orElse(Collections.emptySet());
     }
-
+    
     /**
      * Extract sharding columns from strategy configuration.
      *
@@ -574,18 +573,18 @@ public final class ShardingInPredicateTokenGenerator implements CollectionSQLTok
         }
         return Collections.emptySet();
     }
-
+    
     /**
      * Value information holder for cleaner parameter passing.
      */
     private static class ValueInfo {
-
+        
         private final int parameterIndex;
-
+        
         private final Comparable<?> value;
-
+        
         private final boolean isParameter;
-
+        
         ValueInfo(final int parameterIndex, final Comparable<?> value, final boolean isParameter) {
             this.parameterIndex = parameterIndex;
             this.value = value;

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInPredicateToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -50,9 +49,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -112,15 +109,6 @@ class ShardingInPredicateTokenGeneratorTest {
         Mockito.when(shardingRule.findShardingTable("t_order")).thenReturn(Optional.of(shardingTable));
         Mockito.when(shardingRule.getTableShardingStrategyConfiguration(shardingTable)).thenReturn(strategyConfiguration);
         Mockito.when(strategyConfiguration.getShardingColumn()).thenReturn("order_id");
-        Mockito.when(strategyConfiguration.getShardingAlgorithmName()).thenReturn("test_algorithm");
-        
-        Map<String, ShardingAlgorithm> algorithms = new HashMap<>();
-        algorithms.put("test_algorithm", standardAlgorithm);
-        Mockito.when(shardingRule.getShardingAlgorithms()).thenReturn(algorithms);
-        
-        Mockito.when(shardingTable.getActualDataNodes()).thenReturn(createDataNodes());
-        
-        Mockito.when(routeContext.getRouteUnits()).thenReturn(createRouteUnits());
         
         Collection<SQLToken> tokens = generator.generateSQLTokens(selectStatementContext);
         

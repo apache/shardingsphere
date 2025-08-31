@@ -35,9 +35,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class ShardingInPredicateTokenTest {
     
     private ShardingInPredicateToken shardingInPredicateToken;
-
+    
     private RouteUnit routeUnit1;
-
+    
     private RouteUnit routeUnit2;
     
     @BeforeEach
@@ -51,8 +51,7 @@ class ShardingInPredicateTokenTest {
                 createValueForRoute(-1, 1L, false, routeUnit2),
                 createValueForRoute(-1, 2L, false, routeUnit1),
                 createValueForRoute(-1, 3L, false, routeUnit2),
-                createValueForRoute(-1, 4L, false, routeUnit1)
-        );
+                createValueForRoute(-1, 4L, false, routeUnit1));
         
         // Create token with new constructor
         shardingInPredicateToken = new ShardingInPredicateToken(10, 30, "order_id", values);
@@ -86,7 +85,7 @@ class ShardingInPredicateTokenTest {
         ShardingInPredicateToken emptyToken = new ShardingInPredicateToken(10, 30, "order_id", emptyValues);
         
         String result = emptyToken.toString(routeUnit1);
-        assertThat(result, is("order_id IN (NULL) AND 1 = 0"));
+        assertThat(result, is(""));
     }
     
     /**
@@ -110,8 +109,7 @@ class ShardingInPredicateTokenTest {
     void assertToStringWithParameterMarkers() {
         List<ShardingInPredicateValue> parameterValues = Arrays.asList(
                 createValueForRoute(0, 100L, true, routeUnit1),
-                createValueForRoute(-1, 200L, false, routeUnit1)
-        );
+                createValueForRoute(-1, 200L, false, routeUnit1));
         
         ShardingInPredicateToken parameterToken = new ShardingInPredicateToken(10, 30, "order_id", parameterValues);
         String result = parameterToken.toString(routeUnit1);
@@ -145,8 +143,7 @@ class ShardingInPredicateTokenTest {
                 createValueForRoute(0, 100L, true, routeUnit1),
                 createValueForRoute(1, 200L, true, routeUnit2),
                 ShardingInPredicateValue.createOrphan(2, 300L, true),
-                createValueForRoute(3, 400L, true, routeUnit1)
-        );
+                createValueForRoute(3, 400L, true, routeUnit1));
         
         ShardingInPredicateToken mixedToken = new ShardingInPredicateToken(10, 30, "order_id", mixedValues);
         Set<Integer> removedIndices = mixedToken.getRemovedParameterIndices(routeUnit1);
@@ -196,7 +193,7 @@ class ShardingInPredicateTokenTest {
         
         assertThat(result, is("order_id = NULL"));
     }
-
+    
     /**
      * Create a route unit with specified table name.
      *

@@ -109,4 +109,3 @@ public final class ShardingInPredicateValue {
         return targetRoutes.contains(routeUnit);
     }
 }
-

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * Simplified data structure with route information embedded in individual values.
  */
 public final class ShardingInPredicateToken extends SQLToken implements Substitutable, RouteUnitAware, ParameterFilterable {
-
+    
     @Getter
     private final int stopIndex;
     
@@ -122,9 +122,6 @@ public final class ShardingInPredicateToken extends SQLToken implements Substitu
      * @return the optimized IN clause as a string
      */
     private String buildInClause(final String column, final List<ShardingInPredicateValue> valueList) {
-        if (valueList.isEmpty()) {
-            return column + " IN (NULL) AND 1 = 0";
-        }
         if (valueList.size() == 1) {
             ShardingInPredicateValue single = valueList.get(0);
             return String.format("%s = %s", column,
