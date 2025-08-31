@@ -71,13 +71,13 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 ```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-parser-sql-engine</artifactId>
+    <artifactId>shardingsphere-parser-sql-engine-core</artifactId>
     <version>${project.version}</version>
 </dependency>
 <!-- 根据需要引入指定方言的解析模块（以 MySQL 为例），可以添加所有支持的方言，也可以只添加使用到的 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
-    <artifactId>shardingsphere-parser-sql-mysql</artifactId>
+    <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
     <version>${project.version}</version>
 </dependency>
 ```

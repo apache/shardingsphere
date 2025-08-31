@@ -19,8 +19,8 @@ package org.apache.shardingsphere.distsql.handler.executor.rdl.resource;
 
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;

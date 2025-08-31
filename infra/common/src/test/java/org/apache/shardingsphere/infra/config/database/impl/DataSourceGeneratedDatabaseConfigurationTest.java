@@ -31,9 +31,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class DataSourceGeneratedDatabaseConfigurationTest {
@@ -42,7 +42,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("foo_db").getDataSource();
-        assertThat(dataSource, instanceOf(MockedDataSource.class));
+        assertThat(dataSource, isA(MockedDataSource.class));
     }
     
     @Test
@@ -58,7 +58,7 @@ class DataSourceGeneratedDatabaseConfigurationTest {
     void assertGetStorageUnits() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSource dataSource = databaseConfig.getStorageUnits().get("foo_db").getDataSource();
-        assertThat(dataSource, instanceOf(MockedDataSource.class));
+        assertThat(dataSource, isA(MockedDataSource.class));
     }
     
     @Test

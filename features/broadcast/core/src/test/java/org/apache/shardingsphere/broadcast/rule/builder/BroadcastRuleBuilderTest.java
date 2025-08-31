@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class BroadcastRuleBuilderTest {
@@ -42,6 +42,6 @@ class BroadcastRuleBuilderTest {
     void assertBuild() {
         BroadcastRuleConfiguration ruleConfig = mock(BroadcastRuleConfiguration.class);
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", databaseType, mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)), instanceOf(BroadcastRule.class));
+        assertThat(builder.build(ruleConfig, "", databaseType, mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)), isA(BroadcastRule.class));
     }
 }

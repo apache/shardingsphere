@@ -32,9 +32,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
-import org.apache.shardingsphere.test.e2e.env.container.config.ProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment.Type;
@@ -65,7 +64,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
         } else {
             storageContainer = containers.registerContainer(new NativeStorageContainer(databaseType, scenario));
         }
-        AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario, databaseType, AdapterContainerUtils.getAdapterContainerImage());
+        AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "cluster", databaseType);
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);

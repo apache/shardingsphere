@@ -198,17 +198,17 @@ public final class ConsistencyCheckJobAPI {
         long recordsCount = jobItemProgress.getRecordsCount();
         long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
-        result.setCheckBeginTime(DateTimeFormatterFactory.getLongMillisFormatter().format(checkBeginTime));
+        result.setCheckBeginTime(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().format(checkBeginTime));
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
             result.setInventoryFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setDurationSeconds(duration.getSeconds());
-            result.setCheckEndTime(DateTimeFormatterFactory.getLongMillisFormatter().format(checkEndTime));
+            result.setCheckEndTime(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().format(checkEndTime));
             result.setInventoryRemainingSeconds(0L);
         } else if (0L != recordsCount && 0L != checkedRecordsCount) {
             result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100L / recordsCount));
-            LocalDateTime stopTime = jobConfigPOJO.isDisabled() ? LocalDateTime.from(DateTimeFormatterFactory.getStandardFormatter().parse(jobConfigPOJO.getProps().getProperty("stop_time")))
+            LocalDateTime stopTime = jobConfigPOJO.isDisabled() ? LocalDateTime.from(DateTimeFormatterFactory.getDatetimeFormatter().parse(jobConfigPOJO.getProps().getProperty("stop_time")))
                     : null;
             long durationMillis = (null != stopTime ? Timestamp.valueOf(stopTime).getTime() : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
             result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));

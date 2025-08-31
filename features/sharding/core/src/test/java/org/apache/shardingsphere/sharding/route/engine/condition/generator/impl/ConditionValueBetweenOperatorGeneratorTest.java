@@ -44,9 +44,9 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -148,7 +148,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         BetweenExpression predicate = new BetweenExpression(0, 0, left, between, and, false);
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Arrays.asList(1, 2), timestampServiceRule);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(RangeShardingConditionValue.class));
+        assertThat(actual.get(), isA(RangeShardingConditionValue.class));
         RangeShardingConditionValue<Integer> conditionValue = (RangeShardingConditionValue<Integer>) actual.get();
         assertThat(conditionValue.getTableName(), is("tbl"));
         assertThat(conditionValue.getColumnName(), is("id"));

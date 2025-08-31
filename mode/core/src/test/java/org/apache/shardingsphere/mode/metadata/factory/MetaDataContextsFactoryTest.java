@@ -48,9 +48,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
@@ -95,7 +95,7 @@ class MetaDataContextsFactoryTest {
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
         MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).create(createContextManagerBuilderParameter());
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
-        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), isA(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
         assertThat(actual.getMetaData().getAllDatabases().size(), is(1));
     }
@@ -112,7 +112,7 @@ class MetaDataContextsFactoryTest {
         when(repository.getChildrenKeys("/statistics/databases")).thenReturn(Collections.emptyList());
         MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).create(createContextManagerBuilderParameter());
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(1));
-        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), instanceOf(MockedRule.class));
+        assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().iterator().next(), isA(MockedRule.class));
         assertTrue(actual.getMetaData().containsDatabase("foo_db"));
         assertThat(actual.getMetaData().getAllDatabases().size(), is(1));
     }

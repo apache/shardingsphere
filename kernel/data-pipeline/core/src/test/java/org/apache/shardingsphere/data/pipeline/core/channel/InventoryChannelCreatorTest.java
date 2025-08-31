@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class InventoryChannelCreatorTest {
@@ -34,6 +34,6 @@ class InventoryChannelCreatorTest {
     @Test
     void assertCreate() {
         assertThat(InventoryChannelCreator.create(new AlgorithmConfiguration("MEMORY", new Properties()), 1, new AtomicReference<>(mock(IngestPosition.class))),
-                instanceOf(MemoryPipelineChannel.class));
+                isA(MemoryPipelineChannel.class));
     }
 }

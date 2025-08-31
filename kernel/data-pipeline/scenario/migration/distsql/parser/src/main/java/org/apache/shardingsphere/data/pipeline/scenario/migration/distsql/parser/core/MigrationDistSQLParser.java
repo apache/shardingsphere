@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 
 /**
  * SQL parser for migration.

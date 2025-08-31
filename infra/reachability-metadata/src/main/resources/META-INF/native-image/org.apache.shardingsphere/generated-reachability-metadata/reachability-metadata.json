@@ -9987,37 +9987,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement.ClickHouseStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10071,37 +10071,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.doris.visitor.statement.DorisStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10113,7 +10113,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.parser.FirebirdLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.parser.FirebirdLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10127,7 +10127,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.parser.FirebirdParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.parser.FirebirdParser",
       "methods": [
         {
           "name": "<init>",
@@ -10141,37 +10141,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.FirebirdStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10183,7 +10183,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type.FirebirdDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.type.FirebirdDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10197,7 +10197,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.firebird.visitor.statement.type.FirebirdDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.type.FirebirdDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10211,7 +10211,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.parser.HiveLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.parser.HiveLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10225,7 +10225,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.parser.HiveParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.parser.HiveParser",
       "methods": [
         {
           "name": "<init>",
@@ -10239,37 +10239,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.HiveStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.HiveStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10281,7 +10281,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.hive.visitor.statement.type.HiveDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.type.HiveDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10295,7 +10295,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10309,7 +10309,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10323,7 +10323,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLParser",
       "methods": [
         {
           "name": "<init>",
@@ -10337,7 +10337,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.parser.MySQLParser",
       "methods": [
         {
           "name": "<init>",
@@ -10351,37 +10351,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10393,7 +10393,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDALStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDALStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10407,7 +10407,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10421,7 +10421,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10435,7 +10435,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10449,7 +10449,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10463,7 +10463,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTCLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type.MySQLTCLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10477,7 +10477,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.parser.OpenGaussLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10491,7 +10491,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.parser.OpenGaussParser",
       "methods": [
         {
           "name": "<init>",
@@ -10505,37 +10505,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.OpenGaussStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.OpenGaussStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.OpenGaussStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10547,7 +10547,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.type.OpenGaussDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10561,7 +10561,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.opengauss.visitor.statement.type.OpenGaussDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10575,37 +10575,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10617,7 +10617,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10631,7 +10631,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10645,7 +10645,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLParser",
       "methods": [
         {
           "name": "<init>",
@@ -10659,7 +10659,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLParser",
       "methods": [
         {
           "name": "<init>",
@@ -10673,37 +10673,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.PostgreSQLStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10715,7 +10715,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10729,7 +10729,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10743,7 +10743,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10757,7 +10757,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.parser.PrestoLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.parser.PrestoLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10771,7 +10771,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.parser.PrestoParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.parser.PrestoParser",
       "methods": [
         {
           "name": "<init>",
@@ -10785,37 +10785,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.PrestoStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.PrestoStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10827,7 +10827,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.presto.visitor.statement.type.PrestoDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.presto.visitor.statement.type.PrestoDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10841,37 +10841,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.SQL92StatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.SQL92StatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.SQL92StatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.SQL92StatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.SQL92StatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sql92.visitor.statement.SQL92StatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.sql92.visitor.statement.SQL92StatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10883,7 +10883,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.parser.SQLServerLexer",
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.parser.SQLServerLexer",
       "methods": [
         {
           "name": "<init>",
@@ -10897,7 +10897,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.parser.SQLServerParser",
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.parser.SQLServerParser",
       "methods": [
         {
           "name": "<init>",
@@ -10911,37 +10911,37 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.cache.SQLStatementCacheLoader"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.backend.handler.ProxySQLComQueryParser"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitorFacade"
     },
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitorFacade",
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitorFacade",
       "methods": [
         {
           "name": "<init>",
@@ -10953,7 +10953,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDDLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerDDLStatementVisitor",
       "methods": [
         {
           "name": "<init>",
@@ -10967,7 +10967,7 @@
       "condition": {
         "typeReached": "org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement"
       },
-      "type": "org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor",
+      "type": "org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor",
       "methods": [
         {
           "name": "<init>",

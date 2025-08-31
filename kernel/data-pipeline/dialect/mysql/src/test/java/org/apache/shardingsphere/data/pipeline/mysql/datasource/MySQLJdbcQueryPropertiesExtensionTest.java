@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLJdbcQueryPropertiesExtensionTest {
@@ -48,7 +48,7 @@ class MySQLJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
-        assertThat(actual, instanceOf(MySQLJdbcQueryPropertiesExtension.class));
+        assertThat(actual, isA(MySQLJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), is(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
     

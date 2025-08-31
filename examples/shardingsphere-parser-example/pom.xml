@@ -31,31 +31,31 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-engine</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-mysql</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-mysql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-oracle</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-oracle</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-sql92</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-sql92</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-postgresql</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-sqlserver</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine-opengauss</artifactId>
         </dependency>
     </dependencies>
 

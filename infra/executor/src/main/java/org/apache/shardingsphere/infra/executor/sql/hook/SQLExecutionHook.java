@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook;
 
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 
 import java.util.List;

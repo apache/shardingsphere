@@ -20,8 +20,8 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.b
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -29,127 +29,127 @@ class MySQLBinaryProtocolValueFactoryTest {
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeString() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.STRING), instanceOf(MySQLByteLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.STRING), isA(MySQLByteLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeVarchar() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.VARCHAR), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.VARCHAR), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeVarString() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.VAR_STRING), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.VAR_STRING), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeEnum() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.ENUM), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.ENUM), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeSet() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.SET), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.SET), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeLongBlob() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.LONG_BLOB), instanceOf(MySQLByteLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.LONG_BLOB), isA(MySQLByteLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeMediumBlob() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.MEDIUM_BLOB), instanceOf(MySQLByteLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.MEDIUM_BLOB), isA(MySQLByteLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeBlob() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.BLOB), instanceOf(MySQLByteLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.BLOB), isA(MySQLByteLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeTinyBlob() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TINY_BLOB), instanceOf(MySQLByteLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TINY_BLOB), isA(MySQLByteLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeGeometry() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.GEOMETRY), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.GEOMETRY), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeBit() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.BIT), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.BIT), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeDecimal() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DECIMAL), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DECIMAL), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeNewDecimal() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.NEWDECIMAL), instanceOf(MySQLStringLenencBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.NEWDECIMAL), isA(MySQLStringLenencBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeLongLong() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.LONGLONG), instanceOf(MySQLInt8BinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.LONGLONG), isA(MySQLInt8BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeLong() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.LONG), instanceOf(MySQLInt4BinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.LONG), isA(MySQLInt4BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeInt24() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.INT24), instanceOf(MySQLInt4BinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.INT24), isA(MySQLInt4BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeShort() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.SHORT), instanceOf(MySQLInt2BinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.SHORT), isA(MySQLInt2BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeYear() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.YEAR), instanceOf(MySQLInt2BinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.YEAR), isA(MySQLInt2BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeTiny() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TINY), instanceOf(MySQLInt1BinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TINY), isA(MySQLInt1BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeDouble() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DOUBLE), instanceOf(MySQLDoubleBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DOUBLE), isA(MySQLDoubleBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeFloat() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.FLOAT), instanceOf(MySQLFloatBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.FLOAT), isA(MySQLFloatBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeDate() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DATE), instanceOf(MySQLDateBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DATE), isA(MySQLDateBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeDatetime() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DATETIME), instanceOf(MySQLDateBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.DATETIME), isA(MySQLDateBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeTimestamp() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TIMESTAMP), instanceOf(MySQLDateBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TIMESTAMP), isA(MySQLDateBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueWithMySQLTypeTime() {
-        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TIME), instanceOf(MySQLTimeBinaryProtocolValue.class));
+        assertThat(MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(MySQLBinaryColumnType.TIME), isA(MySQLTimeBinaryProtocolValue.class));
     }
     
     @Test

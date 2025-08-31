@@ -107,7 +107,7 @@ Then for the intercepted fragment of the following YAML file,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::org.h2.Driver}
-  jdbcUrl: $${FIXTURE_JDBC_URL::jdbc:h2:mem:foo_ds_do_not_use}
+  standardJdbcUrl: $${FIXTURE_JDBC_URL::jdbc:h2:mem:foo_ds_do_not_use}
   username: $${FIXTURE_USERNAME::}
   password: $${FIXTURE_PASSWORD::}
 ```
@@ -118,7 +118,7 @@ This YAML snippet will be parsed as,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: org.h2.Driver
-  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+  standardJdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
   username: sa
   password:
 ```
@@ -144,7 +144,7 @@ Then for the intercepted fragment of the following YAML file,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${fixture.config.driver.driver-class-name::org.h2.Driver}
-  jdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
+  standardJdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
   username: $${fixture.config.driver.username::}
   password: $${fixture.config.driver.password::}
 ```
@@ -155,7 +155,7 @@ This YAML snippet will be parsed as,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: org.h2.Driver
-  jdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+  standardJdbcUrl: jdbc:h2:mem:foo_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
   username: sa
   password:
 ```
@@ -213,7 +213,7 @@ Then for the intercepted fragment of the following YAML file,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
-  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
+  standardJdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
   username: $${FIXTURE_USERNAME::}
   password: $${FIXTURE_PASSWORD::}
 ```
@@ -224,7 +224,7 @@ This YAML snippet will be parsed as,
 ds_1:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
   driverClassName: com.mysql.cj.jdbc.Driver
-  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
+  standardJdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
   username: sa
   password:
 ```

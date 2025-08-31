@@ -25,8 +25,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class DateTimeFormatterFactoryTest {
     
     @Test
-    void assertGetStandardFormatter() {
-        assertThat(DateTimeFormatterFactory.getStandardFormatter().parse("1970-01-01 00:00:00").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
+    void assertGetDatetimeFormatter() {
+        assertThat(DateTimeFormatterFactory.getDatetimeFormatter().parse("1970-01-01 00:00:00").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
     }
     
     @Test
@@ -40,12 +40,27 @@ class DateTimeFormatterFactoryTest {
     }
     
     @Test
-    void assertGetShortMillisFormatter() {
-        assertThat(DateTimeFormatterFactory.getShortMillisFormatter().parse("1970-01-01 00:00:00.0").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
+    void assertGetShortMillisDatetimeFormatter() {
+        assertThat(DateTimeFormatterFactory.getShortMillisDatetimeFormatter().parse("1970-01-01 00:00:00.0").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
     }
     
     @Test
-    void assertGetLongMillisFormatter() {
-        assertThat(DateTimeFormatterFactory.getLongMillisFormatter().parse("1970-01-01 00:00:00.000").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
+    void assertGetDoubleMillisDatetimeFormatter() {
+        assertThat(DateTimeFormatterFactory.getDoubleMillisDatetimeFormatter().parse("1970-01-01 00:00:00.01").toString(), is("{},ISO resolved to 1970-01-01T00:00:00.010"));
+    }
+    
+    @Test
+    void assertGetLongMillisDatetimeFormatter() {
+        assertThat(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().parse("1970-01-01 00:00:00.000").toString(), is("{},ISO resolved to 1970-01-01T00:00"));
+    }
+    
+    @Test
+    void assertGetFullMillisDatetimeFormatter() {
+        assertThat(DateTimeFormatterFactory.getFullMillisDatetimeFormatter().parse("1970-01-01 00:00:00.000001").toString(), is("{},ISO resolved to 1970-01-01T00:00:00.000001"));
+    }
+    
+    @Test
+    void assertGetFullTimeFormatter() {
+        assertThat(DateTimeFormatterFactory.getFullTimeFormatter().parse("00:00:00.000001").toString(), is("{},ISO resolved to 00:00:00.000001"));
     }
 }

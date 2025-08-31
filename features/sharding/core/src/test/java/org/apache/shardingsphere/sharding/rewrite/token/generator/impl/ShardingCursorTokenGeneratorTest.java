@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -76,6 +76,6 @@ class ShardingCursorTokenGeneratorTest {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         SQLToken actual = generator.generateSQLToken(sqlStatementContext);
-        assertThat(actual, instanceOf(CursorToken.class));
+        assertThat(actual, isA(CursorToken.class));
     }
 }

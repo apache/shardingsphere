@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenGaussJdbcQueryPropertiesExtensionTest {
@@ -41,7 +41,7 @@ class OpenGaussJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertExtension(final JdbcQueryPropertiesExtension actual) {
-        assertThat(actual, instanceOf(OpenGaussJdbcQueryPropertiesExtension.class));
+        assertThat(actual, isA(OpenGaussJdbcQueryPropertiesExtension.class));
         assertThat(actual.getType(), is(TypedSPILoader.getService(DatabaseType.class, "openGauss")));
         Properties props = new Properties();
         actual.extendQueryProperties(props);

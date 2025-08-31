@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineProxyTypeEnum;
-import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.config.proxy.PipelineProxyClusterContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.data.pipeline.framework.container.config.proxy.PipelineProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
@@ -71,7 +71,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
             storageContainers.add(storageContainer);
         }
-        AdaptorContainerConfiguration containerConfig = PipelineProxyClusterContainerConfigurationFactory.newInstance(databaseType);
+        AdaptorContainerConfiguration containerConfig = PipelineProxyContainerConfigurationFactory.newInstance(databaseType);
         DatabaseType proxyDatabaseType = "Oracle".equals(databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : databaseType;
         if (PipelineE2EEnvironment.getInstance().getItProxyType() == PipelineProxyTypeEnum.INTERNAL) {
             ShardingSphereProxyEmbeddedContainer proxyContainer = new ShardingSphereProxyEmbeddedContainer(proxyDatabaseType, containerConfig);

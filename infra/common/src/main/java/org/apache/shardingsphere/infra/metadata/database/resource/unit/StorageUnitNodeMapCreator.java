@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.database.connector.core.connector.ConnectionPropertiesParser;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;

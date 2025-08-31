@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -74,7 +74,7 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
     private void assertPipelineDataSourceConfiguration(final ShardingSpherePipelineDataSourceConfiguration actual) {
         assertThat(actual.getDatabaseType().getType(), is("FIXTURE"));
         assertThat(actual.getType(), is(ShardingSpherePipelineDataSourceConfiguration.TYPE));
-        assertThat(actual.getDataSourceConfiguration(), instanceOf(YamlRootConfiguration.class));
+        assertThat(actual.getDataSourceConfiguration(), isA(YamlRootConfiguration.class));
         Map<String, Map<String, Object>> dataSources = actual.getRootConfig().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds_0"));

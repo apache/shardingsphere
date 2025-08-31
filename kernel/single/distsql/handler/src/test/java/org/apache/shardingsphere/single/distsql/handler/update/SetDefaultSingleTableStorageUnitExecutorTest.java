@@ -87,6 +87,7 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }

@@ -51,9 +51,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -78,7 +78,7 @@ class TCLBackendHandlerFactoryTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new CommitStatement(databaseType)), null, connectionSession);
-        assertThat(proxyBackendHandler, instanceOf(TCLBackendHandler.class));
+        assertThat(proxyBackendHandler, isA(TCLBackendHandler.class));
         TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.COMMIT));
         assertFieldOfInstance(getBackendTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
@@ -96,7 +96,7 @@ class TCLBackendHandlerFactoryTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ProxyBackendHandler proxyBackendHandler = TCLBackendHandlerFactory.newInstance(new CommonSQLStatementContext(new RollbackStatement(databaseType)), null, connectionSession);
-        assertThat(proxyBackendHandler, instanceOf(TCLBackendHandler.class));
+        assertThat(proxyBackendHandler, isA(TCLBackendHandler.class));
         TCLBackendHandler backendHandler = (TCLBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(backendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
         assertFieldOfInstance(getBackendTransactionManager(backendHandler), "connection", is(databaseConnectionManager));
@@ -121,7 +121,7 @@ class TCLBackendHandlerFactoryTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         ConnectionContext connectionContext = mockConnectionContext();
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        assertThat(TCLBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession), instanceOf(DatabaseConnector.class));
+        assertThat(TCLBackendHandlerFactory.newInstance(sqlStatementContext, null, connectionSession), isA(DatabaseConnector.class));
     }
     
     private ConnectionContext mockConnectionContext() {

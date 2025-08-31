@@ -51,9 +51,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -347,42 +347,42 @@ class ShardingSphereResultSetTest {
     void assertGetAsciiStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Ascii")).thenReturn(inputStream);
-        assertThat(shardingSphereResultSet.getAsciiStream(1), instanceOf(InputStream.class));
+        assertThat(shardingSphereResultSet.getAsciiStream(1), isA(InputStream.class));
     }
     
     @Test
     void assertGetAsciiStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Ascii")).thenReturn(inputStream);
-        assertThat(shardingSphereResultSet.getAsciiStream("label"), instanceOf(InputStream.class));
+        assertThat(shardingSphereResultSet.getAsciiStream("label"), isA(InputStream.class));
     }
     
     @Test
     void assertGetUnicodeStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Unicode")).thenReturn(inputStream);
-        assertThat(shardingSphereResultSet.getUnicodeStream(1), instanceOf(InputStream.class));
+        assertThat(shardingSphereResultSet.getUnicodeStream(1), isA(InputStream.class));
     }
     
     @Test
     void assertGetUnicodeStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Unicode")).thenReturn(inputStream);
-        assertThat(shardingSphereResultSet.getUnicodeStream("label"), instanceOf(InputStream.class));
+        assertThat(shardingSphereResultSet.getUnicodeStream("label"), isA(InputStream.class));
     }
     
     @Test
     void assertGetBinaryStreamWithColumnIndex() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Binary")).thenReturn(inputStream);
-        assertThat(shardingSphereResultSet.getBinaryStream(1), instanceOf(InputStream.class));
+        assertThat(shardingSphereResultSet.getBinaryStream(1), isA(InputStream.class));
     }
     
     @Test
     void assertGetBinaryStreamWithColumnLabel() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergeResultSet.getInputStream(1, "Binary")).thenReturn(inputStream);
-        assertThat(shardingSphereResultSet.getBinaryStream("label"), instanceOf(InputStream.class));
+        assertThat(shardingSphereResultSet.getBinaryStream("label"), isA(InputStream.class));
     }
     
     @Test

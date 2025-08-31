@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -33,6 +33,6 @@ class CircuitBreakDriverStateTest {
     @Test
     void assertGetConnection() {
         Connection actual = new CircuitBreakDriverState().getConnection("foo_db", mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThat(actual, instanceOf(CircuitBreakerConnection.class));
+        assertThat(actual, isA(CircuitBreakerConnection.class));
     }
 }

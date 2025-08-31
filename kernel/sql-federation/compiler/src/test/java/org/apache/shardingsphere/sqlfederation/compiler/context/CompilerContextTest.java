@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,19 +38,19 @@ class CompilerContextTest {
     @Test
     void assertGetSqlParserRule() {
         CompilerContext actual = CompilerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getSqlParserRule(), instanceOf(SQLParserRule.class));
+        assertThat(actual.getSqlParserRule(), isA(SQLParserRule.class));
     }
     
     @Test
     void assertGetCalciteSchema() {
         CompilerContext actual = CompilerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getCalciteSchema(), instanceOf(CalciteSchema.class));
+        assertThat(actual.getCalciteSchema(), isA(CalciteSchema.class));
     }
     
     @Test
     void assertGetConnectionConfig() {
         CompilerContext actual = CompilerContextFactory.create(Collections.singleton(mockDatabase()));
-        assertThat(actual.getConnectionConfig(), instanceOf(CalciteConnectionConfig.class));
+        assertThat(actual.getConnectionConfig(), isA(CalciteConnectionConfig.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {

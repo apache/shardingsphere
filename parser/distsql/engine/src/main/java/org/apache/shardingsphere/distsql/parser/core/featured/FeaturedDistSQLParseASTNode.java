@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.core.featured;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 
 /**
  * Featured DistSQL parse AST node.

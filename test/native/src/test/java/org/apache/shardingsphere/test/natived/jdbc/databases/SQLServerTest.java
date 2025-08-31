@@ -43,7 +43,7 @@ class SQLServerTest {
     }
     
     /**
-     * TODO `shardingsphere-parser-sql-sqlserver` module does not support `DROP TABLE IF EXISTS t_order` statements yet.
+     * TODO `shardingsphere-parser-sql-engine-sqlserver` module does not support `DROP TABLE IF EXISTS t_order` statements yet.
      *
      * @throws SQLException SQL exception
      */

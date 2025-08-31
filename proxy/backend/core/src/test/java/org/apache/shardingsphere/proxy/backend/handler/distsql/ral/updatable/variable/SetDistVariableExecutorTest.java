@@ -58,8 +58,6 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
-        assertThat(actualValue.toString(), is("1024"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
     }
     
@@ -68,8 +66,6 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps().get("proxy-meta-data-collector-enabled");
-        assertThat(actualValue.toString(), is("false"));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
     }
     
@@ -78,8 +74,7 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_database_protocol_type", "Fixture");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-database-protocol-type");
-        assertThat(actualValue.toString(), is("FIXTURE"));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty("proxy-frontend-database-protocol-type"), is("FIXTURE"));
         assertThat(((DatabaseType) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE)).getType(), is("FIXTURE"));
     }
     

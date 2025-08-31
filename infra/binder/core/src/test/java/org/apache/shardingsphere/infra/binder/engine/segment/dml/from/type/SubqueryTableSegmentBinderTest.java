@@ -48,9 +48,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -79,15 +79,15 @@ class SubqueryTableSegmentBinderTest {
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
         assertThat(projectionSegments.size(), is(3));
-        assertThat(projectionSegments.get(0), instanceOf(ColumnProjectionSegment.class));
+        assertThat(projectionSegments.get(0), isA(ColumnProjectionSegment.class));
         assertTrue(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getOwner().isPresent());
         assertThat(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getOwner().get().getIdentifier().getValue(), is("temp"));
         assertThat(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getIdentifier().getValue(), is("order_id"));
-        assertThat(projectionSegments.get(1), instanceOf(ColumnProjectionSegment.class));
+        assertThat(projectionSegments.get(1), isA(ColumnProjectionSegment.class));
         assertTrue(((ColumnProjectionSegment) projectionSegments.get(1)).getColumn().getOwner().isPresent());
         assertThat(((ColumnProjectionSegment) projectionSegments.get(1)).getColumn().getOwner().get().getIdentifier().getValue(), is("temp"));
         assertThat(((ColumnProjectionSegment) projectionSegments.get(1)).getColumn().getIdentifier().getValue(), is("user_id"));
-        assertThat(projectionSegments.get(2), instanceOf(ColumnProjectionSegment.class));
+        assertThat(projectionSegments.get(2), isA(ColumnProjectionSegment.class));
         assertTrue(((ColumnProjectionSegment) projectionSegments.get(2)).getColumn().getOwner().isPresent());
         assertThat(((ColumnProjectionSegment) projectionSegments.get(2)).getColumn().getOwner().get().getIdentifier().getValue(), is("temp"));
         assertThat(((ColumnProjectionSegment) projectionSegments.get(2)).getColumn().getIdentifier().getValue(), is("status"));
@@ -113,7 +113,7 @@ class SubqueryTableSegmentBinderTest {
         assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
         List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
         assertThat(projectionSegments.size(), is(1));
-        assertThat(projectionSegments.get(0), instanceOf(ColumnProjectionSegment.class));
+        assertThat(projectionSegments.get(0), isA(ColumnProjectionSegment.class));
         assertTrue(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getOwner().isPresent());
         assertThat(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getOwner().get().getIdentifier().getValue(), is("temp"));
         assertThat(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getIdentifier().getValue(), is("order_id_alias"));

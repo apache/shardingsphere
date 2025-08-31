@@ -308,7 +308,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
             assertNull(actual.getTimestamp(columnIndex));
             return;
         }
-        assertThat(DateTimeFormatterFactory.getShortMillisFormatter().format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
+        assertThat(DateTimeFormatterFactory.getShortMillisDatetimeFormatter().format(actual.getTimestamp(columnIndex).toLocalDateTime()), is(expected));
     }
     
     private boolean isNullValue(final String value) {
