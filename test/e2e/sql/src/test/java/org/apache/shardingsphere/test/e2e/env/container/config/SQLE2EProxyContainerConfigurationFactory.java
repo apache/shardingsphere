@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.config;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -57,19 +58,25 @@ public final class SQLE2EProxyContainerConfigurationFactory {
     }
     
     private static String getGlobalYamlPath(final String scenario, final String modeType, final DatabaseType databaseType) {
-        String governanceCenterType = "cluster".equals(modeType) ? E2ETestEnvironment.getInstance().getGovernanceCenter().toLowerCase() : "";
+        String governanceCenterType = getGovernanceCenterType(modeType);
         if (isGovernanceCenterGlobalYamlExists(scenario, modeType, governanceCenterType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, governanceCenterType);
         }
-        if (isDialectScenarioGlobalYamlExists(scenario, modeType, databaseType)) {
+        if (isDialectScenarioGlobalYamlExists(scenario, modeType, governanceCenterType, databaseType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase());
         }
         if (isScenarioGlobalYamlExists(scenario, modeType)) {
             return String.format("/env/scenario/%s/proxy/mode/%s/global.yaml", scenario, modeType);
         }
-        return "cluster".equals(modeType)
-                ? String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, governanceCenterType)
-                : String.format("/env/common/%s/proxy/conf/global.yaml", modeType);
+        return String.format("/env/common/%s/proxy/conf/%s/global.yaml", modeType, governanceCenterType);
+    }
+    
+    private static String getGovernanceCenterType(final String modeType) {
+        String governanceCenter = E2ETestEnvironment.getInstance().getGovernanceCenter();
+        if (Strings.isNullOrEmpty(governanceCenter)) {
+            return "cluster".equals(modeType) ? "zookeeper" : "memory";
+        }
+        return governanceCenter.toLowerCase();
     }
     
     private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType) {
@@ -77,8 +84,9 @@ public final class SQLE2EProxyContainerConfigurationFactory {
         return null != url;
     }
     
-    private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String modeType, final DatabaseType databaseType) {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/scenario/%s/proxy/mode/%s/%s/global.yaml", scenario, modeType, databaseType.getType().toLowerCase()));
+    private static boolean isDialectScenarioGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType, final DatabaseType databaseType) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(
+                String.format("env/scenario/%s/proxy/mode/%s/%s/%s/global.yaml", scenario, modeType, governanceCenterType, databaseType.getType().toLowerCase()));
         return null != url;
     }
     
