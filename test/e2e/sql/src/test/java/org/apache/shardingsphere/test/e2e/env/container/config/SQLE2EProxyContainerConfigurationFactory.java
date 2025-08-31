@@ -76,11 +76,7 @@ public final class SQLE2EProxyContainerConfigurationFactory {
         if (Strings.isNullOrEmpty(governanceCenter)) {
             return "cluster".equals(modeType) ? "zookeeper" : "memory";
         }
-        // TODO merge modeType and governanceCenter 
-        if ("cluster".equals(governanceCenter)) {
-            return "zookeeper";
-        }
-        return "memory";
+        return governanceCenter.toLowerCase();
     }
     
     private static boolean isGovernanceCenterGlobalYamlExists(final String scenario, final String modeType, final String governanceCenterType) {
