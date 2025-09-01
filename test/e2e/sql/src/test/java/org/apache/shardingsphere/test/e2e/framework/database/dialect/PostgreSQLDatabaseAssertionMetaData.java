@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.database.impl;
+package org.apache.shardingsphere.test.e2e.framework.database.dialect;
 
 import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
 
@@ -26,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * PostgreSQL assertion meta data.
+ * Assertion meta data for PostgreSQL.
  */
 public final class PostgreSQLDatabaseAssertionMetaData implements DatabaseAssertionMetaData {
     
