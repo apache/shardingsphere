@@ -35,7 +35,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.Nati
 import org.apache.shardingsphere.test.e2e.env.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.e2e.env.container.config.SQLE2EProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment.Type;
 
 import javax.sql.DataSource;
@@ -59,11 +58,9 @@ public final class ClusterContainerComposer implements ContainerComposer {
         // TODO support other types of governance
         governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
         Type envType = E2ETestEnvironment.getInstance().getClusterEnvironment().getType();
-        if (ClusterEnvironment.Type.DOCKER == envType) {
-            storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationFactory.newInstance(databaseType, scenario)));
-        } else {
-            storageContainer = containers.registerContainer(new NativeStorageContainer(databaseType, scenario));
-        }
+        storageContainer = containers.registerContainer(Type.DOCKER == envType
+                ? StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationFactory.newInstance(databaseType, scenario))
+                : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "cluster", databaseType);
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
         if (adapterContainer instanceof DockerITContainer) {
