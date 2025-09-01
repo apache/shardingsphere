@@ -25,10 +25,10 @@ import org.apache.shardingsphere.test.e2e.framework.database.dialect.PostgreSQLD
 import java.util.Optional;
 
 /**
- * Dialect database assertion meta data factory.
+ * Dialect database assertion meta data SQL provider factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectDatabaseAssertionMetaDataFactory {
+public final class DialectDatabaseAssertionMetaDataSQLProviderFactory {
     
     /**
      * Create new instance of database assertion meta data.
