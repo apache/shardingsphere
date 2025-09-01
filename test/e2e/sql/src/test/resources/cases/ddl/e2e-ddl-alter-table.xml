@@ -93,4 +93,33 @@
     <!--        </assertion>-->
     <!--    </test-case>-->
     
+    <!-- Hive-specific ALTER TABLE test cases -->
+    <test-case sql="ALTER TABLE t_order_details ADD COLUMNS (name STRING)" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="alter_add.xml">
+            <initial-sql sql="CREATE TABLE t_order_details(id INT, description STRING)" affected-table="t_order_details" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_user_details ADD COLUMNS (name STRING)" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="alter_add.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT, address_id INT, number_cipher STRING, description STRING)" affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_user_details RENAME TO t_user_details_new" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="alter_change.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT, address_id INT, number_cipher STRING, description STRING)" affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details_new" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_order_details CHANGE description new_description STRING" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="alter_change.xml">
+            <initial-sql sql="CREATE TABLE t_order_details(id INT, description STRING)" affected-table="t_order_details" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
+    </test-case>
+    
 </e2e-test-cases>

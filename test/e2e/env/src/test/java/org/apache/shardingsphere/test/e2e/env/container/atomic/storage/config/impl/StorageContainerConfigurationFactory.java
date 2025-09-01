@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.hive.HiveContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mariadb.MariaDBContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
@@ -51,6 +52,8 @@ public final class StorageContainerConfigurationFactory {
                 return OpenGaussContainerConfigurationFactory.newInstance(scenario);
             case "H2":
                 return H2ContainerConfigurationFactory.newInstance(scenario);
+            case "Hive":
+                return HiveContainerConfigurationFactory.newInstance(scenario);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
@@ -76,6 +79,8 @@ public final class StorageContainerConfigurationFactory {
                 return H2ContainerConfigurationFactory.newInstance();
             case "MariaDB":
                 return MariaDBContainerConfigurationFactory.newInstance();
+            case "Hive":
+                return HiveContainerConfigurationFactory.newInstance();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
@@ -98,6 +103,8 @@ public final class StorageContainerConfigurationFactory {
                 return OpenGaussContainerConfigurationFactory.newInstance();
             case "H2":
                 return H2ContainerConfigurationFactory.newInstance();
+            case "Hive":
+                return HiveContainerConfigurationFactory.newInstance();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
