@@ -17,31 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.framework.database.dialect;
 
-import org.apache.shardingsphere.test.e2e.framework.database.DatabaseAssertionMetaData;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.apache.shardingsphere.test.e2e.framework.database.DialectDatabaseAssertionMetaDataSQLProvider;
 
 /**
- * Assertion meta data for PostgreSQL.
+ * PostgreSQL database assertion meta data SQL provider.
  */
-public final class PostgreSQLDatabaseAssertionMetaData implements DatabaseAssertionMetaData {
+public final class PostgreSQLDatabaseAssertionMetaDataSQLProvider implements DialectDatabaseAssertionMetaDataSQLProvider {
     
     @Override
-    public String getPrimaryKeyColumnName(final DataSource dataSource, final String tableName) throws SQLException {
-        String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
+    public String getFetchPrimaryKeyColumnNameSQL(final String tableName) {
+        return String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", tableName);
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            if (resultSet.next()) {
-                return resultSet.getString("attname");
-            }
-            throw new SQLException(String.format("Can not get primary key of `%s`", tableName));
-        }
     }
 }

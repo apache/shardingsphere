@@ -20,15 +20,15 @@ package org.apache.shardingsphere.test.e2e.framework.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.framework.database.dialect.PostgreSQLDatabaseAssertionMetaData;
+import org.apache.shardingsphere.test.e2e.framework.database.dialect.PostgreSQLDatabaseAssertionMetaDataSQLProvider;
 
 import java.util.Optional;
 
 /**
- * Database assertion meta data factory.
+ * Dialect database assertion meta data factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseAssertionMetaDataFactory {
+public final class DialectDatabaseAssertionMetaDataFactory {
     
     /**
      * Create new instance of database assertion meta data.
@@ -36,11 +36,11 @@ public final class DatabaseAssertionMetaDataFactory {
      * @param databaseType database type
      * @return created instance
      */
-    public static Optional<DatabaseAssertionMetaData> newInstance(final DatabaseType databaseType) {
+    public static Optional<DialectDatabaseAssertionMetaDataSQLProvider> newInstance(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "PostgreSQL":
             case "openGauss":
-                return Optional.of(new PostgreSQLDatabaseAssertionMetaData());
+                return Optional.of(new PostgreSQLDatabaseAssertionMetaDataSQLProvider());
             default:
                 return Optional.empty();
         }
