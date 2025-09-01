@@ -37,8 +37,7 @@ import org.apache.shardingsphere.test.e2e.env.SQLE2EEnvironmentEngine;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.e2e.framework.database.DialectDatabaseAssertionMetaDataSQLProvider;
-import org.apache.shardingsphere.test.e2e.framework.database.DialectDatabaseAssertionMetaDataSQLProviderFactory;
+import org.apache.shardingsphere.test.e2e.framework.metadata.DialectDatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.CaseTestParameter;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
@@ -233,25 +232,9 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private String generateFetchActualDataSQL(final Map<String, DataSource> actualDataSourceMap, final DataNode dataNode, final DatabaseType databaseType) throws SQLException {
-        Optional<DialectDatabaseAssertionMetaDataSQLProvider> dialectDatabaseAssertionMetaDataSQLProvider = DialectDatabaseAssertionMetaDataSQLProviderFactory.newInstance(databaseType);
-        if (dialectDatabaseAssertionMetaDataSQLProvider.isPresent()) {
-            String fetchPrimaryKeyColumnNameSQL = dialectDatabaseAssertionMetaDataSQLProvider.get().getFetchPrimaryKeyColumnNameSQL(dataNode.getTableName());
-            String primaryKeyColumnName = getPrimaryKeyColumnName(actualDataSourceMap.get(dataNode.getDataSourceName()), dataNode.getTableName(), fetchPrimaryKeyColumnNameSQL);
-            return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
-        }
-        return String.format("SELECT * FROM %s", dataNode.getTableName());
-    }
-    
-    private String getPrimaryKeyColumnName(final DataSource dataSource, final String tableName, final String sql) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            if (resultSet.next()) {
-                return resultSet.getString("attname");
-            }
-            throw new SQLException(String.format("Can not get primary key of `%s`", tableName));
-        }
+        String tableName = dataNode.getTableName();
+        Optional<String> primaryKeyColumnName = DialectDatabaseAssertionMetaDataFactory.getPrimaryKeyColumnName(databaseType, actualDataSourceMap.get(dataNode.getDataSourceName()), tableName);
+        return primaryKeyColumnName.isPresent() ? String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, primaryKeyColumnName) : String.format("SELECT * FROM %s", tableName);
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {

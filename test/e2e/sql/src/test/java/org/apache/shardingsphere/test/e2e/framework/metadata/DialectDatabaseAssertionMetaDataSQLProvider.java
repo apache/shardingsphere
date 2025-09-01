@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.database.dialect;
-
-import org.apache.shardingsphere.test.e2e.framework.database.DialectDatabaseAssertionMetaDataSQLProvider;
+package org.apache.shardingsphere.test.e2e.framework.metadata;
 
 /**
- * PostgreSQL database assertion meta data SQL provider.
+ * Dialect database assertion meta data SQL provider.
  */
-public final class PostgreSQLDatabaseAssertionMetaDataSQLProvider implements DialectDatabaseAssertionMetaDataSQLProvider {
+public interface DialectDatabaseAssertionMetaDataSQLProvider {
     
-    @Override
-    public String getFetchPrimaryKeyColumnNameSQL(final String tableName) {
-        return String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
-                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", tableName);
-    }
+    /**
+     * Get fetch primary key column name SQL.
+     *
+     * @param tableName table name
+     * @return fetch primary key column name SQL
+     */
+    String getFetchPrimaryKeyColumnNameSQL(String tableName);
 }
