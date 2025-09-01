@@ -46,10 +46,7 @@ public final class DialectDatabaseAssertionMetaDataFactory {
      */
     public static Optional<String> getPrimaryKeyColumnName(final DatabaseType databaseType, final DataSource dataSource, final String tableName) throws SQLException {
         Optional<DialectDatabaseAssertionMetaDataSQLProvider> sqlProvider = findDialectDatabaseAssertionMetaDataSQLProvider(databaseType);
-        if (!sqlProvider.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of(getPrimaryKeyColumnName(dataSource, tableName, sqlProvider.get().getFetchPrimaryKeyColumnNameSQL(tableName)));
+        return sqlProvider.isPresent() ? Optional.of(getPrimaryKeyColumnName(dataSource, tableName, sqlProvider.get().getFetchPrimaryKeyColumnNameSQL(tableName))) : Optional.empty();
     }
     
     private static String getPrimaryKeyColumnName(final DataSource dataSource, final String tableName, final String sql) throws SQLException {
