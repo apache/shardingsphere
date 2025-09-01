@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.firebird.database.system;
+package org.apache.shardingsphere.database.connector.firebird.metadata.database.system;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 
