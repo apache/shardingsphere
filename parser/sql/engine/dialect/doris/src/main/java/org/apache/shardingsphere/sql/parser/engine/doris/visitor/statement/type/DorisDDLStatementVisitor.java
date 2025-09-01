@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceNdbContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BeginStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropEncryptKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CaseStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CharsetNameContext;
@@ -180,6 +181,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEncryptKeyStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -1036,5 +1038,10 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropEncryptKey(final DropEncryptKeyContext ctx) {
+        return new DropEncryptKeyStatement(getDatabaseType());
     }
 }

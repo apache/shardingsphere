@@ -701,6 +701,8 @@ public enum SQLVisitorRule {
     
     DROP_CONTEXT("DropContext", SQLStatementType.DDL),
     
+    DROP_ENCRYPT_KEY("DropEncryptKey", SQLStatementType.DDL),
+    
     SYSTEM_ACTION("SystemAction", SQLStatementType.DDL),
     
     EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL),
@@ -720,6 +722,8 @@ public enum SQLVisitorRule {
     SPOOL("Spool", SQLStatementType.DAL),
     
     START_REPLICA("StartReplica", SQLStatementType.DAL),
+    
+    REFRESH("Refresh", SQLStatementType.DAL),
     
     OPEN("Open", SQLStatementType.DDL);
     

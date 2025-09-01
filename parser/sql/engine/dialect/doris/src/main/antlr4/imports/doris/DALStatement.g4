@@ -615,6 +615,15 @@ assignGtidsToAnonymousTransactionsDef
     : (OFF | LOCAL | string_)
     ;
 
+refresh
+    : REFRESH (
+        LDAP (ALL | (FOR identifier)?)?
+        | CATALOG identifier
+        | DATABASE (identifier DOT_)? identifier
+        | TABLE ((identifier DOT_)? (identifier DOT_)?)? identifier
+    )
+    ;
+
 show
     : showDatabases
     | showTables
