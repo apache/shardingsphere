@@ -63,7 +63,6 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     }
     
     private boolean isClusterMode(final AdapterMode adapterMode, final AdapterType adapterType) {
-        // TODO cluster mode often throw exception sometimes, issue is #15517
         return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType || AdapterType.PROXY_RANDOM == adapterType;
     }
     
@@ -81,13 +80,13 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         containerComposers.clear();
     }
     
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     private void closeTargetDataSource(final DataSource targetDataSource) {
         Preconditions.checkState(targetDataSource instanceof AutoCloseable, "target data source is not implement AutoCloseable");
         ((AutoCloseable) targetDataSource).close();
     }
     
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     private void closeActualDataSourceMap(final Map<String, DataSource> actualDataSourceMap) {
         for (DataSource each : actualDataSourceMap.values()) {
             Preconditions.checkState(each instanceof AutoCloseable, "actual data source is not implement AutoCloseable");

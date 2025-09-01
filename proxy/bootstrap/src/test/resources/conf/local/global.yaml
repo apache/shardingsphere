@@ -22,10 +22,6 @@ mode:
     props:
       namespace: governance_ds
       server-lists: localhost:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
 
 authority:
   users:

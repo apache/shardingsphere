@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.framework.database;
+package org.apache.shardingsphere.test.e2e.framework.metadata.dialect;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
+import org.apache.shardingsphere.test.e2e.framework.metadata.DialectDatabaseAssertionMetaDataSQLProvider;
 
 /**
- * Database assertion meta data.
+ * PostgreSQL database assertion meta data SQL provider.
  */
-public interface DatabaseAssertionMetaData {
+public final class PostgreSQLDatabaseAssertionMetaDataSQLProvider implements DialectDatabaseAssertionMetaDataSQLProvider {
     
-    /**
-     * Get primary key column name.
-     *
-     * @param dataSource data source
-     * @param tableName table name
-     * @return primary key column name
-     * @throws SQLException SQL exception
-     */
-    String getPrimaryKeyColumnName(DataSource dataSource, String tableName) throws SQLException;
+    @Override
+    public String getFetchPrimaryKeyColumnNameSQL(final String tableName) {
+        return String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
+                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", tableName);
+    }
 }

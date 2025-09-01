@@ -15,18 +15,6 @@
 # limitations under the License.
 #
 
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: it_db
-      server-lists: zk.host:2181
-      timeToLiveSeconds: 60
-      operationTimeoutMilliseconds: 500
-      retryIntervalMilliseconds: 500
-      maxRetries: 3
-
 authority:
   users:
     - user: proxy
@@ -34,7 +22,7 @@ authority:
       admin: true
   privilege:
     type: ALL_PERMITTED
-    
+
 sqlParser:
   sqlStatementCache:
     initialCapacity: 2000
@@ -45,7 +33,7 @@ sqlParser:
 
 props:
   max-connections-size-per-query: 1
-  kernel-executor-size: 16  # Infinite by default.
-  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  kernel-executor-size: 16
+  proxy-frontend-flush-threshold: 128
   sql-show: false
   proxy-frontend-ssl-enabled: true
