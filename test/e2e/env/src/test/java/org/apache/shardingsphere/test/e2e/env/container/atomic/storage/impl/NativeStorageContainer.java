@@ -104,13 +104,14 @@ public final class NativeStorageContainer implements StorageContainer {
     public int getExposedPort() {
         if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
             return 3306;
-        } else if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
-            return 5432;
-        } else if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
-            return 5432;
-        } else {
-            throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
         }
+        if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
+            return 5432;
+        }
+        if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
+            return 5432;
+        }
+        throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
     }
     
     @Override
