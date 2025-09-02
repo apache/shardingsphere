@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
