@@ -139,7 +139,6 @@ class DropEncryptRuleExecutorTest {
     private ContextManager mockContextManager(final EncryptRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }
