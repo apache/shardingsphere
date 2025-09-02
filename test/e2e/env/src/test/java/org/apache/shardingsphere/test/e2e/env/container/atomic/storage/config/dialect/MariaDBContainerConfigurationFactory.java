@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mariadb;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

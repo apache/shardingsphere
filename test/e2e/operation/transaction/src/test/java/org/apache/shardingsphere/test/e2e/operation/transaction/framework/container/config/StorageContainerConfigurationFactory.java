@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.H2ContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.opengauss.OpenGaussContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.postgresql.PostgreSQLContainerConfigurationFactory;

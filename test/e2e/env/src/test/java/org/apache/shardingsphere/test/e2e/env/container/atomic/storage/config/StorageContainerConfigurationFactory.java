@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.h2.H2ContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mariadb.MariaDBContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.opengauss.OpenGaussContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.postgresql.PostgreSQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.H2ContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MariaDBContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.OpenGaussContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.PostgreSQLContainerConfigurationFactory;
 
 /**
  * Storage container configuration factory.

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
