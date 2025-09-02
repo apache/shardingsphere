@@ -55,7 +55,7 @@ public final class DialectDatabaseAssertionMetaDataFactory {
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {
-                return resultSet.getString("attname");
+                return resultSet.getString(1);
             }
             throw new SQLException(String.format("Can not get primary key of `%s`", tableName));
         }
