@@ -234,7 +234,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     private String generateFetchActualDataSQL(final Map<String, DataSource> actualDataSourceMap, final DataNode dataNode, final DatabaseType databaseType) throws SQLException {
         String tableName = dataNode.getTableName();
         Optional<String> primaryKeyColumnName = DialectDatabaseAssertionMetaDataFactory.getPrimaryKeyColumnName(databaseType, actualDataSourceMap.get(dataNode.getDataSourceName()), tableName);
-        return primaryKeyColumnName.isPresent() ? String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, primaryKeyColumnName) : String.format("SELECT * FROM %s", tableName);
+        return primaryKeyColumnName.map(optional -> String.format("SELECT * FROM %s ORDER BY %s ASC", tableName, optional)).orElseGet(() -> String.format("SELECT * FROM %s", tableName));
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
