@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
@@ -53,11 +54,12 @@ public final class StandaloneContainerComposer implements ContainerComposer {
         storageContainer = containers.registerContainer(Type.DOCKER == envType
                 ? StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationFactory.newInstance(databaseType, scenario))
                 : new NativeStorageContainer(databaseType, scenario));
-        adapterContainer = containers.registerContainer(AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario,
-                SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType), storageContainer, envType.name()));
+        AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType);
+        AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(storageContainer);
         }
+        this.adapterContainer = containers.registerContainer(adapterContainer);
     }
     
     @Override
