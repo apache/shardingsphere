@@ -85,29 +85,13 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
             DataSource dataSource = StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(),
                     Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort()), each),
                     E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
             result.put(each, dataSource);
         }
-        return result;
-    }
-    
-    @Override
-    public String getAbbreviation() {
-        return databaseType.getType().toLowerCase();
-    }
-    
-    @Override
-    public Map<String, String> getLinkReplacements() {
-        Map<String, String> result = new HashMap<>();
-        for (String each : getNetworkAliases()) {
-            result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
-        }
-        result.put(StorageContainerConstants.USERNAME, E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put(StorageContainerConstants.PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
         return result;
     }
     
@@ -120,16 +104,33 @@ public final class NativeStorageContainer implements StorageContainer {
     public int getExposedPort() {
         if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
             return 3306;
-        } else if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
-            return 5432;
-        } else if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
-            return 5432;
-        } else {
-            throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
         }
+        if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
+            return 5432;
+        }
+        if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
+            return 5432;
+        }
+        throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
     }
     
     @Override
     public void start() {
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return databaseType.getType().toLowerCase();
+    }
+    
+    @Override
+    public Map<String, String> getLinkReplacements() {
+        Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
+        for (String each : getNetworkAliases()) {
+            result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
+        }
+        result.put(StorageContainerConstants.USERNAME, E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put(StorageContainerConstants.PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        return result;
     }
 }
