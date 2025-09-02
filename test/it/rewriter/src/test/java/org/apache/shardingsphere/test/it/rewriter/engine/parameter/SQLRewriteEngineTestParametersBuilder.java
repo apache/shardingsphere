@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.engine.parameter;
+package org.apache.shardingsphere.test.it.rewriter.engine.parameter;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -23,11 +23,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.shardingsphere.test.it.rewrite.engine.type.SQLExecuteType;
-import org.apache.shardingsphere.test.it.rewrite.entity.RewriteAssertionEntity;
-import org.apache.shardingsphere.test.it.rewrite.entity.RewriteAssertionsRootEntity;
-import org.apache.shardingsphere.test.it.rewrite.entity.RewriteOutputEntity;
-import org.apache.shardingsphere.test.it.rewrite.loader.RewriteAssertionsRootEntityLoader;
+import org.apache.shardingsphere.test.it.rewriter.engine.type.SQLExecuteType;
+import org.apache.shardingsphere.test.it.rewriter.entity.RewriteAssertionEntity;
+import org.apache.shardingsphere.test.it.rewriter.entity.RewriteAssertionsRootEntity;
+import org.apache.shardingsphere.test.it.rewriter.entity.RewriteOutputEntity;
+import org.apache.shardingsphere.test.it.rewriter.loader.RewriteAssertionsRootEntityLoader;
 
 import java.io.File;
 import java.util.ArrayList;

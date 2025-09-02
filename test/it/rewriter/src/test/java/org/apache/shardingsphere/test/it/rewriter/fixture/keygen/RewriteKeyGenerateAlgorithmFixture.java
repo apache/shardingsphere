@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.engine;
+package org.apache.shardingsphere.test.it.rewriter.fixture.keygen;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 
-/**
- * SQL rewriter IT settings.
- */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-public @interface SQLRewriterITSettings {
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
     
-    /**
-     * Get scenario case path.
-     *
-     * @return scenario case path
-     */
-    String value();
+    @Override
+    public Collection<Long> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 1L).collect(Collectors.toList());
+    }
+    
+    @Override
+    public String getType() {
+        return "REWRITE.FIXTURE";
+    }
 }

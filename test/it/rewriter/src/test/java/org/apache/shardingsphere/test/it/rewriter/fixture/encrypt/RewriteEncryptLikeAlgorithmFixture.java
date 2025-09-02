@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
+package org.apache.shardingsphere.test.it.rewriter.fixture.encrypt;
 
 import com.google.common.base.Strings;
 import lombok.Getter;

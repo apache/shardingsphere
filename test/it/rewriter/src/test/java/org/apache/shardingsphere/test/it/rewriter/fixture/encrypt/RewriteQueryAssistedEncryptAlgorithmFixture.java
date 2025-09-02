@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
+package org.apache.shardingsphere.test.it.rewriter.fixture.encrypt;
 
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -26,24 +26,21 @@ import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContex
 import java.util.Properties;
 
 @Getter
-public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgorithm {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm {
     
-    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(true, true, false);
+    private final EncryptAlgorithmMetaData metaData = new EncryptAlgorithmMetaData(false, true, false);
     
     @Override
     public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
         if (null == plainValue) {
             return null;
         }
-        return "encrypt_" + plainValue;
+        return "assisted_query_" + plainValue;
     }
     
     @Override
     public Object decrypt(final Object cipherValue, final AlgorithmSQLContext algorithmSQLContext) {
-        if (null == cipherValue) {
-            return null;
-        }
-        return cipherValue.toString().replaceAll("encrypt_", "");
+        throw new UnsupportedOperationException(String.format("Algorithm `%s` is unsupported to decrypt", getType()));
     }
     
     @Override
@@ -53,6 +50,6 @@ public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgori
     
     @Override
     public String getType() {
-        return "REWRITE.NORMAL.FIXTURE";
+        return "REWRITE.ASSISTED_QUERY.FIXTURE";
     }
 }

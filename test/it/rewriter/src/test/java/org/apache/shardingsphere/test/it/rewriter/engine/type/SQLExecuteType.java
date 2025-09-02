@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.fixture.keygen;
+package org.apache.shardingsphere.test.it.rewriter.engine.type;
 
-import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
-import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-public final class RewriteKeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
+/**
+ * SQL execute type.
+ */
+public enum SQLExecuteType {
     
-    @Override
-    public Collection<Long> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> 1L).collect(Collectors.toList());
-    }
-    
-    @Override
-    public String getType() {
-        return "REWRITE.FIXTURE";
-    }
+    LITERAL, PLACEHOLDER
 }
