@@ -55,8 +55,7 @@ public final class StorageContainerFactory {
      * @return created instance
      * @throws RuntimeException runtime exception
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage,
-                                               final StorageContainerConfiguration storageContainerConfig) {
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String storageContainerImage, final StorageContainerConfiguration storageContainerConfig) {
         switch (databaseType.getType()) {
             case "MySQL":
                 return new MySQLContainer(storageContainerImage, storageContainerConfig);

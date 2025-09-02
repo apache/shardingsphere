@@ -85,7 +85,7 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
             DataSource dataSource = StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(),
                     Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort()), each),
@@ -102,7 +102,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     @Override
     public Map<String, String> getLinkReplacements() {
-        Map<String, String> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
         for (String each : getNetworkAliases()) {
             result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
         }
