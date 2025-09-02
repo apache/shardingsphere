@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
+package org.apache.shardingsphere.test.it.rewriter.engine.scenario;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterIT;
-import org.apache.shardingsphere.test.it.rewrite.engine.SQLRewriterITSettings;
+import org.apache.shardingsphere.test.it.rewriter.engine.SQLRewriterIT;
+import org.apache.shardingsphere.test.it.rewriter.engine.SQLRewriterITSettings;
 
 import java.sql.Types;
 import java.util.Arrays;

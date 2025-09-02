@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.engine.parameter;
+package org.apache.shardingsphere.test.it.rewriter.engine.parameter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.it.rewrite.engine.type.SQLExecuteType;
+import org.apache.shardingsphere.test.it.rewriter.engine.type.SQLExecuteType;
 
 import java.util.List;
 

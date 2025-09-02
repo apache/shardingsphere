@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.engine.type;
+package org.apache.shardingsphere.test.it.rewriter.engine;
+
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * SQL execute type.
+ * SQL rewriter IT settings.
  */
-public enum SQLExecuteType {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SQLRewriterITSettings {
     
-    LITERAL, PLACEHOLDER
+    /**
+     * Get scenario case path.
+     *
+     * @return scenario case path
+     */
+    String value();
 }

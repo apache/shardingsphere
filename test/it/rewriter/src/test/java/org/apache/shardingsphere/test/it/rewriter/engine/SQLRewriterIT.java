@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.rewrite.engine;
+package org.apache.shardingsphere.test.it.rewriter.engine;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
@@ -57,8 +57,8 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParameters;
-import org.apache.shardingsphere.test.it.rewrite.engine.parameter.SQLRewriteEngineTestParametersBuilder;
+import org.apache.shardingsphere.test.it.rewriter.engine.parameter.SQLRewriteEngineTestParameters;
+import org.apache.shardingsphere.test.it.rewriter.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
