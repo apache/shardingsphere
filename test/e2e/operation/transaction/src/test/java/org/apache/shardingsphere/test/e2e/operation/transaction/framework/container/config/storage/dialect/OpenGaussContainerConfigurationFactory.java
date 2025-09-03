@@ -64,6 +64,7 @@ public final class OpenGaussContainerConfigurationFactory {
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, DATABASE_TYPE) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, DATABASE_TYPE) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
     }
 }
