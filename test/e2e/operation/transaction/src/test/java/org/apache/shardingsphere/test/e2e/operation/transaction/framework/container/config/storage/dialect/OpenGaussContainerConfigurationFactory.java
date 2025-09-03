@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
+ *   
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.opengauss;
+package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,6 +38,8 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenGaussContainerConfigurationFactory {
     
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    
     /**
      * Create new instance of openGauss container configuration.
      *
@@ -46,8 +48,7 @@ public final class OpenGaussContainerConfigurationFactory {
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
         return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
-                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "openGauss")),
-                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "openGauss")));
+                DatabaseEnvironmentManager.getDatabaseTypes(scenario, DATABASE_TYPE), DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, DATABASE_TYPE));
     }
     
     private static String getCommand() {
@@ -60,10 +61,8 @@ public final class OpenGaussContainerConfigurationFactory {
     
     private static Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "openGauss")) + "/01-actual-init.sql",
-                "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "openGauss")) + "/01-expected-init.sql",
-                "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, DATABASE_TYPE) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, DATABASE_TYPE) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
         return result;
     }
