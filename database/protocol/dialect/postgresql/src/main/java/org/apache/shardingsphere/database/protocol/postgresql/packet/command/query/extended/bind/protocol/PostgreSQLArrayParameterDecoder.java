@@ -171,10 +171,10 @@ public final class PostgreSQLArrayParameterDecoder {
                 if (dims.isEmpty()) {
                     dims.add(arrayList);
                 } else {
-                    PgDimensionsArrayList a = new PgDimensionsArrayList();
-                    PgDimensionsArrayList p = dims.get(dims.size() - 1);
-                    p.add(a);
-                    dims.add(a);
+                    PgDimensionsArrayList array = new PgDimensionsArrayList();
+                    PgDimensionsArrayList parent = dims.get(dims.size() - 1);
+                    parent.add(array);
+                    dims.add(array);
                 }
                 curArray = dims.get(dims.size() - 1);
                 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.ArrayDecoding;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.postgresql.jdbc.ShardingSpherePgArrayUtils;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.ShardingSpherePgArrayUtils;
 
 /**
  * Binary protocol value for string array for PostgreSQL.

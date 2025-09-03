@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
 import org.postgresql.core.Oid;
-import org.postgresql.jdbc.ShardingSpherePgArrayUtils;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.ShardingSpherePgArrayUtils;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -35,6 +35,7 @@ public final class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinar
     static {
         OID_TYPE_NAME.put(Oid.BOOL, "bool[]");
         OID_TYPE_NAME.put(Oid.BYTEA, "bytea[]");
+        // TODO not supported yet
         // oidTypeName.put(Oid.CHAR_ARRAY, "char[]");
         // oidTypeName.put(Oid.NAME_ARRAY, "name[]");
         OID_TYPE_NAME.put(Oid.INT2, "int2[]");
@@ -46,10 +47,13 @@ public final class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinar
         OID_TYPE_NAME.put(Oid.VARCHAR, "varchar[]");
         OID_TYPE_NAME.put(Oid.DATE, "date[]");
         OID_TYPE_NAME.put(Oid.TIMESTAMP, "timestamp[]");
+        // TODO not supported yet
         // oidTypeName.put(Oid.TIMESTAMPTZ_ARRAY, "timestamptz[]");
         OID_TYPE_NAME.put(Oid.TIME, "time[]");
+        // TODO not supported yet
         // oidTypeName.put(Oid.TIMETZ_ARRAY, "timetz[]");
         OID_TYPE_NAME.put(Oid.NUMERIC, "numeric[]");
+        // TODO not supported yet
         // oidTypeName.put(Oid.UUID_ARRAY, "uuid[]");
     }
     
