@@ -15,14 +15,14 @@
   ~ limitations under the License.
   -->
 
-<!--<dataset>-->
-<!--    <metadata table-name="t_user_details_new" data-nodes="encrypt.t_user_details_new">-->
-<!--        <column name="user_id" type="integer" />-->
-<!--        <column name="address_id" type="integer" />-->
-<!--        <column name="number_cipher" type="varchar" />-->
-<!--        <column name="description" type="varchar" />-->
-<!--    </metadata>-->
-<!--</dataset>-->
+<dataset>
+    <metadata table-name="t_user_details_hive" data-nodes="encrypt.t_user_details_hive">
+        <column name="user_id" type="int" />
+        <column name="address_id" type="int" />
+        <column name="number_cipher_new" type="varchar" />
+        <column name="description" type="varchar" />
+    </metadata>
+</dataset>
 
 
 

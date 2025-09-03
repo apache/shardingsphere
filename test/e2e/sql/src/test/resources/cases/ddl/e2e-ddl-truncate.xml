@@ -58,20 +58,4 @@
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>
-    
-    <!-- Hive-specific TRUNCATE TABLE test cases -->
-<!--    <test-case sql="TRUNCATE TABLE t_order_details" db-types="Hive" scenario-types="encrypt">-->
-<!--        <assertion expected-data-file="unchanged_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_order_details(id INT, description STRING)" affected-table="t_order_details" />-->
-<!--            <destroy-sql sql="DROP TABLE t_order_details" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="TRUNCATE TABLE t_user_details" db-types="Hive" scenario-types="encrypt">-->
-<!--        <assertion expected-data-file="unchanged_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT, address_id INT, number_cipher STRING, description STRING)" affected-table="t_user_details" />-->
-<!--            <destroy-sql sql="DROP TABLE t_user_details" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-    
 </e2e-test-cases>

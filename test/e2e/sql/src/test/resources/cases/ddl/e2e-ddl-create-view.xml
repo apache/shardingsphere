@@ -23,20 +23,4 @@
             <destroy-sql sql="DROP VIEW t_order_sharding_view" />
         </assertion>
     </test-case>
-    
-<!--    &lt;!&ndash; Hive-specific CREATE VIEW test cases &ndash;&gt;-->
-<!--    <test-case sql="CREATE VIEW t_user_view AS SELECT user_id, user_name_cipher AS user_name FROM t_user WHERE user_id &gt; 0" db-types="Hive" scenario-types="encrypt">-->
-<!--        <assertion expected-data-file="create_view_with_sharding_table.xml">-->
-<!--            <initial-sql affected-table="t_user_view" />-->
-<!--            <destroy-sql sql="DROP VIEW IF EXISTS t_user_view" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-<!--    -->
-<!--    <test-case sql="CREATE VIEW IF NOT EXISTS t_order_view AS SELECT order_id, user_id, status FROM t_order WHERE order_id &gt; 0" db-types="Hive" scenario-types="encrypt">-->
-<!--        <assertion expected-data-file="create_view_with_sharding_table.xml">-->
-<!--            <initial-sql affected-table="t_order_view" />-->
-<!--            <destroy-sql sql="DROP VIEW IF EXISTS t_order_view" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
-    
 </e2e-test-cases>
