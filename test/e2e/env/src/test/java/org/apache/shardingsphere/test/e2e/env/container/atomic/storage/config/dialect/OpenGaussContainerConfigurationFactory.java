@@ -61,7 +61,7 @@ public final class OpenGaussContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "";
+        return "--max_connections=600 --max_prepared_transactions=600";
     }
     
     private static Map<String, String> getContainerEnvironments() {
