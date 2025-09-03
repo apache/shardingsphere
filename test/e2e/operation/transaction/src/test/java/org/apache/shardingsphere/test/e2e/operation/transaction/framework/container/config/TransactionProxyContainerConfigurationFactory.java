@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.proxy;
+package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
