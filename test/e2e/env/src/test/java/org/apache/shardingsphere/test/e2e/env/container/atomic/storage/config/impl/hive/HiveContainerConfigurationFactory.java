@@ -46,36 +46,33 @@ public final class HiveContainerConfigurationFactory {
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
         return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
-            DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")),
-            DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive"))
-        );
+                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")),
+                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")));
     }
-
+    
     /**
      * Create new instance of Hive container configuration.
      *
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap()
-        );
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
     }
     
     private static String getCommand() {
-        // Start Hive services - database creation is handled in postStart() method
         return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }
     
     private static Map<String, String> getContainerEnvironments() {
         Map<String, String> result = new HashMap<>(4, 1F);
         result.put("SERVICE_NAME", "hiveserver2");
-        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true " +
-                                   "-Dhive.exec.dynamic.partition.mode=nonstrict " +
-                                   "-Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
+        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true "
+                + "-Dhive.exec.dynamic.partition.mode=nonstrict "
+                + "-Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
         result.put("LANG", "C.UTF-8");
         return result;
     }
-
+    
     private static Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(1, 1F);
         String path = "env/hive/01-initdb.sql";

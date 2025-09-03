@@ -124,7 +124,7 @@ public final class NativeStorageContainer implements StorageContainer {
             return 5432;
         } else if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
             return 5432;
-        } else if("Hive".equalsIgnoreCase(databaseType.getType())){
+        } else if ("Hive".equalsIgnoreCase(databaseType.getType())) {
             return 10000;
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
