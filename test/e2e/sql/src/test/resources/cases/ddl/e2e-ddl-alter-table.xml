@@ -93,4 +93,10 @@
     <!--        </assertion>-->
     <!--    </test-case>-->
 
+    <test-case sql="ALTER TABLE t_user_details_hive CHANGE COLUMN number_cipher number_cipher_new VARCHAR(50)" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="alter_change.xml">
+            <initial-sql sql="DROP TABLE IF EXISTS t_user_details_hive; CREATE TABLE t_user_details_hive (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details_hive" />
+            <destroy-sql sql="DROP TABLE t_user_details_hive" />
+        </assertion>
+    </test-case>
 </e2e-test-cases>

@@ -37,7 +37,7 @@ public final class StorageContainerConfigurationFactory {
      * Create new instance of storage container configuration.
      *
      * @param databaseType database type
-     * @param scenario     scenario
+     * @param scenario scenario
      * @return created instance
      * @throws RuntimeException runtime exception
      */
