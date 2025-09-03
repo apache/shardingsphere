@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConfigurationFactory {
-
+    
     /**
      * Create new instance of storage container configuration.
      *
@@ -57,7 +57,7 @@ public final class StorageContainerConfigurationFactory {
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
     }
-
+    
     /**
      * Create new instance of storage container configuration.
      *
