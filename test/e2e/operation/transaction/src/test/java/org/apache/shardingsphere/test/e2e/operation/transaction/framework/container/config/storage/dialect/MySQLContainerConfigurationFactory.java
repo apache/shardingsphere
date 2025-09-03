@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -50,14 +51,13 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "--sql_mode= --default-authentication-plugin=mysql_native_password";
+        return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(3, 1F);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
-        result.put("MYSQL_ROOT_HOST", "%");
         return result;
     }
     
