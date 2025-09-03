@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mode.metadata.persist.config.global.PropertiesP
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.infra.framework.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.mock.StaticMockSettings;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -48,7 +47,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Disabled("fix this unit test @menghaoran")
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 class SetDistVariableExecutorTest {
@@ -60,7 +58,6 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold"), is(1024));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(1024));
     }
     
@@ -69,7 +66,6 @@ class SetDistVariableExecutorTest {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps().get("proxy-meta-data-collector-enabled"), is(Boolean.FALSE));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
     }
     

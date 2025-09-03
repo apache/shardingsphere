@@ -42,6 +42,8 @@ public final class E2ETestEnvironment {
     
     private final Collection<String> scenarios;
     
+    private final String governanceCenter;
+    
     private final ClusterEnvironment clusterEnvironment;
     
     private final boolean smoke;
@@ -66,6 +68,7 @@ public final class E2ETestEnvironment {
         nativeStoragePort = props.getProperty("it.native.storage.port");
         nativeStorageUsername = props.getProperty("it.native.storage.username");
         nativeStoragePassword = props.getProperty("it.native.storage.password");
+        governanceCenter = props.getProperty("it.env.governance.center");
     }
     
     @SuppressWarnings("AccessOfSystemProperties")
