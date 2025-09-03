@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -42,20 +42,20 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class NativeStorageContainer implements StorageContainer {
-    
+
     private final DatabaseType databaseType;
-    
+
     private final String scenario;
-    
+
     private final Map<String, DataSource> actualDataSourceMap;
-    
+
     private final Map<String, DataSource> expectedDataSourceMap;
-    
+
     private final StorageContainerConfiguration storageContainerConfiguration;
-    
+
     @Setter
     private List<String> networkAliases;
-    
+
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
@@ -64,53 +64,37 @@ public final class NativeStorageContainer implements StorageContainer {
         actualDataSourceMap = createActualDataSourceMap();
         expectedDataSourceMap = createExpectedDataSourceMap();
     }
-    
+
     private void initDatabase() {
         DataSource dataSource = StorageContainerUtils.generateDataSource(
                 DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(), Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort())),
                 E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
         storageContainerConfiguration.getMountedResources().keySet().stream().filter(each -> each.toLowerCase().endsWith(".sql")).forEach(each -> SQLScriptUtils.execute(dataSource, each));
     }
-    
+
     private Map<String, DataSource> createActualDataSourceMap() {
         Collection<String> databaseNames =
                 storageContainerConfiguration.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
         return getDataSourceMap(databaseNames);
     }
-    
+
     private Map<String, DataSource> createExpectedDataSourceMap() {
         Collection<String> databaseNames =
                 storageContainerConfiguration.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
         return getDataSourceMap(databaseNames);
     }
-    
+
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
-        Map<String, DataSource> result = new HashMap<>();
+        Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
             DataSource dataSource = StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(),
-                    Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort()), each),
+                            Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort()), each),
                     E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
             result.put(each, dataSource);
         }
         return result;
     }
-    
-    @Override
-    public String getAbbreviation() {
-        return databaseType.getType().toLowerCase();
-    }
-    
-    @Override
-    public Map<String, String> getLinkReplacements() {
-        Map<String, String> result = new HashMap<>();
-        for (String each : getNetworkAliases()) {
-            result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
-        }
-        result.put(StorageContainerConstants.USERNAME, E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put(StorageContainerConstants.PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
-        return result;
-    }
-    
+
     /**
      * Get exposed port.
      *
@@ -120,6 +104,7 @@ public final class NativeStorageContainer implements StorageContainer {
     public int getExposedPort() {
         if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
             return 3306;
+<<<<<<< HEAD
         } else if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
             return 5432;
         } else if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
@@ -128,10 +113,38 @@ public final class NativeStorageContainer implements StorageContainer {
             return 10000;
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
+=======
+>>>>>>> 8a0888a0219
         }
+        if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
+            return 5432;
+        }
+        if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
+            return 5432;
+        }
+        if ("Hive".equalsIgnoreCase(databaseType.getType())) {
+            return 10000;
+        }
+        throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
     }
-    
+
     @Override
     public void start() {
+    }
+
+    @Override
+    public String getAbbreviation() {
+        return databaseType.getType().toLowerCase();
+    }
+
+    @Override
+    public Map<String, String> getLinkReplacements() {
+        Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
+        for (String each : getNetworkAliases()) {
+            result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
+        }
+        result.put(StorageContainerConstants.USERNAME, E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put(StorageContainerConstants.PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        return result;
     }
 }

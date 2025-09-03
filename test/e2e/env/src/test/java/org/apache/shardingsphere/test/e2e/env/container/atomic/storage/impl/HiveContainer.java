@@ -22,11 +22,15 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+<<<<<<< HEAD
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.io.IOException;
 import java.sql.DriverManager;
+=======
+
+>>>>>>> 8a0888a0219
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -55,10 +59,15 @@ public final class HiveContainer extends DockerStorageContainer {
         setCommands(storageContainerConfig.getContainerCommand());
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
+<<<<<<< HEAD
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
         setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
+=======
+        super.configure();
+        withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
+>>>>>>> 8a0888a0219
     }
     
     @Override
@@ -89,6 +98,7 @@ public final class HiveContainer extends DockerStorageContainer {
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
+<<<<<<< HEAD
         return Optional.empty();
     }
     
@@ -103,5 +113,8 @@ public final class HiveContainer extends DockerStorageContainer {
         }
         super.postStart();
         System.out.println("Hive container postStart completed successfully");
+=======
+        return Optional.of("default");
+>>>>>>> 8a0888a0219
     }
 }

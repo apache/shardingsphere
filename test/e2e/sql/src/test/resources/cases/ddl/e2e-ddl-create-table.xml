@@ -37,4 +37,26 @@
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>
+    
+    <!-- Hive-specific CREATE TABLE test cases -->
+    <test-case sql="CREATE TABLE t_order_details(id INT, description STRING)" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="create_table.xml">
+            <initial-sql affected-table="t_order_details" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="CREATE TABLE t_user_details (user_id INT, address_id INT, number STRING, description STRING)" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="create_table.xml">
+            <initial-sql affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="CREATE TABLE IF NOT EXISTS t_hive_test (id BIGINT, name STRING, value DOUBLE, created_date DATE)" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="create_table.xml">
+            <initial-sql affected-table="t_hive_test" />
+            <destroy-sql sql="DROP TABLE IF EXISTS t_hive_test" />
+        </assertion>
+    </test-case>
 </e2e-test-cases>

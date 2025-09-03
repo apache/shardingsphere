@@ -67,11 +67,14 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+<<<<<<< HEAD
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-parser-sql-engine-hive</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+=======
+>>>>>>> 8a0888a0219
     </dependencies>
 </project>

@@ -14,6 +14,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
+<<<<<<< HEAD
 SET character_set_database='utf8';
 SET character_set_server='utf8';
 
@@ -25,3 +26,44 @@ CREATE TABLE expected_dataset.t_order_item (item_id INT PRIMARY KEY, order_id IN
 CREATE TABLE expected_dataset.t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NULL, password VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE expected_dataset.t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 
+=======
+
+DROP DATABASE IF EXISTS expected_dataset CASCADE;
+CREATE DATABASE IF NOT EXISTS expected_dataset;
+
+CREATE TABLE expected_dataset.t_order (
+  order_id INT,
+  user_id INT,
+  status STRING,
+  merchant_id INT,
+  remark STRING,
+  creation_date DATE
+);
+
+CREATE TABLE expected_dataset.t_order_item (
+  item_id INT,
+  order_id INT,
+  user_id INT,
+  product_id INT,
+  quantity INT,
+  creation_date DATE
+);
+
+CREATE TABLE expected_dataset.t_user (
+  user_id INT,
+  user_name STRING,
+  password STRING,
+  email STRING,
+  telephone STRING,
+  creation_date DATE
+);
+
+CREATE TABLE expected_dataset.t_merchant (
+  merchant_id INT,
+  country_id SMALLINT,
+  merchant_name STRING,
+  business_code STRING,
+  telephone STRING,
+  creation_date DATE
+);
+>>>>>>> 8a0888a0219

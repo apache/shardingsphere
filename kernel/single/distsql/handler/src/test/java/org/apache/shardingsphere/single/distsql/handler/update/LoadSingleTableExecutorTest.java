@@ -86,7 +86,6 @@ class LoadSingleTableExecutorTest {
     
     private ContextManager mockContextManager(final SingleRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db")).thenReturn(database);
         if (null == rule) {
             when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));

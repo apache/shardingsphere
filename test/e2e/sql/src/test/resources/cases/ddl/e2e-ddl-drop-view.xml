@@ -22,4 +22,18 @@
             <initial-sql sql="CREATE VIEW t_order_sharding_view AS SELECT o.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id" affected-table="t_order_sharding_view" />
         </assertion>
     </test-case>
+    
+    <!-- Hive-specific DROP VIEW test cases -->
+    <test-case sql="DROP VIEW t_user_view" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="drop_view_with_sharding_table.xml">
+            <initial-sql sql="CREATE VIEW t_user_view AS SELECT user_id, user_name_cipher AS user_name FROM t_user WHERE user_id &gt; 0" affected-table="t_user_view" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="DROP VIEW IF EXISTS t_order_view" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="drop_view_with_sharding_table.xml">
+            <initial-sql sql="CREATE VIEW t_order_view AS SELECT order_id, user_id, status FROM t_order WHERE order_id &gt; 0" affected-table="t_order_view" />
+        </assertion>
+    </test-case>
+    
 </e2e-test-cases>

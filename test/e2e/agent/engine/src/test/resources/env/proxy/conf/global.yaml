@@ -22,10 +22,6 @@ mode:
     props:
       namespace: it_logging
       server-lists: zk.host:2181
-      timeToLiveSeconds: 60
-      operationTimeoutMilliseconds: 500
-      retryIntervalMilliseconds: 500
-      maxRetries: 3
 
 authority:
   users:
