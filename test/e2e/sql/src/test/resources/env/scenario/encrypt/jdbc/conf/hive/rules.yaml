@@ -19,10 +19,8 @@ databaseName: encrypt
 
 dataSources:
   encrypt:
-    url: jdbc:hive2://hive.encrypt.host:10000/default?ssl=false&useUnicode=true&characterEncoding=utf-8&hive.exec.dynamic.partition=true&hive.exec.dynamic.partition.mode=nonstrict
+    url: jdbc:hive2://hive.encrypt.host:10000/encrypt?ssl=false&useUnicode=true&characterEncoding=utf-8&hive.exec.dynamic.partition=true&hive.exec.dynamic.partition.mode=nonstrict
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    username: 
-    password: 
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

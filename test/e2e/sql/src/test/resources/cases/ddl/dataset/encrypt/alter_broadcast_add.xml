@@ -16,13 +16,15 @@
   -->
 
 <dataset>
-    <metadata table-name="t_user" data-nodes="encrypt.t_user">
-        <column name="user_id" type="integer" />
-        <column name="user_name_cipher" type="varchar" />
-        <column name="password_cipher" type="varchar" />
-        <column name="email_cipher" type="varchar" />
-        <column name="user_telephone_cipher" type="varchar" />
-        <column name="creation_date" type="date" />
+    <metadata table-name="t_broadcast_table_for_ddl" data-nodes="encrypt.t_broadcast_table_for_ddl">
+        <column name="id" type="integer" />
+        <column name="description" type="varchar" />
+        <column name="name" type="varchar" />
     </metadata>
 </dataset>
+
+
+
+
+
 

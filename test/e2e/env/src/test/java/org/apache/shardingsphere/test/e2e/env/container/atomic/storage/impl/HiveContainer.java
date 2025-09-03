@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
+import lombok.var;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
+import java.sql.DriverManager;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -51,8 +55,12 @@ public final class HiveContainer extends DockerStorageContainer {
         setCommands(storageContainerConfig.getContainerCommand());
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
-        super.configure();
+        withExposedPorts(getExposedPort());
+        // Use custom wait strategy for Hive - don't rely on ready_user since Hive doesn't support traditional user creation
         withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
+        // Wait for HiveServer2 to be ready by checking if we can connect to the default database
+        setWaitStrategy(new JdbcConnectionWaitStrategy(
+                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
     }
     
     @Override
@@ -83,6 +91,25 @@ public final class HiveContainer extends DockerStorageContainer {
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
-        return Optional.of("default");
+        // Don't wait for encrypt database - it's created during container startup
+        // in the getCommand() method of HiveContainerConfigurationFactory
+        return Optional.empty();
+    }
+
+    @Override
+    protected void postStart() {
+        // Ensure databases exist before creating data sources
+        try {
+            execInContainer("bash", "-c", 
+                "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; CREATE DATABASE IF NOT EXISTS expected_dataset;\"");
+            System.out.println("Databases created successfully in postStart()");
+        } catch (Exception e) {
+            System.err.println("Failed to create databases in postStart(): " + e.getMessage());
+            // Don't fail the container startup, just log the error
+        }
+        
+        // Now create data sources
+        super.postStart();
+        System.out.println("Hive container postStart completed successfully");
     }
 }

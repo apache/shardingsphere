@@ -50,7 +50,7 @@ public final class HiveContainerConfigurationFactory {
             DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive"))
         );
     }
-    
+
     /**
      * Create new instance of Hive container configuration.
      *
@@ -62,7 +62,8 @@ public final class HiveContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "--service hiveserver2";
+        // Start Hive services - database creation is handled in postStart() method
+        return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }
     
     private static Map<String, String> getContainerEnvironments() {
@@ -74,7 +75,7 @@ public final class HiveContainerConfigurationFactory {
         result.put("LANG", "C.UTF-8");
         return result;
     }
-    
+
     private static Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(1, 1F);
         String path = "env/hive/01-initdb.sql";
@@ -86,7 +87,7 @@ public final class HiveContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(3, 1F);
+        Map<String, String> result = new HashMap<>(4, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "Hive")) + "/01-actual-init.sql",
                 "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "Hive")) + "/01-expected-init.sql",

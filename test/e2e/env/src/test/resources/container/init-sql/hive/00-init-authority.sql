@@ -21,10 +21,13 @@
 -- Hive authentication is typically handled at the Hadoop/HDFS level
 
 -- Create default database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS default;
+CREATE DATABASE IF NOT EXISTS encrypt;
 
 -- Create test database for E2E testing
-CREATE DATABASE IF NOT EXISTS test_user;
+--CREATE DATABASE IF NOT EXISTS test_user;
+
+-- Create databases for encrypt scenario
+CREATE DATABASE IF NOT EXISTS expected_dataset;
 
 
 
