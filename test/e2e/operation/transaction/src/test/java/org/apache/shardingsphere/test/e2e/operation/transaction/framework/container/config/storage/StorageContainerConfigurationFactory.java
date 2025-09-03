@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.H2ContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect.OpenGaussContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect.PostgreSQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.OpenGaussContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.PostgreSQLContainerConfigurationFactory;
 
 /**
  * Storage container configuration factory.
