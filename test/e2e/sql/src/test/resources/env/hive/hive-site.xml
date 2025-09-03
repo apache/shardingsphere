@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>/opt/hive/warehouse</value>
+    </property>
+    
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+    </property>
+    
+    <property>
+        <name>hive.metastore.autoCreateAll</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>false</value>
+    </property>
+    
+    <property>
+        <name>hive.server2.transport.mode</name>
+        <value>binary</value>
+    </property>
+    
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+    </property>
+    
+    <property>
+        <name>hive.support.concurrency</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>hive.txn.manager</name>
+        <value>org.apache.hadoop.hive.ql.lockmgr.DbTxnManager</value>
+    </property>
+    
+    <property>
+        <name>hive.compactor.initiator.on</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>hive.compactor.cleaner.on</name>
+        <value>true</value>
+    </property>
+    
+    <property>
+        <name>hive.compactor.worker.threads</name>
+        <value>1</value>
+    </property>
+    
+    <property>
+        <name>hive.exec.dynamic.partition.mode</name>
+        <value>nonstrict</value>
+    </property>
+    
+    <property>
+        <name>hive.log.dir</name>
+        <value>/opt/hive/logs</value>
+    </property>
+    
+    <property>
+        <name>hive.log.level</name>
+        <value>INFO</value>
+    </property>
+</configuration>
+
+
+
+
+
+
+

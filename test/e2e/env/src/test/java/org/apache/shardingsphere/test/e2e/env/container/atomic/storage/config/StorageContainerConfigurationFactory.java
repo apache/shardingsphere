@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.H2ContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.HiveContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MariaDBContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.OpenGaussContainerConfigurationFactory;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.di
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConfigurationFactory {
-    
+
     /**
      * Create new instance of storage container configuration.
      *
@@ -50,11 +51,13 @@ public final class StorageContainerConfigurationFactory {
                 return OpenGaussContainerConfigurationFactory.newInstance(scenario);
             case "H2":
                 return H2ContainerConfigurationFactory.newInstance(scenario);
+            case "Hive":
+                return HiveContainerConfigurationFactory.newInstance(scenario);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
     }
-    
+
     /**
      * Create new instance of storage container configuration.
      *
@@ -75,6 +78,8 @@ public final class StorageContainerConfigurationFactory {
                 return H2ContainerConfigurationFactory.newInstance();
             case "MariaDB":
                 return MariaDBContainerConfigurationFactory.newInstance();
+            case "Hive":
+                return HiveContainerConfigurationFactory.newInstance();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

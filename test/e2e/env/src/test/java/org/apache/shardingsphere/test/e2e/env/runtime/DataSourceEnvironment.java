@@ -43,6 +43,8 @@ public final class DataSourceEnvironment {
                 return "org.postgresql.Driver";
             case "openGauss":
                 return "org.opengauss.Driver";
+            case "Hive":
+                return "org.apache.hive.jdbc.HiveDriver";
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }
@@ -71,6 +73,8 @@ public final class DataSourceEnvironment {
                 return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
             case "openGauss":
                 return String.format("jdbc:opengauss://%s:%s/", host, port);
+            case "Hive":
+                return String.format("jdbc:hive2://%s:%s/", host, port);
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }
@@ -102,6 +106,8 @@ public final class DataSourceEnvironment {
                 return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);
             case "openGauss":
                 return String.format("jdbc:opengauss://%s:%s/%s?batchMode=OFF", host, port, dataSourceName);
+            case "Hive":
+                return String.format("jdbc:hive2://%s:%s/%s?ssl=false&useUnicode=true&characterEncoding=utf-8", host, port, dataSourceName);
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }
