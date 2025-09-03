@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -51,7 +51,7 @@ public final class PostgreSQLContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "--max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
+        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER + " --max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
     }
     
     private static Map<String, String> getContainerEnvironments() {
@@ -65,7 +65,7 @@ public final class PostgreSQLContainerConfigurationFactory {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, DATABASE_TYPE) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, DATABASE_TYPE) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("/env/postgresql/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
         return result;
     }
 }
