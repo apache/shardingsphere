@@ -61,11 +61,14 @@ public final class PostgreSQLContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER;
+        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER + " --max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        return Collections.singletonMap("POSTGRES_PASSWORD", StorageContainerConstants.PASSWORD);
+        Map<String, String> result = new HashMap<>(2, 1F);
+        result.put("POSTGRES_HOST", StorageContainerConstants.USERNAME);
+        result.put("POSTGRES_PASSWORD", StorageContainerConstants.PASSWORD);
+        return result;
     }
     
     private static Map<String, String> getMountedResources() {
