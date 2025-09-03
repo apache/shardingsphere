@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config;
+package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.H2ContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.mysql.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.opengauss.OpenGaussContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.postgresql.PostgreSQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect.OpenGaussContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.dialect.PostgreSQLContainerConfigurationFactory;
 
 /**
  * Storage container configuration factory.
