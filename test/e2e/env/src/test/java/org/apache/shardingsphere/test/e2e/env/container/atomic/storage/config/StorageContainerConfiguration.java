@@ -44,11 +44,11 @@ public class StorageContainerConfiguration {
     
     public StorageContainerConfiguration(final String containerCommand, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources,
                                          final Map<String, DatabaseType> databaseTypes, final Map<String, DatabaseType> expectedDatabaseTypes) {
-        this.databaseTypes = databaseTypes;
-        this.expectedDatabaseTypes = expectedDatabaseTypes;
         scenario = null;
         this.containerCommand = containerCommand;
         this.containerEnvironments = containerEnvironments;
         this.mountedResources = mountedResources;
+        this.databaseTypes = databaseTypes;
+        this.expectedDatabaseTypes = expectedDatabaseTypes;
     }
 }
