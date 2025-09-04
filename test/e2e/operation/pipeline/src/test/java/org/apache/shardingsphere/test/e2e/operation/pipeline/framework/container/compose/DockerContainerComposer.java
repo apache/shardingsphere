@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerSto
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
@@ -65,7 +66,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
             int majorVersion = databaseType instanceof MySQLDatabaseType ? new DockerImageVersion(storageContainerImage).getMajorVersion() : 0;
-            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType, majorVersion);
+            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), majorVersion);
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
                     storageContainerConfig));
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));

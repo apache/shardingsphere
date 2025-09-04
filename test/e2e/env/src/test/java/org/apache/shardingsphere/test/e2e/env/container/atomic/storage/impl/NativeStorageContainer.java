@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.Storage
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -59,7 +60,7 @@ public final class NativeStorageContainer implements StorageContainer {
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        storageContainerConfiguration = StorageContainerConfigurationFactory.newInstance(this.databaseType, this.scenario);
+        storageContainerConfiguration = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(this.databaseType), this.databaseType, this.scenario);
         initDatabase();
         actualDataSourceMap = createActualDataSourceMap();
         expectedDataSourceMap = createExpectedDataSourceMap();
