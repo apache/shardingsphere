@@ -26,21 +26,21 @@ public interface StorageContainerConfigurationOption {
     
     /**
      * Get command.
-     * 
+     *
      * @return command
      */
     String getCommand();
     
     /**
      * Get container environments.
-     * 
+     *
      * @return container environments
      */
     Map<String, String> getContainerEnvironments();
     
     /**
      * Get mounted resources.
-     * 
+     *
      * @return mounted resources
      */
     Map<String, String> getMountedResources();
