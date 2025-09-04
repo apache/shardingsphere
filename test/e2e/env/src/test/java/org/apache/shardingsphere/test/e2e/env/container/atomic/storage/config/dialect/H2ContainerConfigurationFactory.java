@@ -44,8 +44,7 @@ public final class H2ContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        Map<String, String> mountedResources = getMountedResources();
-        return new StorageContainerConfiguration("", Collections.emptyMap(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
     }
     
     /**
@@ -55,8 +54,16 @@ public final class H2ContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
-        return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), getMountedResources(scenario),
+        return new StorageContainerConfiguration(scenario, getCommand(), getContainerEnvironments(), getMountedResources(scenario),
                 DatabaseEnvironmentManager.getDatabaseTypes(scenario, DATABASE_TYPE), DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, DATABASE_TYPE));
+    }
+    
+    private static String getCommand() {
+        return "";
+    }
+    
+    private static Map<String, String> getContainerEnvironments() {
+        return Collections.emptyMap();
     }
     
     private static Map<String, String> getMountedResources() {
