@@ -44,8 +44,7 @@ public final class H2ContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        Map<String, String> mountedResources = new HashMap<>(1, 1F);
-        mountedResources.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
+        Map<String, String> mountedResources = getMountedResources();
         return new StorageContainerConfiguration("", Collections.emptyMap(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
     }
     
@@ -56,10 +55,18 @@ public final class H2ContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
-        Map<String, String> mountedResources = new HashMap<>(2, 1F);
-        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, DATABASE_TYPE) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        mountedResources.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, DATABASE_TYPE) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), mountedResources,
+        return new StorageContainerConfiguration(scenario, "", Collections.emptyMap(), getMountedResources(scenario),
                 DatabaseEnvironmentManager.getDatabaseTypes(scenario, DATABASE_TYPE), DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, DATABASE_TYPE));
+    }
+    
+    private static Map<String, String> getMountedResources() {
+        return Collections.singletonMap("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
+    }
+    
+    private static Map<String, String> getMountedResources(final String scenario) {
+        Map<String, String> result = new HashMap<>(2, 1F);
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, DATABASE_TYPE) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, DATABASE_TYPE) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        return result;
     }
 }
