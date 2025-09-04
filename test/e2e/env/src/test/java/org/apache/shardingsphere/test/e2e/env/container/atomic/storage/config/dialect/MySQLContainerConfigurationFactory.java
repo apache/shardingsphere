@@ -44,6 +44,15 @@ public final class MySQLContainerConfigurationFactory {
     /**
      * Create new instance of MySQL container configuration.
      *
+     * @return created instance
+     */
+    public static StorageContainerConfiguration newInstance() {
+        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
+    }
+    
+    /**
+     * Create new instance of MySQL container configuration.
+     *
      * @param scenario scenario
      * @return created instance
      */
@@ -62,15 +71,6 @@ public final class MySQLContainerConfigurationFactory {
         return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(majorVersion), Collections.emptyMap(), Collections.emptyMap());
     }
     
-    /**
-     * Create new instance of MySQL container configuration.
-     *
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
-    }
-    
     private static String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
@@ -79,6 +79,16 @@ public final class MySQLContainerConfigurationFactory {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
+        return result;
+    }
+    
+    private static Map<String, String> getMountedResources() {
+        Map<String, String> result = new HashMap<>(1, 1F);
+        String path = "env/mysql/01-initdb.sql";
+        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+        if (null != url) {
+            result.put(path, "/docker-entrypoint-initdb.d/01-initdb.sql");
+        }
         return result;
     }
     
@@ -96,16 +106,6 @@ public final class MySQLContainerConfigurationFactory {
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         if (majorVersion > 5) {
             result.put("/env/mysql/mysql8/02-initdb.sql", "/docker-entrypoint-initdb.d/02-initdb.sql");
-        }
-        return result;
-    }
-    
-    private static Map<String, String> getMountedResources() {
-        Map<String, String> result = new HashMap<>(1, 1F);
-        String path = "env/mysql/01-initdb.sql";
-        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (null != url) {
-            result.put(path, "/docker-entrypoint-initdb.d/01-initdb.sql");
         }
         return result;
     }
