@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -33,42 +30,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * OpenGauss container configuration factory.
+ * Storage container configuration option for openGauss.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class OpenGaussContainerConfigurationFactory {
+public final class OpenGaussStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
-    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "openGauss");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
-    /**
-     * Create new instance of openGauss container configuration.
-     *
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
-    }
-    
-    /**
-     * Create new instance of openGauss container configuration.
-     *
-     * @param scenario scenario
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance(final String scenario) {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
-                DatabaseEnvironmentManager.getDatabaseTypes(scenario, DATABASE_TYPE), DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, DATABASE_TYPE));
-    }
-    
-    private static String getCommand() {
+    @Override
+    public String getCommand() {
         return "--max_connections=600 --max_prepared_transactions=600";
     }
     
-    private static Map<String, String> getContainerEnvironments() {
+    @Override
+    public Map<String, String> getContainerEnvironments() {
         return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.PASSWORD);
     }
     
-    private static Map<String, String> getMountedResources() {
+    @Override
+    public Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put("/env/opengauss/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
@@ -76,12 +55,28 @@ public final class OpenGaussContainerConfigurationFactory {
         return result;
     }
     
-    private static Map<String, String> getMountedResources(final String scenario) {
+    @Override
+    public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(4, 1F);
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, DATABASE_TYPE) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, DATABASE_TYPE) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
         result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
+    }
+    
+    @Override
+    public Map<String, String> getMountedResources(final int majorVersion) {
+        return getMountedResources();
+    }
+    
+    @Override
+    public boolean isEmbeddedStorageContainer() {
+        return false;
+    }
+    
+    @Override
+    public boolean isRecognizeMajorVersion() {
+        return false;
     }
 }
