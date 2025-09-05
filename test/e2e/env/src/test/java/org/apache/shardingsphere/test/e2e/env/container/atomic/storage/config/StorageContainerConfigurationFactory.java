@@ -20,12 +20,11 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.H2ContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MariaDBContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.MySQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.OpenGaussContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect.PostgreSQLContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.hive.HiveContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Storage container configuration factory.
@@ -36,52 +35,29 @@ public final class StorageContainerConfigurationFactory {
     /**
      * Create new instance of storage container configuration.
      *
-     * @param databaseType database type
-     * @param scenario scenario
-     * @return created instance
-     * @throws RuntimeException runtime exception
+     * @param option storage container configuration option
+     * @param majorVersion majorVersion
+     * @return created storage container configuration
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final String scenario) {
-        switch (databaseType.getType()) {
-            case "MySQL":
-                return MySQLContainerConfigurationFactory.newInstance(scenario);
-            case "PostgreSQL":
-                return PostgreSQLContainerConfigurationFactory.newInstance(scenario);
-            case "openGauss":
-                return OpenGaussContainerConfigurationFactory.newInstance(scenario);
-            case "H2":
-                return H2ContainerConfigurationFactory.newInstance(scenario);
-            case "Hive":
-                return HiveContainerConfigurationFactory.newInstance(scenario);
-            default:
-                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
-        }
+    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final int majorVersion) {
+        return option.isRecognizeMajorVersion()
+                ? new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(majorVersion), Collections.emptyMap(), Collections.emptyMap())
+                : new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
     }
     
     /**
      * Create new instance of storage container configuration.
      *
+     * @param option storage container configuration option
      * @param databaseType database type
-     * @param majorVersion majorVersion
-     * @return created instance
-     * @throws RuntimeException runtime exception
+     * @param scenario  scenario
+     * @return created storage container configuration
      */
-    public static StorageContainerConfiguration newInstance(final DatabaseType databaseType, final int majorVersion) {
-        switch (databaseType.getType()) {
-            case "MySQL":
-                return MySQLContainerConfigurationFactory.newInstance(majorVersion);
-            case "PostgreSQL":
-                return PostgreSQLContainerConfigurationFactory.newInstance();
-            case "openGauss":
-                return OpenGaussContainerConfigurationFactory.newInstance();
-            case "H2":
-                return H2ContainerConfigurationFactory.newInstance();
-            case "MariaDB":
-                return MariaDBContainerConfigurationFactory.newInstance();
-            case "Hive":
-                return HiveContainerConfigurationFactory.newInstance();
-            default:
-                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
-        }
+    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final String scenario) {
+        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType);
+        Map<String, DatabaseType> expectedDatabaseTypes = DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, databaseType);
+        return option.isEmbeddedStorageContainer()
+                ? new StorageContainerConfiguration(scenario, option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(scenario), databaseTypes, expectedDatabaseTypes)
+                : new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(scenario), databaseTypes, expectedDatabaseTypes);
     }
 }

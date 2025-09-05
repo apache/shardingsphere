@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
@@ -28,35 +26,48 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * MariaDB container configuration factory.
+ * Storage container configuration option for MariaDB.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MariaDBContainerConfigurationFactory {
+public final class MariaDBStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
-    /**
-     * Create new instance of MariaDB container configuration.
-     *
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
-    }
-    
-    private static String getCommand() {
+    @Override
+    public String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
-    private static Map<String, String> getContainerEnvironments() {
+    @Override
+    public Map<String, String> getContainerEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
-    private static Map<String, String> getMountedResources() {
+    @Override
+    public Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("/env/mysql/mysql8/my.cnf", MariaDBContainer.MARIADB_CONF_IN_CONTAINER);
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         return result;
+    }
+    
+    @Override
+    public Map<String, String> getMountedResources(final String scenario) {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Map<String, String> getMountedResources(final int majorVersion) {
+        return getMountedResources();
+    }
+    
+    @Override
+    public boolean isEmbeddedStorageContainer() {
+        return false;
+    }
+    
+    @Override
+    public boolean isRecognizeMajorVersion() {
+        return false;
     }
 }

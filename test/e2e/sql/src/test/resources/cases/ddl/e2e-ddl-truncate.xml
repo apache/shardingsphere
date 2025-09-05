@@ -59,10 +59,10 @@
         </assertion>
     </test-case>
 
-<!--    <test-case sql="TRUNCATE TABLE t_user_details PARTITION (dt='2024-01-01', country='US')" db-types="Hive" scenario-types="encrypt">-->
-<!--        <assertion expected-data-file="create_hive_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher STRING, description STRING) PARTITIONED BY (dt STRING, country STRING) STORED AS ORC TBLPROPERTIES ('orc.compress'='SNAPPY'); ALTER TABLE t_user_details ADD PARTITION (dt='2024-01-01', country='US')" affected-table="t_user_details" />-->
-<!--            <destroy-sql sql="DROP TABLE t_user_details" />-->
-<!--        </assertion>-->
-<!--    </test-case>-->
+    <test-case sql="TRUNCATE TABLE t_user_details PARTITION (dt='2024-01-01', country='US')" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="create_hive_table.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher STRING, description STRING) PARTITIONED BY (dt STRING, country STRING) STORED AS ORC TBLPROPERTIES ('orc.compress'='SNAPPY'); ALTER TABLE t_user_details ADD PARTITION (dt='2024-01-01', country='US')" affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details" />
+        </assertion>
+    </test-case>
 </e2e-test-cases>

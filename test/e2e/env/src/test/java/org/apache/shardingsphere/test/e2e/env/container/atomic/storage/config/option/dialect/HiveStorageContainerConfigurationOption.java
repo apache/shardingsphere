@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.hive;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.HiveContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
@@ -35,8 +34,7 @@ import java.util.Map;
 /**
  * Hive container configuration factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HiveContainerConfigurationFactory {
+public final class HiveStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     /**
      * Create new instance of Hive container configuration.
@@ -45,7 +43,8 @@ public final class HiveContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance(final String scenario) {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario),
+        HiveStorageContainerConfigurationOption option = new HiveStorageContainerConfigurationOption();
+        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(scenario),
                 DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")),
                 DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")));
     }
@@ -56,14 +55,17 @@ public final class HiveContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance() {
-        return new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
+        HiveStorageContainerConfigurationOption option = new HiveStorageContainerConfigurationOption();
+        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
     }
     
-    private static String getCommand() {
+    @Override
+    public String getCommand() {
         return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }
     
-    private static Map<String, String> getContainerEnvironments() {
+    @Override
+    public Map<String, String> getContainerEnvironments() {
         Map<String, String> result = new HashMap<>(4, 1F);
         result.put("SERVICE_NAME", "hiveserver2");
         result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true "
@@ -73,7 +75,8 @@ public final class HiveContainerConfigurationFactory {
         return result;
     }
     
-    private static Map<String, String> getMountedResources() {
+    @Override
+    public Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(1, 1F);
         String path = "env/hive/01-initdb.sql";
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
@@ -83,7 +86,8 @@ public final class HiveContainerConfigurationFactory {
         return result;
     }
     
-    private static Map<String, String> getMountedResources(final String scenario) {
+    @Override
+    public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(4, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "Hive")) + "/01-actual-init.sql",
                 "/docker-entrypoint-initdb.d/01-actual-init.sql");
@@ -91,5 +95,20 @@ public final class HiveContainerConfigurationFactory {
                 "/docker-entrypoint-initdb.d/01-expected-init.sql");
         result.put("/env/hive/hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
         return result;
+    }
+    
+    @Override
+    public Map<String, String> getMountedResources(final int majorVersion) {
+        return getMountedResources();
+    }
+    
+    @Override
+    public boolean isEmbeddedStorageContainer() {
+        return false;
+    }
+    
+    @Override
+    public boolean isRecognizeMajorVersion() {
+        return false;
     }
 }

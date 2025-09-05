@@ -31,6 +31,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
@@ -56,8 +58,10 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
         containers = new ITContainers(testParam.getScenario());
         governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
+        StorageContainerConfigurationOption option = StorageContainerConfigurationOptionFactory.newInstance(testParam.getDatabaseType());
         StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "",
-                StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType(), testParam.getScenario())));
+                StorageContainerConfigurationFactory.newInstance(option, testParam.getDatabaseType(), testParam.getScenario())));
+        
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");

@@ -34,11 +34,12 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.Z
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.storage.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.proxy.TransactionProxyContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.TransactionProxyContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.param.TransactionTestParameter;
 
 import java.net.URL;
@@ -68,7 +69,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         TransactionE2EEnvTypeEnum envType = TransactionE2EEnvironment.getInstance().getItEnvType();
         if (TransactionE2EEnvTypeEnum.DOCKER == envType) {
             storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, testParam.getStorageContainerImage(),
-                    StorageContainerConfigurationFactory.newInstance(databaseType, testParam.getScenario())));
+                    StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, testParam.getScenario())));
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }
