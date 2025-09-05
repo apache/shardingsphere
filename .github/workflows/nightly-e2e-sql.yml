@@ -75,7 +75,7 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL, openGauss, Hive ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, distsql_rdl, passthrough, db, tbl, encrypt, readwrite_splitting, shadow, mask, dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding, db_tbl_sql_federation, empty_storage_units ]
         additional-options: [ '' ]
         include:
@@ -83,6 +83,9 @@ jobs:
             database: MySQL
             scenario: passthrough
             additional-options: '-Dmysql-connector-java.version=8.3.0'
+          - adapter: jdbc
+            database: Hive
+            scenario: encrypt
         exclude:
           - adapter: jdbc
             scenario: passthrough
@@ -98,51 +101,6 @@ jobs:
             mode: Standalone
             scenario: passthrough
           - adapter: proxy
-            scenario: empty_storage_units
-          # Hive only supports encrypt scenario and JDBC adapter
-          - database: Hive
-            adapter: proxy
-          - database: Hive
-            scenario: empty_rules
-          - database: Hive
-            scenario: distsql_rdl
-          - database: Hive
-            scenario: passthrough
-          - database: Hive
-            scenario: db
-          - database: Hive
-            scenario: tbl
-          - database: Hive
-            scenario: readwrite_splitting
-          - database: Hive
-            scenario: shadow
-          - database: Hive
-            scenario: mask
-          - database: Hive
-            scenario: dbtbl_with_readwrite_splitting
-          - database: Hive
-            scenario: dbtbl_with_readwrite_splitting_and_encrypt
-          - database: Hive
-            scenario: sharding_and_encrypt
-          - database: Hive
-            scenario: encrypt_and_readwrite_splitting
-          - database: Hive
-            scenario: encrypt_shadow
-          - database: Hive
-            scenario: readwrite_splitting_and_shadow
-          - database: Hive
-            scenario: sharding_and_shadow
-          - database: Hive
-            scenario: sharding_encrypt_shadow
-          - database: Hive
-            scenario: mask_encrypt
-          - database: Hive
-            scenario: mask_sharding
-          - database: Hive
-            scenario: mask_encrypt_sharding
-          - database: Hive
-            scenario: db_tbl_sql_federation
-          - database: Hive
             scenario: empty_storage_units
     steps:
       - uses: actions/checkout@v4
