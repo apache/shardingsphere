@@ -63,7 +63,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         String path = "/env/mysql/my.cnf";
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         if (null != url) {
-            result.put("/env/mysql/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+            result.put("/env/mysql/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         } else {
             result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         }
