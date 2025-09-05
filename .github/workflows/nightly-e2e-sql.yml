@@ -99,7 +99,6 @@ jobs:
             scenario: passthrough
           - adapter: proxy
             scenario: empty_storage_units
-          # Hive only supports encrypt scenario and JDBC adapter
           - database: Hive
             adapter: proxy
           - database: Hive
