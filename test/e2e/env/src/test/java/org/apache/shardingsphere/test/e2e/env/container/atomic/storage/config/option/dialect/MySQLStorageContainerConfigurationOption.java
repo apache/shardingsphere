@@ -60,7 +60,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        String path = "/env/mysql/my.cnf";
+        String path = "/env/mysql/8/my.cnf";
         URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         if (null != url) {
             result.put("/env/mysql/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
@@ -73,7 +73,13 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
         Map<String, String> result = new HashMap<>(3, 1F);
-        result.put(String.format("/container/mysql/cnf/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+        String path = String.format("/env/mysql/%s/my.cnf", majorVersion);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+        if (null != url) {
+            result.put(String.format("/env/mysql/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+        } else {
+            result.put(String.format("/container/mysql/cnf/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+        }
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         if (majorVersion > 5) {
             result.put("/env/mysql/mysql8/02-initdb.sql", "/docker-entrypoint-initdb.d/02-initdb.sql");
