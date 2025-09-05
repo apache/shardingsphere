@@ -30,33 +30,32 @@ import java.util.AbstractMap;
  * System database of Firebird.
  */
 public final class FirebirdSystemDatabase implements DialectSystemDatabase {
-
+    
     private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Collections.singletonList("rdb"));
-
-
+    
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new AbstractMap<String, Collection<String>>() {
-
+        
         @Override
         public Collection<String> get(final Object key) {
             return SYSTEM_SCHEMAS;
         }
-
+        
         @Override
         public Set<Entry<String, Collection<String>>> entrySet() {
             return Collections.emptySet();
         }
     };
-
+    
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
         return SYSTEM_DATABASE_SCHEMA_MAP;
     }
-
+    
     @Override
     public Collection<String> getSystemSchemas() {
         return SYSTEM_SCHEMAS;
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "Firebird";
