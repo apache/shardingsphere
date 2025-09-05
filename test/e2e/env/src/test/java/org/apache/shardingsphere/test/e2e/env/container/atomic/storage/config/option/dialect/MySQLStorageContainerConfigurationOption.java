@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUti
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
-import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,13 +51,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     
     @Override
     public Map<String, String> getMountedResources() {
-        Map<String, String> result = new HashMap<>(1, 1F);
-        String path = "env/mysql/01-initdb.sql";
-        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (null != url) {
-            result.put(path, "/docker-entrypoint-initdb.d/01-initdb.sql");
-        }
-        return result;
+        return Collections.singletonMap("env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override
