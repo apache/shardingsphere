@@ -109,7 +109,6 @@ class DistSQLBackendHandlerFactoryTest {
     
     private MetaDataContexts mockMetaDataContexts(final ShardingSphereDatabase database) {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
         return result;
     }

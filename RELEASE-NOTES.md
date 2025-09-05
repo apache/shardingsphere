@@ -140,6 +140,7 @@
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
 1. Encrypt: Add quotes to encrypt rewrite derived columns - [#34950](https://github.com/apache/shardingsphere/pull/34950)
 1. Encrypt: Add support for NOT LIKE operator in encryption - [#35984](https://github.com/apache/shardingsphere/pull/35984)
+1. Readwrite-splitting: Update transactionalReadQueryStrategy default type and modify doc - [#36477](https://github.com/apache/shardingsphere/pull/36477)
 
 ### Bug Fixes
 
