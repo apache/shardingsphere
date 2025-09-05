@@ -47,6 +47,6 @@ public final class FirebirdSchemaOption implements DialectSchemaOption {
     
     @Override
     public Optional<String> getDefaultSystemSchema() {
-        return Optional.of("rdb");
+        return Optional.of("system_tables");
     }
 }

@@ -56,10 +56,10 @@ class FirebirdSchemaMetaDataLoaderTest {
     @BeforeEach
     void setUp() throws SQLException {
         ResultSet tableResultSet = mockTableResultSet();
-        when(dataSource.getConnection().getMetaData().getTables("catalog", "public", null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"}))
+        when(dataSource.getConnection().getMetaData().getTables("catalog", "sharding_db", null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"}))
                 .thenReturn(tableResultSet);
         when(dataSource.getConnection().getCatalog()).thenReturn("catalog");
-        when(dataSource.getConnection().getSchema()).thenReturn("public");
+        when(dataSource.getConnection().getSchema()).thenReturn("sharding_db");
         ResultSet schemaResultSet = mockSchemaResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
     }
@@ -70,11 +70,11 @@ class FirebirdSchemaMetaDataLoaderTest {
         when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "RDB$RELATIONS", "RDB$REL", "RDB_Relations", "rdb$functions");
         return result;
     }
-    
+
     private ResultSet mockSchemaResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TABLE_SCHEM")).thenReturn("rdb", "schema1", "schema2");
+        when(result.getString("TABLE_SCHEM")).thenReturn("system_tables","sharding_db", "schema1", "schema2");
         return result;
     }
     
@@ -83,9 +83,9 @@ class FirebirdSchemaMetaDataLoaderTest {
         Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
         assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(schemaTableNames));
     }
-    
+
     @Test
     void assertLoadSchemaNames() throws SQLException {
-        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaNames(dataSource.getConnection()), is(Collections.singletonList("rdb")));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaNames(dataSource.getConnection()), is(Collections.singletonList("sharding_db")));
     }
 }

@@ -35,13 +35,13 @@ class FirebirdSystemDatabaseTest {
 
     @Test
     void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Collections.singletonList("rdb"))));
+        assertThat(systemDatabase.getSystemSchemas(), is(new HashSet<>(Collections.singletonList("system_tables"))));
     }
 
     @Test
     void assertGetSystemSchemasByDatabaseName() {
-        assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("sharding_db"), is(Collections.singleton("rdb")));
-        assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("logic_db"), is(Collections.singleton("rdb")));
-        assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("firebird"), is(Collections.singleton("rdb")));
+        assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("sharding_db"), is(Collections.singleton("system_tables")));
+        assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("logic_db"), is(Collections.singleton("system_tables")));
+        assertThat(systemDatabase.getSystemDatabaseSchemaMap().get("firebird"), is(Collections.singleton("system_tables")));
     }
 }
