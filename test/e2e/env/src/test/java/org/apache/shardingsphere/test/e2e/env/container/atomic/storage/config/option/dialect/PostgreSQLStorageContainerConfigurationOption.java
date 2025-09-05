@@ -52,7 +52,7 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     public Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("/env/postgresql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        result.put("/env/postgresql/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
+        result.put("/container/postgresql/cnf/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
         return result;
     }
     
@@ -61,7 +61,7 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/env/postgresql/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
+        result.put("/container/postgresql/cnf/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
         return result;
     }
     

@@ -50,8 +50,8 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     public Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put("/env/opengauss/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
+        result.put("/container/postgresql/cnf/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("/container/opengauss/cnf/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
     }
     
@@ -60,8 +60,8 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
         Map<String, String> result = new HashMap<>(4, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/env/postgresql/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("/env/opengauss/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
+        result.put("/container/postgresql/cnf/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("/container/opengauss/cnf/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
     }
     
