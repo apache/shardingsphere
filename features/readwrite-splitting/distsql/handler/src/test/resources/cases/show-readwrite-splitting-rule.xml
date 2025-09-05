@@ -20,7 +20,7 @@
     <test-case dist-sql="SHOW READWRITE_SPLITTING RULES" current-rule-config-yaml-file="cases/show-readwrite-splitting-rule-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>
-                readwrite_ds|write_ds|read_ds_0,read_ds_1|DYNAMIC||
+                readwrite_ds|write_ds|read_ds_0,read_ds_1|PRIMARY||
             </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>

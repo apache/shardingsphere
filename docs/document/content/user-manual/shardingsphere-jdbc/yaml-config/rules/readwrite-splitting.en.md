@@ -17,7 +17,7 @@ rules:
     <data_source_group_name> (+): # Logic data source group name of readwrite-splitting, which uses Groovy's Row Value Expressions SPI implementation to parse by default
       write_data_source_name: # Write data source name, which uses Groovy's Row Value Expressions SPI implementation to parse by default
       read_data_source_names: # Read data source names, multiple data source names separated with comma, which uses Groovy's Row Value Expressions SPI implementation to parse by default
-      transactionalReadQueryStrategy (?): # Routing strategy for read query within a transaction, values include: PRIMARY (to primary), FIXED (to fixed data source), DYNAMIC (to any data source), default value: DYNAMIC
+      transactionalReadQueryStrategy (?): # Routing strategy for read query within a transaction, values include: PRIMARY (to primary), FIXED (to fixed data source), DYNAMIC (to any data source), default value: PRIMARY, **Note: `FIXED` and `DYNAMIC` require a database that supports strong primary-replica synchronization, such as openGauss.**
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration
