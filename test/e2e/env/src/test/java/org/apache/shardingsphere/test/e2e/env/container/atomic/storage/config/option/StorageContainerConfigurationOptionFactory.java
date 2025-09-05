@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.op
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.MySQLStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.OpenGaussStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.PostgreSQLStorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.HiveStorageContainerConfigurationOption;
 
 /**
  * Storage container configuration option factory.
@@ -51,6 +52,8 @@ public final class StorageContainerConfigurationOptionFactory {
                 return new OpenGaussStorageContainerConfigurationOption();
             case "H2":
                 return new H2StorageContainerConfigurationOption();
+            case "Hive":
+                return new HiveStorageContainerConfigurationOption();
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }

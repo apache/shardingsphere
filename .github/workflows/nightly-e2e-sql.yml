@@ -83,6 +83,9 @@ jobs:
             database: MySQL
             scenario: passthrough
             additional-options: '-Dmysql-connector-java.version=8.3.0'
+          - adapter: jdbc
+            database: Hive
+            scenario: encrypt
         exclude:
           - adapter: jdbc
             scenario: passthrough

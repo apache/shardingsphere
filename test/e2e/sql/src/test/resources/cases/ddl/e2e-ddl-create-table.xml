@@ -23,16 +23,23 @@
             <destroy-sql sql="DROP TABLE t_order_details" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="create_broadcast_table.xml">
             <initial-sql affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-    
+
     <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number VARCHAR(45), description varchar(10))" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_table.xml">
+            <initial-sql affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher STRING, description STRING) PARTITIONED BY (dt STRING, country STRING) CLUSTERED BY (user_id) SORTED BY (address_id DESC) INTO 4 BUCKETS STORED AS ORC TBLPROPERTIES ('orc.compress'='SNAPPY')" db-types="Hive" scenario-types="encrypt">
+        <assertion expected-data-file="create_hive_table.xml">
             <initial-sql affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
