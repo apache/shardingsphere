@@ -54,7 +54,7 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                         + System.lineSeparator()
                         + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
                         + System.lineSeparator()
-                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC',"
+                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='PRIMARY',"
                         + System.lineSeparator()
                         + "TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))"
                         + System.lineSeparator()
@@ -64,7 +64,7 @@ class ReadwriteSplittingRuleConfigurationToDistSQLConverterTest {
                         + System.lineSeparator()
                         + "READ_STORAGE_UNITS(ds_slave_0,ds_slave_1),"
                         + System.lineSeparator()
-                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='DYNAMIC'"
+                        + "TRANSACTIONAL_READ_QUERY_STRATEGY='PRIMARY'"
                         + System.lineSeparator()
                         + ");"));
     }
