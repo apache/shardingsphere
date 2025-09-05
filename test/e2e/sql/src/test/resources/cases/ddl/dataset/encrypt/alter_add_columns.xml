@@ -25,5 +25,3 @@
         <column name="created_date" type="date" />
     </metadata>
 </dataset>
-
-
