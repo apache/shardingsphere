@@ -92,83 +92,83 @@
     <!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />-->
     <!--        </assertion>-->
     <!--    </test-case>-->
-	
-    <test-case sql="ALTER TABLE t_user_details_hive CHANGE COLUMN number_cipher number_cipher_new VARCHAR(50)" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_change.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_hive (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details_hive" />
-            <destroy-sql sql="DROP TABLE t_user_details_hive" />
-        </assertion>
-    </test-case>
 
-    <test-case sql="ALTER TABLE t_user_details ADD COLUMNS (email VARCHAR(100), created_date DATE)" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_add_columns.xml">
-            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details" />
-            <destroy-sql sql="DROP TABLE t_user_details" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_hive CHANGE COLUMN number_cipher number_cipher_new VARCHAR(50)" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_change.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_hive (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details_hive" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_hive" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_hive REPLACE COLUMNS (user_id INT, address_id INT, number_cipher_new VARCHAR(50), description VARCHAR(10))" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_change.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_hive (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details_hive" />
-            <destroy-sql sql="DROP TABLE t_user_details_hive" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details ADD COLUMNS (email VARCHAR(100), created_date DATE)" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_add_columns.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1)" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_hive REPLACE COLUMNS (user_id INT, address_id INT, number_cipher_new VARCHAR(50), description VARCHAR(10))" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_change.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_hive (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details_hive" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_hive" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned PARTITION (year=2024, month=1) RENAME TO PARTITION (year=2025, month=2)" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT); ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1)" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned_2 EXCHANGE PARTITION (year=2024, month=1) WITH TABLE t_user_details_partitioned" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="exchange_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT); ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1); CREATE TABLE t_user_details_partitioned_2 (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned_2" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned; DROP TABLE t_user_details_partitioned_2" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned PARTITION (year=2024, month=1) RENAME TO PARTITION (year=2025, month=2)" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT); ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned DROP PARTITION (year=2024, month=1)" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT); ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned_2 EXCHANGE PARTITION (year=2024, month=1) WITH TABLE t_user_details_partitioned" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="exchange_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT); ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1); CREATE TABLE t_user_details_partitioned_2 (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned_2" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned; DROP TABLE t_user_details_partitioned_2" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned SET FILEFORMAT ORC" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned DROP PARTITION (year=2024, month=1)" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT); ALTER TABLE t_user_details_partitioned ADD PARTITION (year=2024, month=1)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned SET TBLPROPERTIES ('comment'='Updated table comment')" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned SET FILEFORMAT ORC" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned SET SERDEPROPERTIES ('field.delim'=',', 'serialization.format'=',')" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned SET TBLPROPERTIES ('comment'='Updated table comment')" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
-    <test-case sql="ALTER TABLE t_user_details_partitioned SET LOCATION '/tmp/new_location'" db-types="Hive" scenario-types="encrypt">
-        <assertion expected-data-file="alter_partition.xml">
-            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />
-            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />
-        </assertion>
-    </test-case>
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned SET SERDEPROPERTIES ('field.delim'=',', 'serialization.format'=',')" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
+
+<!--    <test-case sql="ALTER TABLE t_user_details_partitioned SET LOCATION '/tmp/new_location'" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="alter_partition.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details_partitioned (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10)) PARTITIONED BY (year INT, month INT)" affected-table="t_user_details_partitioned" />-->
+<!--            <destroy-sql sql="DROP TABLE t_user_details_partitioned" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 
     <test-case sql="ALTER TABLE t_user_details_hive CHANGE COLUMN number_cipher number_cipher_new VARCHAR(50)" db-types="Hive" scenario-types="encrypt">
         <assertion expected-data-file="alter_change.xml">

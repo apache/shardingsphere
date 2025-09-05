@@ -34,4 +34,10 @@
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
+
+<!--    <test-case sql="DROP TABLE IF EXISTS t_user_details PURGE" db-types="Hive" scenario-types="encrypt">-->
+<!--        <assertion expected-data-file="drop_table.xml">-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher STRING, description STRING) PARTITIONED BY (dt STRING, country STRING) STORED AS ORC TBLPROPERTIES ('orc.compress'='SNAPPY')" affected-table="t_user_details" />-->
+<!--        </assertion>-->
+<!--    </test-case>-->
 </e2e-test-cases>
