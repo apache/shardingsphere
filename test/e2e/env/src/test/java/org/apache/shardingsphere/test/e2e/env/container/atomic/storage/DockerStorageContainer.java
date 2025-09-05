@@ -60,8 +60,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/00-init-authority.sql", "/docker-entrypoint-initdb.d/00-init-authority.sql", BindMode.READ_ONLY);
-        withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/99-be-ready.sql", "/docker-entrypoint-initdb.d/99-be-ready.sql", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/container/" + databaseType.getType().toLowerCase() + "/init-sql/00-init-authority.sql", "/docker-entrypoint-initdb.d/00-init-authority.sql", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/container/" + databaseType.getType().toLowerCase() + "/init-sql/99-be-ready.sql", "/docker-entrypoint-initdb.d/99-be-ready.sql", BindMode.READ_ONLY);
         withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
