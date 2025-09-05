@@ -15,7 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
+	
 <e2e-test-cases>
     <test-case sql="ALTER TABLE t_order_details ADD name varchar(10)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="alter_add.xml">
