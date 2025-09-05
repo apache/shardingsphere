@@ -30,7 +30,7 @@ import java.util.Set;
  * System database of Firebird.
  */
 public final class FirebirdSystemDatabase implements DialectSystemDatabase {
-
+    
     private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Collections.singletonList("system_tables"));
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new AbstractMap<String, Collection<String>>() {
