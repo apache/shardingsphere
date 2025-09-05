@@ -69,6 +69,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         } else {
             result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         }
+        log.error("===getMountedResources===:" + result);
         return result;
     }
     
