@@ -45,6 +45,7 @@ execute
     | dropLogfileGroup
     | createServer
     | dropServer
+    | dropEncryptKey
     | createView
     | dropView
     | createTrigger
@@ -100,6 +101,7 @@ execute
     | explain
     | doStatement
     | show
+    | refresh
     | setVariable
     | setCharacter
     | call

@@ -237,6 +237,10 @@ CASE
     : C A S E
     ;
 
+CATALOG
+    : C A T A L O G
+    ;
+
 CATALOG_NAME
     : C A T A L O G UL_ N A M E
     ;
@@ -683,6 +687,10 @@ ENCLOSED
 
 ENCRYPTION
     : E N C R Y P T I O N
+    ;
+
+ENCRYPTKEY
+    : E N C R Y P T K E Y
     ;
 
 END
@@ -1230,6 +1238,10 @@ KILL
 
 LAG
     : L A G
+    ;
+
+LDAP
+    : L D A P
     ;
 
 LANGUAGE
