@@ -58,7 +58,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         if (null != url) {
             result.put("/env/mysql/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         } else {
-            result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+            result.put("/container/mysql/cnf/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         }
         return result;
     }
@@ -70,7 +70,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         if (null != url) {
             result.put(String.format("/env/mysql/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         } else {
-            result.put(String.format("/container/mysql/cnf/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+            result.put("/container/mysql/cnf/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         }
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         if (majorVersion > 5) {
