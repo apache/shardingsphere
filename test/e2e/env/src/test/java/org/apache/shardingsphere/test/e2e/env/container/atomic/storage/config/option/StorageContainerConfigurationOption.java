@@ -71,7 +71,7 @@ public interface StorageContainerConfigurationOption {
     
     /**
      * Get supported major versions.
-     * 
+     *
      * @return supported major versions
      */
     List<Integer> getSupportedMajorVersions();
