@@ -40,9 +40,7 @@ public final class StorageContainerConfigurationFactory {
      * @return created storage container configuration
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final int majorVersion) {
-        return option.isRecognizeMajorVersion()
-                ? new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(majorVersion), Collections.emptyMap(), Collections.emptyMap())
-                : new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
+        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(majorVersion), Collections.emptyMap(), Collections.emptyMap());
     }
     
     /**

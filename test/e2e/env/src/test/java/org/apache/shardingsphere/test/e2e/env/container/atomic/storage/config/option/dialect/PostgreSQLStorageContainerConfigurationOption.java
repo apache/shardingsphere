@@ -49,14 +49,6 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
-    public Map<String, String> getMountedResources() {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("/env/postgresql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        result.put("/container/postgresql/cnf/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
-        return result;
-    }
-    
-    @Override
     public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
@@ -67,16 +59,14 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        return getMountedResources();
+        Map<String, String> result = new HashMap<>(2, 1F);
+        result.put("/env/postgresql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
+        result.put("/container/postgresql/cnf/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
+        return result;
     }
     
     @Override
     public boolean isEmbeddedStorageContainer() {
-        return false;
-    }
-    
-    @Override
-    public boolean isRecognizeMajorVersion() {
         return false;
     }
 }
