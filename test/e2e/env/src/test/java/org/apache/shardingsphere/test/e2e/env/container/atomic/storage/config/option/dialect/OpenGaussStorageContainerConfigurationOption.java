@@ -38,7 +38,7 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     
     @Override
     public String getCommand() {
-        return "--max_connections=600 --max_prepared_transactions=600";
+        return "";
     }
     
     @Override
