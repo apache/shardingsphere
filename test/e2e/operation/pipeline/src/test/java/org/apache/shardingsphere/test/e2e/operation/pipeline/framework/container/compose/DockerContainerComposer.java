@@ -35,7 +35,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.config.proxy.PipelineProxyContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DockerImageVersion;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 
 import java.security.InvalidParameterException;
 import java.util.Collections;

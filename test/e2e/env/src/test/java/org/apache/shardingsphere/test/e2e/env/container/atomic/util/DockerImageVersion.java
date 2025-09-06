@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 
 import org.apache.commons.lang3.StringUtils;
 
