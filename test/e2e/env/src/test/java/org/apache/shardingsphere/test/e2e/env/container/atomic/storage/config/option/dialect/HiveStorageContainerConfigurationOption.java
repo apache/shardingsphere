@@ -19,45 +19,21 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.HiveContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Hive container configuration factory.
+ * Storage container configuration option for Hive.
  */
 public final class HiveStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
-    /**
-     * Create new instance of Hive container configuration.
-     *
-     * @param scenario scenario
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance(final String scenario) {
-        HiveStorageContainerConfigurationOption option = new HiveStorageContainerConfigurationOption();
-        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(scenario),
-                DatabaseEnvironmentManager.getDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")),
-                DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, TypedSPILoader.getService(DatabaseType.class, "Hive")));
-    }
-    
-    /**
-     * Create new instance of Hive container configuration.
-     *
-     * @return created instance
-     */
-    public static StorageContainerConfiguration newInstance() {
-        HiveStorageContainerConfigurationOption option = new HiveStorageContainerConfigurationOption();
-        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), option.getMountedResources(), Collections.emptyMap(), Collections.emptyMap());
-    }
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
     
     @Override
     public String getCommand() {
@@ -66,11 +42,9 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     
     @Override
     public Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(4, 1F);
+        Map<String, String> result = new HashMap<>(3, 1F);
         result.put("SERVICE_NAME", "hiveserver2");
-        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true "
-                + "-Dhive.exec.dynamic.partition.mode=nonstrict "
-                + "-Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
+        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
         result.put("LANG", "C.UTF-8");
         return result;
     }
@@ -89,11 +63,9 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     @Override
     public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(4, 1F);
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, TypedSPILoader.getService(DatabaseType.class, "Hive")) + "/01-actual-init.sql",
-                "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, TypedSPILoader.getService(DatabaseType.class, "Hive")) + "/01-expected-init.sql",
-                "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/env/hive/hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
+        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
+        result.put("/container/hive/cnf/hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
         return result;
     }
     
