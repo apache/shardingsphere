@@ -37,7 +37,7 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public String getCommand() {
-        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER + " --max_connections=600 --max_prepared_transactions=600 --wal_level=logical";
+        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER;
     }
     
     @Override
