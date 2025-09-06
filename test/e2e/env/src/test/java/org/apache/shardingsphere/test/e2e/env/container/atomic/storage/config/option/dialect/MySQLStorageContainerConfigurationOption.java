@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
@@ -34,7 +33,6 @@ import java.util.Map;
 /**
  * Storage container configuration option for MySQL.
  */
-@Slf4j
 public final class MySQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
@@ -68,7 +66,6 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         } else {
             result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         }
-        log.error("===getMountedResources(scenario)===:" + result);
         return result;
     }
     
@@ -85,7 +82,6 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         if (majorVersion > 5) {
             result.put("/env/mysql/mysql8/02-initdb.sql", "/docker-entrypoint-initdb.d/02-initdb.sql");
         }
-        log.error("===getMountedResources(majorVersion)===:" + result);
         return result;
     }
     
