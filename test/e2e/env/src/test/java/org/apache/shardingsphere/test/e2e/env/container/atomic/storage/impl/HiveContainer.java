@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Hive container.
  */
+@Slf4j
 public final class HiveContainer extends DockerStorageContainer {
     
     public static final int HIVE_EXPOSED_PORT = 10000;
@@ -96,12 +98,18 @@ public final class HiveContainer extends DockerStorageContainer {
     protected void postStart() {
         try {
             execInContainer("bash", "-c",
-                    "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; CREATE DATABASE IF NOT EXISTS expected_dataset;\"");
-            System.out.println("Databases created successfully in postStart()");
+                    "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; "
+                            + "CREATE DATABASE IF NOT EXISTS expected_dataset; CREATE DATABASE IF NOT EXISTS mask;\"");
+            log.info("Databases created successfully in postStart()");
+            execInContainer("bash", "-c",
+                    "if [ -f /docker-entrypoint-initdb.d/01-actual-init.sql ]; then beeline -u \"jdbc:hive2://localhost:10000/default\" -f /docker-entrypoint-initdb.d/01-actual-init.sql; fi");
+            execInContainer("bash", "-c",
+                    "if [ -f /docker-entrypoint-initdb.d/01-expected-init.sql ]; then beeline -u \"jdbc:hive2://localhost:10000/default\" -f /docker-entrypoint-initdb.d/01-expected-init.sql; fi");
+            log.info("Initialization SQL files executed successfully");
         } catch (final InterruptedException | IOException ex) {
-            System.err.println("Failed to create databases in postStart(): " + ex.getMessage());
+            log.error("Failed to execute postStart operations: {}", ex.getMessage());
         }
         super.postStart();
-        System.out.println("Hive container postStart completed successfully");
+        log.info("Hive container postStart completed successfully");
     }
 }

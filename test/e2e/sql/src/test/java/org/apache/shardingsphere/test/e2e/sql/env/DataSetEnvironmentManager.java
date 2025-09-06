@@ -94,10 +94,19 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
-                insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetaData.getColumns(), databaseType);
+                DatabaseType currentDatabaseType;
+                try {
+                    currentDatabaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
+                } catch (final SQLException ex) {
+                    currentDatabaseType = databaseType;
+                }
+                String insertTableName = dataNode.getTableName();
+                if ("Hive".equalsIgnoreCase(currentDatabaseType.getType())) {
+                    insertTableName = dataNode.getDataSourceName() + "." + dataNode.getTableName();
+                }
+                insertSQL = generateInsertSQL(insertTableName, dataSetMetaData.getColumns(), currentDatabaseType);
             }
-            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
+            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups, databaseType));
         }
         final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
         for (Future<Void> future : futures) {
@@ -192,23 +201,65 @@ public final class DataSetEnvironmentManager {
         
         private final Collection<SQLValueGroup> sqlValueGroups;
         
+        private final DatabaseType databaseType;
+        
         @Override
         public Void call() throws SQLException {
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                for (SQLValueGroup each : sqlValueGroups) {
-                    setParameters(preparedStatement, each);
-                    preparedStatement.addBatch();
+                boolean isHive = "Hive".equalsIgnoreCase(databaseType.getType());
+                if (isHive) {
+                    for (SQLValueGroup each : sqlValueGroups) {
+                        setParameters(preparedStatement, each);
+                        preparedStatement.executeUpdate();
+                    }
+                } else {
+                    for (SQLValueGroup each : sqlValueGroups) {
+                        setParameters(preparedStatement, each);
+                        preparedStatement.addBatch();
+                    }
+                    preparedStatement.executeBatch();
                 }
-                preparedStatement.executeBatch();
             }
             return null;
         }
         
         private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
             for (SQLValue each : sqlValueGroup.getValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
+                Object value = each.getValue();
+                int index = each.getIndex();
+                if (value == null) {
+                    preparedStatement.setNull(index, java.sql.Types.NULL);
+                } else if (value instanceof String) {
+                    preparedStatement.setString(index, (String) value);
+                } else if (value instanceof Integer) {
+                    preparedStatement.setInt(index, (Integer) value);
+                } else if (value instanceof Long) {
+                    preparedStatement.setLong(index, (Long) value);
+                } else if (value instanceof Short) {
+                    preparedStatement.setShort(index, (Short) value);
+                } else if (value instanceof Byte) {
+                    preparedStatement.setByte(index, (Byte) value);
+                } else if (value instanceof Float) {
+                    preparedStatement.setFloat(index, (Float) value);
+                } else if (value instanceof Double) {
+                    preparedStatement.setDouble(index, (Double) value);
+                } else if (value instanceof Boolean) {
+                    preparedStatement.setBoolean(index, (Boolean) value);
+                } else if (value instanceof java.math.BigDecimal) {
+                    preparedStatement.setBigDecimal(index, (java.math.BigDecimal) value);
+                } else if (value instanceof java.sql.Date) {
+                    preparedStatement.setDate(index, (java.sql.Date) value);
+                } else if (value instanceof java.sql.Time) {
+                    preparedStatement.setTime(index, (java.sql.Time) value);
+                } else if (value instanceof java.sql.Timestamp) {
+                    preparedStatement.setTimestamp(index, (java.sql.Timestamp) value);
+                } else if (value instanceof byte[]) {
+                    preparedStatement.setBytes(index, (byte[]) value);
+                } else {
+                    preparedStatement.setString(index, value.toString());
+                }
             }
         }
     }
