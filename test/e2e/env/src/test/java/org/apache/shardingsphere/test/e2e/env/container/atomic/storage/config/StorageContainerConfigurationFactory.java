@@ -84,9 +84,8 @@ public final class StorageContainerConfigurationFactory {
             } else {
                 foundMajorVersion = Optional.of(option.getSupportedMajorVersions().stream().filter(optional -> optional == majorVersion).findAny().orElse(option.getSupportedMajorVersions().get(0)));
             }
-            String configFilePath = foundMajorVersion.isPresent()
-                    ? String.format("container/%s/cnf/%d/%s", databaseType.getType().toLowerCase(), majorVersion, entry.getKey())
-                    : String.format("container/%s/cnf/%s", databaseType.getType().toLowerCase(), entry.getKey());
+            String configFilePath = foundMajorVersion.map(optional -> String.format("container/%s/cnf/%d/%s", databaseType.getType().toLowerCase(), optional, entry.getKey()))
+                    .orElseGet(() -> String.format("container/%s/cnf/%s", databaseType.getType().toLowerCase(), entry.getKey()));
             result.put(getToBeMountedConfigurationFile(configFilePath, scenario), entry.getValue());
         }
         return result;
