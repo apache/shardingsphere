@@ -74,7 +74,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         }
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         if (majorVersion > 5) {
-            result.put("/env/mysql/mysql8/02-initdb.sql", "/docker-entrypoint-initdb.d/02-initdb.sql");
+            result.put("/env/mysql/02-grant-xa-privilege.sql", "/docker-entrypoint-initdb.d/02-grant-xa-privilege.sql");
         }
         return result;
     }
