@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
 import java.util.Collections;
@@ -46,7 +46,7 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     @Override
     public Map<String, String> getMountedResources() {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("/env/mysql/mysql8/my.cnf", MariaDBContainer.MARIADB_CONF_IN_CONTAINER);
+        result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         return result;
     }
