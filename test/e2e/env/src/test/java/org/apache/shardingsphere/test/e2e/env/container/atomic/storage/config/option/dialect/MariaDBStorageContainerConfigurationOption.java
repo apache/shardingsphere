@@ -44,7 +44,12 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Map<String, String> getMountedResources() {
+    public Map<String, String> getMountedResources(final String scenario) {
+        return Collections.emptyMap();
+    }
+    
+    @Override
+    public Map<String, String> getMountedResources(final int majorVersion) {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
@@ -52,22 +57,7 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Map<String, String> getMountedResources(final String scenario) {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, String> getMountedResources(final int majorVersion) {
-        return getMountedResources();
-    }
-    
-    @Override
     public boolean isEmbeddedStorageContainer() {
-        return false;
-    }
-    
-    @Override
-    public boolean isRecognizeMajorVersion() {
         return false;
     }
 }

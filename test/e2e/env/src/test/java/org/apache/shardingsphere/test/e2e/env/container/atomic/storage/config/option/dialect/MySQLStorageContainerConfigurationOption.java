@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,11 +47,6 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
-    }
-    
-    @Override
-    public Map<String, String> getMountedResources() {
-        return Collections.singletonMap("env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override
@@ -88,10 +82,5 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
-    }
-    
-    @Override
-    public boolean isRecognizeMajorVersion() {
-        return true;
     }
 }

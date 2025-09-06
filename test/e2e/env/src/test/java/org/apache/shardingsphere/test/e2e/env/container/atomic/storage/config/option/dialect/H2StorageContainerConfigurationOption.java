@@ -45,11 +45,6 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
-    public Map<String, String> getMountedResources() {
-        return Collections.singletonMap("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-    }
-    
-    @Override
     public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
@@ -59,16 +54,11 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        return getMountedResources();
+        return Collections.singletonMap("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override
     public boolean isEmbeddedStorageContainer() {
         return true;
-    }
-    
-    @Override
-    public boolean isRecognizeMajorVersion() {
-        return false;
     }
 }

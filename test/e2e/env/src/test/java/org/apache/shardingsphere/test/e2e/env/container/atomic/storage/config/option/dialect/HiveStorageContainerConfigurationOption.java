@@ -50,17 +50,6 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
-    public Map<String, String> getMountedResources() {
-        Map<String, String> result = new HashMap<>(1, 1F);
-        String path = "env/hive/01-initdb.sql";
-        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (null != url) {
-            result.put(path, "/docker-entrypoint-initdb.d/01-initdb.sql");
-        }
-        return result;
-    }
-    
-    @Override
     public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(4, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
@@ -71,16 +60,17 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        return getMountedResources();
+        Map<String, String> result = new HashMap<>(1, 1F);
+        String path = "env/hive/01-initdb.sql";
+        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+        if (null != url) {
+            result.put(path, "/docker-entrypoint-initdb.d/01-initdb.sql");
+        }
+        return result;
     }
     
     @Override
     public boolean isEmbeddedStorageContainer() {
-        return false;
-    }
-    
-    @Override
-    public boolean isRecognizeMajorVersion() {
         return false;
     }
 }
