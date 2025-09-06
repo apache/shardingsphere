@@ -66,7 +66,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
             int majorVersion = databaseType instanceof MySQLDatabaseType ? new DockerImageVersion(storageContainerImage).getMajorVersion() : 0;
-            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), majorVersion);
+            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, majorVersion);
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
                     storageContainerConfig));
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
