@@ -102,7 +102,7 @@ class CreateTableSQLGeneratorIT {
     
     private StorageContainerConfiguration createStorageContainerConfiguration(final DatabaseType databaseType, final String storageContainerImage) {
         int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
-        return StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), majorVersion);
+        return StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, majorVersion);
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {

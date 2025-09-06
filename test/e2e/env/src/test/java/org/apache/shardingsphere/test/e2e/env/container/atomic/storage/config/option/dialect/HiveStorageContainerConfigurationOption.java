@@ -25,7 +25,9 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,11 +52,15 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
+    public Map<String, String> getMountedConfigurationResources() {
+        return Collections.singletonMap("hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
+    }
+    
+    @Override
     public Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(4, 1F);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/container/hive/cnf/hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
         return result;
     }
     
@@ -72,5 +78,10 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
+    }
+    
+    @Override
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
 }

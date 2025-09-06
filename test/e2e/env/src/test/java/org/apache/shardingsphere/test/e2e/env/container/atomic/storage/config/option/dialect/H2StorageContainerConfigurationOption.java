@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +46,11 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
+    public Map<String, String> getMountedConfigurationResources() {
+        return Collections.emptyMap();
+    }
+    
+    @Override
     public Map<String, String> getMountedResources(final String scenario) {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
@@ -60,5 +66,10 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     @Override
     public boolean isEmbeddedStorageContainer() {
         return true;
+    }
+    
+    @Override
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
 }

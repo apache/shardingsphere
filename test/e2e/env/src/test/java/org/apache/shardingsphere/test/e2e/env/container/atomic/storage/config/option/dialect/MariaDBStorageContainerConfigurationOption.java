@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUti
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,20 +45,27 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
+    public Map<String, String> getMountedConfigurationResources() {
+        return Collections.singletonMap("my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    }
+    
+    @Override
     public Map<String, String> getMountedResources(final String scenario) {
         return Collections.emptyMap();
     }
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-        result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        return result;
+        return Collections.singletonMap("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
+    }
+    
+    @Override
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
 }
