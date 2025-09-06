@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.firebird.database.option;
+package org.apache.shardingsphere.database.connector.firebird.metadata.database.option;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -47,6 +47,6 @@ public final class FirebirdSchemaOption implements DialectSchemaOption {
     
     @Override
     public Optional<String> getDefaultSystemSchema() {
-        return Optional.of("rdb");
+        return Optional.of("system_tables");
     }
 }
