@@ -118,11 +118,11 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Optional<String> getToBeMountedSQLFile(final DatabaseType databaseType, final String sqlFile, final String scenario) {
-        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType).substring(1) + "/" + sqlFile;
+        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/" + sqlFile;
         if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
             return Optional.of(actualScenarioFile);
         }
-        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType).substring(1) + "/" + sqlFile;
+        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/" + sqlFile;
         if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
             return Optional.of(expectedScenarioFile);
         }
