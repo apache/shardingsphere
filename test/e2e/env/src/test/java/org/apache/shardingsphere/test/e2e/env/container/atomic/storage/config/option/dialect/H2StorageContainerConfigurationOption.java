@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.op
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +50,11 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     @Override
     public Map<String, String> getMountedConfigurationResources() {
         return Collections.emptyMap();
+    }
+    
+    @Override
+    public Collection<String> getMountedSQLResources() {
+        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
     }
     
     @Override

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +56,11 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     @Override
     public Map<String, String> getMountedConfigurationResources() {
         return Collections.singletonMap("hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
+    }
+    
+    @Override
+    public Collection<String> getMountedSQLResources() {
+        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
     }
     
     @Override

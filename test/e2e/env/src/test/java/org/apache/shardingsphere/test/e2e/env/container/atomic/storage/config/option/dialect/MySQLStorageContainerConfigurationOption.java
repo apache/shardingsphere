@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,16 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     @Override
     public Map<String, String> getMountedConfigurationResources() {
         return Collections.singletonMap("my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    }
+    
+    @Override
+    public Collection<String> getMountedSQLResources() {
+        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
+    }
+    
+    @Override
+    public Collection<String> getMountedSQLResources(final int majorVersion) {
+        return majorVersion > 5 ? Collections.singleton("02-grant-xa-privilege.sql") : Collections.emptyList();
     }
     
     @Override
