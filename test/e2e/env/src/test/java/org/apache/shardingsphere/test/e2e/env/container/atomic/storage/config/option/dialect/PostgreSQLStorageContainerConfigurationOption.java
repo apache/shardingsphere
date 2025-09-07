@@ -25,7 +25,9 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.Post
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,24 +51,30 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
+    public Map<String, String> getMountedConfigurationResources() {
+        return Collections.singletonMap("postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
+    }
+    
+    @Override
     public Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(3, 1F);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/container/postgresql/cnf/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
         return result;
     }
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("/env/postgresql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        result.put("/container/postgresql/cnf/postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
-        return result;
+        return Collections.singletonMap("/env/postgresql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
+    }
+    
+    @Override
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
 }

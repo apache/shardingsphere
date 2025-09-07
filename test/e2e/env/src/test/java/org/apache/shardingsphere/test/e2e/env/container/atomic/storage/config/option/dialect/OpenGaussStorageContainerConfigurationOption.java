@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,26 +48,33 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
+    public Map<String, String> getMountedConfigurationResources() {
+        Map<String, String> result = new HashMap<>(2, 1F);
+        result.put("postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
+        result.put("pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
+        return result;
+    }
+    
+    @Override
     public Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(4, 1F);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        result.put("/container/postgresql/cnf/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("/container/opengauss/cnf/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
     }
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        Map<String, String> result = new HashMap<>(3, 1F);
-        result.put("/env/opengauss/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-        result.put("/container/postgresql/cnf/postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("/container/opengauss/cnf/pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
-        return result;
+        return Collections.singletonMap("/env/opengauss/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
+    }
+    
+    @Override
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
 }

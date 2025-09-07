@@ -25,8 +25,10 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUti
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
-import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,28 +52,21 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
+    public Map<String, String> getMountedConfigurationResources() {
+        return Collections.singletonMap("my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    }
+    
+    @Override
     public Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(3, 1F);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
         result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        URL url = Thread.currentThread().getContextClassLoader().getResource("env/mysql/8/my.cnf");
-        if (null != url) {
-            result.put("/env/mysql/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-        } else {
-            result.put("/container/mysql/cnf/8/my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-        }
         return result;
     }
     
     @Override
     public Map<String, String> getMountedResources(final int majorVersion) {
-        Map<String, String> result = new HashMap<>(3, 1F);
-        URL url = Thread.currentThread().getContextClassLoader().getResource(String.format("env/mysql/%s/my.cnf", majorVersion));
-        if (null != url) {
-            result.put(String.format("/env/mysql/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-        } else {
-            result.put(String.format("/container/mysql/cnf/%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
-        }
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
         if (majorVersion > 5) {
             result.put("/env/mysql/02-grant-xa-privilege.sql", "/docker-entrypoint-initdb.d/02-grant-xa-privilege.sql");
@@ -82,5 +77,10 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
+    }
+    
+    @Override
+    public List<Integer> getSupportedMajorVersions() {
+        return Arrays.asList(5, 8);
     }
 }
