@@ -120,15 +120,15 @@ public final class StorageContainerConfigurationFactory {
     private static Optional<String> getToBeMountedSQLFile(final DatabaseType databaseType, final String sqlFile, final String scenario) {
         String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType).substring(1) + "/" + sqlFile;
         if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
-            return Optional.of("/" + actualScenarioFile);
+            return Optional.of(actualScenarioFile);
         }
         String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType).substring(1) + "/" + sqlFile;
         if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
-            return Optional.of("/" + expectedScenarioFile);
+            return Optional.of(expectedScenarioFile);
         }
         String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
         if (null != Thread.currentThread().getContextClassLoader().getResource(envFile)) {
-            return Optional.of("/" + envFile);
+            return Optional.of(envFile);
         }
         return Optional.empty();
     }
@@ -144,7 +144,7 @@ public final class StorageContainerConfigurationFactory {
     
     private static Optional<String> getToBeMountedVersionSQLFiles(final DatabaseType databaseType, final String sqlFile) {
         String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
-        return null == Thread.currentThread().getContextClassLoader().getResource(envFile) ? Optional.empty() : Optional.of("/" + envFile);
+        return null == Thread.currentThread().getContextClassLoader().getResource(envFile) ? Optional.empty() : Optional.of(envFile);
     }
     
     private static Optional<Integer> findMajorVersion(final StorageContainerConfigurationOption option, final int majorVersion) {
