@@ -103,13 +103,12 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        Map<String, String> result = getToBeMountedSQLFiles(databaseType, option, scenario);
-        findMajorVersion(option, majorVersion).ifPresent(optional -> result.putAll(getToBeMountedVersionSQLFiles(databaseType, option, optional)));
-        return result;
+        int foundMajorVersion = findMajorVersion(option, majorVersion).orElse(0);
+        return getToBeMountedSQLFiles(databaseType, foundMajorVersion, option, scenario);
     }
     
-    private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final String scenario) {
-        Collection<String> mountedSQLResources = option.getMountedSQLResources();
+    private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final int majorVersion, final StorageContainerConfigurationOption option, final String scenario) {
+        Collection<String> mountedSQLResources = option.getMountedSQLResources(majorVersion);
         Map<String, String> result = new HashMap<>(mountedSQLResources.size(), 1F);
         for (String each : mountedSQLResources) {
             getToBeMountedSQLFile(databaseType, each, scenario).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
@@ -131,20 +130,6 @@ public final class StorageContainerConfigurationFactory {
             return Optional.of(envFile);
         }
         return Optional.empty();
-    }
-    
-    private static Map<String, String> getToBeMountedVersionSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion) {
-        Collection<String> mountedSQLResources = option.getMountedSQLResources(majorVersion);
-        Map<String, String> result = new HashMap<>(mountedSQLResources.size(), 1F);
-        for (String each : mountedSQLResources) {
-            getToBeMountedVersionSQLFiles(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
-        }
-        return result;
-    }
-    
-    private static Optional<String> getToBeMountedVersionSQLFiles(final DatabaseType databaseType, final String sqlFile) {
-        String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
-        return null == Thread.currentThread().getContextClassLoader().getResource(envFile) ? Optional.empty() : Optional.of(envFile);
     }
     
     private static Optional<Integer> findMajorVersion(final StorageContainerConfigurationOption option, final int majorVersion) {

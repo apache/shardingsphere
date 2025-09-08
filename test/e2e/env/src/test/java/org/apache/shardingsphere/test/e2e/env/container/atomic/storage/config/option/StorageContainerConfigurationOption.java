@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,19 +50,10 @@ public interface StorageContainerConfigurationOption {
     /**
      * Get mounted SQL resources.
      *
-     * @return mounted SQL resources
-     */
-    Collection<String> getMountedSQLResources();
-    
-    /**
-     * Get mounted SQL resources.
-     *
      * @param majorVersion major version
      * @return mounted SQL resources
      */
-    default Collection<String> getMountedSQLResources(final int majorVersion) {
-        return Collections.emptyList();
-    }
+    Collection<String> getMountedSQLResources(int majorVersion);
     
     /**
      * Whether embedded storage container.
