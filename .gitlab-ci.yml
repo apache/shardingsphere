@@ -16,7 +16,8 @@ stages:
 
 workflow:
   rules:
-    when: never
+    - if: $CI_COMMIT_BRANCH == "master"
+      when: push
 
 build_project:
   tags: ["docker", "linux"]
