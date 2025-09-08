@@ -45,21 +45,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <testResources>
-            <testResource>
-                <directory>../dialect/mysql/src/main/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>../dialect/postgresql/src/main/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>../dialect/opengauss/src/main/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>../dialect/firebird/src/main/resources</directory>
-            </testResource>
-        </testResources>
-    </build>
 </project>

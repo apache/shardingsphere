@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.database.connector.core.metadata.manager;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +32,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SystemTableManagerTest {
+    
+    private static ClassLoader originalClassLoader;
+    
+    private static URLClassLoader schemaClassLoader;
+    
+    @BeforeAll
+    static void setUp() throws Exception {
+        originalClassLoader = Thread.currentThread().getContextClassLoader();
+        URL[] urls = {
+                Paths.get("../dialect/mysql/src/main/resources").toUri().toURL(),
+                Paths.get("../dialect/postgresql/src/main/resources").toUri().toURL(),
+                Paths.get("../dialect/opengauss/src/main/resources").toUri().toURL(),
+                Paths.get("../dialect/firebird/src/main/resources").toUri().toURL()
+        };
+        schemaClassLoader = new URLClassLoader(urls, originalClassLoader);
+        Thread.currentThread().setContextClassLoader(schemaClassLoader);
+        Class.forName(SystemTableManager.class.getName(), true, schemaClassLoader);
+    }
+    
+    @AfterAll
+    static void tearDown() throws Exception {
+        Thread.currentThread().setContextClassLoader(originalClassLoader);
+        schemaClassLoader.close();
+    }
     
     @Test
     void assertValueOfSchemaPathSuccess() {
