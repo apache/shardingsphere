@@ -4,6 +4,7 @@
 variables:
   JDK_BUILD_IMAGE: registry.red-soft.biz:5000/jdk/temurin-11-jdk
   JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
+  RELEASEHUB_CLIENT_IMAGE: registry.red-soft.biz:5000/utils/red-release-manager/client:master
   MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
 stages:
@@ -13,10 +14,9 @@ stages:
   - deploy
 
 
-#workflow:
-#  rules:
-#    #- $CI_PROJECT_NAME="red-database/shardingsphere"
-#    - if: $CI_COMMIT_BRANCH == "ci_testing" && ci_pipeline_source == "push"
+workflow:
+  rules:
+    when: never
 
 build_project:
   tags: ["docker", "linux"]
@@ -30,4 +30,12 @@ build_project:
       "distribution/proxy/target/",
       "distribution/agent/target"
     ]
-  
+
+# relhub deploy example:
+# http://git.red-soft.biz/red-database/red-database/-/blob/master/.gitlab-ci.yml#L779
+
+# TODO: add release hub key (client pulls it from system envvars)
+deploy_to_release_hub:
+  stage: deploy
+  tags: ["docker", "x86_64"]
+  image: $RELEASEHUB_CLIENT_IMAGE
