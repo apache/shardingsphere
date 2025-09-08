@@ -13,10 +13,10 @@ stages:
   - deploy
 
 
-workflow:
-  rules:
-    #- $CI_PROJECT_NAME="red-database/shardingsphere"
-    - if: $CI_COMMIT_BRANCH == "ci_testing" && ci_pipeline_source == "push"
+#workflow:
+#  rules:
+#    #- $CI_PROJECT_NAME="red-database/shardingsphere"
+#    - if: $CI_COMMIT_BRANCH == "ci_testing" && ci_pipeline_source == "push"
 
 build_project:
   tags: ["docker", "linux"]
