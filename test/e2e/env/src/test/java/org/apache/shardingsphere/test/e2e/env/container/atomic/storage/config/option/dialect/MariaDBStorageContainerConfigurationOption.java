@@ -51,7 +51,7 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
+    public Collection<String> getMountedSQLResources(final int majorVersion) {
         return Collections.singleton("01-initdb.sql");
     }
     

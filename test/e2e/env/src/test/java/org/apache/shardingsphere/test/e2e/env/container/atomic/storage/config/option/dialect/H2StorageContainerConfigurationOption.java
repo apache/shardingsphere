@@ -46,7 +46,7 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
+    public Collection<String> getMountedSQLResources(final int majorVersion) {
         return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
     }
     

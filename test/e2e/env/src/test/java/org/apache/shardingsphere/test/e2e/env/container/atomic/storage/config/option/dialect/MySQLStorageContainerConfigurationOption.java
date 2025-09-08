@@ -52,13 +52,12 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
-        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
-    }
-    
-    @Override
     public Collection<String> getMountedSQLResources(final int majorVersion) {
-        return majorVersion > 5 ? Collections.singleton("02-grant-xa-privilege.sql") : Collections.emptyList();
+        Collection<String> result = Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
+        if (majorVersion > 5) {
+            result.add("02-grant-xa-privilege.sql");
+        }
+        return result;
     }
     
     @Override
