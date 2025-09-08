@@ -16,4 +16,3 @@
 --
 
 CREATE USER IF NOT EXISTS 'ready_user'@'%' IDENTIFIED BY 'Ready@123';
-
