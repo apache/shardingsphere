@@ -67,8 +67,8 @@ class OpenGaussSchemaMetaDataLoaderTest {
     
     private ResultSet mockTableResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl");
+        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "gs_db_privilege", "applicable_roles", "app_roles");
         return result;
     }
     
@@ -86,7 +86,7 @@ class OpenGaussSchemaMetaDataLoaderTest {
     
     private Map<String, Collection<String>> createSchemaTableNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>(3, 1F);
-        result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
+        result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "app_roles")));
         result.put("schema_1", Collections.emptySet());
         result.put("schema_2", Collections.emptySet());
         return result;

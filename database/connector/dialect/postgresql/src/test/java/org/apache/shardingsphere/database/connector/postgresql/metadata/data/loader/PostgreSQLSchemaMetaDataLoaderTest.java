@@ -67,8 +67,8 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     
     private ResultSet mockTableResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl");
+        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, true, false);
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "pg_aggregate", "pg_naming", "pg_am", "collations");
         return result;
     }
     
@@ -86,7 +86,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     
     private Map<String, Collection<String>> createSchemaTableNames() {
         Map<String, Collection<String>> result = new CaseInsensitiveMap<>();
-        result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
+        result.put("public", new CaseInsensitiveSet<>(Arrays.asList("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "pg_naming")));
         result.put("schema_1", Collections.emptySet());
         result.put("schema_2", Collections.emptySet());
         return result;

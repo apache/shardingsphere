@@ -25,6 +25,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.manager.DialectSystemTableManager;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -124,6 +126,7 @@ public final class SchemaMetaDataLoader {
     }
     
     private boolean isSystemTable(final String table) {
-        return table.contains("$") || table.contains("/") || table.contains("##");
+        return DatabaseTypedSPILoader.findService(DialectSystemTableManager.class, databaseType)
+                .map(optional -> optional.isSystemTable(table)).orElseGet(() -> table.contains("$") || table.contains("/") || table.contains("##"));
     }
 }

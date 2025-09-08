@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.manager.SystemTableManager;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
@@ -153,7 +153,7 @@ public final class OpenGaussSystemTableQueryExecutorCreator {
             return false;
         }
         for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
-            if (!SystemSchemaManager.isSystemTable("openGauss", each.getKey(), each.getValue())) {
+            if (!SystemTableManager.isSystemTable("openGauss", each.getKey(), each.getValue())) {
                 return false;
             }
         }

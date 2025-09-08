@@ -23,6 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.manager.SystemTableManager;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexE
 import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
-import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -127,7 +127,7 @@ public final class SimpleTableSegmentBinder {
         DatabaseType databaseType = binderContext.getSqlStatement().getDatabaseType();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
         Optional<String> defaultSystemSchema = databaseTypeRegistry.getDialectDatabaseMetaData().getSchemaOption().getDefaultSystemSchema();
-        return defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())
+        return defaultSystemSchema.isPresent() && SystemTableManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())
                 ? new IdentifierValue(defaultSystemSchema.get())
                 : new IdentifierValue(databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName()));
     }
@@ -167,7 +167,8 @@ public final class SimpleTableSegmentBinder {
         if ("DUAL".equalsIgnoreCase(tableName)) {
             return;
         }
-        if (SystemSchemaManager.isSystemTable(schemaName, tableName)) {
+        // TODO check if this function is needed or if it can be replaced by SystemTableManager.isSystemTable(databaseType). (issues/36462)
+        if (SystemTableManager.isSystemTable(schemaName, tableName)) {
             return;
         }
         if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
