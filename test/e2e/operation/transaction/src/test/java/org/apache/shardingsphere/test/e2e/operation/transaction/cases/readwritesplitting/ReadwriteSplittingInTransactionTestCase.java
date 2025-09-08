@@ -74,11 +74,12 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
             assertAccountRowCount(connection, 0);
             assertRouteToWriteDataSource(preview(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)"));
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)");
-            assertRouteToReadDataSource(preview(connection, "SELECT * FROM account"));
+            assertRouteToWriteDataSource(preview(connection, "SELECT * FROM account"));
             assertRouteToWriteDataSource(preview(connection, "SELECT COUNT(*) FROM account FOR UPDATE"));
             assertWriteDataSourceTableRowCount(connection, 1);
-            assertAccountRowCount(connection, 0);
+            assertAccountRowCount(connection, 1);
             connection.rollback();
+            assertAccountRowCount(connection, 0);
         }
     }
     
@@ -89,11 +90,12 @@ public final class ReadwriteSplittingInTransactionTestCase extends BaseTransacti
             assertAccountRowCount(connection, 0);
             assertRouteToWriteDataSource(preview(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)"));
             executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)");
-            assertRouteToReadDataSource(preview(connection, "SELECT * FROM account"));
+            assertRouteToWriteDataSource(preview(connection, "SELECT * FROM account"));
             assertRouteToWriteDataSource(preview(connection, "SELECT COUNT(*) FROM account FOR UPDATE"));
             assertWriteDataSourceTableRowCount(connection, 1);
-            assertAccountRowCount(connection, 0);
+            assertAccountRowCount(connection, 1);
             connection.commit();
+            assertAccountRowCount(connection, 1);
         }
     }
     
