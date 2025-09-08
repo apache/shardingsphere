@@ -1,9 +1,9 @@
-# Building with jdk11 and running tests with jdk10,
+# Building with jdk11 and running tests with jdk8,
 # see https://github.com/apache/shardingsphere/blob/master/.github/workflows/ci.yml
 
 variables:
-  JDK_BUILD_IMAGE: eclipse-temurin:11-jdk
-  JDK_TEST_IMAGE: eclipse-temurin:8-jdk
+  JDK_BUILD_IMAGE: registry.red-soft.biz:5000/jdk/temurin-11-jdk
+  JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
   MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
 stages:
@@ -14,14 +14,20 @@ stages:
 
 
 workflow:
-  when:
+  rules:
     #- $CI_PROJECT_NAME="red-database/shardingsphere"
-    $CI_COMMIT_BRANCH == "ci_testing_0"
+    - if: $CI_COMMIT_BRANCH == "ci_testing" && ci_pipeline_source == "push"
 
 build_project:
   tags: ["docker", "linux"]
   stage: build
   image: $JDK_BUILD_IMAGE
   script:
-    - ./mvnw clean install -B -ntp -DskipTests -T1C
+    - ./mvnw clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+  artifacts:
+    paths: [
+      "distribution/jdbc/target/",
+      "distribution/proxy/target/",
+      "distribution/agent/target"
+    ]
   
