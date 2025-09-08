@@ -2,9 +2,9 @@
 # see https://github.com/apache/shardingsphere/blob/master/.github/workflows/ci.yml
 
 variables:
-  JDK_BUILD_IMAGE = eclipse-temurin:11-jdk
-  JDK_TEST_IMAGE = eclipse-temurin:8-jdk
-  MAVEN_OPTS = "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
+  JDK_BUILD_IMAGE: eclipse-temurin:11-jdk
+  JDK_TEST_IMAGE: eclipse-temurin:8-jdk
+  MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
 stages:
   - prepare
@@ -16,7 +16,7 @@ stages:
 workflow:
   when:
     #- $CI_PROJECT_NAME="red-database/shardingsphere"
-    - $CI_COMMIT_BRANCH == "ci_testing_0"
+    $CI_COMMIT_BRANCH == "ci_testing_0"
 
 build_project:
   tags: ["docker", "linux"]
