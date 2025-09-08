@@ -69,11 +69,11 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResources(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        Map<String, String> mountConfigResources = getToBeMountedConfigurationFiles(databaseType, option, majorVersion, scenario);
-        Map<String, String> mountSQLResources = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
-        Map<String, String> result = new HashMap<>(mountConfigResources.size() + mountSQLResources.size(), 1F);
-        result.putAll(mountConfigResources);
-        result.putAll(mountSQLResources);
+        Map<String, String> mountedConfigResources = getToBeMountedConfigurationFiles(databaseType, option, majorVersion, scenario);
+        Map<String, String> mountedSQLResources = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
+        Map<String, String> result = new HashMap<>(mountedConfigResources.size() + mountedSQLResources.size(), 1F);
+        result.putAll(mountedConfigResources);
+        result.putAll(mountedSQLResources);
         return result;
     }
     
