@@ -29,6 +29,7 @@ import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -47,6 +48,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private static final String READY_USER_PASSWORD = "Ready@123";
     
+    private static final Collection<String> TO_BE_MOUNTED_SQL_FILES = Arrays.asList("00-init-authority.sql", "99-be-ready.sql");
+    
     private final DatabaseType databaseType;
     
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
@@ -60,20 +63,24 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping("/container/" + databaseType.getType().toLowerCase() + "/init-sql/00-init-authority.sql", "/docker-entrypoint-initdb.d/00-init-authority.sql", BindMode.READ_ONLY);
-        withClasspathResourceMapping("/container/" + databaseType.getType().toLowerCase() + "/init-sql/99-be-ready.sql", "/docker-entrypoint-initdb.d/99-be-ready.sql", BindMode.READ_ONLY);
+        for (String each : TO_BE_MOUNTED_SQL_FILES) {
+            findToBeMountedSQLFile(each).ifPresent(optional -> withClasspathResourceMapping(optional, "/docker-entrypoint-initdb.d/" + each, BindMode.READ_ONLY));
+        }
         withExposedPorts(getExposedPort());
-        setWaitStrategy(new JdbcConnectionWaitStrategy(
-                () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
-                        ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), READY_USER, READY_USER_PASSWORD)));
+        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
+                ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
+                : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), READY_USER, READY_USER_PASSWORD)));
+    }
+    
+    private Optional<String> findToBeMountedSQLFile(final String toBeMountedSQLFile) {
+        String toBeMountedSQLFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
+        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedSQLFilePath) ? Optional.empty() : Optional.of("/" + toBeMountedSQLFilePath);
     }
     
     protected final void setCommands(final String command) {
-        if (Strings.isNullOrEmpty(command)) {
-            return;
+        if (!Strings.isNullOrEmpty(command)) {
+            setCommand(command);
         }
-        setCommand(command);
     }
     
     protected final void addEnvs(final Map<String, String> envs) {
@@ -165,12 +172,12 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     public Map<String, String> getLinkReplacements() {
-        Map<String, String> replacements = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
         for (String each : getNetworkAliases()) {
             for (Integer exposedPort : getExposedPorts()) {
-                replacements.put(each + ":" + exposedPort, getHost() + ":" + getMappedPort(exposedPort));
+                result.put(each + ":" + exposedPort, getHost() + ":" + getMappedPort(exposedPort));
             }
         }
-        return replacements;
+        return result;
     }
 }
