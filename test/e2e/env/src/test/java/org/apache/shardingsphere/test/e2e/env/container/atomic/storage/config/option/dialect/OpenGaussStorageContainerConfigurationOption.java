@@ -17,13 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +32,6 @@ import java.util.Map;
  * Storage container configuration option for openGauss.
  */
 public final class OpenGaussStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
-    
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
     
     @Override
     public String getCommand() {
@@ -60,19 +54,6 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     @Override
     public Collection<String> getMountedSQLResources() {
         return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
-    }
-    
-    @Override
-    public Map<String, String> getMountedResources(final String scenario) {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql");
-        result.put(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql", "/docker-entrypoint-initdb.d/01-expected-init.sql");
-        return result;
-    }
-    
-    @Override
-    public Map<String, String> getMountedResources(final int majorVersion) {
-        return Collections.singletonMap("/env/opengauss/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
     }
     
     @Override

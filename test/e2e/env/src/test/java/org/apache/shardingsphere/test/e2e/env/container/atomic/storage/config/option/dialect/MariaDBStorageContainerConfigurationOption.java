@@ -56,16 +56,6 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Map<String, String> getMountedResources(final String scenario) {
-        return Collections.emptyMap();
-    }
-    
-    @Override
-    public Map<String, String> getMountedResources(final int majorVersion) {
-        return Collections.singletonMap("/env/mysql/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql");
-    }
-    
-    @Override
     public boolean isEmbeddedStorageContainer() {
         return false;
     }

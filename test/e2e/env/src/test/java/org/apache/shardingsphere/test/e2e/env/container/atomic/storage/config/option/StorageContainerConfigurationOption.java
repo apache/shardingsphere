@@ -66,22 +66,6 @@ public interface StorageContainerConfigurationOption {
     }
     
     /**
-     * Get mounted resources.
-     *
-     * @param scenario scenario
-     * @return mounted resources
-     */
-    Map<String, String> getMountedResources(String scenario);
-    
-    /**
-     * Get mounted resources.
-     *
-     * @param majorVersion major version
-     * @return mounted resources
-     */
-    Map<String, String> getMountedResources(int majorVersion);
-    
-    /**
      * Whether embedded storage container.
      *
      * @return is embedded storage container or not
