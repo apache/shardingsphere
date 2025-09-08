@@ -368,6 +368,9 @@ public abstract class TransactionBaseE2EIT {
         
         private Collection<TransactionTestParameter> getTestParameters(final TransactionTestCaseRegistry registry, final String databaseVersion) {
             Map<String, TransactionTestParameter> result = new LinkedHashMap<>();
+            if (TEST_CASES.isEmpty()) {
+                log.warn("Transaction test cases are empty.");
+            }
             for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
                 if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
                     log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
