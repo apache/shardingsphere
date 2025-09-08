@@ -17,7 +17,8 @@ stages:
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
-      when: manual
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "push"
 
 build_project:
   tags: ["docker", "linux"]
