@@ -225,6 +225,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             if (each instanceof ColumnProjection) {
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = schema.getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+                if (table == null) {
+                    table = metaDataContexts.getMetaData().getDatabase(databaseName).getSchema("system_tables")
+                            .getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName);
+                }
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
                 processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {

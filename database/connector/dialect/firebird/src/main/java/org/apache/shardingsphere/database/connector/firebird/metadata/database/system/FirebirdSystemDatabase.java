@@ -15,28 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.firebird.database.system;
+package org.apache.shardingsphere.database.connector.firebird.metadata.database.system;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * System database of Firebird.
  */
 public final class FirebirdSystemDatabase implements DialectSystemDatabase {
     
-    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
+    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Collections.singletonList("system_tables"));
     
-    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Collections.singletonList("rdb"));
-    
-    static {
-        SYSTEM_DATABASE_SCHEMA_MAP.put("logic_db", SYSTEM_SCHEMAS);
-    }
+    private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new AbstractMap<String, Collection<String>>() {
+        
+        @Override
+        public Collection<String> get(final Object key) {
+            return SYSTEM_SCHEMAS;
+        }
+        
+        @Override
+        public Set<Entry<String, Collection<String>>> entrySet() {
+            return Collections.emptySet();
+        }
+    };
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {

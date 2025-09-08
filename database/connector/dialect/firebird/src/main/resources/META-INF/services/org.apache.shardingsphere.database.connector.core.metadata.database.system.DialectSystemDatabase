@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.firebird.database.system.FirebirdSystemDatabase
+org.apache.shardingsphere.database.connector.firebird.metadata.database.system.FirebirdSystemDatabase

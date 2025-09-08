@@ -1,0 +1,215 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: MON$DATABASE
+columns:
+  MON$DATABASE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$DATABASE_NAME
+    primaryKey: false
+    visible: true
+  MON$PAGE_SIZE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$PAGE_SIZE
+    primaryKey: false
+    visible: true
+  MON$ODS_MAJOR:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$ODS_MAJOR
+    primaryKey: false
+    visible: true
+  MON$ODS_MINOR:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$ODS_MINOR
+    primaryKey: false
+    visible: true
+  MON$OLDEST_TRANSACTION:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$OLDEST_TRANSACTION
+    primaryKey: false
+    visible: true
+  MON$OLDEST_ACTIVE:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$OLDEST_ACTIVE
+    primaryKey: false
+    visible: true
+  MON$OLDEST_SNAPSHOT:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$OLDEST_SNAPSHOT
+    primaryKey: false
+    visible: true
+  MON$NEXT_TRANSACTION:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$NEXT_TRANSACTION
+    primaryKey: false
+    visible: true
+  MON$PAGE_BUFFERS:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$PAGE_BUFFERS
+    primaryKey: false
+    visible: true
+  MON$SQL_DIALECT:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$SQL_DIALECT
+    primaryKey: false
+    visible: true
+  MON$SHUTDOWN_MODE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$SHUTDOWN_MODE
+    primaryKey: false
+    visible: true
+  MON$SWEEP_INTERVAL:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$SWEEP_INTERVAL
+    primaryKey: false
+    visible: true
+  MON$READ_ONLY:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$READ_ONLY
+    primaryKey: false
+    visible: true
+  MON$FORCED_WRITES:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$FORCED_WRITES
+    primaryKey: false
+    visible: true
+  MON$RESERVE_SPACE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$RESERVE_SPACE
+    primaryKey: false
+    visible: true
+  MON$CREATION_DATE:
+    caseSensitive: false
+    dataType: 2014
+    generated: false
+    name: MON$CREATION_DATE
+    primaryKey: false
+    visible: true
+  MON$PAGES:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$PAGES
+    primaryKey: false
+    visible: true
+  MON$STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STAT_ID
+    primaryKey: false
+    visible: true
+  MON$BACKUP_STATE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$BACKUP_STATE
+    primaryKey: false
+    visible: true
+  MON$CRYPT_PAGE:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$CRYPT_PAGE
+    primaryKey: false
+    visible: true
+  MON$OWNER:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$OWNER
+    primaryKey: false
+    visible: true
+  MON$SEC_DATABASE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$SEC_DATABASE
+    primaryKey: false
+    visible: true
+  MON$CRYPT_STATE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$CRYPT_STATE
+    primaryKey: false
+    visible: true
+  MON$GUID:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$GUID
+    primaryKey: false
+    visible: true
+  MON$FILE_ID:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$FILE_ID
+    primaryKey: false
+    visible: true
+  MON$NEXT_ATTACHMENT:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$NEXT_ATTACHMENT
+    primaryKey: false
+    visible: true
+  MON$NEXT_STATEMENT:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$NEXT_STATEMENT
+    primaryKey: false
+    visible: true
+  MON$REPLICA_MODE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$REPLICA_MODE
+    primaryKey: false
+    visible: true

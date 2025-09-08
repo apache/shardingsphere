@@ -1,0 +1,201 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: MON$ATTACHMENTS
+columns:
+  MON$ATTACHMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$ATTACHMENT_ID
+    primaryKey: false
+    visible: true
+  MON$SERVER_PID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$SERVER_PID
+    primaryKey: false
+    visible: true
+  MON$STATE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$STATE
+    primaryKey: false
+    visible: true
+  MON$ATTACHMENT_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$ATTACHMENT_NAME
+    primaryKey: false
+    visible: true
+  MON$USER:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$USER
+    primaryKey: false
+    visible: true
+  MON$ROLE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$ROLE
+    primaryKey: false
+    visible: true
+  MON$REMOTE_PROTOCOL:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$REMOTE_PROTOCOL
+    primaryKey: false
+    visible: true
+  MON$REMOTE_ADDRESS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$REMOTE_ADDRESS
+    primaryKey: false
+    visible: true
+  MON$REMOTE_PID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$REMOTE_PID
+    primaryKey: false
+    visible: true
+  MON$CHARACTER_SET_ID:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$CHARACTER_SET_ID
+    primaryKey: false
+    visible: true
+  MON$TIMESTAMP:
+    caseSensitive: false
+    dataType: 2014
+    generated: false
+    name: MON$TIMESTAMP
+    primaryKey: false
+    visible: true
+  MON$GARBAGE_COLLECTION:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$GARBAGE_COLLECTION
+    primaryKey: false
+    visible: true
+  MON$REMOTE_PROCESS:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$REMOTE_PROCESS
+    primaryKey: false
+    visible: true
+  MON$STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STAT_ID
+    primaryKey: false
+    visible: true
+  MON$CLIENT_VERSION:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$CLIENT_VERSION
+    primaryKey: false
+    visible: true
+  MON$REMOTE_VERSION:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$REMOTE_VERSION
+    primaryKey: false
+    visible: true
+  MON$REMOTE_HOST:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$REMOTE_HOST
+    primaryKey: false
+    visible: true
+  MON$REMOTE_OS_USER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$REMOTE_OS_USER
+    primaryKey: false
+    visible: true
+  MON$AUTH_METHOD:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$AUTH_METHOD
+    primaryKey: false
+    visible: true
+  MON$SYSTEM_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$SYSTEM_FLAG
+    primaryKey: false
+    visible: true
+  MON$IDLE_TIMEOUT:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$IDLE_TIMEOUT
+    primaryKey: false
+    visible: true
+  MON$IDLE_TIMER:
+    caseSensitive: false
+    dataType: 2014
+    generated: false
+    name: MON$IDLE_TIMER
+    primaryKey: false
+    visible: true
+  MON$STATEMENT_TIMEOUT:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STATEMENT_TIMEOUT
+    primaryKey: false
+    visible: true
+  MON$WIRE_COMPRESSED:
+    caseSensitive: false
+    dataType: 16
+    generated: false
+    name: MON$WIRE_COMPRESSED
+    primaryKey: false
+    visible: true
+  MON$WIRE_ENCRYPTED:
+    caseSensitive: false
+    dataType: 16
+    generated: false
+    name: MON$WIRE_ENCRYPTED
+    primaryKey: false
+    visible: true
+  MON$WIRE_CRYPT_PLUGIN:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$WIRE_CRYPT_PLUGIN
+    primaryKey: false
+    visible: true

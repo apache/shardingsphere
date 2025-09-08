@@ -15,4 +15,19 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.firebird.metadata.database.FirebirdDatabaseMetaData
+name: SEC$DB_CREATORS
+columns:
+  SEC$USER:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$USER
+    primaryKey: false
+    visible: true
+  SEC$USER_TYPE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: SEC$USER_TYPE
+    primaryKey: false
+    visible: true

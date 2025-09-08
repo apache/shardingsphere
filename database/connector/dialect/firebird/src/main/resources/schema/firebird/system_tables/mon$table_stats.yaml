@@ -15,4 +15,33 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.firebird.metadata.database.FirebirdDatabaseMetaData
+name: MON$TABLE_STATS
+columns:
+  MON$STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$STAT_ID
+    primaryKey: false
+    visible: true
+  MON$STAT_GROUP:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: MON$STAT_GROUP
+    primaryKey: false
+    visible: true
+  MON$TABLE_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$TABLE_NAME
+    primaryKey: false
+    visible: true
+  MON$RECORD_STAT_ID:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$RECORD_STAT_ID
+    primaryKey: false
+    visible: true

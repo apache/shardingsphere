@@ -1,0 +1,75 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: SEC$USERS
+columns:
+  SEC$USER_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$USER_NAME
+    primaryKey: false
+    visible: true
+  SEC$FIRST_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SEC$FIRST_NAME
+    primaryKey: false
+    visible: true
+  SEC$MIDDLE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SEC$MIDDLE_NAME
+    primaryKey: false
+    visible: true
+  SEC$LAST_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SEC$LAST_NAME
+    primaryKey: false
+    visible: true
+  SEC$ACTIVE:
+    caseSensitive: false
+    dataType: 16
+    generated: false
+    name: SEC$ACTIVE
+    primaryKey: false
+    visible: true
+  SEC$ADMIN:
+    caseSensitive: false
+    dataType: 16
+    generated: false
+    name: SEC$ADMIN
+    primaryKey: false
+    visible: true
+  SEC$DESCRIPTION:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: SEC$DESCRIPTION
+    primaryKey: false
+    visible: true
+  SEC$PLUGIN:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: SEC$PLUGIN
+    primaryKey: false
+    visible: true

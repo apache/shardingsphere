@@ -15,4 +15,33 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.firebird.metadata.database.FirebirdDatabaseMetaData
+name: MON$CONTEXT_VARIABLES
+columns:
+  MON$ATTACHMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$ATTACHMENT_ID
+    primaryKey: false
+    visible: true
+  MON$TRANSACTION_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$TRANSACTION_ID
+    primaryKey: false
+    visible: true
+  MON$VARIABLE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$VARIABLE_NAME
+    primaryKey: false
+    visible: true
+  MON$VARIABLE_VALUE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: MON$VARIABLE_VALUE
+    primaryKey: false
+    visible: true
