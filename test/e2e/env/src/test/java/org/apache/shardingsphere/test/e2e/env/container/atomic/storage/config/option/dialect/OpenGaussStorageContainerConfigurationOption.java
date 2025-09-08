@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.Open
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,11 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
         result.put("postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
         result.put("pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
         return result;
+    }
+    
+    @Override
+    public Collection<String> getMountedSQLResources() {
+        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
     }
     
     @Override
