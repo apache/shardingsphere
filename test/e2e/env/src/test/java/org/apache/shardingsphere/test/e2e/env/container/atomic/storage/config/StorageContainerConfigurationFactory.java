@@ -39,9 +39,9 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConfigurationFactory {
     
-    private static final String TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE = "01-actual-init.sql";
+    private static final String TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE = "50-actual-init.sql";
     
-    private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "01-expected-init.sql";
+    private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "60-expected-init.sql";
     
     /**
      * Create new instance of storage container configuration.
@@ -119,15 +119,7 @@ public final class StorageContainerConfigurationFactory {
             getToBeMountedSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
         }
         for (String each : getToBeMountedScenarioSQLFiles(databaseType, scenario)) {
-            result.put("/" + each, "/docker-entrypoint-initdb.d/" + each);
-        }
-        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql";
-        if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
-            result.put("/" + actualScenarioFile, "/docker-entrypoint-initdb.d/" + actualScenarioFile);
-        }
-        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql";
-        if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
-            result.put("/" + expectedScenarioFile, "/docker-entrypoint-initdb.d/" + expectedScenarioFile);
+            result.put("/" + each, "/docker-entrypoint-initdb.d/" + new File(each).getName());
         }
         return result;
     }
