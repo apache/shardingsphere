@@ -48,7 +48,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private static final String READY_USER_PASSWORD = "Ready@123";
     
-    private static final Collection<String> TO_BE_MOUNTED_SQL_FILES = Arrays.asList("00-init-authority.sql", "99-be-ready.sql");
+    private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-init-authority.sql", "99-be-ready.sql");
     
     private final DatabaseType databaseType;
     
@@ -63,8 +63,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        for (String each : TO_BE_MOUNTED_SQL_FILES) {
-            findToBeMountedSQLFile(each).ifPresent(optional -> withClasspathResourceMapping(optional, "/docker-entrypoint-initdb.d/" + each, BindMode.READ_ONLY));
+        for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
+            findToBeMountedCommonSQLFile(each).ifPresent(optional -> withClasspathResourceMapping(optional, "/docker-entrypoint-initdb.d/" + each, BindMode.READ_ONLY));
         }
         withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
@@ -72,7 +72,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
                 : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), READY_USER, READY_USER_PASSWORD)));
     }
     
-    private Optional<String> findToBeMountedSQLFile(final String toBeMountedSQLFile) {
+    private Optional<String> findToBeMountedCommonSQLFile(final String toBeMountedSQLFile) {
         String toBeMountedSQLFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedSQLFilePath) ? Optional.empty() : Optional.of("/" + toBeMountedSQLFilePath);
     }
