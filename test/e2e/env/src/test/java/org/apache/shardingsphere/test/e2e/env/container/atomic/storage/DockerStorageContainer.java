@@ -44,11 +44,11 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    private static final String READY_USER = "ready_user";
+    private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-common-init-authority.sql", "99-common-check-ready.sql");
     
-    private static final String READY_USER_PASSWORD = "Ready@123";
+    private static final String CHECK_READY_USER = "ready_user";
     
-    private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-init-authority.sql", "99-be-ready.sql");
+    private static final String CHECK_READY_PASSWORD = "Ready@123";
     
     private final DatabaseType databaseType;
     
@@ -67,7 +67,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             findToBeMountedCommonSQLFile(each).ifPresent(optional -> withClasspathResourceMapping(optional, "/docker-entrypoint-initdb.d/" + each, BindMode.READ_ONLY));
         }
         withExposedPorts(getExposedPort());
-        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), READY_USER, READY_USER_PASSWORD)));
+        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), CHECK_READY_USER, CHECK_READY_PASSWORD)));
     }
     
     private Optional<String> findToBeMountedCommonSQLFile(final String toBeMountedSQLFile) {
