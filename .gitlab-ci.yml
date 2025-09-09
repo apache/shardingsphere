@@ -21,7 +21,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "push"
 
 build_project:
-  tags: ["docker", "linux"]
+  tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
   script:
@@ -39,7 +39,7 @@ build_project:
 # TODO: add release hub key (client pulls it from system envvars)
 deploy_to_release_hub:
   stage: deploy
-  tags: ["docker", "x86_64"]
+  tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
     - printf "\nThis is a placeholder for release hub deploy job\n"
