@@ -17,44 +17,45 @@
 
 package org.apache.shardingsphere.proxy.backend.state.type;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
-import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableRALStatement;
-import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.exception.ShardingSphereStateException;
-import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
 import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * ReadOnly proxy state.
+ * Unavailable proxy state.
  */
-public final class ReadOnlyProxyState implements ProxyClusterState {
+public final class UnavailableProxyStateChecker implements ProxyClusterStateChecker {
     
-    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENT_TYPES = Collections.singleton(UnlockClusterStatement.class);
+    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENT_TYPES = Arrays.asList(
+            ImportMetaDataStatement.class, ShowStatement.class, QueryableRALStatement.class, RQLStatement.class, UnlockClusterStatement.class);
     
-    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Arrays.asList(
-            InsertStatement.class, UpdateStatement.class, DeleteStatement.class, DDLStatement.class, UpdatableRALStatement.class, RDLStatement.class);
-    
-    private final ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(
-            SUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList(), UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENT_TYPES = Collections.singleton(SQLStatement.class);
     
     @Override
     public void check(final SQLStatement sqlStatement, final DatabaseType databaseType) {
+        Collection<Class<? extends SQLStatement>> supportedDialectSQLStatementTypes = DatabaseTypedSPILoader.findService(DialectProxyStateSupportedSQLProvider.class, databaseType)
+                .map(DialectProxyStateSupportedSQLProvider::getSupportedSQLStatementTypesOnUnavailableState).orElse(Collections.emptyList());
+        ProxySQLSupportedJudgeEngine judgeEngine = new ProxySQLSupportedJudgeEngine(
+                SUPPORTED_SQL_STATEMENT_TYPES, supportedDialectSQLStatementTypes, UNSUPPORTED_SQL_STATEMENT_TYPES, Collections.emptyList());
         ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), () -> new ShardingSphereStateException(getType(), sqlStatement));
     }
     
     @Override
     public String getType() {
-        return "READ_ONLY";
+        return "UNAVAILABLE";
     }
 }
