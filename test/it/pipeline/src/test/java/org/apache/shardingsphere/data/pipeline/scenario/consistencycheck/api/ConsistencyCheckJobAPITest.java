@@ -244,7 +244,7 @@ class ConsistencyCheckJobAPITest {
         ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(checkJobConfig, 0, jobStatus, checkJobItemProgress);
         LocalDateTime checkBeginTime = new Timestamp(checkJobItemContext.getProgressContext().getCheckBeginTimeMillis()).toLocalDateTime();
         checkJobItemContext.getProgressContext().setRecordsCount(recordCount);
-        checkJobItemContext.getProgressContext().setCheckEndTimeMillis((Timestamp.valueOf(checkBeginTime.plusDays(1)).getTime()));
+        checkJobItemContext.getProgressContext().setCheckEndTimeMillis(Timestamp.valueOf(checkBeginTime.plusDays(1)).getTime());
         jobItemManager.persistProgress(checkJobItemContext);
     }
 }
