@@ -54,6 +54,7 @@ public final class HiveContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
         withExposedPorts(getExposedPort());
+        super.configure();
         withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
         setWaitStrategy(new JdbcConnectionWaitStrategy(
                 () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
