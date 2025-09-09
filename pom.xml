@@ -29,7 +29,12 @@
     <packaging>pom</packaging>
     <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
-    
+    <repositories>
+        <repository>
+            <id>http-repo</id>
+            <url>http://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
     <modules>
         <module>infra</module>
         <module>database</module>
