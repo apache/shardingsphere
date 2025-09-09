@@ -49,7 +49,7 @@ import org.apache.shardingsphere.proxy.backend.handler.tcl.TCLBackendHandlerFact
 import org.apache.shardingsphere.proxy.backend.handler.tcl.TransactionalErrorAllowedSQLStatementHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.state.DialectProxyStateSupportedSQLProvider;
-import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterStateChecker;
 import org.apache.shardingsphere.proxy.backend.state.ProxySQLSupportedJudgeEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
@@ -178,7 +178,7 @@ public final class ProxyBackendHandlerFactory {
     private static void checkClusterState(final SQLStatement sqlStatement, final DatabaseType databaseType) {
         ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
         if (ShardingSphereState.OK != currentState) {
-            TypedSPILoader.getService(ProxyClusterState.class, currentState.name()).check(sqlStatement, databaseType);
+            TypedSPILoader.getService(ProxyClusterStateChecker.class, currentState.name()).check(sqlStatement, databaseType);
         }
     }
     

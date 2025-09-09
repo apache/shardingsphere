@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * Proxy cluster state.
+ * Proxy cluster state checker.
  */
 @SingletonSPI
-public interface ProxyClusterState extends TypedSPI {
+public interface ProxyClusterStateChecker extends TypedSPI {
     
     /**
      * Check SQL statement.
