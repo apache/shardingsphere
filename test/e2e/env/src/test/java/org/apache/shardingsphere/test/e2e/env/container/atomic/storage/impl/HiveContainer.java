@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Hive container.
  */
+@Slf4j
 public final class HiveContainer extends DockerStorageContainer {
     
     public static final int HIVE_EXPOSED_PORT = 10000;
@@ -62,18 +64,12 @@ public final class HiveContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() == getDatabaseType())
-                .map(Entry::getKey)
-                .collect(Collectors.toList());
+        return storageContainerConfig.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream()
-                .filter(entry -> entry.getValue() == getDatabaseType())
-                .map(Entry::getKey)
-                .collect(Collectors.toList());
+        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
@@ -94,13 +90,11 @@ public final class HiveContainer extends DockerStorageContainer {
     @Override
     protected void postStart() {
         try {
-            execInContainer("bash", "-c",
-                    "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; CREATE DATABASE IF NOT EXISTS expected_dataset;\"");
-            System.out.println("Databases created successfully in postStart()");
+            execInContainer("bash", "-c", "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; CREATE DATABASE IF NOT EXISTS expected_dataset;\"");
         } catch (final InterruptedException | IOException ex) {
-            System.err.println("Failed to create databases in postStart(): " + ex.getMessage());
+            log.error("Failed to create databases in postStart()", ex);
         }
         super.postStart();
-        System.out.println("Hive container postStart completed successfully");
+        log.info("Hive container postStart completed successfully");
     }
 }
