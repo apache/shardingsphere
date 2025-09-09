@@ -8,5 +8,5 @@
         }
     },
     "runArgs": ["--net=host"],
-    "postCreateCommand": "apt update && DEBIAN_FRONTEND=noninteractive apt install git linxml2-utils -y --no-install-recommends"
+    "postCreateCommand": "apt update && DEBIAN_FRONTEND=noninteractive apt install git libxml2-utils -y --no-install-recommends"
 }
