@@ -200,14 +200,13 @@ public final class ConsistencyCheckJobAPI {
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
         result.setCheckBeginTime(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().format(checkBeginTime));
         if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
-            result.setInventoryFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setDurationSeconds(duration.getSeconds());
             result.setCheckEndTime(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().format(checkEndTime));
             result.setInventoryRemainingSeconds(0L);
         } else if (0L != recordsCount && 0L != checkedRecordsCount) {
-            result.setInventoryFinishedPercentage((int) (checkedRecordsCount * 100L / recordsCount));
+            result.setInventoryFinishedPercentage(Math.min(100, (int) (checkedRecordsCount * 100L / recordsCount)));
             LocalDateTime stopTime = jobConfigPOJO.isDisabled() ? LocalDateTime.from(DateTimeFormatterFactory.getDatetimeFormatter().parse(jobConfigPOJO.getProps().getProperty("stop_time")))
                     : null;
             long durationMillis = (null != stopTime ? Timestamp.valueOf(stopTime).getTime() : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
@@ -217,6 +216,10 @@ public final class ConsistencyCheckJobAPI {
             }
             long remainingMillis = Math.max(0L, (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis));
             result.setInventoryRemainingSeconds(remainingMillis / 1000L);
+        }
+        if (JobStatus.EXECUTE_INCREMENTAL_TASK == jobItemProgress.getStatus() || JobStatus.FINISHED == jobItemProgress.getStatus()) {
+            result.setInventoryFinishedPercentage(100);
+            result.setInventoryRemainingSeconds(0L);
         }
     }
     

@@ -24,6 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -47,9 +48,9 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
     
     private final Long checkEndTimeMillis;
     
-    private final Map<String, Object> sourceTableCheckPositions;
+    private final Map<String, Object> sourceTableCheckPositions = new LinkedHashMap<>();
     
-    private final Map<String, Object> targetTableCheckPositions;
+    private final Map<String, Object> targetTableCheckPositions = new LinkedHashMap<>();
     
     private final String sourceDatabaseType;
     
@@ -63,8 +64,8 @@ public final class ConsistencyCheckJobItemProgress implements PipelineJobItemPro
         recordsCount = context.getRecordsCount();
         checkBeginTimeMillis = context.getCheckBeginTimeMillis();
         checkEndTimeMillis = context.getCheckEndTimeMillis();
-        sourceTableCheckPositions = context.getSourceTableCheckPositions();
-        targetTableCheckPositions = context.getTargetTableCheckPositions();
+        sourceTableCheckPositions.putAll(context.getSourceTableCheckPositions());
+        targetTableCheckPositions.putAll(context.getTargetTableCheckPositions());
         sourceDatabaseType = context.getSourceDatabaseType();
     }
 }

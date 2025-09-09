@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -44,9 +43,9 @@ public final class YamlConsistencyCheckJobItemProgress implements YamlPipelineJo
     
     private Long checkEndTimeMillis;
     
-    private Map<String, Object> sourceTableCheckPositions = new LinkedHashMap<>();
+    private Map<String, Object> sourceTableCheckPositions;
     
-    private Map<String, Object> targetTableCheckPositions = new LinkedHashMap<>();
+    private Map<String, Object> targetTableCheckPositions;
     
     private String sourceDatabaseType;
 }
