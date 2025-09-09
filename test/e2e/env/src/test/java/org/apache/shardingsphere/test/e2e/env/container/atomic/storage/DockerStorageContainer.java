@@ -48,7 +48,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private static final String READY_USER_PASSWORD = "Ready@123";
     
-    private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-init-authority.sql", "99-be-ready.sql");
+    private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-common-init-authority.sql", "99-common-check-ready.sql");
     
     private final DatabaseType databaseType;
     
