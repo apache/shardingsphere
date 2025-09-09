@@ -41,3 +41,5 @@ deploy_to_release_hub:
   stage: deploy
   tags: ["docker", "x86_64"]
   image: $RELEASEHUB_CLIENT_IMAGE
+  script:
+    - printf "\nThis is a placeholder for release hub deploy job\n"
