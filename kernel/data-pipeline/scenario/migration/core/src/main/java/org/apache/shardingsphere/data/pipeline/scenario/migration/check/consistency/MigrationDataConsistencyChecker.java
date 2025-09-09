@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipe
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -89,17 +91,18 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         progressContext.setRecordsCount(getRecordsCount());
         progressContext.getTableNames().addAll(sourceTableNames);
         progressContext.onProgressUpdated(new PipelineJobUpdateProgress(0));
-        Map<QualifiedTable, TableDataConsistencyCheckResult> result = new LinkedHashMap<>();
+        Map<QualifiedTable, TableDataConsistencyCheckResult> checkResultMap = new LinkedHashMap<>();
         try (
                 PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
                 TableDataConsistencyChecker tableChecker = TableDataConsistencyCheckerFactory.newInstance(algorithmType, algorithmProps)) {
+            PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobConfig.getJobId(), (ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget());
             for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
-                if (checkTableInventoryDataUnmatchedAndBreak(each, tableChecker, result, dataSourceManager)) {
-                    return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
+                if (checkTableInventoryDataUnmatchedAndBreak(each, tableChecker, checkResultMap, dataSourceManager)) {
+                    return checkResultMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
                 }
             }
         }
-        return result.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
+        return checkResultMap.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().format(), Entry::getValue));
     }
     
     private long getRecordsCount() {

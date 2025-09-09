@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+databaseName: logic_db
+
 props:
   system-schema-metadata-assembly-enabled: false
 
