@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.HiveContainer;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,8 +46,8 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.singletonMap("hive-site.xml", HiveContainer.HIVE_CONF_IN_CONTAINER);
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.singleton("/opt/hive/conf/hive-site.xml");
     }
     
     @Override

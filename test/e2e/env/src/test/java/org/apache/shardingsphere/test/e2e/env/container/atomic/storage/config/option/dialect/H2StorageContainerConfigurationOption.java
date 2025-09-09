@@ -41,8 +41,8 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.emptyMap();
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.emptyList();
     }
     
     @Override

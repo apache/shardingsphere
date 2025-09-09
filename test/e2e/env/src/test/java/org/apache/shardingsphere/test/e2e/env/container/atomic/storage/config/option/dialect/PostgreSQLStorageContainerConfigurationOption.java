@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +34,7 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public String getCommand() {
-        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER;
+        return "-c config_file=/etc/postgresql/postgresql.conf";
     }
     
     @Override
@@ -47,8 +46,8 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.singletonMap("postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.singleton("/etc/postgresql/postgresql.conf");
     }
     
     @Override

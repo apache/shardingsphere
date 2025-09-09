@@ -35,8 +35,6 @@ public final class MariaDBContainer extends DockerStorageContainer {
     
     public static final int EXPOSED_PORT = 3306;
     
-    public static final String MARIADB_CONF_IN_CONTAINER = "/etc/mysql/mariadb.cnf";
-    
     private final StorageContainerConfiguration storageContainerConfig;
     
     public MariaDBContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {

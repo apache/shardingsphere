@@ -37,8 +37,6 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     public static final int MYSQL_EXPOSED_PORT = 3306;
     
-    public static final String MYSQL_CONF_IN_CONTAINER = "/etc/mysql/my.cnf";
-    
     private final StorageContainerConfiguration storageContainerConfig;
     
     public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
