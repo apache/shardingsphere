@@ -67,14 +67,18 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             findToBeMountedCommonSQLFile(each).ifPresent(optional -> withClasspathResourceMapping(optional, "/docker-entrypoint-initdb.d/" + each, BindMode.READ_ONLY));
         }
         withExposedPorts(getExposedPort());
-        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
-                ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), READY_USER, READY_USER_PASSWORD)));
+        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), READY_USER, READY_USER_PASSWORD)));
     }
     
     private Optional<String> findToBeMountedCommonSQLFile(final String toBeMountedSQLFile) {
         String toBeMountedSQLFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedSQLFilePath) ? Optional.empty() : Optional.of("/" + toBeMountedSQLFilePath);
+    }
+    
+    private String getURL() {
+        return getDefaultDatabaseName().isPresent()
+                ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
+                : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort());
     }
     
     protected final void setCommands(final String command) {
