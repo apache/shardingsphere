@@ -35,8 +35,6 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public static final int POSTGRESQL_EXPOSED_PORT = 5432;
     
-    public static final String POSTGRESQL_CONF_IN_CONTAINER = "/etc/postgresql/postgresql.conf";
-    
     private final StorageContainerConfiguration storageContainerConfig;
     
     public PostgreSQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {

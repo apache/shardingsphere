@@ -19,12 +19,10 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,11 +42,8 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
-        return result;
+    public Collection<String> getMountedConfigurationResources() {
+        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf");
     }
     
     @Override

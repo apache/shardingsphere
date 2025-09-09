@@ -45,7 +45,7 @@ public interface StorageContainerConfigurationOption {
      *
      * @return mounted configuration resources
      */
-    Map<String, String> getMountedConfigurationResources();
+    Collection<String> getMountedConfigurationResources();
     
     /**
      * Get mounted SQL resources.

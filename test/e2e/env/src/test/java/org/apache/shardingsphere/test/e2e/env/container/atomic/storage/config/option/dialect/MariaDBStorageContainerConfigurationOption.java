@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
 import java.util.Collection;
@@ -46,8 +45,8 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.singletonMap("my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.singleton("/etc/mysql/mariadb.cnf");
     }
     
     @Override

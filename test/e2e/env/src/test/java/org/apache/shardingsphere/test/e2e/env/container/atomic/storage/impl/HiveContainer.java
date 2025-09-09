@@ -41,8 +41,6 @@ public final class HiveContainer extends DockerStorageContainer {
     
     public static final int HIVE_EXPOSED_PORT = 10000;
     
-    public static final String HIVE_CONF_IN_CONTAINER = "/opt/hive/conf/hive-site.xml";
-    
     private final StorageContainerConfiguration storageContainerConfig;
     
     public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
