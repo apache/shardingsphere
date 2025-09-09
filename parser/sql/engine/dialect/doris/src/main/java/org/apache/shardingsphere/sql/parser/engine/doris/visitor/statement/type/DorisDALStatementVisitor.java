@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlushCo
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FromTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HelpContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RefreshContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IndexNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.InstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.InstallPluginContext;
@@ -146,6 +147,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.RefreshStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -929,5 +931,10 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitHelp(final HelpContext ctx) {
         return new MySQLHelpStatement(getDatabaseType(), ctx.textOrIdentifier().getText());
+    }
+    
+    @Override
+    public ASTNode visitRefresh(final RefreshContext ctx) {
+        return new RefreshStatement(getDatabaseType());
     }
 }
