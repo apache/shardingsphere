@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,8 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     
     @Override
     public Collection<String> getMountedSQLResources(final int majorVersion) {
-        Collection<String> result = Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
+        Collection<String> result = new LinkedList<>();
+        result.add("01-initdb.sql");
         if (majorVersion > 5) {
             result.add("02-grant-xa-privilege.sql");
         }
