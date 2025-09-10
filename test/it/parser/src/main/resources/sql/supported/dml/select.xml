@@ -373,4 +373,5 @@
     <sql-case id="select_optimize_for_hint" value="SELECT * FROM Person OPTION ( OPTIMIZE FOR (@city_name = 'Seattle', @postal_code UNKNOWN) );" db-types="SQLServer"/>
     <sql-case id="select_fast_hint" value="SELECT * FROM Person OPTION (HASH GROUP, FAST 10);" db-types="SQLServer"/>
     <sql-case id="select_use_hint" value="SELECT * FROM Person OPTION (RECOMPILE, USE HINT ('ASSUME_MIN_SELECTIVITY_FOR_FILTER_ESTIMATES', 'DISABLE_PARAMETER_SNIFFING'));" db-types="SQLServer"/>
+    <sql-case id="select_maxdop_hint" value="SELECT * FROM Person OPTION (MAXDOP 2);" db-types="SQLServer"/>
 </sql-cases>
