@@ -127,7 +127,7 @@ public final class StorageContainerConfigurationFactory {
     
     private static Optional<String> findToBeMountedCommonSQLFile(final DatabaseType databaseType, final String toBeMountedSQLFile) {
         String toBeMountedSQLFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
-        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedSQLFilePath) ? Optional.empty() : Optional.of("/" + toBeMountedSQLFilePath);
+        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedSQLFilePath) ? Optional.empty() : Optional.of(toBeMountedSQLFilePath);
     }
     
     private static Optional<String> getToBeMountedSQLFile(final DatabaseType databaseType, final String sqlFile) {
