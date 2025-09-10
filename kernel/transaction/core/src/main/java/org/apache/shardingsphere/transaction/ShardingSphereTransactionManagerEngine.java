@@ -49,9 +49,10 @@ public final class ShardingSphereTransactionManagerEngine {
      * @param providerType transaction manager provider type
      */
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final String providerType) {
-        if (TransactionType.LOCAL != transactionType) {
-            distributedTransactionManager.init(databaseTypes, dataSourceMap, providerType);
+        if (TransactionType.LOCAL == transactionType) {
+            return;
         }
+        distributedTransactionManager.init(databaseTypes, dataSourceMap, providerType);
     }
     
     /**
