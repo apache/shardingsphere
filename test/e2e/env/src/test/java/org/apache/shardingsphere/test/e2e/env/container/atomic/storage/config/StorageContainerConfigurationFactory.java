@@ -39,9 +39,9 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConfigurationFactory {
     
-    private static final String TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE = "50-actual-init.sql";
+    private static final String TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE = "50-scenario-actual-init.sql";
     
-    private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "60-expected-init.sql";
+    private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "60-scenario-expected-init.sql";
     
     /**
      * Create new instance of storage container configuration.
