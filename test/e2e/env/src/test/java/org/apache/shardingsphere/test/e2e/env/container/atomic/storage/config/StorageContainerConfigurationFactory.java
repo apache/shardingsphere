@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConfigurationFactory {
+    
+    private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-common-init-authority.sql", "99-common-check-ready.sql");
     
     private static final String TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE = "50-scenario-actual-init.sql";
     
@@ -109,13 +112,11 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        return getToBeMountedSQLFiles(databaseType, findMajorVersion(option, majorVersion).orElse(0), option, scenario);
-    }
-    
-    private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final int majorVersion, final StorageContainerConfigurationOption option, final String scenario) {
-        Collection<String> mountedSQLResources = option.getMountedSQLResources(majorVersion);
-        Map<String, String> result = new HashMap<>(mountedSQLResources.size(), 1F);
-        for (String each : mountedSQLResources) {
+        Map<String, String> result = new HashMap<>();
+        for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
+            findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
+        }
+        for (String each : option.getMountedSQLResources(findMajorVersion(option, majorVersion).orElse(0))) {
             getToBeMountedSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
         }
         for (String each : getToBeMountedScenarioSQLFiles(databaseType, scenario)) {
@@ -124,12 +125,14 @@ public final class StorageContainerConfigurationFactory {
         return result;
     }
     
+    private static Optional<String> findToBeMountedCommonSQLFile(final DatabaseType databaseType, final String toBeMountedSQLFile) {
+        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
+        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
+    }
+    
     private static Optional<String> getToBeMountedSQLFile(final DatabaseType databaseType, final String sqlFile) {
-        String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
-        if (null != Thread.currentThread().getContextClassLoader().getResource(envFile)) {
-            return Optional.of(envFile);
-        }
-        return Optional.empty();
+        String toBeMountedFilePath = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
+        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
     private static Collection<String> getToBeMountedScenarioSQLFiles(final DatabaseType databaseType, final String scenario) {
