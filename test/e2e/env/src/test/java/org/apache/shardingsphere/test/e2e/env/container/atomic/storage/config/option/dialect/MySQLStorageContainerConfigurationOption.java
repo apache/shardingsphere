@@ -52,11 +52,10 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public Collection<String> getMountedSQLResources(final int majorVersion) {
+    public Collection<String> getAdditionalMountedSQLEnvResources(final int majorVersion) {
         Collection<String> result = new LinkedList<>();
-        result.add("01-initdb.sql");
         if (majorVersion > 5) {
-            result.add("02-grant-xa-privilege.sql");
+            result.add("21-env-grant-xa-privilege.sql");
         }
         return result;
     }

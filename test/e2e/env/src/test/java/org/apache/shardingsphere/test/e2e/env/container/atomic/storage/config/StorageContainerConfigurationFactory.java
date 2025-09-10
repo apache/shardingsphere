@@ -42,6 +42,8 @@ public final class StorageContainerConfigurationFactory {
     
     private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-common-init-authority.sql", "99-common-check-ready.sql");
     
+    private static final String TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE = "20-env-initdb.sql";
+    
     private static final String TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE = "50-scenario-actual-init.sql";
     
     private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "60-scenario-expected-init.sql";
@@ -116,7 +118,11 @@ public final class StorageContainerConfigurationFactory {
         for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
             findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
         }
-        for (String each : option.getMountedSQLResources(findMajorVersion(option, majorVersion).orElse(0))) {
+        String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
+        if (null != Thread.currentThread().getContextClassLoader().getResource(toBeMountedStandardEnvSQLFilePath)) {
+            result.put("/" + TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE, "/docker-entrypoint-initdb.d/" + TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
+        }
+        for (String each : option.getAdditionalMountedSQLEnvResources(findMajorVersion(option, majorVersion).orElse(0))) {
             getToBeMountedEnvSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
         }
         for (String each : getToBeMountedScenarioSQLFiles(databaseType, scenario)) {
@@ -131,7 +137,7 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Optional<String> getToBeMountedEnvSQLFile(final DatabaseType databaseType, final String sqlFile) {
-        String toBeMountedFilePath = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
+        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), sqlFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     

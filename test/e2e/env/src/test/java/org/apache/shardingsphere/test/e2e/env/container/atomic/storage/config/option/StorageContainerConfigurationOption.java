@@ -48,12 +48,12 @@ public interface StorageContainerConfigurationOption {
     Collection<String> getMountedConfigurationResources();
     
     /**
-     * Get mounted SQL resources.
+     * Get additional mounted env SQL resources.
      *
      * @param majorVersion major version
-     * @return mounted SQL resources
+     * @return additional mounted env SQL resources
      */
-    Collection<String> getMountedSQLResources(int majorVersion);
+    Collection<String> getAdditionalMountedSQLEnvResources(int majorVersion);
     
     /**
      * Whether embedded storage container.
