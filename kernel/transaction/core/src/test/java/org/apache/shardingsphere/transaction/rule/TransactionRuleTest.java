@@ -44,6 +44,7 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -120,7 +121,7 @@ class TransactionRuleTest {
     void assertClose() {
         TransactionRule actual = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.singleton(createDatabase()));
         actual.close();
-        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
+        assertNull(actual.getResource());
     }
     
     private ShardingSphereDatabase createDatabase() {
