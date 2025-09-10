@@ -126,13 +126,13 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Optional<String> findToBeMountedCommonSQLFile(final DatabaseType databaseType, final String toBeMountedSQLFile) {
-        String toBeMountedSQLFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
-        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedSQLFilePath) ? Optional.empty() : Optional.of(toBeMountedSQLFilePath);
+        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
+        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
     private static Optional<String> getToBeMountedSQLFile(final DatabaseType databaseType, final String sqlFile) {
-        String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
-        return null == Thread.currentThread().getContextClassLoader().getResource(envFile) ? Optional.empty() : Optional.of(envFile);
+        String toBeMountedFilePath = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
+        return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
     private static Collection<String> getToBeMountedScenarioSQLFiles(final DatabaseType databaseType, final String scenario) {
