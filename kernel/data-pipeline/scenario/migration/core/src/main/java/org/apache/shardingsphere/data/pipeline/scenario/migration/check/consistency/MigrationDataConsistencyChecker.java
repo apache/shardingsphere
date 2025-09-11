@@ -79,7 +79,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     public MigrationDataConsistencyChecker(final MigrationJobConfiguration jobConfig, final TransmissionProcessContext processContext,
                                            final ConsistencyCheckJobItemProgressContext progressContext) {
         this.jobConfig = jobConfig;
-        readRateLimitAlgorithm = null == processContext ? null : processContext.getReadRateLimitAlgorithm();
+        readRateLimitAlgorithm = processContext.getReadRateLimitAlgorithm();
         this.progressContext = progressContext;
     }
     
@@ -135,21 +135,24 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final String targetTableName, final DataNode dataNode,
                                                                           final TableDataConsistencyChecker tableChecker, final PipelineDataSourceManager dataSourceManager) {
         QualifiedTable sourceTable = new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName());
-        QualifiedTable targetTable = new QualifiedTable(dataNode.getSchemaName(), targetTableName);
         PipelineDataSource sourceDataSource = dataSourceManager.getDataSource(jobConfig.getSources().get(dataNode.getDataSourceName()));
-        PipelineDataSource targetDataSource = dataSourceManager.getDataSource(jobConfig.getTarget());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dataNode.getSchemaName(), dataNode.getTableName());
         ShardingSpherePreconditions.checkNotNull(tableMetaData,
                 () -> new PipelineTableDataConsistencyCheckLoadingFailedException(new QualifiedTable(dataNode.getSchemaName(), dataNode.getTableName())));
         List<String> columnNames = tableMetaData.getColumnNames();
         List<PipelineColumnMetaData> uniqueKeys = PipelineTableMetaDataUtils.getUniqueKeyColumns(sourceTable.getSchemaName(), sourceTable.getTableName(), metaDataLoader);
+        QualifiedTable targetTable = new QualifiedTable(dataNode.getSchemaName(), targetTableName);
+        PipelineDataSource targetDataSource = dataSourceManager.getDataSource(jobConfig.getTarget());
         TableInventoryCheckParameter param = new TableInventoryCheckParameter(
                 jobConfig.getJobId(), sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext);
         TableInventoryChecker tableInventoryChecker = tableChecker.buildTableInventoryChecker(param);
         currentTableInventoryChecker.set(tableInventoryChecker);
         Optional<TableDataConsistencyCheckResult> preCheckResult = tableInventoryChecker.preCheck();
-        return preCheckResult.orElseGet(tableInventoryChecker::checkSingleTableInventoryData);
+        TableDataConsistencyCheckResult result = preCheckResult.orElseGet(tableInventoryChecker::checkSingleTableInventoryData);
+        tableInventoryChecker.cancel();
+        currentTableInventoryChecker.set(null);
+        return result;
     }
     
     @Override
