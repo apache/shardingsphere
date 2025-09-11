@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.h2.util.ScriptReader;
 
 import javax.sql.DataSource;
@@ -35,12 +36,16 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Batched SQL utility class.
+ * SQL script utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLScriptUtils {
+    
+    private static final int SQL_BATCH_SIZE = 100;
     
     /**
      * Execute SQL script.
@@ -50,9 +55,15 @@ public final class SQLScriptUtils {
      */
     @SneakyThrows({SQLException.class, IOException.class})
     public static void execute(final DataSource dataSource, final String scriptFilePath) {
+        Collection<String> sqls = readSQLs(scriptFilePath);
+        try (Connection connection = dataSource.getConnection()) {
+            executeBatch(connection, sqls);
+        }
+    }
+    
+    private static Collection<String> readSQLs(final String scriptFilePath) throws IOException {
+        Collection<String> result = new LinkedList<>();
         try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement();
                 Reader reader = getReader(scriptFilePath);
                 ScriptReader scriptReader = new ScriptReader(reader)) {
             scriptReader.setSkipRemarks(true);
@@ -61,16 +72,33 @@ public final class SQLScriptUtils {
                 if (null == sql) {
                     break;
                 }
-                if (StringUtils.isBlank(sql)) {
-                    continue;
+                if (!StringUtils.isBlank(sql)) {
+                    result.add(sql);
                 }
-                statement.execute(sql);
             }
         }
+        return result;
     }
     
     private static Reader getReader(final String scriptFilePath) throws FileNotFoundException {
-        InputStream resourceAsStream = SQLScriptUtils.class.getClassLoader().getResourceAsStream(StringUtils.removeStart(scriptFilePath, "/"));
+        InputStream resourceAsStream = SQLScriptUtils.class.getClassLoader().getResourceAsStream(Strings.CS.removeStart(scriptFilePath, "/"));
         return null == resourceAsStream ? new FileReader(scriptFilePath) : new BufferedReader(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8));
+    }
+    
+    private static void executeBatch(final Connection connection, final Collection<String> sqls) throws SQLException {
+        int count = 0;
+        try (Statement statement = connection.createStatement()) {
+            for (String each : sqls) {
+                statement.addBatch(each);
+                count++;
+                if (0 == count % SQL_BATCH_SIZE) {
+                    statement.executeBatch();
+                    statement.clearBatch();
+                }
+            }
+            if (0 != count % SQL_BATCH_SIZE) {
+                statement.executeBatch();
+            }
+        }
     }
 }
