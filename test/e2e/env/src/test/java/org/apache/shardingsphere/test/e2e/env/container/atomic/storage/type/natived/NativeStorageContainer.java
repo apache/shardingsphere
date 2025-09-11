@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived;
 
 import lombok.Getter;
 import lombok.Setter;

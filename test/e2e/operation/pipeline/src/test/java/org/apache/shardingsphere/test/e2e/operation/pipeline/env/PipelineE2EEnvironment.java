@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.MariaDBContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.OpenGaussContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.PostgreSQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.MariaDBContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.OpenGaussContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.PostgreSQLContainer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
