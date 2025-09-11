@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -23,22 +23,24 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * PostgreSQL container.
+ * MySQL container.
  */
-public final class PostgreSQLContainer extends DockerStorageContainer {
+public final class MySQLContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 5432;
+    public static final int EXPOSED_PORT = 3306;
     
     private final StorageContainerConfiguration storageContainerConfig;
     
-    public PostgreSQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage);
+    public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
+        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.0.40" : containerImage);
         this.storageContainerConfig = storageContainerConfig;
     }
     
@@ -48,6 +50,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
         super.configure();
+        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     @Override
@@ -72,6 +75,6 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
-        return Optional.of("postgres");
+        return Optional.empty();
     }
 }

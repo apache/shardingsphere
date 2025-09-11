@@ -21,12 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.H2Container;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.HiveContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MariaDBContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.H2Container;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.HiveContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.MariaDBContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.OpenGaussContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.PostgreSQLContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 /**

@@ -15,39 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type;
 
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
+import java.io.IOException;
+import java.sql.DriverManager;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * MariaDB container.
+ * Hive container.
  */
-public final class MariaDBContainer extends DockerStorageContainer {
+@Slf4j
+public final class HiveContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 3306;
+    public static final int EXPOSED_PORT = 10000;
     
     private final StorageContainerConfiguration storageContainerConfig;
     
-    public MariaDBContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "MariaDB"), Strings.isNullOrEmpty(containerImage) ? "mariadb:11" : containerImage);
+    public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
+        super(TypedSPILoader.getService(DatabaseType.class, "Hive"), Strings.isNullOrEmpty(containerImage) ? "apache/hive:4.0.1" : containerImage);
         this.storageContainerConfig = storageContainerConfig;
     }
     
+    @SuppressWarnings("CallToDriverManagerGetConnection")
     @Override
     protected void configure() {
         setCommands(storageContainerConfig.getContainerCommand());
         addEnvs(storageContainerConfig.getContainerEnvironments());
         mapResources(storageContainerConfig.getMountedResources());
+        withExposedPorts(getExposedPort());
         super.configure();
+        withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
+        setWaitStrategy(new JdbcConnectionWaitStrategy(
+                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
     }
     
     @Override
@@ -73,5 +86,16 @@ public final class MariaDBContainer extends DockerStorageContainer {
     @Override
     protected Optional<String> getDefaultDatabaseName() {
         return Optional.empty();
+    }
+    
+    @Override
+    protected void postStart() {
+        try {
+            execInContainer("bash", "-c", "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; CREATE DATABASE IF NOT EXISTS expected_dataset;\"");
+        } catch (final InterruptedException | IOException ex) {
+            log.error("Failed to create databases in postStart()", ex);
+        }
+        super.postStart();
+        log.info("Hive container postStart completed successfully");
     }
 }
