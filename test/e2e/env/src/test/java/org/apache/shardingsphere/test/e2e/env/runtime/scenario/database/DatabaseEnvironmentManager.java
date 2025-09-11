@@ -49,18 +49,7 @@ public final class DatabaseEnvironmentManager {
      * @return database types
      */
     public static Map<String, DatabaseType> getDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType) {
-        Collection<String> datasourceNames = unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases();
-        return crateDatabaseTypes(datasourceNames, defaultDatabaseType);
-    }
-    
-    private static Map<String, DatabaseType> crateDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(datasourceNames.size(), 1F);
-        for (String each : datasourceNames) {
-            List<String> items = Splitter.on(":").splitToList(each);
-            DatabaseType databaseType = items.size() > 1 ? TypedSPILoader.getService(DatabaseType.class, items.get(1)) : defaultDatabaseType;
-            result.put(items.get(0), databaseType);
-        }
-        return result;
+        return crateDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.ACTUAL)).getDatabases(), defaultDatabaseType);
     }
     
     /**
@@ -72,6 +61,16 @@ public final class DatabaseEnvironmentManager {
      */
     public static Map<String, DatabaseType> getExpectedDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType) {
         return crateDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(Type.EXPECTED)).getDatabases(), defaultDatabaseType);
+    }
+    
+    private static Map<String, DatabaseType> crateDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(datasourceNames.size(), 1F);
+        for (String each : datasourceNames) {
+            List<String> items = Splitter.on(":").splitToList(each);
+            DatabaseType databaseType = items.size() > 1 ? TypedSPILoader.getService(DatabaseType.class, items.get(1)) : defaultDatabaseType;
+            result.put(items.get(0), databaseType);
+        }
+        return result;
     }
     
     @SneakyThrows({IOException.class, JAXBException.class})
