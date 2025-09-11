@@ -124,15 +124,6 @@ public final class TransactionE2EEnvironment {
     }
     
     /**
-     * Get native database type.
-     *
-     * @return native database type
-     */
-    public String getNativeDatabaseType() {
-        return String.valueOf(props.get("transaction.it.native.database"));
-    }
-    
-    /**
      * Get actual data source username.
      *
      * @param databaseType database type
