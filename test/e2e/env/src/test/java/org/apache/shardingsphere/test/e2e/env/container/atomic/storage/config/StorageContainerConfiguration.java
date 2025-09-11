@@ -28,13 +28,13 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public class StorageContainerConfiguration {
+public final class StorageContainerConfiguration {
     
     private final String scenario;
     
-    private final String containerCommand;
+    private final String command;
     
-    private final Map<String, String> containerEnvironments;
+    private final Map<String, String> environments;
     
     private final Map<String, String> mountedResources;
     
@@ -42,13 +42,8 @@ public class StorageContainerConfiguration {
     
     private final Map<String, DatabaseType> expectedDatabaseTypes;
     
-    public StorageContainerConfiguration(final String containerCommand, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources,
+    public StorageContainerConfiguration(final String command, final Map<String, String> environments, final Map<String, String> mountedResources,
                                          final Map<String, DatabaseType> databaseTypes, final Map<String, DatabaseType> expectedDatabaseTypes) {
-        scenario = null;
-        this.containerCommand = containerCommand;
-        this.containerEnvironments = containerEnvironments;
-        this.mountedResources = mountedResources;
-        this.databaseTypes = databaseTypes;
-        this.expectedDatabaseTypes = expectedDatabaseTypes;
+        this(null, command, environments, mountedResources, databaseTypes, expectedDatabaseTypes);
     }
 }
