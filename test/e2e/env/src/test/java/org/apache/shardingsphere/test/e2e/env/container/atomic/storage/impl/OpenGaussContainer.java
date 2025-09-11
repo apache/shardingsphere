@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public static final int OPENGAUSS_EXPOSED_PORT = 5432;
+    public static final int EXPOSED_PORT = 5432;
     
     private final StorageContainerConfiguration storageContainerConfig;
     
@@ -68,12 +68,12 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return OPENGAUSS_EXPOSED_PORT;
+        return EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(OPENGAUSS_EXPOSED_PORT);
+        return getMappedPort(EXPOSED_PORT);
     }
     
     @Override

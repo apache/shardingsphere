@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public static final int POSTGRESQL_EXPOSED_PORT = 5432;
+    public static final int EXPOSED_PORT = 5432;
     
     private final StorageContainerConfiguration storageContainerConfig;
     
@@ -62,12 +62,12 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return POSTGRESQL_EXPOSED_PORT;
+        return EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(POSTGRESQL_EXPOSED_PORT);
+        return getMappedPort(EXPOSED_PORT);
     }
     
     @Override

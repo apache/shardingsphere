@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class HiveContainer extends DockerStorageContainer {
     
-    public static final int HIVE_EXPOSED_PORT = 10000;
+    public static final int EXPOSED_PORT = 10000;
     
     private final StorageContainerConfiguration storageContainerConfig;
     
@@ -74,12 +74,12 @@ public final class HiveContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return HIVE_EXPOSED_PORT;
+        return EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(HIVE_EXPOSED_PORT);
+        return getMappedPort(EXPOSED_PORT);
     }
     
     @Override
