@@ -35,7 +35,7 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         return Collections.emptyMap();
     }
     
@@ -50,12 +50,12 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return true;
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
     
     @Override
-    public List<Integer> getSupportedMajorVersions() {
-        return Collections.emptyList();
+    public boolean isEmbeddedStorageContainer() {
+        return true;
     }
 }

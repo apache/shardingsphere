@@ -39,7 +39,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
@@ -61,12 +61,12 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public List<Integer> getSupportedMajorVersions() {
+        return Arrays.asList(5, 8);
     }
     
     @Override
-    public List<Integer> getSupportedMajorVersions() {
-        return Arrays.asList(5, 8);
+    public boolean isEmbeddedStorageContainer() {
+        return false;
     }
 }

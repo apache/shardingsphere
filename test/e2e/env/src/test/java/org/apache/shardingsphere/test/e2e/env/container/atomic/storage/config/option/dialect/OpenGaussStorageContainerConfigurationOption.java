@@ -37,7 +37,7 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.PASSWORD);
     }
     
@@ -52,12 +52,12 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
     
     @Override
-    public List<Integer> getSupportedMajorVersions() {
-        return Collections.emptyList();
+    public boolean isEmbeddedStorageContainer() {
+        return false;
     }
 }
