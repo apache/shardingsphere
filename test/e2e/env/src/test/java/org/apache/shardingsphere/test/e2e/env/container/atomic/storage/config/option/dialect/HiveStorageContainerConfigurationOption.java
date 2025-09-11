@@ -36,7 +36,7 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(3, 1F);
         result.put("SERVICE_NAME", "hiveserver2");
         result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
@@ -55,12 +55,12 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
     
     @Override
-    public List<Integer> getSupportedMajorVersions() {
-        return Collections.emptyList();
+    public boolean isEmbeddedStorageContainer() {
+        return false;
     }
 }

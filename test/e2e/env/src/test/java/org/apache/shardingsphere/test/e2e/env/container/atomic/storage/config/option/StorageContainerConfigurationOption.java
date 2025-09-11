@@ -27,9 +27,9 @@ import java.util.Map;
 public interface StorageContainerConfigurationOption {
     
     /**
-     * Get command.
+     * Get container command.
      *
-     * @return command
+     * @return container command
      */
     String getCommand();
     
@@ -38,7 +38,7 @@ public interface StorageContainerConfigurationOption {
      *
      * @return container environments
      */
-    Map<String, String> getContainerEnvironments();
+    Map<String, String> getEnvironments();
     
     /**
      * Get mounted configuration resources.
@@ -56,16 +56,16 @@ public interface StorageContainerConfigurationOption {
     Collection<String> getAdditionalMountedSQLEnvResources(int majorVersion);
     
     /**
-     * Whether embedded storage container.
-     *
-     * @return is embedded storage container or not
-     */
-    boolean isEmbeddedStorageContainer();
-    
-    /**
      * Get supported major versions.
      *
      * @return supported major versions
      */
     List<Integer> getSupportedMajorVersions();
+    
+    /**
+     * Whether embedded storage container.
+     *
+     * @return is embedded storage container or not
+     */
+    boolean isEmbeddedStorageContainer();
 }

@@ -58,7 +58,7 @@ public final class StorageContainerConfigurationFactory {
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion) {
         Map<String, String> mountedResources = getMountedResources(databaseType, option, majorVersion, "");
-        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
+        return new StorageContainerConfiguration(option.getCommand(), option.getEnvironments(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
     }
     
     /**
@@ -74,8 +74,8 @@ public final class StorageContainerConfigurationFactory {
         Map<String, DatabaseType> expectedDatabaseTypes = DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, databaseType);
         Map<String, String> mountedResources = getMountedResources(databaseType, option, 0, scenario);
         return option.isEmbeddedStorageContainer()
-                ? new StorageContainerConfiguration(scenario, option.getCommand(), option.getContainerEnvironments(), mountedResources, databaseTypes, expectedDatabaseTypes)
-                : new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), mountedResources, databaseTypes, expectedDatabaseTypes);
+                ? new StorageContainerConfiguration(scenario, option.getCommand(), option.getEnvironments(), mountedResources, databaseTypes, expectedDatabaseTypes)
+                : new StorageContainerConfiguration(option.getCommand(), option.getEnvironments(), mountedResources, databaseTypes, expectedDatabaseTypes);
     }
     
     private static Map<String, String> getMountedResources(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {

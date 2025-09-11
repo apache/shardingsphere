@@ -37,7 +37,7 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
@@ -55,12 +55,12 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public List<Integer> getSupportedMajorVersions() {
+        return Collections.emptyList();
     }
     
     @Override
-    public List<Integer> getSupportedMajorVersions() {
-        return Collections.emptyList();
+    public boolean isEmbeddedStorageContainer() {
+        return false;
     }
 }
