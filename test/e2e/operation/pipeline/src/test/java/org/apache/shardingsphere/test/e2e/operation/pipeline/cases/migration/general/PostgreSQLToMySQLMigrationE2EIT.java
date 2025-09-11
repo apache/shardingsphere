@@ -124,6 +124,13 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void registerMigrationSourceStorageUnit(final PipelineContainerComposer containerComposer) throws SQLException {
+        if (PipelineEnvTypeEnum.NATIVE == PipelineE2EEnvironment.getInstance().getItEnvType()) {
+            try {
+                containerComposer.proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT source_ds", 2);
+            } catch (final SQLException ex) {
+                log.warn("Unregister migration source storage unit `source_ds` failed, maybe it does not exist. Error msg: {}", ex.getMessage());
+            }
+        }
         String jdbcUrl = String.format("jdbc:postgresql://%s:5432/postgres",
                 PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER ? "postgresql.host" : "localhost");
         String sql = String.format("REGISTER MIGRATION SOURCE STORAGE UNIT source_ds (URL='%s', USER='postgres', PASSWORD='postgres')", jdbcUrl);
