@@ -32,13 +32,12 @@
     <repositories>
 
         <repository>
-            <id>maven-central</id>
-            <url>https://repo1.maven.org/maven2</url>
-        </repository>
-
-        <repository>
             <id>nexus-red-soft-ru-jaybird</id>
             <url>https://nexus.red-soft.ru/repository/jaybird</url>
+        </repository>
+        <repository>
+            <id>nexus-red-soft-ru-central</id>
+            <url>http://nexus.red-soft.biz/repository/central/</url>
         </repository>
 
     </repositories>
