@@ -50,7 +50,6 @@ public final class HiveContainer extends DockerStorageContainer {
         this.storageContainerConfig = storageContainerConfig;
     }
     
-    @SuppressWarnings("CallToDriverManagerGetConnection")
     @Override
     protected void configure() {
         setCommands(storageContainerConfig.getContainerCommand());
