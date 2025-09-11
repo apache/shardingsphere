@@ -75,7 +75,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private Map<String, DataSource> createActualDataSourceMap() {
         Collection<String> databaseNames =
-                storageContainerConfiguration.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
+                storageContainerConfiguration.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
         return getDataSourceMap(databaseNames);
     }
     

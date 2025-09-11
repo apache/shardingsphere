@@ -58,7 +58,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
