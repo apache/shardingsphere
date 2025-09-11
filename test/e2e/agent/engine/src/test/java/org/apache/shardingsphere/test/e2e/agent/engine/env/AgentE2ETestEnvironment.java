@@ -39,7 +39,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.MySQLContainer;
 import org.awaitility.Awaitility;
 import org.testcontainers.containers.output.OutputFrame;
 
