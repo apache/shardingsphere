@@ -71,7 +71,6 @@ public final class E2ETestEnvironment {
         governanceCenter = props.getProperty("it.env.governance.center");
     }
     
-    @SuppressWarnings("AccessOfSystemProperties")
     private Properties loadProperties() {
         Properties result = new Properties();
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/it-env.properties")) {

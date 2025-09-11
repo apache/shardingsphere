@@ -38,7 +38,6 @@ public final class AgentE2EEnvironmentProperties {
      * @return properties
      */
     @SneakyThrows(IOException.class)
-    @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {
         Properties result = new Properties();
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(propsFileName)) {
