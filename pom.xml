@@ -30,10 +30,17 @@
     <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
     <repositories>
+
         <repository>
-            <id>http-repo</id>
-            <url>http://repo.maven.apache.org/maven2</url>
+            <id>maven-central</id>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
+
+        <repository>
+            <id>nexus-red-soft-ru-jaybird</id>
+            <url>https://nexus.red-soft.ru/repository/jaybird</url>
+        </repository>
+
     </repositories>
     <modules>
         <module>infra</module>
