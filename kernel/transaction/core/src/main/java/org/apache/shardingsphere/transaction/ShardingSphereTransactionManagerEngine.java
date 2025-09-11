@@ -72,8 +72,9 @@ public final class ShardingSphereTransactionManagerEngine {
      * Close transaction manager.
      */
     public void close() {
-        if (TransactionType.LOCAL != transactionType) {
-            distributedTransactionManager.close();
+        if (TransactionType.LOCAL == transactionType) {
+            return;
         }
+        distributedTransactionManager.close();
     }
 }
