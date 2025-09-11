@@ -90,13 +90,13 @@ public final class PipelineE2EEnvironment {
     public int getActualDatabasePort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", MySQLContainer.MYSQL_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", MySQLContainer.EXPOSED_PORT).toString());
             case "MariaDB":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.mariadb.port", MariaDBContainer.EXPOSED_PORT).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", PostgreSQLContainer.POSTGRESQL_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", PostgreSQLContainer.EXPOSED_PORT).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", OpenGaussContainer.OPENGAUSS_EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", OpenGaussContainer.EXPOSED_PORT).toString());
             case "Oracle":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.oracle.port", 1521).toString());
             default:

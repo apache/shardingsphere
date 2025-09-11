@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public static final int MYSQL_EXPOSED_PORT = 3306;
+    public static final int EXPOSED_PORT = 3306;
     
     private final StorageContainerConfiguration storageContainerConfig;
     
@@ -65,12 +65,12 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     public int getExposedPort() {
-        return MYSQL_EXPOSED_PORT;
+        return EXPOSED_PORT;
     }
     
     @Override
     public int getMappedPort() {
-        return getMappedPort(MYSQL_EXPOSED_PORT);
+        return getMappedPort(EXPOSED_PORT);
     }
     
     @Override
