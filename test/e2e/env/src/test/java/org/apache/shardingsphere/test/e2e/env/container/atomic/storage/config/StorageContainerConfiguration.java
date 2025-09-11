@@ -38,12 +38,7 @@ public final class StorageContainerConfiguration {
     
     private final Map<String, String> mountedResources;
     
-    private final Map<String, DatabaseType> databaseTypes;
+    private final Map<String, DatabaseType> actualDatabaseTypes;
     
     private final Map<String, DatabaseType> expectedDatabaseTypes;
-    
-    public StorageContainerConfiguration(final String command, final Map<String, String> environments, final Map<String, String> mountedResources,
-                                         final Map<String, DatabaseType> databaseTypes, final Map<String, DatabaseType> expectedDatabaseTypes) {
-        this(null, command, environments, mountedResources, databaseTypes, expectedDatabaseTypes);
-    }
 }

@@ -137,7 +137,7 @@ public final class AgentE2ETestEnvironment {
         environments.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         Map<String, String> mountedResources = Collections.singletonMap("/env/mysql/init.sql", "/docker-entrypoint-initdb.d/init.sql");
         return new StorageContainerConfiguration(
-                "--sql_mode= --default-authentication-plugin=mysql_native_password", environments, mountedResources, Collections.emptyMap(), Collections.emptyMap());
+                null, "--sql_mode= --default-authentication-plugin=mysql_native_password", environments, mountedResources, Collections.emptyMap(), Collections.emptyMap());
     }
     
     private AdaptorContainerConfiguration getAdaptorContainerConfiguration() {
