@@ -23,7 +23,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
 import org.awaitility.Awaitility;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
