@@ -68,4 +68,11 @@ public interface StorageContainerConfigurationOption {
      * @return is embedded storage container or not
      */
     boolean isEmbeddedStorageContainer();
+    
+    /**
+     * Get container startup timeout seconds.
+     *
+     * @return container startup timeout seconds
+     */
+    long getStartupTimeoutSeconds();
 }

@@ -60,4 +60,9 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     public boolean isEmbeddedStorageContainer() {
         return false;
     }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
+    }
 }

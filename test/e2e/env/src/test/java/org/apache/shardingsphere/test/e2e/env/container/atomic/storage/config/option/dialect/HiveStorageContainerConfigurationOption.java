@@ -63,4 +63,9 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     public boolean isEmbeddedStorageContainer() {
         return false;
     }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 180L;
+    }
 }
