@@ -26,7 +26,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StorageContainerConstants {
     
-    public static final String USERNAME = "test_user";
+    public static final String OPERATION_USER = "test_user";
     
-    public static final String PASSWORD = "Test@123";
+    public static final String OPERATION_PASSWORD = "Test@123";
+    
+    public static final String CHECK_READY_USER = "ready_user";
+    
+    public static final String CHECK_READY_PASSWORD = "Ready@123";
 }

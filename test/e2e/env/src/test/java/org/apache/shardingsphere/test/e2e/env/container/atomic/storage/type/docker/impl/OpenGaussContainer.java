@@ -63,11 +63,11 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
-        return Optional.of(StorageContainerConstants.USERNAME);
+        return Optional.of(StorageContainerConstants.OPERATION_USER);
     }
     
     @Override
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? StorageContainerConstants.USERNAME : dataSourceName);
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? StorageContainerConstants.OPERATION_USER : dataSourceName);
     }
 }

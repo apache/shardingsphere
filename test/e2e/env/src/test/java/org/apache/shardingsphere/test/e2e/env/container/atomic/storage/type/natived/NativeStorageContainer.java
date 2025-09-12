@@ -133,8 +133,8 @@ public final class NativeStorageContainer implements StorageContainer {
         for (String each : getNetworkAliases()) {
             result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
         }
-        result.put(StorageContainerConstants.USERNAME, E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put(StorageContainerConstants.PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        result.put(StorageContainerConstants.OPERATION_USER, E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put(StorageContainerConstants.OPERATION_PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
         return result;
     }
 }

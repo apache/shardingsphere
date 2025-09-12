@@ -197,8 +197,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
                 result.put(network + ":" + storageContainer.getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
             }
         }
-        result.put("username: " + StorageContainerConstants.USERNAME, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put("password: " + StorageContainerConstants.PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put("password: " + StorageContainerConstants.OPERATION_PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
         return result;
     }
     
