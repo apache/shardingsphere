@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
-import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
@@ -82,10 +81,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private void addEnvironments() {
         storageContainerConfig.getConfigurationOption().getEnvironments().forEach(this::addEnv);
-    }
-    
-    private void mapResources(final Map<String, String> resources) {
-        resources.forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     private void setPrivilegedMode() {

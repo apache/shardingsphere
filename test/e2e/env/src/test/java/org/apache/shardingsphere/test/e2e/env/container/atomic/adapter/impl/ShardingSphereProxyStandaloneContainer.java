@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
-import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
@@ -51,13 +50,9 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     @Override
     protected void configure() {
         withExposedPorts(3307, 3308);
-        mountConfigurationFiles();
+        mapResources(config.getMountedResources());
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(
                 DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
-    }
-    
-    private void mountConfigurationFiles() {
-        config.getMountedResources().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override
