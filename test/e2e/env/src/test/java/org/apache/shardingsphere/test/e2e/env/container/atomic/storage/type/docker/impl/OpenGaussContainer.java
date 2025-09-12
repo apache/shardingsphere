@@ -39,19 +39,12 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     public static final int EXPOSED_PORT = 5432;
     
-    private final StorageContainerConfiguration storageContainerConfig;
-    
     public OpenGaussContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "opengauss/opengauss:3.1.0" : containerImage);
-        this.storageContainerConfig = storageContainerConfig;
+        super(TypedSPILoader.getService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "opengauss/opengauss:3.1.0" : containerImage, storageContainerConfig);
     }
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfig.getCommand());
-        addEnvs(storageContainerConfig.getEnvironments());
-        mapResources(storageContainerConfig.getMountedConfigurationResources());
-        mapResources(storageContainerConfig.getMountedSQLResources());
         withPrivilegedMode(true);
         super.configure();
         withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
@@ -59,12 +52,12 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
