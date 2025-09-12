@@ -71,6 +71,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         addEnvs(storageContainerConfig.getConfigurationOption().getEnvironments());
         mapResources(storageContainerConfig.getMountedConfigurationResources());
         mapResources(storageContainerConfig.getMountedSQLResources());
+        if (storageContainerConfig.getConfigurationOption().withPrivilegedMode()) {
+            withPrivilegedMode(true);
+        }
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), CHECK_READY_USER, CHECK_READY_PASSWORD)));

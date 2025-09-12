@@ -60,6 +60,11 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
     public long getStartupTimeoutSeconds() {
         return 0L;
     }

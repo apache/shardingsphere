@@ -70,6 +70,13 @@ public interface StorageContainerConfigurationOption {
     boolean isEmbeddedStorageContainer();
     
     /**
+     * Whether with privileged mode.
+     *
+     * @return is with privileged mode or not
+     */
+    boolean withPrivilegedMode();
+    
+    /**
      * Get container startup timeout seconds.
      *
      * @return container startup timeout seconds

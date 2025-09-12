@@ -65,6 +65,11 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
     public long getStartupTimeoutSeconds() {
         return 180L;
     }

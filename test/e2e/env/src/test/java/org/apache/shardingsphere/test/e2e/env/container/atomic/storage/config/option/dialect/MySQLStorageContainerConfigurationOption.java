@@ -71,6 +71,11 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
     public long getStartupTimeoutSeconds() {
         return 120L;
     }
