@@ -65,6 +65,11 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
     public long getStartupTimeoutSeconds() {
         return 120L;
     }

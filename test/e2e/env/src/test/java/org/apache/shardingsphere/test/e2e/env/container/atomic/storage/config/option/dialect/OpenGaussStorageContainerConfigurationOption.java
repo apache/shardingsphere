@@ -62,6 +62,11 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
+    public boolean withPrivilegedMode() {
+        return true;
+    }
+    
+    @Override
     public long getStartupTimeoutSeconds() {
         return 120L;
     }
