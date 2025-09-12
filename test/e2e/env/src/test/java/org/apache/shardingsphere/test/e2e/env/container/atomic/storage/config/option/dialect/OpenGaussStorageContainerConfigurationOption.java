@@ -38,7 +38,7 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     
     @Override
     public Map<String, String> getEnvironments() {
-        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.PASSWORD);
+        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
     }
     
     @Override

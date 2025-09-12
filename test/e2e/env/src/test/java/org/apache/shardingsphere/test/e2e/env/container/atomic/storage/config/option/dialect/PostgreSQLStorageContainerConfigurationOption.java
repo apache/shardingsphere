@@ -39,8 +39,8 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     @Override
     public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("POSTGRES_HOST", StorageContainerConstants.USERNAME);
-        result.put("POSTGRES_PASSWORD", StorageContainerConstants.PASSWORD);
+        result.put("POSTGRES_HOST", StorageContainerConstants.OPERATION_USER);
+        result.put("POSTGRES_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
         return result;
     }
     

@@ -132,7 +132,7 @@ public final class TransactionE2EEnvironment {
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
         return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
                 ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USERNAME))
-                : StorageContainerConstants.USERNAME;
+                : StorageContainerConstants.OPERATION_USER;
     }
     
     /**
@@ -144,7 +144,7 @@ public final class TransactionE2EEnvironment {
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
         return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
                 ? props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), ProxyContainerConstants.PASSWORD).toString()
-                : StorageContainerConstants.PASSWORD;
+                : StorageContainerConstants.OPERATION_PASSWORD;
     }
     
     /**

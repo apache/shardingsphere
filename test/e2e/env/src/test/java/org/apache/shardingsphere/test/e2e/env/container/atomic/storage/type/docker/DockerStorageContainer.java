@@ -47,10 +47,6 @@ import java.util.stream.Collectors;
 @Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    private static final String CHECK_READY_USER = "ready_user";
-    
-    private static final String CHECK_READY_PASSWORD = "Ready@123";
-    
     private final DatabaseType databaseType;
     
     private final StorageContainerConfiguration storageContainerConfig;
@@ -74,7 +70,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
-        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), CHECK_READY_USER, CHECK_READY_PASSWORD)));
+        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), StorageContainerConstants.CHECK_READY_USER, StorageContainerConstants.CHECK_READY_PASSWORD)));
     }
     
     private void setCommands() {
@@ -152,7 +148,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return username
      */
     public final String getUsername() {
-        return StorageContainerConstants.USERNAME;
+        return StorageContainerConstants.OPERATION_USER;
     }
     
     /**
@@ -161,7 +157,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return unified database access password
      */
     public final String getPassword() {
-        return StorageContainerConstants.PASSWORD;
+        return StorageContainerConstants.OPERATION_PASSWORD;
     }
     
     /**
