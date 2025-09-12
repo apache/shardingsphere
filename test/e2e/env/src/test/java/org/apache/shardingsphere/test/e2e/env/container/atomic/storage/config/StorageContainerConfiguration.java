@@ -36,7 +36,9 @@ public final class StorageContainerConfiguration {
     
     private final Map<String, String> environments;
     
-    private final Map<String, String> mountedResources;
+    private final Map<String, String> mountedConfigurationResources;
+    
+    private final Map<String, String> mountedSQLResources;
     
     private final Map<String, DatabaseType> actualDatabaseTypes;
     

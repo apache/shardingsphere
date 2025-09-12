@@ -54,7 +54,8 @@ public final class HiveContainer extends DockerStorageContainer {
     protected void configure() {
         setCommands(storageContainerConfig.getCommand());
         addEnvs(storageContainerConfig.getEnvironments());
-        mapResources(storageContainerConfig.getMountedResources());
+        mapResources(storageContainerConfig.getMountedConfigurationResources());
+        mapResources(storageContainerConfig.getMountedSQLResources());
         withExposedPorts(getExposedPort());
         super.configure();
         withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
