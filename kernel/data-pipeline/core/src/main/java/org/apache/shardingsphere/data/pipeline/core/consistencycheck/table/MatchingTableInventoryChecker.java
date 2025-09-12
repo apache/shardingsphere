@@ -31,18 +31,14 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.QueryType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.range.QueryRange;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
-import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
-import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -88,8 +84,8 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
         SingleTableInventoryCalculator targetCalculator = buildSingleTableInventoryCalculator();
         this.targetCalculator = targetCalculator;
         try {
-            Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> sourceCalculator.calculate(sourceParam))).iterator();
-            Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> targetCalculator.calculate(targetParam))).iterator();
+            Iterator<SingleTableInventoryCalculatedResult> sourceCalculatedResults = PipelineTaskUtils.waitFuture(executor.submit(() -> sourceCalculator.calculate(sourceParam))).iterator();
+            Iterator<SingleTableInventoryCalculatedResult> targetCalculatedResults = PipelineTaskUtils.waitFuture(executor.submit(() -> targetCalculator.calculate(targetParam))).iterator();
             return checkSingleTableInventoryData(sourceCalculatedResults, targetCalculatedResults, param, executor);
         } finally {
             QuietlyCloser.close(sourceParam.getCalculationContext());
@@ -107,8 +103,8 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
             if (null != param.getReadRateLimitAlgorithm()) {
                 param.getReadRateLimitAlgorithm().intercept(PipelineSQLOperationType.SELECT, 1);
             }
-            SingleTableInventoryCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
-            SingleTableInventoryCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
+            SingleTableInventoryCalculatedResult sourceCalculatedResult = PipelineTaskUtils.waitFuture(executor.submit(sourceCalculatedResults::next));
+            SingleTableInventoryCalculatedResult targetCalculatedResult = PipelineTaskUtils.waitFuture(executor.submit(targetCalculatedResults::next));
             if (!Objects.equals(sourceCalculatedResult, targetCalculatedResult)) {
                 checkResult.setMatched(false);
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKeys={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKeys());
@@ -122,29 +118,10 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
             }
             param.getProgressContext().onProgressUpdated(new PipelineJobUpdateProgress(sourceCalculatedResult.getRecordsCount()));
         }
-        if (sourceCalculatedResults.hasNext()) {
+        if (sourceCalculatedResults.hasNext() || targetCalculatedResults.hasNext()) {
             checkResult.setMatched(false);
-            return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
-        }
-        if (targetCalculatedResults.hasNext()) {
-            checkResult.setMatched(false);
-            return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
         }
         return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
-    }
-    
-    private <T> T waitFuture(final Future<T> future) {
-        try {
-            return future.get();
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new SQLWrapperException(new SQLException(ex));
-        } catch (final ExecutionException ex) {
-            if (ex.getCause() instanceof PipelineSQLException) {
-                throw (PipelineSQLException) ex.getCause();
-            }
-            throw new SQLWrapperException(new SQLException(ex));
-        }
     }
     
     protected abstract SingleTableInventoryCalculator buildSingleTableInventoryCalculator();
