@@ -35,30 +35,18 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public static final int EXPOSED_PORT = 5432;
     
-    private final StorageContainerConfiguration storageContainerConfig;
-    
     public PostgreSQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage);
-        this.storageContainerConfig = storageContainerConfig;
-    }
-    
-    @Override
-    protected void configure() {
-        setCommands(storageContainerConfig.getCommand());
-        addEnvs(storageContainerConfig.getEnvironments());
-        mapResources(storageContainerConfig.getMountedConfigurationResources());
-        mapResources(storageContainerConfig.getMountedSQLResources());
-        super.configure();
+        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, storageContainerConfig);
     }
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

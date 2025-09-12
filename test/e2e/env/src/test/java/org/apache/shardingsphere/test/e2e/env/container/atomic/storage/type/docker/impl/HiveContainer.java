@@ -23,11 +23,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.io.IOException;
-import java.sql.DriverManager;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -43,34 +40,24 @@ public final class HiveContainer extends DockerStorageContainer {
     
     public static final int EXPOSED_PORT = 10000;
     
-    private final StorageContainerConfiguration storageContainerConfig;
-    
     public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "Hive"), Strings.isNullOrEmpty(containerImage) ? "apache/hive:4.0.1" : containerImage);
-        this.storageContainerConfig = storageContainerConfig;
+        super(TypedSPILoader.getService(DatabaseType.class, "Hive"), Strings.isNullOrEmpty(containerImage) ? "apache/hive:4.0.1" : containerImage, storageContainerConfig);
     }
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfig.getCommand());
-        addEnvs(storageContainerConfig.getEnvironments());
-        mapResources(storageContainerConfig.getMountedConfigurationResources());
-        mapResources(storageContainerConfig.getMountedSQLResources());
-        withExposedPorts(getExposedPort());
         super.configure();
         withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
-        setWaitStrategy(new JdbcConnectionWaitStrategy(
-                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
     }
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

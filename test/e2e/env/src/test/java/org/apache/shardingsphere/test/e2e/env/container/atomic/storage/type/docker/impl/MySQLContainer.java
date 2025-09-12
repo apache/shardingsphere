@@ -37,31 +37,24 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     public static final int EXPOSED_PORT = 3306;
     
-    private final StorageContainerConfiguration storageContainerConfig;
-    
     public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.0.40" : containerImage);
-        this.storageContainerConfig = storageContainerConfig;
+        super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.0.40" : containerImage, storageContainerConfig);
     }
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfig.getCommand());
-        addEnvs(storageContainerConfig.getEnvironments());
-        mapResources(storageContainerConfig.getMountedConfigurationResources());
-        mapResources(storageContainerConfig.getMountedSQLResources());
         super.configure();
         withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     @Override
     protected Collection<String> getDatabaseNames() {
-        return storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
     protected Collection<String> getExpectedDatabaseNames() {
-        return storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
+        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

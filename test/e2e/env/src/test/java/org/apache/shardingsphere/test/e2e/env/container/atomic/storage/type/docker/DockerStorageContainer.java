@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -50,17 +51,24 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final DatabaseType databaseType;
     
+    private final StorageContainerConfiguration storageContainerConfig;
+    
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
-    protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage) {
+    protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(databaseType.getType().toLowerCase(), containerImage);
         this.databaseType = databaseType;
+        this.storageContainerConfig = storageContainerConfig;
     }
     
     @Override
     protected void configure() {
+        setCommands(storageContainerConfig.getCommand());
+        addEnvs(storageContainerConfig.getEnvironments());
+        mapResources(storageContainerConfig.getMountedConfigurationResources());
+        mapResources(storageContainerConfig.getMountedSQLResources());
         withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), CHECK_READY_USER, CHECK_READY_PASSWORD)));
     }
