@@ -80,7 +80,7 @@ public final class ScenarioDataPath {
      * @return expected init SQL file
      */
     public String getInitSQLFile(final Type type, final DatabaseType databaseType) {
-        String initSQLFileName = String.join("-", "01", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
+        String initSQLFileName = String.join("-", Type.ACTUAL == type ? "50" : "60", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
         String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
         URL url = Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
         assertNotNull(url, String.format("File `%s` must exist.", initSQLResourceFile));
