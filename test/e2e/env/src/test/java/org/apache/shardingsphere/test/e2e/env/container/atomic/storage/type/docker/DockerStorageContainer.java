@@ -65,8 +65,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfig.getCommand());
-        addEnvs(storageContainerConfig.getEnvironments());
+        setCommands(storageContainerConfig.getConfigurationOption().getCommand());
+        addEnvs(storageContainerConfig.getConfigurationOption().getEnvironments());
         mapResources(storageContainerConfig.getMountedConfigurationResources());
         mapResources(storageContainerConfig.getMountedSQLResources());
         withExposedPorts(getExposedPort());
