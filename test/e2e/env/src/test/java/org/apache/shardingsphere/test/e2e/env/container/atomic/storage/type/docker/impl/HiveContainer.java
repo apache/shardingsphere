@@ -25,8 +25,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -42,12 +40,6 @@ public final class HiveContainer extends DockerStorageContainer {
     
     public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "Hive"), Strings.isNullOrEmpty(containerImage) ? "apache/hive:4.0.1" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    protected void configure() {
-        super.configure();
-        withStartupTimeout(Duration.of(180L, ChronoUnit.SECONDS));
     }
     
     @Override

@@ -25,8 +25,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -47,7 +45,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     protected void configure() {
         withPrivilegedMode(true);
         super.configure();
-        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     @Override

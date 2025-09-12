@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -39,12 +37,6 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.0.40" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    protected void configure() {
-        super.configure();
-        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     @Override

@@ -58,4 +58,9 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     public boolean isEmbeddedStorageContainer() {
         return true;
     }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 0L;
+    }
 }

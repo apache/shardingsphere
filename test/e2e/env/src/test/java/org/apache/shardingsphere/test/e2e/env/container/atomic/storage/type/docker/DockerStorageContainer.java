@@ -31,6 +31,8 @@ import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -70,6 +72,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         mapResources(storageContainerConfig.getMountedConfigurationResources());
         mapResources(storageContainerConfig.getMountedSQLResources());
         withExposedPorts(getExposedPort());
+        withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), CHECK_READY_USER, CHECK_READY_PASSWORD)));
     }
     

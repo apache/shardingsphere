@@ -69,4 +69,9 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     public boolean isEmbeddedStorageContainer() {
         return false;
     }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
+    }
 }

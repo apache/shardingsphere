@@ -63,4 +63,9 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     public boolean isEmbeddedStorageContainer() {
         return false;
     }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
+    }
 }

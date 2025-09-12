@@ -63,4 +63,9 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     public boolean isEmbeddedStorageContainer() {
         return false;
     }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
+    }
 }
