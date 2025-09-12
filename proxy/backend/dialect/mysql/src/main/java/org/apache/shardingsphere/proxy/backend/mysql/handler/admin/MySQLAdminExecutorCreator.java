@@ -155,7 +155,12 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     private boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
         Iterator<ProjectionSegment> segmentIterator = sqlStatement.getProjections().getProjections().iterator();
         ProjectionSegment firstProjection = segmentIterator.next();
-        return !segmentIterator.hasNext() && firstProjection instanceof ExpressionProjectionSegment && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
+        if (segmentIterator.hasNext() || !(firstProjection instanceof ExpressionProjectionSegment)) {
+            return false;
+        }
+        String projectionText = ((ExpressionProjectionSegment) firstProjection).getText();
+        String trimmedText = projectionText.replaceAll("\\s+\\(", "(");
+        return functionName.equalsIgnoreCase(trimmedText);
     }
     
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
