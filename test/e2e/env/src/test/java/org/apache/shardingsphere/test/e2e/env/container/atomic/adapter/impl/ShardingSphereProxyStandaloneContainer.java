@@ -36,8 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ShardingSphereProxyStandaloneContainer extends DockerITContainer implements AdapterContainer {
     
-    private static final String PROPERTY_AGENT_HOME = "AGENT_HOME";
-    
     private final DatabaseType databaseType;
     
     private final AdaptorContainerConfiguration config;
@@ -48,18 +46,6 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
         super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
         this.databaseType = databaseType;
         this.config = config;
-    }
-    
-    /**
-     * Mount the agent into container.
-     *
-     * @param agentHome agent home
-     * @return self
-     */
-    public ShardingSphereProxyStandaloneContainer withAgent(final String agentHome) {
-        withEnv(PROPERTY_AGENT_HOME, ProxyContainerConstants.AGENT_HOME_IN_CONTAINER);
-        withFileSystemBind(agentHome, ProxyContainerConstants.AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);
-        return this;
     }
     
     @Override
