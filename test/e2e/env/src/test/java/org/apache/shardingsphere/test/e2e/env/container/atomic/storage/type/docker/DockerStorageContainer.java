@@ -67,16 +67,35 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfig.getConfigurationOption().getCommand());
-        addEnvs(storageContainerConfig.getConfigurationOption().getEnvironments());
+        setCommands();
+        addEnvironments();
         mapResources(storageContainerConfig.getMountedConfigurationResources());
         mapResources(storageContainerConfig.getMountedSQLResources());
-        if (storageContainerConfig.getConfigurationOption().withPrivilegedMode()) {
-            withPrivilegedMode(true);
-        }
+        setPrivilegedMode();
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), CHECK_READY_USER, CHECK_READY_PASSWORD)));
+    }
+    
+    private void setCommands() {
+        String command = storageContainerConfig.getConfigurationOption().getCommand();
+        if (!Strings.isNullOrEmpty(command)) {
+            setCommand(command);
+        }
+    }
+    
+    private void addEnvironments() {
+        storageContainerConfig.getConfigurationOption().getEnvironments().forEach(this::addEnv);
+    }
+    
+    private void mapResources(final Map<String, String> resources) {
+        resources.forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
+    }
+    
+    private void setPrivilegedMode() {
+        if (storageContainerConfig.getConfigurationOption().withPrivilegedMode()) {
+            withPrivilegedMode(true);
+        }
     }
     
     private String getURL() {
@@ -85,27 +104,13 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
                 : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort());
     }
     
-    protected final void setCommands(final String command) {
-        if (!Strings.isNullOrEmpty(command)) {
-            setCommand(command);
-        }
-    }
-    
-    protected final void addEnvs(final Map<String, String> envs) {
-        envs.forEach(this::addEnv);
-    }
-    
-    protected final void mapResources(final Map<String, String> resources) {
-        resources.forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
-    }
-    
     @Override
     protected void postStart() {
-        actualDataSourceMap.putAll(createAccessDataSource(getDatabaseNames()));
+        actualDataSourceMap.putAll(createAccessDataSource(getActualDatabaseNames()));
         expectedDataSourceMap.putAll(createAccessDataSource(getExpectedDatabaseNames()));
     }
     
-    protected abstract Collection<String> getDatabaseNames();
+    protected abstract Collection<String> getActualDatabaseNames();
     
     protected abstract Collection<String> getExpectedDatabaseNames();
     

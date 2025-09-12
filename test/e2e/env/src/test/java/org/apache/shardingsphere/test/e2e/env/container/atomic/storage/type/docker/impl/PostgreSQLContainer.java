@@ -40,7 +40,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    protected Collection<String> getDatabaseNames() {
+    protected Collection<String> getActualDatabaseNames() {
         return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
