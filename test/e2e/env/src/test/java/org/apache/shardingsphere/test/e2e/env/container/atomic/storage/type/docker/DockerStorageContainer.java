@@ -117,7 +117,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return access data source
      */
     public DataSource createAccessDataSource(final String dataSourceName) {
-        return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), getUsername(), getPassword(), 20);
+        return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), StorageContainerConstants.OPERATION_USER, StorageContainerConstants.OPERATION_PASSWORD, 20);
     }
     
     /**
@@ -141,24 +141,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     protected abstract Optional<String> getDefaultDatabaseName();
-    
-    /**
-     * Get username.
-     *
-     * @return username
-     */
-    public final String getUsername() {
-        return StorageContainerConstants.OPERATION_USER;
-    }
-    
-    /**
-     * Get unified database access password.
-     *
-     * @return unified database access password
-     */
-    public final String getPassword() {
-        return StorageContainerConstants.OPERATION_PASSWORD;
-    }
     
     /**
      * Get database container exposed port.
