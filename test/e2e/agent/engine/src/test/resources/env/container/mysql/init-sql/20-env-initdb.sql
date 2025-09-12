@@ -15,9 +15,6 @@
 -- limitations under the License.
 --
 
-SET character_set_database='utf8';
-SET character_set_server='utf8';
-
 DROP DATABASE IF EXISTS demo_ds_0;
 DROP DATABASE IF EXISTS demo_ds_1;
 
@@ -32,5 +29,3 @@ CREATE TABLE demo_ds_1.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, s
 
 CREATE USER IF NOT EXISTS 'test_user'@'%' IDENTIFIED BY 'Test@123';
 GRANT ALL ON *.* TO 'test_user'@'%';
-
-CREATE USER IF NOT EXISTS 'ready_user'@'%' IDENTIFIED BY 'Ready@123';
