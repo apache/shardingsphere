@@ -136,7 +136,7 @@ public final class StorageContainerConfigurationFactory {
     }
     
     private static Optional<String> getToBeMountedEnvSQLFile(final DatabaseType databaseType, final String sqlFile) {
-        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), sqlFile);
+        String toBeMountedFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), sqlFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
