@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
 import org.testcontainers.images.RemoteDockerImage;
@@ -28,6 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +47,12 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
         this.name = name;
     }
     
+    protected final void mapResources(final Map<String, String> resources) {
+        resources.forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
+    }
+    
     @Override
-    public void start() {
+    public final void start() {
         startDependencies();
         super.start();
         postStart();
