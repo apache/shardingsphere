@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.single.yaml.config.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -125,9 +126,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
                 ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
                 : new NativeContainerComposer(testParam.getDatabaseType());
         if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
-            username = storageContainer.getUsername();
-            password = storageContainer.getPassword();
+            username = StorageContainerConstants.OPERATION_USER;
+            password = StorageContainerConstants.OPERATION_PASSWORD;
         } else {
             username = PipelineE2EEnvironment.getInstance().getActualDataSourceUsername(databaseType);
             password = PipelineE2EEnvironment.getInstance().getActualDataSourcePassword(databaseType);
