@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.Storage
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted.MountedSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
@@ -41,26 +42,28 @@ import java.util.stream.Collectors;
 /**
  * Native storage container.
  */
-@Getter
 public final class NativeStorageContainer implements StorageContainer {
     
     private final DatabaseType databaseType;
     
     private final String scenario;
     
+    private final StorageContainerConfiguration storageContainerConfig;
+    
+    @Getter
     private final Map<String, DataSource> actualDataSourceMap;
     
+    @Getter
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    private final StorageContainerConfiguration storageContainerConfiguration;
-    
+    @Getter
     @Setter
     private List<String> networkAliases;
     
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        storageContainerConfiguration = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(this.databaseType), this.databaseType, this.scenario);
+        storageContainerConfig = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, scenario);
         initDatabase();
         actualDataSourceMap = createActualDataSourceMap();
         expectedDataSourceMap = createExpectedDataSourceMap();
@@ -70,18 +73,18 @@ public final class NativeStorageContainer implements StorageContainer {
         DataSource dataSource = StorageContainerUtils.generateDataSource(
                 DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(), Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort())),
                 E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
-        storageContainerConfiguration.getMountedSQLResources().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        new MountedSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
     }
     
     private Map<String, DataSource> createActualDataSourceMap() {
         Collection<String> databaseNames =
-                storageContainerConfiguration.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
+                storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
         return getDataSourceMap(databaseNames);
     }
     
     private Map<String, DataSource> createExpectedDataSourceMap() {
         Collection<String> databaseNames =
-                storageContainerConfiguration.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
+                storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
         return getDataSourceMap(databaseNames);
     }
     

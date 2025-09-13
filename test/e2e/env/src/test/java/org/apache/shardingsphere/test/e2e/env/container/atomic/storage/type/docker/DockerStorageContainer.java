@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.Storage
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted.MountedConfigurationResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted.MountedSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
@@ -69,7 +70,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         setCommands();
         addEnvironments();
         mapResources(new MountedConfigurationResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
-        mapResources(storageContainerConfig.getMountedSQLResourceMap());
+        mapResources(new MountedSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
