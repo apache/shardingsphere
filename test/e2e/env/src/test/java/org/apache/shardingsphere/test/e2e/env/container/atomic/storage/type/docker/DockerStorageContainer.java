@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted.MountedConfigurationResourceGenerator;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted.MountedSQLResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount.MountConfigurationResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount.MountSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
@@ -69,8 +69,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     protected final void configure() {
         setCommands();
         addEnvironments();
-        mapResources(new MountedConfigurationResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
-        mapResources(new MountedSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
+        mapResources(new MountConfigurationResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
+        mapResources(new MountSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
