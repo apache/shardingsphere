@@ -38,7 +38,7 @@ public final class MountedConfigurationResourceGenerator {
     
     /**
      * Generate mounted configuration resource map.
-     * 
+     *
      * @param majorVersion major version
      * @param scenario scenario
      * @return generated resource map
