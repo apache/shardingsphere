@@ -53,13 +53,11 @@ public final class StorageContainerConfigurationFactory {
      *
      * @param option storage container configuration option
      * @param databaseType database type
-     * @param majorVersion majorVersion
+     * @param scenario scenario
      * @return created storage container configuration
      */
-    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion) {
-        Map<String, String> toBeMountedConfigurationFiles = getToBeMountedConfigurationFiles(databaseType, option, majorVersion, "");
-        Map<String, String> toBeMountedSQLFiles = getToBeMountedSQLFiles(databaseType, option, majorVersion, "");
-        return new StorageContainerConfiguration(null, option, toBeMountedConfigurationFiles, toBeMountedSQLFiles, Collections.emptyMap(), Collections.emptyMap());
+    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final String scenario) {
+        return newInstance(option, databaseType, 0, scenario);
     }
     
     /**
@@ -67,14 +65,15 @@ public final class StorageContainerConfigurationFactory {
      *
      * @param option storage container configuration option
      * @param databaseType database type
-     * @param scenario  scenario
+     * @param majorVersion majorVersion
+     * @param scenario scenario
      * @return created storage container configuration
      */
-    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final String scenario) {
+    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion, final String scenario) {
         Map<String, String> toBeMountedConfigurationFiles = getToBeMountedConfigurationFiles(databaseType, option, 0, scenario);
-        Map<String, String> toBeMountedSQLFiles = getToBeMountedSQLFiles(databaseType, option, 0, scenario);
-        Map<String, DatabaseType> actualDatabaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL);
-        Map<String, DatabaseType> expectedDatabaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED);
+        Map<String, String> toBeMountedSQLFiles = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
+        Map<String, DatabaseType> actualDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL);
+        Map<String, DatabaseType> expectedDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED);
         return new StorageContainerConfiguration(
                 option.isEmbeddedStorageContainer() ? scenario : null, option, toBeMountedConfigurationFiles, toBeMountedSQLFiles, actualDatabaseTypes, expectedDatabaseTypes);
     }
