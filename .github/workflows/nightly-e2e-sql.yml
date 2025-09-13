@@ -86,6 +86,9 @@ jobs:
           - adapter: jdbc
             database: Hive
             scenario: encrypt
+          - adapter: jdbc
+            database: Hive
+            scenario: mask
         exclude:
           - adapter: jdbc
             scenario: passthrough

@@ -109,4 +109,8 @@
     <test-case sql="UPDATE t_data_type_date SET creation_date = ?, update_date = ? where id = ?" db-types="MySQL" scenario-types="passthrough">
         <assertion parameters="2018-08-08:Date, 2018-08-08:datetime, 1:int" expected-data-file="update_date_values.xml"/>
     </test-case>
+
+    <test-case sql="UPDATE t_user SET password = ? WHERE user_id = ?" db-types="Hive" scenario-types="encrypt">
+        <assertion parameters="222222:String, 11:int" expected-data-file="update_user_table_hive.xml" />
+    </test-case>
 </e2e-test-cases>

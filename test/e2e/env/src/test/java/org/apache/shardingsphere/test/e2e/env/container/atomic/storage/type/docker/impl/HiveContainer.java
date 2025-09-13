@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,11 +71,42 @@ public final class HiveContainer extends DockerStorageContainer {
     @Override
     protected void postStart() {
         try {
-            execInContainer("bash", "-c", "beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"CREATE DATABASE IF NOT EXISTS encrypt; CREATE DATABASE IF NOT EXISTS expected_dataset;\"");
+            createDatabasesFromConfiguration();
+            log.info("Databases created successfully in postStart()");
+            executeMountedSQLScripts();
+            log.info("Mounted SQL scripts executed successfully");
         } catch (final InterruptedException | IOException ex) {
             log.error("Failed to create databases in postStart()", ex);
         }
         super.postStart();
         log.info("Hive container postStart completed successfully");
+    }
+    
+    private void createDatabasesFromConfiguration() throws InterruptedException, IOException {
+        Collection<String> actualDatabaseNames = getDatabaseNames();
+        Collection<String> expectedDatabaseNames = getExpectedDatabaseNames();
+        Collection<String> allDatabaseNames = new HashSet<>();
+        allDatabaseNames.addAll(actualDatabaseNames);
+        allDatabaseNames.addAll(expectedDatabaseNames);
+        if (allDatabaseNames.isEmpty()) {
+            log.warn("No databases configured for Hive container");
+            return;
+        }
+        StringBuilder createDatabaseSQL = new StringBuilder();
+        for (String databaseName : allDatabaseNames) {
+            createDatabaseSQL.append("CREATE DATABASE IF NOT EXISTS ").append(databaseName).append("; ");
+        }
+        String command = String.format("beeline -u \"jdbc:hive2://localhost:10000/default\" -e \"%s\"", createDatabaseSQL.toString());
+        execInContainer("bash", "-c", command);
+        log.info("Created databases: {}", allDatabaseNames);
+    }
+    
+    private void executeMountedSQLScripts() throws InterruptedException, IOException {
+        execInContainer("bash", "-c",
+                "if [ -f /docker-entrypoint-initdb.d/50-scenario-actual-init.sql ]; then beeline -u \"jdbc:hive2://localhost:10000/default\" -f "
+                        + "/docker-entrypoint-initdb.d/50-scenario-actual-init.sql; fi");
+        execInContainer("bash", "-c",
+                "if [ -f /docker-entrypoint-initdb.d/60-scenario-expected-init.sql ]; then beeline -u \"jdbc:hive2://localhost:10000/default\" -f "
+                        + "/docker-entrypoint-initdb.d/60-scenario-expected-init.sql; fi");
     }
 }

@@ -41,8 +41,10 @@ import javax.xml.bind.JAXBException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -94,10 +96,13 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
-                DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
-                insertSQL = generateInsertSQL(dataNode.getTableName(), dataSetMetaData.getColumns(), databaseType);
+                String insertTableName = dataNode.getTableName();
+                if ("Hive".equalsIgnoreCase(databaseType.getType())) {
+                    insertTableName = dataNode.getDataSourceName() + "." + dataNode.getTableName();
+                }
+                insertSQL = generateInsertSQL(insertTableName, dataSetMetaData.getColumns(), databaseType);
             }
-            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
+            fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups, databaseType));
         }
         final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
         for (Future<Void> future : futures) {
@@ -192,23 +197,43 @@ public final class DataSetEnvironmentManager {
         
         private final Collection<SQLValueGroup> sqlValueGroups;
         
+        private final DatabaseType databaseType;
+        
         @Override
         public Void call() throws SQLException {
             try (
                     Connection connection = dataSource.getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-                for (SQLValueGroup each : sqlValueGroups) {
-                    setParameters(preparedStatement, each);
-                    preparedStatement.addBatch();
+                boolean isHive = "Hive".equalsIgnoreCase(databaseType.getType());
+                if (isHive) {
+                    for (SQLValueGroup each : sqlValueGroups) {
+                        setParameters(preparedStatement, each);
+                        preparedStatement.executeUpdate();
+                    }
+                } else {
+                    for (SQLValueGroup each : sqlValueGroups) {
+                        setParameters(preparedStatement, each);
+                        preparedStatement.addBatch();
+                    }
+                    preparedStatement.executeBatch();
                 }
-                preparedStatement.executeBatch();
             }
             return null;
         }
         
         private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
             for (SQLValue each : sqlValueGroup.getValues()) {
-                preparedStatement.setObject(each.getIndex(), each.getValue());
+                Object value = each.getValue();
+                int index = each.getIndex();
+                if ("Hive".equalsIgnoreCase(databaseType.getType())) {
+                    if (value instanceof Date) {
+                        preparedStatement.setString(index, value.toString());
+                    } else {
+                        preparedStatement.setObject(index, value);
+                    }
+                } else {
+                    preparedStatement.setObject(index, value);
+                }
             }
         }
     }
@@ -223,8 +248,8 @@ public final class DataSetEnvironmentManager {
         @Override
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
+                DatabaseType databaseType = getDatabaseType(connection);
                 for (String each : tableNames) {
-                    DatabaseType databaseType = DatabaseTypeFactory.get(connection.getMetaData().getURL());
                     String quotedTableName = getQuotedTableName(each, databaseType);
                     try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("TRUNCATE TABLE %s", quotedTableName))) {
                         preparedStatement.execute();
@@ -232,6 +257,19 @@ public final class DataSetEnvironmentManager {
                 }
             }
             return null;
+        }
+        
+        private DatabaseType getDatabaseType(final Connection connection) throws SQLException {
+            try {
+                String url = connection.getMetaData().getURL();
+                return DatabaseTypeFactory.get(url);
+            } catch (final SQLFeatureNotSupportedException ex) {
+                String driverName = connection.getMetaData().getDriverName();
+                if (driverName != null && driverName.toLowerCase().contains("hive")) {
+                    return DatabaseTypeFactory.get("jdbc:hive2://localhost:10000/default");
+                }
+                throw ex;
+            }
         }
         
         private String getQuotedTableName(final String tableName, final DatabaseType databaseType) {

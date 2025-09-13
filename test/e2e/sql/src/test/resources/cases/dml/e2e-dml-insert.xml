@@ -145,7 +145,7 @@
         <assertion parameters="5000:int, 6000:int" expected-data-file="batch_insert_without_auto_generate_key_column.xml" expected-generated-key-data-file="batch_insert_without_auto_generate_key_column_generated_key_data.xml" />
     </test-case>-->
 
-    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+    <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" db-types="MySQL,PostgreSQL,openGauss,Hive" scenario-types="encrypt">
         <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     

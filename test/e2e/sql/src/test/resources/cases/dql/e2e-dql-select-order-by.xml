@@ -157,7 +157,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_user ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
+    <test-case sql="SELECT * FROM t_user ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss,Hive" scenario-types="mask,mask_encrypt,mask_sharding,mask_encrypt_sharding">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
 </e2e-test-cases>
