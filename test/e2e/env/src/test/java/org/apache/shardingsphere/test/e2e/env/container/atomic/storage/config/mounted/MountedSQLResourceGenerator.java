@@ -57,21 +57,21 @@ public final class MountedSQLResourceGenerator {
      * @return generated resource map
      */
     public Map<String, String> generate(final int majorVersion, final String scenario) {
-        Collection<String> result = new LinkedList<>();
+        Collection<String> toBeMountedSQLFiles = new LinkedList<>();
         for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
-            findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> result.add("/" + optional));
+            findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
         }
         String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
         if (null != Thread.currentThread().getContextClassLoader().getResource(toBeMountedStandardEnvSQLFilePath)) {
-            result.add("/" + toBeMountedStandardEnvSQLFilePath);
+            toBeMountedSQLFiles.add("/" + toBeMountedStandardEnvSQLFilePath);
         }
         for (String each : option.getAdditionalEnvMountedSQLResources(majorVersion)) {
-            getToBeMountedAdditionalEnvSQLFile(databaseType, each).ifPresent(optional -> result.add("/" + optional));
+            getToBeMountedAdditionalEnvSQLFile(databaseType, each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
         }
         for (String each : getToBeMountedScenarioSQLFiles(databaseType, scenario)) {
-            result.add("/" + each);
+            toBeMountedSQLFiles.add("/" + each);
         }
-        return result.stream().collect(Collectors.toMap(each -> each, each -> "/docker-entrypoint-initdb.d/" + new File(each).getName()));
+        return toBeMountedSQLFiles.stream().collect(Collectors.toMap(each -> each, each -> "/docker-entrypoint-initdb.d/" + new File(each).getName()));
     }
     
     private Optional<String> findToBeMountedCommonSQLFile(final DatabaseType databaseType, final String toBeMountedSQLFile) {
