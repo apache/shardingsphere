@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for Hive.
@@ -67,6 +68,11 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     @Override
     public boolean withPrivilegedMode() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.empty();
     }
     
     @Override

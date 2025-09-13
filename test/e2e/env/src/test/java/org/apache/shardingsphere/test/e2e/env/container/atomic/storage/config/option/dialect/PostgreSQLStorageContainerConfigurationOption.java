@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for  PostgreSQL.
@@ -67,6 +68,11 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     @Override
     public boolean withPrivilegedMode() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.of("postgres");
     }
     
     @Override

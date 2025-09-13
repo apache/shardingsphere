@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for openGauss.
@@ -64,6 +65,11 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     @Override
     public boolean withPrivilegedMode() {
         return true;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.of(StorageContainerConstants.OPERATION_USER);
     }
     
     @Override
