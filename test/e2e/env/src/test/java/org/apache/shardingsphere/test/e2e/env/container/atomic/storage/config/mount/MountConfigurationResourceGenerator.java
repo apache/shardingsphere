@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -27,17 +27,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mounted configuration resource generator.
+ * Mount configuration resource generator.
  */
 @RequiredArgsConstructor
-public final class MountedConfigurationResourceGenerator {
+public final class MountConfigurationResourceGenerator {
     
     private final StorageContainerConfigurationOption option;
     
     private final DatabaseType databaseType;
     
     /**
-     * Generate mounted configuration resource map.
+     * Generate mount configuration resource map.
      *
      * @param majorVersion major version
      * @param scenario scenario

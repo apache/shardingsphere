@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -32,10 +32,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Mounted SQL resource generator.
+ * Mount SQL resource generator.
  */
 @RequiredArgsConstructor
-public final class MountedSQLResourceGenerator {
+public final class MountSQLResourceGenerator {
     
     private static final Collection<String> TO_BE_MOUNTED_COMMON_SQL_FILES = Arrays.asList("00-common-init-authority.sql", "99-common-check-ready.sql");
     
@@ -50,7 +50,7 @@ public final class MountedSQLResourceGenerator {
     private final DatabaseType databaseType;
     
     /**
-     * Generate mounted SQL resource map.
+     * Generate mount SQL resource map.
      *
      * @param majorVersion major version
      * @param scenario scenario
