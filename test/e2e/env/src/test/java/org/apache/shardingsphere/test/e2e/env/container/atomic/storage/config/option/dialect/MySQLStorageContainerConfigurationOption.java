@@ -62,7 +62,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
-        return Arrays.asList(5, 8);
+        return Arrays.asList(8, 5);
     }
     
     @Override

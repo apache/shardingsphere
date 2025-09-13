@@ -57,7 +57,7 @@ public final class StorageContainerConfigurationFactory {
      * @return created storage container configuration
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final String scenario) {
-        return newInstance(option, databaseType, 0, scenario);
+        return newInstance(option, databaseType, findMajorVersion(option, 0).orElse(0), scenario);
     }
     
     /**
@@ -70,7 +70,7 @@ public final class StorageContainerConfigurationFactory {
      * @return created storage container configuration
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion, final String scenario) {
-        Map<String, String> toBeMountedConfigurationFiles = getToBeMountedConfigurationFiles(databaseType, option, 0, scenario);
+        Map<String, String> toBeMountedConfigurationFiles = getToBeMountedConfigurationFiles(databaseType, option, majorVersion, scenario);
         Map<String, String> toBeMountedSQLFiles = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
         Map<String, DatabaseType> actualDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL);
         Map<String, DatabaseType> expectedDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED);
