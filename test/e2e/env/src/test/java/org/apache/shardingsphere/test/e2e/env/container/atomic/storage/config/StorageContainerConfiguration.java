@@ -48,7 +48,7 @@ public final class StorageContainerConfiguration {
     
     /**
      * Get mounted SQL resource map.
-     * 
+     *
      * @return mounted SQL resource map
      */
     public Map<String, String> getMountedSQLResourceMap() {
