@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioData
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Storage container configuration factory.
@@ -43,28 +42,8 @@ public final class StorageContainerConfigurationFactory {
      * @return created storage container configuration
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final String scenario) {
-        return newInstance(option, databaseType, findMajorVersion(option, 0).orElse(0), scenario);
-    }
-    
-    /**
-     * Create new instance of storage container configuration.
-     *
-     * @param option storage container configuration option
-     * @param databaseType database type
-     * @param majorVersion majorVersion
-     * @param scenario scenario
-     * @return created storage container configuration
-     */
-    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion, final String scenario) {
         Map<String, DatabaseType> actualDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL);
         Map<String, DatabaseType> expectedDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED);
         return new StorageContainerConfiguration(scenario, option, actualDatabaseTypes, expectedDatabaseTypes);
-    }
-    
-    private static Optional<Integer> findMajorVersion(final StorageContainerConfigurationOption option, final int majorVersion) {
-        if (option.getSupportedMajorVersions().isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(option.getSupportedMajorVersions().stream().filter(optional -> optional == majorVersion).findAny().orElse(option.getSupportedMajorVersions().get(0)));
     }
 }
