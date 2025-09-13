@@ -79,7 +79,7 @@ public interface StorageContainerConfigurationOption {
     
     /**
      * Get the default database name.
-     * 
+     *
      * @param majorVersion major version
      * @return default database name
      */
