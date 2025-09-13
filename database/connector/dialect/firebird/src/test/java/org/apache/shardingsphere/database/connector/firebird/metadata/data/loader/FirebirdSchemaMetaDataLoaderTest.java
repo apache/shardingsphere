@@ -66,7 +66,7 @@ class FirebirdSchemaMetaDataLoaderTest {
     
     private ResultSet mockTableResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, false);
+        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "RDB$RELATIONS", "RDB$REL", "RDB_Relations", "rdb$functions");
         return result;
     }
@@ -80,7 +80,8 @@ class FirebirdSchemaMetaDataLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
-        Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
+        Map<String, Collection<String>> schemaTableNames =
+                Collections.singletonMap("foo_db", new CaseInsensitiveSet<>(Arrays.asList("tbl", "$tbl", "/tbl", "##tbl", "partitioned_tbl", "RDB$REL", "RDB_Relations")));
         assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(schemaTableNames));
     }
     
