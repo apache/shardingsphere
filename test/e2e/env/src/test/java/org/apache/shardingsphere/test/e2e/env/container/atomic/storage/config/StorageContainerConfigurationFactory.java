@@ -71,7 +71,7 @@ public final class StorageContainerConfigurationFactory {
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion, final String scenario) {
         Map<String, String> toBeMountedConfigurationFiles = getToBeMountedConfigurationFiles(databaseType, option, majorVersion, scenario);
-        Map<String, String> toBeMountedSQLFiles = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
+        Collection<String> toBeMountedSQLFiles = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
         Map<String, DatabaseType> actualDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL);
         Map<String, DatabaseType> expectedDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED);
         return new StorageContainerConfiguration(
@@ -104,20 +104,20 @@ public final class StorageContainerConfigurationFactory {
         return "/" + toBeMountedConfigFile;
     }
     
-    private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        Map<String, String> result = new HashMap<>();
+    private static Collection<String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
+        Collection<String> result = new LinkedList<>();
         for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
-            findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
+            findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> result.add("/" + optional));
         }
         String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
         if (null != Thread.currentThread().getContextClassLoader().getResource(toBeMountedStandardEnvSQLFilePath)) {
-            result.put("/" + toBeMountedStandardEnvSQLFilePath, "/docker-entrypoint-initdb.d/" + TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
+            result.add("/" + toBeMountedStandardEnvSQLFilePath);
         }
         for (String each : option.getAdditionalEnvMountedSQLResources(findMajorVersion(option, majorVersion).orElse(0))) {
-            getToBeMountedAdditionalEnvSQLFile(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
+            getToBeMountedAdditionalEnvSQLFile(databaseType, each).ifPresent(optional -> result.add("/" + optional));
         }
         for (String each : getToBeMountedScenarioSQLFiles(databaseType, scenario)) {
-            result.put("/" + each, "/docker-entrypoint-initdb.d/" + new File(each).getName());
+            result.add("/" + each);
         }
         return result;
     }

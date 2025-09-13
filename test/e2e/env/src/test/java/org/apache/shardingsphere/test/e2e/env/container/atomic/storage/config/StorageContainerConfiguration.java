@@ -22,7 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Docker storage container configuration.
@@ -37,9 +40,18 @@ public final class StorageContainerConfiguration {
     
     private final Map<String, String> mountedConfigurationResources;
     
-    private final Map<String, String> mountedSQLResources;
+    private final Collection<String> mountedSQLResources;
     
     private final Map<String, DatabaseType> actualDatabaseTypes;
     
     private final Map<String, DatabaseType> expectedDatabaseTypes;
+    
+    /**
+     * Get mounted SQL resource map.
+     *
+     * @return mounted SQL resource map
+     */
+    public Map<String, String> getMountedSQLResourceMap() {
+        return mountedSQLResources.stream().collect(Collectors.toMap(each -> each, each -> "/docker-entrypoint-initdb.d/" + new File(each).getName()));
+    }
 }
