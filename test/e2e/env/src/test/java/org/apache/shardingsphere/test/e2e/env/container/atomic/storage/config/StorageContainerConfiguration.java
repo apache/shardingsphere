@@ -38,8 +38,6 @@ public final class StorageContainerConfiguration {
     
     private final StorageContainerConfigurationOption configurationOption;
     
-    private final Map<String, String> mountedConfigurationResources;
-    
     private final Collection<String> mountedSQLResources;
     
     private final Map<String, DatabaseType> actualDatabaseTypes;

@@ -58,11 +58,6 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
-    }
-    
-    @Override
     public boolean withPrivilegedMode() {
         return true;
     }

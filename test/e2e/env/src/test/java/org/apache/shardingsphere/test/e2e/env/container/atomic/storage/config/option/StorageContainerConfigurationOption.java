@@ -64,13 +64,6 @@ public interface StorageContainerConfigurationOption {
     List<Integer> getSupportedMajorVersions();
     
     /**
-     * Whether embedded storage container.
-     *
-     * @return is embedded storage container or not
-     */
-    boolean isEmbeddedStorageContainer();
-    
-    /**
      * Whether with privileged mode.
      *
      * @return is with privileged mode or not
