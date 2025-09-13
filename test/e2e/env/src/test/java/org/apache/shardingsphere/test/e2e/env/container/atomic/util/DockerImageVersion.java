@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Docker image version.
  */
@@ -26,10 +29,20 @@ public final class DockerImageVersion {
     
     private static final String SEPARATOR = ":";
     
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+    
     private final String version;
     
     public DockerImageVersion(final String dockerImageName) {
-        version = dockerImageName.contains(SEPARATOR) ? dockerImageName.split(SEPARATOR)[1] : "0";
+        version = getVersion(dockerImageName);
+    }
+    
+    private String getVersion(final String dockerImageName) {
+        if (dockerImageName.contains(SEPARATOR)) {
+            return dockerImageName.split(SEPARATOR)[1];
+        }
+        Matcher matcher = NUMBER_PATTERN.matcher(dockerImageName);
+        return matcher.find() ? matcher.group() : "0";
     }
     
     /**

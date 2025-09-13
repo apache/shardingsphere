@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option.
@@ -75,6 +76,14 @@ public interface StorageContainerConfigurationOption {
      * @return is with privileged mode or not
      */
     boolean withPrivilegedMode();
+    
+    /**
+     * Get the default database name.
+     * 
+     * @param majorVersion major version
+     * @return default database name
+     */
+    Optional<String> getDefaultDatabaseName(int majorVersion);
     
     /**
      * Get container startup timeout seconds.

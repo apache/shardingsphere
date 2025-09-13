@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for MySQL.
@@ -73,6 +74,11 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     @Override
     public boolean withPrivilegedMode() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.empty();
     }
     
     @Override

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
 
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -57,10 +56,5 @@ public final class MariaDBContainer extends DockerStorageContainer {
     @Override
     public int getMappedPort() {
         return getMappedPort(EXPOSED_PORT);
-    }
-    
-    @Override
-    protected Optional<String> getDefaultDatabaseName() {
-        return Optional.empty();
     }
 }

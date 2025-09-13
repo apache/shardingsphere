@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -36,7 +37,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,6 +50,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final StorageContainerConfiguration storageContainerConfig;
     
+    private final int majorVersion;
+    
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
@@ -58,10 +60,11 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         super(databaseType.getType().toLowerCase(), containerImage);
         this.databaseType = databaseType;
         this.storageContainerConfig = storageContainerConfig;
+        majorVersion = new DockerImageVersion(containerImage).getMajorVersion();
     }
     
     @Override
-    protected void configure() {
+    protected final void configure() {
         setCommands();
         addEnvironments();
         mapResources(storageContainerConfig.getMountedConfigurationResources());
@@ -90,9 +93,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     private String getURL() {
-        return getDefaultDatabaseName().isPresent()
-                ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort());
+        return storageContainerConfig.getConfigurationOption().getDefaultDatabaseName(majorVersion)
+                .map(optional -> DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), optional))
+                .orElseGet(() -> DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()));
     }
     
     @Override
@@ -111,7 +114,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @param dataSourceName data source name
      * @return access data source
      */
-    public DataSource createAccessDataSource(final String dataSourceName) {
+    public final DataSource createAccessDataSource(final String dataSourceName) {
         return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), StorageContainerConstants.OPERATION_USER, StorageContainerConstants.OPERATION_PASSWORD, 20);
     }
     
@@ -121,7 +124,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @param dataSourceNames data source name collection
      * @return access data source map
      */
-    public Map<String, DataSource> createAccessDataSource(final Collection<String> dataSourceNames) {
+    public final Map<String, DataSource> createAccessDataSource(final Collection<String> dataSourceNames) {
         return dataSourceNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
     }
     
@@ -134,8 +137,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     public String getJdbcUrl(final String dataSourceName) {
         return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(), dataSourceName);
     }
-    
-    protected abstract Optional<String> getDefaultDatabaseName();
     
     /**
      * Get database container exposed port.

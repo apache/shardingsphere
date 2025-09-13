@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.util.Collection;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -59,11 +58,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     @Override
     public int getMappedPort() {
         return getMappedPort(EXPOSED_PORT);
-    }
-    
-    @Override
-    protected Optional<String> getDefaultDatabaseName() {
-        return Optional.of(StorageContainerConstants.OPERATION_USER);
     }
     
     @Override

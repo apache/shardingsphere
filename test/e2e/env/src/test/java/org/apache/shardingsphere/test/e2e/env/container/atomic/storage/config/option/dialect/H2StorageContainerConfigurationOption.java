@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for H2.
@@ -62,6 +63,11 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     @Override
     public boolean withPrivilegedMode() {
         return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.empty();
     }
     
     @Override
