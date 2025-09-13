@@ -50,7 +50,7 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
-    public Collection<String> getAdditionalMountedSQLEnvResources(final int majorVersion) {
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
         return Collections.emptyList();
     }
     
