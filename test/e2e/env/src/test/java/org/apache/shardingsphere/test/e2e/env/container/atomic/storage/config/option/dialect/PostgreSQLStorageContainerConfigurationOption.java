@@ -61,11 +61,6 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
-    }
-    
-    @Override
     public boolean withPrivilegedMode() {
         return false;
     }

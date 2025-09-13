@@ -67,11 +67,6 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
-    }
-    
-    @Override
     public boolean withPrivilegedMode() {
         return false;
     }

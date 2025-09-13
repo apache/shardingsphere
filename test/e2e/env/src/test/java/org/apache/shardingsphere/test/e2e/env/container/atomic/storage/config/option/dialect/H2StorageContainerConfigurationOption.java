@@ -56,11 +56,6 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
-    public boolean isEmbeddedStorageContainer() {
-        return true;
-    }
-    
-    @Override
     public boolean withPrivilegedMode() {
         return false;
     }

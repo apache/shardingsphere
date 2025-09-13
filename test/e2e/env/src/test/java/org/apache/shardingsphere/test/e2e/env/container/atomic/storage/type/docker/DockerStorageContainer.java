@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mounted.MountedConfigurationResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
@@ -67,7 +68,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     protected final void configure() {
         setCommands();
         addEnvironments();
-        mapResources(storageContainerConfig.getMountedConfigurationResources());
+        mapResources(new MountedConfigurationResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
         mapResources(storageContainerConfig.getMountedSQLResourceMap());
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
