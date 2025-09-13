@@ -52,7 +52,7 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public Collection<String> getAdditionalMountedSQLEnvResources(final int majorVersion) {
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
         Collection<String> result = new LinkedList<>();
         if (majorVersion > 5) {
             result.add("21-env-grant-xa-privilege.sql");

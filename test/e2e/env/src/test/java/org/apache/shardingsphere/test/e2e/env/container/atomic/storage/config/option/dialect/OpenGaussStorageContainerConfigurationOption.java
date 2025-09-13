@@ -47,7 +47,7 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
-    public Collection<String> getAdditionalMountedSQLEnvResources(final int majorVersion) {
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
         return Collections.emptyList();
     }
     

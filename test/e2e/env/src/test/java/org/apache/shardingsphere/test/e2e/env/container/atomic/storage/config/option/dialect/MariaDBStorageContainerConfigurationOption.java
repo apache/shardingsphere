@@ -50,7 +50,7 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Collection<String> getAdditionalMountedSQLEnvResources(final int majorVersion) {
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
         return Collections.emptyList();
     }
     
