@@ -31,6 +31,11 @@ import java.util.Optional;
 public final class H2StorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 0;
+    }
+    
+    @Override
     public String getCommand() {
         return "";
     }

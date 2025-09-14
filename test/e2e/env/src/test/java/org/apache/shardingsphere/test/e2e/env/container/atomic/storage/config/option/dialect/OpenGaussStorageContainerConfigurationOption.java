@@ -33,6 +33,11 @@ import java.util.Optional;
 public final class OpenGaussStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 5432;
+    }
+    
+    @Override
     public String getCommand() {
         return "";
     }

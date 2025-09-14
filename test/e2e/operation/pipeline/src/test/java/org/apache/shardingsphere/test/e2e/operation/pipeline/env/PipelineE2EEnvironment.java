@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.MariaDBContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.OpenGaussContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.PostgreSQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.MariaDBStorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.MySQLStorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.OpenGaussStorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect.PostgreSQLStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
@@ -90,13 +90,13 @@ public final class PipelineE2EEnvironment {
     public int getActualDatabasePort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", MySQLContainer.EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", new MySQLStorageContainerConfigurationOption().getPort()).toString());
             case "MariaDB":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mariadb.port", MariaDBContainer.EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mariadb.port", new MariaDBStorageContainerConfigurationOption().getPort()).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", PostgreSQLContainer.EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", new PostgreSQLStorageContainerConfigurationOption().getPort()).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", OpenGaussContainer.EXPOSED_PORT).toString());
+                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", new OpenGaussStorageContainerConfigurationOption().getPort()).toString());
             case "Oracle":
                 return Integer.parseInt(props.getOrDefault("pipeline.it.native.oracle.port", 1521).toString());
             default:

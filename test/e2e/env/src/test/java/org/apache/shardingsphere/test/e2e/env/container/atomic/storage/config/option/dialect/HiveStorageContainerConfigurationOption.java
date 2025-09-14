@@ -32,6 +32,11 @@ import java.util.Optional;
 public final class HiveStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 10000;
+    }
+    
+    @Override
     public String getCommand() {
         return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }
