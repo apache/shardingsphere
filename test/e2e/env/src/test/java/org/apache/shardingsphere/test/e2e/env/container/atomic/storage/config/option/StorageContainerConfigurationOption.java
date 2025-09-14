@@ -36,7 +36,7 @@ public interface StorageContainerConfigurationOption {
     
     /**
      * Get default container image name.
-     * 
+     *
      * @return default container image name
      */
     String getDefaultImageName();
