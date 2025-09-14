@@ -23,10 +23,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 
-import java.util.Collection;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 /**
  * OpenGauss container.
  */
@@ -36,16 +32,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     public OpenGaussContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "opengauss/opengauss:3.1.0" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    protected Collection<String> getActualDatabaseNames() {
-        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
-    }
-    
-    @Override
-    protected Collection<String> getExpectedDatabaseNames() {
-        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
