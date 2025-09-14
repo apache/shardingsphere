@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.metadata.manager;
+package org.apache.shardingsphere.database.connector.core.metadata.detector;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
- * Dialect system table manager.
+ * Rule to judge whether table is system table for specific database type.
  */
-@SingletonSPI
-public interface DialectSystemTableManager extends DatabaseTypedSPI {
+public interface DialectSystemTableRule extends DatabaseTypedSPI {
     
     /**
-     * Judge whether the table is system table or not.
+     * Judge whether the table is a system table.
      *
      * @param tableName table name
-     * @return whether the table is system table or not
+     * @return {@code true} if the table is a system table; otherwise {@code false}
      */
-    default boolean isSystemTable(final String tableName) {
-        return SystemTableManager.isSystemTable(getDatabaseType(), null, tableName);
-    }
+    boolean isSystemTable(String tableName);
 }

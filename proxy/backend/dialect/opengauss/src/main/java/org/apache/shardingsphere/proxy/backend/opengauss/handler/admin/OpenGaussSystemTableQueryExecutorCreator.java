@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.manager.SystemTableManager;
+import org.apache.shardingsphere.database.connector.core.metadata.detector.SystemTableDetector;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
@@ -153,7 +153,7 @@ public final class OpenGaussSystemTableQueryExecutorCreator {
             return false;
         }
         for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
-            if (!SystemTableManager.isSystemTable("openGauss", each.getKey(), each.getValue())) {
+            if (!SystemTableDetector.isSystemTable("openGauss", each.getKey(), each.getValue())) {
                 return false;
             }
         }

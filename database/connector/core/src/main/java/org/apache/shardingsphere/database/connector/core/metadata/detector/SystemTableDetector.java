@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.core.metadata.manager;
+package org.apache.shardingsphere.database.connector.core.metadata.detector;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
@@ -26,48 +26,41 @@ import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectory
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * System table manager.
+ * System table detector.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SystemTableManager {
+public final class SystemTableDetector {
     
     private static final Map<String, Map<String, Collection<String>>> DATABASE_TYPE_SCHEMA_TABLE_MAP;
     
     private static final String COMMON = "common";
     
     static {
-        List<String> resourceNames;
         try (Stream<String> resourceNameStream = ClasspathResourceDirectoryReader.read("schema")) {
-            resourceNames = resourceNameStream.filter(each -> each.endsWith(".yaml")).collect(Collectors.toList());
+            DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNameStream.filter(each -> each.endsWith(".yaml"))
+                    .map(resourceName -> resourceName.split("/"))
+                    .filter(path -> 4 == path.length)
+                    .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new,
+                            Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
+                                    Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"),
+                                            Collectors.toCollection(CaseInsensitiveSet::new)))));
         }
-        DATABASE_TYPE_SCHEMA_TABLE_MAP = resourceNames.stream().map(resourceName -> resourceName.split("/")).filter(each -> each.length == 4)
-                .collect(Collectors.groupingBy(path -> path[1], CaseInsensitiveMap::new, Collectors.groupingBy(path -> path[2], CaseInsensitiveMap::new,
-                        Collectors.mapping(path -> StringUtils.removeEnd(path[3], ".yaml"), Collectors.toCollection(CaseInsensitiveSet::new)))));
     }
     
     /**
-     * Judge whether current table is system table or not.
+     * Judge whether the given database type contains system tables.
      *
-     * @param schema schema
-     * @param tableName table name
-     * @return whether current table is system table or not
+     * @param databaseType database type
+     * @return {@code true} if the given database type contains system tables, otherwise {@code false}
      */
-    // TODO check if this function is needed, since it's only used in SimpleTableSegmentBinder and could be replaced by SystemTableManager.isSystemTable(databaseType). (issues/36462)
-    public static boolean isSystemTable(final String schema, final String tableName) {
-        for (Map.Entry<String, Map<String, Collection<String>>> entry : DATABASE_TYPE_SCHEMA_TABLE_MAP.entrySet()) {
-            if (Optional.ofNullable(entry.getValue().get(schema)).map(tables -> tables.contains(tableName)).orElse(false)) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean hasSystemTables(final String databaseType) {
+        return !DATABASE_TYPE_SCHEMA_TABLE_MAP.getOrDefault(databaseType, Collections.emptyMap()).isEmpty();
     }
     
     /**
@@ -104,19 +97,5 @@ public final class SystemTableManager {
             }
         }
         return true;
-    }
-    
-    /**
-     * Get tables.
-     *
-     * @param databaseType database type
-     * @param schema       schema
-     * @return optional tables
-     */
-    public static Collection<String> getTables(final String databaseType, final String schema) {
-        Collection<String> result = new LinkedList<>();
-        Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(databaseType)).map(schemas -> schemas.get(schema)).ifPresent(result::addAll);
-        Optional.ofNullable(DATABASE_TYPE_SCHEMA_TABLE_MAP.get(COMMON)).map(schemas -> schemas.get(schema)).ifPresent(result::addAll);
-        return result;
     }
 }

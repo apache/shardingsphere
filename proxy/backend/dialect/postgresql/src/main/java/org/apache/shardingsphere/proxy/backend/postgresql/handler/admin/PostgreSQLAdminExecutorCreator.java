@@ -21,7 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.metadata.manager.SystemTableManager;
+import org.apache.shardingsphere.database.connector.core.metadata.detector.SystemTableDetector;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.DialectDatabaseStatisticsCollector;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -142,7 +142,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
             return false;
         }
         for (Entry<String, Collection<String>> each : selectedSchemaTables.entrySet()) {
-            if (!SystemTableManager.isSystemTable("postgresql", each.getKey(), each.getValue())) {
+            if (!SystemTableDetector.isSystemTable("postgresql", each.getKey(), each.getValue())) {
                 return false;
             }
         }
