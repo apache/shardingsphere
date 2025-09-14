@@ -38,6 +38,11 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
+    public String getDefaultImageName() {
+        return "mariadb:11";
+    }
+    
+    @Override
     public String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }

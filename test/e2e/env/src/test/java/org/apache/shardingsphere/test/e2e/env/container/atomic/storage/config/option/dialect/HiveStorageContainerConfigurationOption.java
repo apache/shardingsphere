@@ -37,6 +37,11 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     }
     
     @Override
+    public String getDefaultImageName() {
+        return "apache/hive:4.0.1";
+    }
+    
+    @Override
     public String getCommand() {
         return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }

@@ -61,7 +61,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
     protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(databaseType.getType().toLowerCase(), containerImage);
+        super(databaseType.getType().toLowerCase(), Strings.isNullOrEmpty(containerImage) ? storageContainerConfig.getConfigurationOption().getDefaultImageName() : containerImage);
         this.databaseType = databaseType;
         this.storageContainerConfig = storageContainerConfig;
         majorVersion = new DockerImageVersion(containerImage).getMajorVersion();

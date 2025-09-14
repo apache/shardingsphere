@@ -40,6 +40,11 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
+    public String getDefaultImageName() {
+        return "mysql:8.0.40";
+    }
+    
+    @Override
     public String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }

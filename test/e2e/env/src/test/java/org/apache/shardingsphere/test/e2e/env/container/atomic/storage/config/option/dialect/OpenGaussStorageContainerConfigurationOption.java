@@ -38,6 +38,11 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     }
     
     @Override
+    public String getDefaultImageName() {
+        return "opengauss/opengauss:3.1.0";
+    }
+    
+    @Override
     public String getCommand() {
         return "";
     }

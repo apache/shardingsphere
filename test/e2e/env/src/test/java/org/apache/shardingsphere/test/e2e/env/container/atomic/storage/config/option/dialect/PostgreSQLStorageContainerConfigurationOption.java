@@ -38,6 +38,11 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     }
     
     @Override
+    public String getDefaultImageName() {
+        return "postgres:12-alpine";
+    }
+    
+    @Override
     public String getCommand() {
         return "-c config_file=/etc/postgresql/postgresql.conf";
     }
