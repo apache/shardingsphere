@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -102,13 +103,17 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void postStart() {
-        actualDataSourceMap.putAll(createAccessDataSource(getActualDatabaseNames()));
-        expectedDataSourceMap.putAll(createAccessDataSource(getExpectedDatabaseNames()));
+        actualDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(storageContainerConfig.getActualDatabaseTypes())));
+        expectedDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(storageContainerConfig.getExpectedDatabaseTypes())));
     }
     
-    protected abstract Collection<String> getActualDatabaseNames();
+    private Collection<String> getDataSourceNames(final Map<String, DatabaseType> dataSourceNameAndTypeMap) {
+        return dataSourceNameAndTypeMap.entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
+    }
     
-    protected abstract Collection<String> getExpectedDatabaseNames();
+    private Map<String, DataSource> createAccessDataSources(final Collection<String> dataSourceNames) {
+        return dataSourceNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
+    }
     
     /**
      * Create access data source.
@@ -118,16 +123,6 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      */
     public final DataSource createAccessDataSource(final String dataSourceName) {
         return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), StorageContainerConstants.OPERATION_USER, StorageContainerConstants.OPERATION_PASSWORD, 20);
-    }
-    
-    /**
-     * Create access data source map.
-     *
-     * @param dataSourceNames data source name collection
-     * @return access data source map
-     */
-    public final Map<String, DataSource> createAccessDataSource(final Collection<String> dataSourceNames) {
-        return dataSourceNames.stream().distinct().collect(Collectors.toMap(Function.identity(), this::createAccessDataSource));
     }
     
     /**

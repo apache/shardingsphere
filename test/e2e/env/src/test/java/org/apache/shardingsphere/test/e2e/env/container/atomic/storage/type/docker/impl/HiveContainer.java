@@ -25,9 +25,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Hive container.
@@ -39,16 +36,6 @@ public final class HiveContainer extends DockerStorageContainer {
     
     public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "Hive"), Strings.isNullOrEmpty(containerImage) ? "apache/hive:4.0.1" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    protected Collection<String> getActualDatabaseNames() {
-        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
-    }
-    
-    @Override
-    protected Collection<String> getExpectedDatabaseNames() {
-        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override

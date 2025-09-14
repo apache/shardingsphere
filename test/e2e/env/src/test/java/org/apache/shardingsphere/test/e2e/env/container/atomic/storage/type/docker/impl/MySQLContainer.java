@@ -23,10 +23,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 
-import java.util.Collection;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 /**
  * MySQL container.
  */
@@ -36,16 +32,6 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.0.40" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    protected Collection<String> getActualDatabaseNames() {
-        return getStorageContainerConfig().getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
-    }
-    
-    @Override
-    protected Collection<String> getExpectedDatabaseNames() {
-        return getStorageContainerConfig().getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == getDatabaseType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     @Override
