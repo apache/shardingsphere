@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.connector.mysql.metadata.manager;
+package org.apache.shardingsphere.database.connector.core.metadata.detector;
 
 import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MySQLSystemTableManagerTest {
+class SystemTableEngineTest {
     
-    private final MySQLSystemTableManager manager = new MySQLSystemTableManager();
-    
-    @Test
-    void assertGetDatabaseType() {
-        assertThat(manager.getDatabaseType(), is("MySQL"));
-    }
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertIsSystemTable() {
-        assertTrue(manager.isSystemTable("user"));
-        assertFalse(manager.isSystemTable("non_existing_table"));
+        assertTrue(SystemTableEngine.isSystemTable(databaseType, "pg$foo"));
+        assertFalse(SystemTableEngine.isSystemTable(databaseType, "t_order"));
     }
 }
