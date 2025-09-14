@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
@@ -29,6 +28,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public PostgreSQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, storageContainerConfig);
+        super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), containerImage, storageContainerConfig);
     }
 }

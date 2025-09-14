@@ -35,6 +35,13 @@ public interface StorageContainerConfigurationOption {
     int getPort();
     
     /**
+     * Get default container image name.
+     *
+     * @return default container image name
+     */
+    String getDefaultImageName();
+    
+    /**
      * Get container command.
      *
      * @return container command

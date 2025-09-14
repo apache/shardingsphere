@@ -36,6 +36,11 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     }
     
     @Override
+    public String getDefaultImageName() {
+        return "";
+    }
+    
+    @Override
     public String getCommand() {
         return "";
     }
