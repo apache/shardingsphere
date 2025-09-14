@@ -156,7 +156,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     @Override
-    public Map<String, String> getLinkReplacements() {
+    public final Map<String, String> getLinkReplacements() {
         Map<String, String> result = new HashMap<>();
         for (String each : getNetworkAliases()) {
             for (Integer exposedPort : getExposedPorts()) {
