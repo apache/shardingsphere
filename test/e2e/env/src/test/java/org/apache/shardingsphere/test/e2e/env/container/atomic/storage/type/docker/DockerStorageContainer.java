@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount.MountConfigurationResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount.MountSQLResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -52,6 +53,9 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     private final StorageContainerConfiguration storageContainerConfig;
     
     @Getter
+    private final int majorVersion;
+    
+    @Getter
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
     @Getter
@@ -61,14 +65,15 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
         super(databaseType.getType().toLowerCase(), Strings.isNullOrEmpty(containerImage) ? storageContainerConfig.getConfigurationOption().getDefaultImageName() : containerImage);
         this.databaseType = databaseType;
         this.storageContainerConfig = storageContainerConfig;
+        majorVersion = new DockerImageVersion(containerImage).getMajorVersion();
     }
     
     @Override
     protected final void configure() {
         setCommands();
         addEnvironments();
-        mapResources(new MountConfigurationResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(getMajorVersion(), storageContainerConfig.getScenario()));
-        mapResources(new MountSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(getMajorVersion(), storageContainerConfig.getScenario()));
+        mapResources(new MountConfigurationResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
+        mapResources(new MountSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
         withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
@@ -93,7 +98,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     }
     
     private String getURL() {
-        return storageContainerConfig.getConfigurationOption().getDefaultDatabaseName(getMajorVersion())
+        return storageContainerConfig.getConfigurationOption().getDefaultDatabaseName(majorVersion)
                 .map(optional -> DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), optional))
                 .orElseGet(() -> DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()));
     }
@@ -130,7 +135,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      */
     public final String getJdbcUrl(final String dataSourceName) {
         return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(),
-                Strings.isNullOrEmpty(dataSourceName) ? storageContainerConfig.getConfigurationOption().getDefaultDatabaseName(getMajorVersion()).orElse("") : dataSourceName);
+                Strings.isNullOrEmpty(dataSourceName) ? storageContainerConfig.getConfigurationOption().getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
     }
     
     /**

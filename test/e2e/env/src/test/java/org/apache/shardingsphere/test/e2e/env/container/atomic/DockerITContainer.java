@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
@@ -43,12 +42,9 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
     
     private String name;
     
-    private final int majorVersion;
-    
     protected DockerITContainer(final String name, final String containerImage) {
         super(new RemoteDockerImage(DockerImageName.parse(containerImage)));
         this.name = name;
-        majorVersion = new DockerImageVersion(containerImage).getMajorVersion();
     }
     
     protected final void mapResources(final Map<String, String> resources) {
