@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 /**
  * Docker storage container.
  */
-public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
+public class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
     private final DatabaseType databaseType;
     
@@ -57,7 +57,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Getter
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
-    protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
+    public DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(databaseType.getType().toLowerCase(), Strings.isNullOrEmpty(containerImage) ? storageContainerConfig.getConfigurationOption().getDefaultImageName() : containerImage);
         this.databaseType = databaseType;
         this.storageContainerConfig = storageContainerConfig;
