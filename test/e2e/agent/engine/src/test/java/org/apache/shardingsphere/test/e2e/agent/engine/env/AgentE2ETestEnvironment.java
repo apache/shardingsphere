@@ -40,7 +40,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.MySQLContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 import org.awaitility.Awaitility;
 import org.testcontainers.containers.output.OutputFrame;
 
@@ -99,9 +99,9 @@ public final class AgentE2ETestEnvironment {
         }
         Optional<DockerITContainer> agentPluginContainer = TypedSPILoader.findService(AgentPluginContainerFactory.class, testConfig.getPluginType()).map(AgentPluginContainerFactory::create);
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createProxyEnvironment(agentPluginContainer);
+            createProxyEnvironment(agentPluginContainer.orElse(null));
         } else if (AdapterType.JDBC.getValue().equalsIgnoreCase(testConfig.getAdapter())) {
-            createJDBCEnvironment(agentPluginContainer);
+            createJDBCEnvironment(agentPluginContainer.orElse(null));
         }
         log.info("Waiting to collect data ...");
         long collectDataWaitSeconds = testConfig.getCollectDataWaitSeconds();
@@ -112,20 +112,21 @@ public final class AgentE2ETestEnvironment {
         initialized = true;
     }
     
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private void createProxyEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
+    private void createProxyEnvironment(final DockerITContainer agentPluginContainer) {
         containers = new ITContainers();
         ShardingSphereProxyClusterContainer proxyContainer = new ShardingSphereProxyClusterContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
-        MySQLContainer storageContainer = new MySQLContainer(
+        DockerStorageContainer storageContainer = new DockerStorageContainer(databaseType,
                 imageConfig.getMysqlImage(), StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, null));
         proxyContainer.dependsOn(storageContainer);
         containers.registerContainer(storageContainer);
         GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
         proxyContainer.dependsOn(governanceContainer);
         containers.registerContainer(governanceContainer);
-        agentPluginContainer.ifPresent(proxyContainer::dependsOn);
-        agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        if (null != agentPluginContainer) {
+            proxyContainer.dependsOn(agentPluginContainer);
+            containers.registerContainer(agentPluginContainer);
+        }
         containers.registerContainer(proxyContainer);
         containers.start();
         try {
@@ -145,16 +146,17 @@ public final class AgentE2ETestEnvironment {
         return new AdaptorContainerConfiguration("sharding_db", Collections.emptyList(), mountedResources, imageConfig.getProxyImage(), "");
     }
     
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    private void createJDBCEnvironment(final Optional<DockerITContainer> agentPluginContainer) {
+    private void createJDBCEnvironment(final DockerITContainer agentPluginContainer) {
         containers = new ITContainers();
-        MySQLContainer storageContainer = new MySQLContainer(imageConfig.getMysqlImage(),
-                StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, null));
+        DockerStorageContainer storageContainer = new DockerStorageContainer(databaseType,
+                imageConfig.getMysqlImage(), StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, null));
         ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
                 imageConfig.getJdbcProjectImage(), testConfig.getPluginType(), testConfig.isLogEnabled() ? this::collectLogs : null);
         jdbcAgentContainer.dependsOn(storageContainer);
-        agentPluginContainer.ifPresent(jdbcAgentContainer::dependsOn);
-        agentPluginContainer.ifPresent(optional -> containers.registerContainer(optional));
+        if (null != agentPluginContainer) {
+            jdbcAgentContainer.dependsOn(agentPluginContainer);
+            containers.registerContainer(agentPluginContainer);
+        }
         containers.registerContainer(storageContainer);
         containers.registerContainer(jdbcAgentContainer);
         containers.start();
@@ -167,7 +169,7 @@ public final class AgentE2ETestEnvironment {
     }
     
     /**
-     * Destroy environment.
+     * Destroy the environment.
      */
     public void destroy() {
         if (!AgentE2ETestConfiguration.getInstance().containsTestParameter()) {
