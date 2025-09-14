@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
-import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
@@ -39,8 +38,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * ShardingSphere proxy container for cluster mode.
  */
 public final class ShardingSphereProxyClusterContainer extends DockerITContainer implements AdapterContainer {
-    
-    private static final String PROPERTY_AGENT_HOME = "AGENT_HOME";
     
     private final DatabaseType databaseType;
     
@@ -57,18 +54,6 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
         this.config = config;
     }
     
-    /**
-     * Mount the agent into container.
-     *
-     * @param agentHome agent home
-     * @return self
-     */
-    public ShardingSphereProxyClusterContainer withAgent(final String agentHome) {
-        withEnv(PROPERTY_AGENT_HOME, ProxyContainerConstants.AGENT_HOME_IN_CONTAINER);
-        withFileSystemBind(agentHome, ProxyContainerConstants.AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);
-        return this;
-    }
-    
     @Override
     protected void configure() {
         if (!Strings.isNullOrEmpty(config.getContainerCommand())) {
@@ -79,14 +64,10 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
             setPortBindings(config.getPortBindings());
         }
         addEnv("TZ", "UTC");
-        mountConfigurationFiles();
+        mapResources(config.getMountedResources());
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
                 getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
         withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
-    }
-    
-    private void mountConfigurationFiles() {
-        config.getMountedResources().forEach((key, value) -> withClasspathResourceMapping(key, value, BindMode.READ_ONLY));
     }
     
     @Override

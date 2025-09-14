@@ -35,7 +35,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterCo
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -197,8 +197,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
                 result.put(network + ":" + storageContainer.getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
             }
         }
-        result.put("username: " + StorageContainerConstants.USERNAME, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put("password: " + StorageContainerConstants.PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        result.put("username: " + StorageContainerConstants.OPERATION_USER, "username: " + E2ETestEnvironment.getInstance().getNativeStorageUsername());
+        result.put("password: " + StorageContainerConstants.OPERATION_PASSWORD, "password: " + E2ETestEnvironment.getInstance().getNativeStoragePassword());
         return result;
     }
     

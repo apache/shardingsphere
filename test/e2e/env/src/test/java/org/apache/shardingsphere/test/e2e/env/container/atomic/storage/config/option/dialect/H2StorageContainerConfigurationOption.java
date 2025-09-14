@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for H2.
@@ -31,32 +31,52 @@ import java.util.Map;
 public final class H2StorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 0;
+    }
+    
+    @Override
+    public String getDefaultImageName() {
+        return "";
+    }
+    
+    @Override
     public String getCommand() {
         return "";
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         return Collections.emptyMap();
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.emptyMap();
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.emptyList();
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
-        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
-    }
-    
-    @Override
-    public boolean isEmbeddedStorageContainer() {
-        return true;
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
+        return Collections.emptyList();
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 0L;
     }
 }

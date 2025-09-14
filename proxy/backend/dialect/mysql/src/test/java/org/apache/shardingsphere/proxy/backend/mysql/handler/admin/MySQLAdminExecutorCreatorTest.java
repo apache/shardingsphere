@@ -254,6 +254,21 @@ class MySQLAdminExecutorCreatorTest {
     }
     
     @Test
+    void assertCreateWithSelectStatementForShowDatabaseWithSpace() {
+        initProxyContext(Collections.emptyList());
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(Optional.empty());
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 11, "DATABASE ()")));
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select DATABASE ()", "", Collections.emptyList());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(ShowCurrentDatabaseExecutor.class));
+    }
+    
+    @Test
     void assertCreateWithOtherSelectStatementForNoResource() {
         initProxyContext(Collections.emptyList());
         SelectStatement selectStatement = mock(SelectStatement.class);

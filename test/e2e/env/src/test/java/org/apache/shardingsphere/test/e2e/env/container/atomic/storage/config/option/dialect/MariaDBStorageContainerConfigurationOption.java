@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
 import java.util.Collection;
@@ -26,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for MariaDB.
@@ -33,12 +33,22 @@ import java.util.Map;
 public final class MariaDBStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 3306;
+    }
+    
+    @Override
+    public String getDefaultImageName() {
+        return "mariadb:11";
+    }
+    
+    @Override
     public String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
@@ -46,22 +56,32 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.singletonMap("my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.singleton("/etc/mysql/mariadb.cnf");
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
-        return Collections.singleton("01-initdb.sql");
-    }
-    
-    @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
+        return Collections.emptyList();
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
     }
 }

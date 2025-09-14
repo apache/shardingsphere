@@ -21,11 +21,11 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPi
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorOutputEntity;
@@ -34,7 +34,6 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -95,14 +94,10 @@ class CreateTableSQLGeneratorIT {
     }
     
     private void startStorageContainer(final DatabaseType databaseType, final String storageContainerImage) {
-        StorageContainerConfiguration storageContainerConfig = createStorageContainerConfiguration(databaseType, storageContainerImage);
+        StorageContainerConfiguration storageContainerConfig = StorageContainerConfigurationFactory.newInstance(
+                StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, null);
         storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, storageContainerConfig);
         storageContainer.start();
-    }
-    
-    private StorageContainerConfiguration createStorageContainerConfiguration(final DatabaseType databaseType, final String storageContainerImage) {
-        int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
-        return StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, majorVersion);
     }
     
     private void assertSQL(final Collection<String> actualSQL, final Collection<String> expectedSQL) {

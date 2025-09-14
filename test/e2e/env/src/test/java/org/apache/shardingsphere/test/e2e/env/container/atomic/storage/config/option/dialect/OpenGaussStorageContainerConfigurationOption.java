@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.OpenGaussContainer;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for openGauss.
@@ -34,35 +33,52 @@ import java.util.Map;
 public final class OpenGaussStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 5432;
+    }
+    
+    @Override
+    public String getDefaultImageName() {
+        return "opengauss/opengauss:3.1.0";
+    }
+    
+    @Override
     public String getCommand() {
         return "";
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
-        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.PASSWORD);
+    public Map<String, String> getEnvironments() {
+        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("postgresql.conf", OpenGaussContainer.OPENGAUSS_CONF_IN_CONTAINER);
-        result.put("pg_hba.conf", OpenGaussContainer.OPENGAUSS_HBA_IN_CONF_CONTAINER);
-        return result;
+    public Collection<String> getMountedConfigurationResources() {
+        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf");
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
-        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
-    }
-    
-    @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
+        return Collections.emptyList();
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public boolean withPrivilegedMode() {
+        return true;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.of(StorageContainerConstants.OPERATION_USER);
+    }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
     }
 }

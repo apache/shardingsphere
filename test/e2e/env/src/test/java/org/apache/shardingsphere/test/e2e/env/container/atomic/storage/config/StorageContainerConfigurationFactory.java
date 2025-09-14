@@ -22,15 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * Storage container configuration factory.
@@ -43,114 +38,12 @@ public final class StorageContainerConfigurationFactory {
      *
      * @param option storage container configuration option
      * @param databaseType database type
-     * @param majorVersion majorVersion
-     * @return created storage container configuration
-     */
-    public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final int majorVersion) {
-        Map<String, String> mountedResources = getMountedResources(databaseType, option, majorVersion, "");
-        return new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), mountedResources, Collections.emptyMap(), Collections.emptyMap());
-    }
-    
-    /**
-     * Create new instance of storage container configuration.
-     *
-     * @param option storage container configuration option
-     * @param databaseType database type
-     * @param scenario  scenario
+     * @param scenario scenario
      * @return created storage container configuration
      */
     public static StorageContainerConfiguration newInstance(final StorageContainerConfigurationOption option, final DatabaseType databaseType, final String scenario) {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType);
-        Map<String, DatabaseType> expectedDatabaseTypes = DatabaseEnvironmentManager.getExpectedDatabaseTypes(scenario, databaseType);
-        Map<String, String> mountedResources = getMountedResources(databaseType, option, 0, scenario);
-        return option.isEmbeddedStorageContainer()
-                ? new StorageContainerConfiguration(scenario, option.getCommand(), option.getContainerEnvironments(), mountedResources, databaseTypes, expectedDatabaseTypes)
-                : new StorageContainerConfiguration(option.getCommand(), option.getContainerEnvironments(), mountedResources, databaseTypes, expectedDatabaseTypes);
-    }
-    
-    private static Map<String, String> getMountedResources(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        Map<String, String> mountConfigResources = getToBeMountedConfigurationFiles(databaseType, option, majorVersion, scenario);
-        Map<String, String> mountSQLResources = getToBeMountedSQLFiles(databaseType, option, majorVersion, scenario);
-        Map<String, String> result = new HashMap<>(mountConfigResources.size() + mountSQLResources.size(), 1F);
-        result.putAll(mountConfigResources);
-        result.putAll(mountSQLResources);
-        return result;
-    }
-    
-    private static Map<String, String> getToBeMountedConfigurationFiles(final DatabaseType databaseType,
-                                                                        final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        Map<String, String> mountedConfigurationResources = option.getMountedConfigurationResources();
-        Map<String, String> result = new HashMap<>(mountedConfigurationResources.size(), 1F);
-        for (Entry<String, String> entry : mountedConfigurationResources.entrySet()) {
-            Optional<Integer> foundMajorVersion = findMajorVersion(option, majorVersion);
-            String configFilePath = foundMajorVersion.map(optional -> String.format("container/%s/cnf/%d/%s", databaseType.getType().toLowerCase(), optional, entry.getKey()))
-                    .orElseGet(() -> String.format("container/%s/cnf/%s", databaseType.getType().toLowerCase(), entry.getKey()));
-            result.put(getToBeMountedConfigurationFile(configFilePath, scenario), entry.getValue());
-        }
-        return result;
-    }
-    
-    private static String getToBeMountedConfigurationFile(final String toBeMountedConfigFile, final String scenario) {
-        String scenarioConfigFilePath = String.format("scenario/%s/%s", scenario, toBeMountedConfigFile);
-        if (null != Thread.currentThread().getContextClassLoader().getResource(scenarioConfigFilePath)) {
-            return "/" + scenarioConfigFilePath;
-        }
-        String envConfigFilePath = String.format("env/%s", toBeMountedConfigFile);
-        if (null != Thread.currentThread().getContextClassLoader().getResource(envConfigFilePath)) {
-            return "/" + envConfigFilePath;
-        }
-        return "/" + toBeMountedConfigFile;
-    }
-    
-    private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion, final String scenario) {
-        Map<String, String> result = getToBeMountedSQLFiles(databaseType, option, scenario);
-        findMajorVersion(option, majorVersion).ifPresent(optional -> result.putAll(getToBeMountedVersionSQLFiles(databaseType, option, optional)));
-        return result;
-    }
-    
-    private static Map<String, String> getToBeMountedSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final String scenario) {
-        Collection<String> mountedSQLResources = option.getMountedSQLResources();
-        Map<String, String> result = new HashMap<>(mountedSQLResources.size(), 1F);
-        for (String each : mountedSQLResources) {
-            getToBeMountedSQLFile(databaseType, each, scenario).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
-        }
-        return result;
-    }
-    
-    private static Optional<String> getToBeMountedSQLFile(final DatabaseType databaseType, final String sqlFile, final String scenario) {
-        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/" + sqlFile;
-        if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
-            return Optional.of(actualScenarioFile);
-        }
-        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/" + sqlFile;
-        if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
-            return Optional.of(expectedScenarioFile);
-        }
-        String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
-        if (null != Thread.currentThread().getContextClassLoader().getResource(envFile)) {
-            return Optional.of(envFile);
-        }
-        return Optional.empty();
-    }
-    
-    private static Map<String, String> getToBeMountedVersionSQLFiles(final DatabaseType databaseType, final StorageContainerConfigurationOption option, final int majorVersion) {
-        Collection<String> mountedSQLResources = option.getMountedSQLResources(majorVersion);
-        Map<String, String> result = new HashMap<>(mountedSQLResources.size(), 1F);
-        for (String each : mountedSQLResources) {
-            getToBeMountedVersionSQLFiles(databaseType, each).ifPresent(optional -> result.put("/" + optional, "/docker-entrypoint-initdb.d/" + each));
-        }
-        return result;
-    }
-    
-    private static Optional<String> getToBeMountedVersionSQLFiles(final DatabaseType databaseType, final String sqlFile) {
-        String envFile = String.format("env/%s/%s", databaseType.getType().toLowerCase(), sqlFile);
-        return null == Thread.currentThread().getContextClassLoader().getResource(envFile) ? Optional.empty() : Optional.of(envFile);
-    }
-    
-    private static Optional<Integer> findMajorVersion(final StorageContainerConfigurationOption option, final int majorVersion) {
-        if (option.getSupportedMajorVersions().isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(option.getSupportedMajorVersions().stream().filter(optional -> optional == majorVersion).findAny().orElse(option.getSupportedMajorVersions().get(0)));
+        Map<String, DatabaseType> actualDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL);
+        Map<String, DatabaseType> expectedDatabaseTypes = null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED);
+        return new StorageContainerConfiguration(scenario, option, actualDatabaseTypes, expectedDatabaseTypes);
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option.
@@ -28,9 +28,23 @@ import java.util.Map;
 public interface StorageContainerConfigurationOption {
     
     /**
-     * Get command.
+     * Get container port.
      *
-     * @return command
+     * @return container port
+     */
+    int getPort();
+    
+    /**
+     * Get default container image name.
+     *
+     * @return default container image name
+     */
+    String getDefaultImageName();
+    
+    /**
+     * Get container command.
+     *
+     * @return container command
      */
     String getCommand();
     
@@ -39,38 +53,22 @@ public interface StorageContainerConfigurationOption {
      *
      * @return container environments
      */
-    Map<String, String> getContainerEnvironments();
+    Map<String, String> getEnvironments();
     
     /**
      * Get mounted configuration resources.
      *
      * @return mounted configuration resources
      */
-    Map<String, String> getMountedConfigurationResources();
+    Collection<String> getMountedConfigurationResources();
     
     /**
-     * Get mounted SQL resources.
-     *
-     * @return mounted SQL resources
-     */
-    Collection<String> getMountedSQLResources();
-    
-    /**
-     * Get mounted SQL resources.
+     * Get additional env mounted SQL resources.
      *
      * @param majorVersion major version
-     * @return mounted SQL resources
+     * @return additional env mounted SQL resources
      */
-    default Collection<String> getMountedSQLResources(final int majorVersion) {
-        return Collections.emptyList();
-    }
-    
-    /**
-     * Whether embedded storage container.
-     *
-     * @return is embedded storage container or not
-     */
-    boolean isEmbeddedStorageContainer();
+    Collection<String> getAdditionalEnvMountedSQLResources(int majorVersion);
     
     /**
      * Get supported major versions.
@@ -78,4 +76,26 @@ public interface StorageContainerConfigurationOption {
      * @return supported major versions
      */
     List<Integer> getSupportedMajorVersions();
+    
+    /**
+     * Whether with privileged mode.
+     *
+     * @return is with privileged mode or not
+     */
+    boolean withPrivilegedMode();
+    
+    /**
+     * Get the default database name.
+     *
+     * @param majorVersion major version
+     * @return default database name
+     */
+    Optional<String> getDefaultDatabaseName(int majorVersion);
+    
+    /**
+     * Get container startup timeout seconds.
+     *
+     * @return container startup timeout seconds
+     */
+    long getStartupTimeoutSeconds();
 }

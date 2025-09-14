@@ -31,7 +31,7 @@ class ParameterMarkerProjectionTest {
     
     @Test
     void assertGetColumnName() {
-        assertThat(new ParameterMarkerProjection(1, ParameterMarkerType.QUESTION, new IdentifierValue("foo")).getColumnName(), is("1"));
+        assertThat(new ParameterMarkerProjection(1, ParameterMarkerType.QUESTION, new IdentifierValue("foo")).getColumnName(), is("foo"));
     }
     
     @Test

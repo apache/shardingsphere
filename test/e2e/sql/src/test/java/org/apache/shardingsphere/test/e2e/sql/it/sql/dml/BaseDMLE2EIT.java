@@ -185,7 +185,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertDataSet(final SQLE2EITContext context, final DataSetMetaData expectedDataSetMetaData, final AssertionTestParameter testParam) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType());
+        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType(), Type.ACTUAL);
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getEnvironmentEngine().getActualDataSourceMap().get(dataNode.getDataSourceName());
@@ -218,7 +218,7 @@ public abstract class BaseDMLE2EIT implements SQLE2EIT {
     }
     
     private void assertDataSet(final DataSetMetaData expectedDataSetMetaData, final CaseTestParameter testParam, final DataSet dataSet) throws SQLException {
-        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType());
+        Map<String, DatabaseType> databaseTypes = DatabaseEnvironmentManager.getDatabaseTypes(testParam.getScenario(), testParam.getDatabaseType(), Type.ACTUAL);
         for (String each : InlineExpressionParserFactory.newInstance(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             DatabaseType databaseType = databaseTypes.get(dataNode.getDataSourceName());

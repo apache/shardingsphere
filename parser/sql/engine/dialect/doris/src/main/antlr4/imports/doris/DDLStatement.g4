@@ -349,6 +349,10 @@ dropServer
     : DROP SERVER ifExists? serverName
     ;
 
+dropEncryptKey
+    : DROP ENCRYPTKEY identifier
+    ;
+
 createView
     : CREATE (OR REPLACE)?
       (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?

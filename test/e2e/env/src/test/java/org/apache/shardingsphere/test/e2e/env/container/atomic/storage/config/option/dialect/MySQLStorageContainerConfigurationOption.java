@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for MySQL.
@@ -34,12 +35,22 @@ import java.util.Map;
 public final class MySQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 3306;
+    }
+    
+    @Override
+    public String getDefaultImageName() {
+        return "mysql:8.0.40";
+    }
+    
+    @Override
     public String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
@@ -47,27 +58,36 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.singletonMap("my.cnf", MySQLContainer.MYSQL_CONF_IN_CONTAINER);
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.singleton("/etc/mysql/my.cnf");
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
-        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
-    }
-    
-    @Override
-    public Collection<String> getMountedSQLResources(final int majorVersion) {
-        return majorVersion > 5 ? Collections.singleton("02-grant-xa-privilege.sql") : Collections.emptyList();
-    }
-    
-    @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
+        Collection<String> result = new LinkedList<>();
+        if (majorVersion > 5) {
+            result.add("21-env-grant-xa-privilege.sql");
+        }
+        return result;
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
-        return Arrays.asList(5, 8);
+        return Arrays.asList(8, 5);
+    }
+    
+    @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.empty();
+    }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
     }
 }

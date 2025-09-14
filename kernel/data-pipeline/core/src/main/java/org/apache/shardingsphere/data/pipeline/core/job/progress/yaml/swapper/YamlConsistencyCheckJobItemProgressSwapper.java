@@ -45,8 +45,13 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlPip
     @Override
     public ConsistencyCheckJobItemProgress swapToObject(final YamlConsistencyCheckJobItemProgress yamlConfig) {
         ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(yamlConfig.getTableNames(), yamlConfig.getIgnoredTableNames(), yamlConfig.getCheckedRecordsCount(),
-                yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(),
-                yamlConfig.getSourceTableCheckPositions(), yamlConfig.getTargetTableCheckPositions(), yamlConfig.getSourceDatabaseType());
+                yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(), yamlConfig.getSourceDatabaseType());
+        if (null != yamlConfig.getSourceTableCheckPositions()) {
+            result.getSourceTableCheckPositions().putAll(yamlConfig.getSourceTableCheckPositions());
+        }
+        if (null != yamlConfig.getTargetTableCheckPositions()) {
+            result.getTargetTableCheckPositions().putAll(yamlConfig.getTargetTableCheckPositions());
+        }
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         return result;
     }

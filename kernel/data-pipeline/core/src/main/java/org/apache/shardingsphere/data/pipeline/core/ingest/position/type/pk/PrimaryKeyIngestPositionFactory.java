@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.IntegerPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.StringPrimaryKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
@@ -41,7 +40,7 @@ public final class PrimaryKeyIngestPositionFactory {
      * @return primary key position
      * @throws IllegalArgumentException illegal argument exception
      */
-    public static IngestPosition newInstance(final String data) {
+    public static PrimaryKeyIngestPosition<?> newInstance(final String data) {
         List<String> parts = Splitter.on(',').splitToList(data);
         Preconditions.checkArgument(3 == parts.size(), "Unknown primary key position: " + data);
         Preconditions.checkArgument(1 == parts.get(0).length(), "Invalid primary key position type: " + parts.get(0));
@@ -67,7 +66,7 @@ public final class PrimaryKeyIngestPositionFactory {
      * @param endValue end value
      * @return ingest position
      */
-    public static IngestPosition newInstance(final Object beginValue, final Object endValue) {
+    public static PrimaryKeyIngestPosition<?> newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
             return new IntegerPrimaryKeyIngestPosition(((Number) beginValue).longValue(), null == endValue ? Long.MAX_VALUE : ((Number) endValue).longValue());
         }

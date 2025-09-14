@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.o
 
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.PostgreSQLContainer;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Storage container configuration option for  PostgreSQL.
@@ -34,35 +33,55 @@ import java.util.Map;
 public final class PostgreSQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
-    public String getCommand() {
-        return "-c config_file=" + PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER;
+    public int getPort() {
+        return 5432;
     }
     
     @Override
-    public Map<String, String> getContainerEnvironments() {
+    public String getDefaultImageName() {
+        return "postgres:12-alpine";
+    }
+    
+    @Override
+    public String getCommand() {
+        return "-c config_file=/etc/postgresql/postgresql.conf";
+    }
+    
+    @Override
+    public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("POSTGRES_HOST", StorageContainerConstants.USERNAME);
-        result.put("POSTGRES_PASSWORD", StorageContainerConstants.PASSWORD);
+        result.put("POSTGRES_HOST", StorageContainerConstants.OPERATION_USER);
+        result.put("POSTGRES_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
         return result;
     }
     
     @Override
-    public Map<String, String> getMountedConfigurationResources() {
-        return Collections.singletonMap("postgresql.conf", PostgreSQLContainer.POSTGRESQL_CONF_IN_CONTAINER);
+    public Collection<String> getMountedConfigurationResources() {
+        return Collections.singleton("/etc/postgresql/postgresql.conf");
     }
     
     @Override
-    public Collection<String> getMountedSQLResources() {
-        return Arrays.asList("01-actual-init.sql", "01-expected-init.sql", "01-initdb.sql");
-    }
-    
-    @Override
-    public boolean isEmbeddedStorageContainer() {
-        return false;
+    public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
+        return Collections.emptyList();
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public boolean withPrivilegedMode() {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultDatabaseName(final int majorVersion) {
+        return Optional.of("postgres");
+    }
+    
+    @Override
+    public long getStartupTimeoutSeconds() {
+        return 120L;
     }
 }
