@@ -32,20 +32,8 @@ import java.io.IOException;
 @Slf4j
 public final class HiveContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 10000;
-    
     public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "Hive"), Strings.isNullOrEmpty(containerImage) ? "apache/hive:4.0.1" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    public int getExposedPort() {
-        return EXPOSED_PORT;
-    }
-    
-    @Override
-    public int getMappedPort() {
-        return getMappedPort(EXPOSED_PORT);
     }
     
     @Override

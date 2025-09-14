@@ -142,14 +142,18 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      *
      * @return exposed database container port
      */
-    public abstract int getExposedPort();
+    public final int getExposedPort() {
+        return storageContainerConfig.getConfigurationOption().getPort();
+    }
     
     /**
      * Get database container mapped port.
      *
      * @return mapped database container port
      */
-    public abstract int getMappedPort();
+    public final int getMappedPort() {
+        return getMappedPort(getExposedPort());
+    }
     
     @Override
     public final String getAbbreviation() {

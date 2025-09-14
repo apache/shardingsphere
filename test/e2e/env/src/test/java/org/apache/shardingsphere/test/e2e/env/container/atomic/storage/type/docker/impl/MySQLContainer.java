@@ -28,19 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 3306;
-    
     public MySQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql:8.0.40" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    public int getExposedPort() {
-        return EXPOSED_PORT;
-    }
-    
-    @Override
-    public int getMappedPort() {
-        return getMappedPort(EXPOSED_PORT);
     }
 }

@@ -28,19 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 5432;
-    
     public OpenGaussContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "openGauss"), Strings.isNullOrEmpty(containerImage) ? "opengauss/opengauss:3.1.0" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    public int getExposedPort() {
-        return EXPOSED_PORT;
-    }
-    
-    @Override
-    public int getMappedPort() {
-        return getMappedPort(EXPOSED_PORT);
     }
 }

@@ -35,6 +35,11 @@ import java.util.Optional;
 public final class MySQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
+    public int getPort() {
+        return 3306;
+    }
+    
+    @Override
     public String getCommand() {
         return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }

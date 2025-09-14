@@ -28,6 +28,13 @@ import java.util.Optional;
 public interface StorageContainerConfigurationOption {
     
     /**
+     * Get container port.
+     *
+     * @return container port
+     */
+    int getPort();
+    
+    /**
      * Get container command.
      *
      * @return container command

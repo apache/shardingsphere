@@ -28,19 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 5432;
-    
     public PostgreSQLContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), Strings.isNullOrEmpty(containerImage) ? "postgres:12-alpine" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    public int getExposedPort() {
-        return EXPOSED_PORT;
-    }
-    
-    @Override
-    public int getMappedPort() {
-        return getMappedPort(EXPOSED_PORT);
     }
 }

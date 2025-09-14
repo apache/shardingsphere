@@ -28,19 +28,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.dock
  */
 public final class MariaDBContainer extends DockerStorageContainer {
     
-    public static final int EXPOSED_PORT = 3306;
-    
     public MariaDBContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
         super(TypedSPILoader.getService(DatabaseType.class, "MariaDB"), Strings.isNullOrEmpty(containerImage) ? "mariadb:11" : containerImage, storageContainerConfig);
-    }
-    
-    @Override
-    public int getExposedPort() {
-        return EXPOSED_PORT;
-    }
-    
-    @Override
-    public int getMappedPort() {
-        return getMappedPort(EXPOSED_PORT);
     }
 }
