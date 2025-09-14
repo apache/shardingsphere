@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.database.connector.firebird.metadata.manager.FirebirdSystemTableManager
+name: APPLICABLE_ROLES
