@@ -46,7 +46,6 @@ import java.util.stream.Collectors;
 /**
  * Docker storage container.
  */
-@Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
     private final DatabaseType databaseType;
@@ -55,8 +54,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     private final int majorVersion;
     
+    @Getter
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
+    @Getter
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
     protected DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
@@ -132,7 +133,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return JDBC URL
      */
     public final String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(),
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(),
                 Strings.isNullOrEmpty(dataSourceName) ? storageContainerConfig.getConfigurationOption().getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
     }
     
