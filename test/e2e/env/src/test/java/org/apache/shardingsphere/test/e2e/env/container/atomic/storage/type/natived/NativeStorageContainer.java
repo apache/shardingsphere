@@ -22,8 +22,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount.MountSQLResourceGenerator;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
@@ -50,7 +50,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private final String scenario;
     
-    private final StorageContainerConfiguration storageContainerConfig;
+    private final StorageContainerConfigurationOption option;
     
     @Getter
     private final Map<String, DataSource> actualDataSourceMap;
@@ -65,7 +65,7 @@ public final class NativeStorageContainer implements StorageContainer {
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        storageContainerConfig = new StorageContainerConfiguration(scenario, StorageContainerConfigurationOptionFactory.newInstance(databaseType));
+        option = StorageContainerConfigurationOptionFactory.newInstance(databaseType);
         initDatabase();
         actualDataSourceMap = createDataSourceMap(Type.ACTUAL);
         expectedDataSourceMap = createDataSourceMap(Type.EXPECTED);
@@ -75,7 +75,7 @@ public final class NativeStorageContainer implements StorageContainer {
         DataSource dataSource = StorageContainerUtils.generateDataSource(
                 DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(), Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort())),
                 E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
-        new MountSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        new MountSQLResourceGenerator(option, databaseType).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
