@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterMode
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
@@ -53,7 +52,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
         containers = new ITContainers(scenario);
         Type envType = E2ETestEnvironment.getInstance().getClusterEnvironment().getType();
         storageContainer = containers.registerContainer(Type.DOCKER == envType
-                ? StorageContainerFactory.newInstance(databaseType, new StorageContainerConfiguration(scenario, StorageContainerConfigurationOptionFactory.newInstance(databaseType)))
+                ? StorageContainerFactory.newInstance(databaseType, StorageContainerConfigurationOptionFactory.newInstance(databaseType), scenario)
                 : new NativeStorageContainer(databaseType, scenario));
         AdaptorContainerConfiguration containerConfig = SQLE2EProxyContainerConfigurationFactory.newInstance(scenario, "standalone", databaseType);
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(adapterMode, adapterType, databaseType, scenario, containerConfig, storageContainer, envType.name());
