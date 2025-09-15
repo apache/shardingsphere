@@ -23,16 +23,18 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.mount.MountSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,10 +65,10 @@ public final class NativeStorageContainer implements StorageContainer {
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        storageContainerConfig = StorageContainerConfigurationFactory.newInstance(StorageContainerConfigurationOptionFactory.newInstance(databaseType), databaseType, scenario);
+        storageContainerConfig = new StorageContainerConfiguration(scenario, StorageContainerConfigurationOptionFactory.newInstance(databaseType));
         initDatabase();
-        actualDataSourceMap = createActualDataSourceMap();
-        expectedDataSourceMap = createExpectedDataSourceMap();
+        actualDataSourceMap = createDataSourceMap(Type.ACTUAL);
+        expectedDataSourceMap = createDataSourceMap(Type.EXPECTED);
     }
     
     private void initDatabase() {
@@ -76,16 +78,11 @@ public final class NativeStorageContainer implements StorageContainer {
         new MountSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
     }
     
-    private Map<String, DataSource> createActualDataSourceMap() {
-        Collection<String> databaseNames =
-                storageContainerConfig.getActualDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
-        return getDataSourceMap(databaseNames);
-    }
-    
-    private Map<String, DataSource> createExpectedDataSourceMap() {
-        Collection<String> databaseNames =
-                storageContainerConfig.getExpectedDatabaseTypes().entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
-        return getDataSourceMap(databaseNames);
+    private Map<String, DataSource> createDataSourceMap(final Type type) {
+        return null == scenario
+                ? Collections.emptyMap()
+                : getDataSourceMap(DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, type).entrySet().stream()
+                        .filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList()));
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {

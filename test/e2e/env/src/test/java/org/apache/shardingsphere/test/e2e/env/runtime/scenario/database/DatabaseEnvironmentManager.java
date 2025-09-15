@@ -50,10 +50,10 @@ public final class DatabaseEnvironmentManager {
      * @return database types
      */
     public static Map<String, DatabaseType> getDatabaseTypes(final String scenario, final DatabaseType defaultDatabaseType, final Type type) {
-        return crateDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(type)).getDatabases(), defaultDatabaseType);
+        return createDatabaseTypes(unmarshal(new ScenarioDataPath(scenario).getDatabasesFile(type)).getDatabases(), defaultDatabaseType);
     }
     
-    private static Map<String, DatabaseType> crateDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
+    private static Map<String, DatabaseType> createDatabaseTypes(final Collection<String> datasourceNames, final DatabaseType defaultDatabaseType) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(datasourceNames.size(), 1F);
         for (String each : datasourceNames) {
             List<String> items = Splitter.on(":").splitToList(each);
