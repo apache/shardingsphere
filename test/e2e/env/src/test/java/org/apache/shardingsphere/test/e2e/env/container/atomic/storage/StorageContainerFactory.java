@@ -59,11 +59,11 @@ public final class StorageContainerFactory {
             case "PostgreSQL":
             case "openGauss":
             case "MariaDB":
-                return new DockerStorageContainer(databaseType, storageContainerImage, storageContainerConfig);
+                return new DockerStorageContainer(databaseType, storageContainerImage, storageContainerConfig.getConfigurationOption(), storageContainerConfig.getScenario());
             case "Hive":
-                return new HiveContainer(storageContainerImage, storageContainerConfig);
+                return new HiveContainer(storageContainerImage, storageContainerConfig.getConfigurationOption(), storageContainerConfig.getScenario());
             case "H2":
-                return new H2Container(storageContainerConfig);
+                return new H2Container(storageContainerConfig.getScenario());
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
