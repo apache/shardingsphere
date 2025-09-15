@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option;
 
 import java.util.Collection;
 import java.util.List;

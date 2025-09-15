@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,37 +28,36 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for Hive.
+ * Storage container configuration option for  PostgreSQL.
  */
-public final class HiveStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class PostgreSQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
     public int getPort() {
-        return 10000;
+        return 5432;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "apache/hive:4.0.1";
+        return "postgres:12-alpine";
     }
     
     @Override
     public String getCommand() {
-        return "bash -c 'start-hive.sh && tail -f /dev/null'";
+        return "-c config_file=/etc/postgresql/postgresql.conf";
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        Map<String, String> result = new HashMap<>(3, 1F);
-        result.put("SERVICE_NAME", "hiveserver2");
-        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
-        result.put("LANG", "C.UTF-8");
+        Map<String, String> result = new HashMap<>(2, 1F);
+        result.put("POSTGRES_HOST", StorageContainerConstants.OPERATION_USER);
+        result.put("POSTGRES_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
         return result;
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/opt/hive/conf/hive-site.xml");
+        return Collections.singleton("/etc/postgresql/postgresql.conf");
     }
     
     @Override
@@ -77,11 +77,11 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.empty();
+        return Optional.of("postgres");
     }
     
     @Override
     public long getStartupTimeoutSeconds() {
-        return 180L;
+        return 120L;
     }
 }
