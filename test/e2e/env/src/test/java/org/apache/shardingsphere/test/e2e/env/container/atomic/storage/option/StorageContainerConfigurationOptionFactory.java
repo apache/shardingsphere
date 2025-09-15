@@ -20,12 +20,11 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.H2StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.HiveStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.MariaDBStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.MySQLStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.OpenGaussStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.PostgreSQLStorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.HiveStorageContainerConfigurationOption;
 
 /**
  * Storage container configuration option factory.
@@ -50,10 +49,10 @@ public final class StorageContainerConfigurationOptionFactory {
                 return new PostgreSQLStorageContainerConfigurationOption();
             case "openGauss":
                 return new OpenGaussStorageContainerConfigurationOption();
-            case "H2":
-                return new H2StorageContainerConfigurationOption();
             case "Hive":
                 return new HiveStorageContainerConfigurationOption();
+            case "H2":
+                return null;
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
