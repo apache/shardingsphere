@@ -15,46 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for openGauss.
+ * Storage container configuration option for MariaDB.
  */
-public final class OpenGaussStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class MariaDBStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
     public int getPort() {
-        return 5432;
+        return 3306;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "opengauss/opengauss:3.1.0";
+        return "mariadb:11";
     }
     
     @Override
     public String getCommand() {
-        return "";
+        return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
+        Map<String, String> result = new HashMap<>(2, 1F);
+        result.put("LANG", "C.UTF-8");
+        result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
+        return result;
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf.sample", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample");
+        return Collections.singleton("/etc/mysql/mariadb.cnf");
     }
     
     @Override
@@ -69,12 +72,12 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     
     @Override
     public boolean withPrivilegedMode() {
-        return true;
+        return false;
     }
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.of(StorageContainerConstants.OPERATION_USER);
+        return Optional.empty();
     }
     
     @Override

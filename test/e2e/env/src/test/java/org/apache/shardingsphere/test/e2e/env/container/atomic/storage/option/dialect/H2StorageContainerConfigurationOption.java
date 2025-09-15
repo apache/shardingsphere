@@ -15,49 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for MariaDB.
+ * Storage container configuration option for H2.
  */
-public final class MariaDBStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class H2StorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
     public int getPort() {
-        return 3306;
+        return 0;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "mariadb:11";
+        return "";
     }
     
     @Override
     public String getCommand() {
-        return "--server-id=" + ContainerUtils.generateMySQLServerId();
+        return "";
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("LANG", "C.UTF-8");
-        result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
-        return result;
+        return Collections.emptyMap();
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/etc/mysql/mariadb.cnf");
+        return Collections.emptyList();
     }
     
     @Override
@@ -82,6 +77,6 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     
     @Override
     public long getStartupTimeoutSeconds() {
-        return 120L;
+        return 0L;
     }
 }

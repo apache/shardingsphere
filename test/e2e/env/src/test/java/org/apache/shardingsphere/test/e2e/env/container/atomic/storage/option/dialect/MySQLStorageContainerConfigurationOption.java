@@ -15,59 +15,65 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for  PostgreSQL.
+ * Storage container configuration option for MySQL.
  */
-public final class PostgreSQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class MySQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
     public int getPort() {
-        return 5432;
+        return 3306;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "postgres:12-alpine";
+        return "mysql:8.0.40";
     }
     
     @Override
     public String getCommand() {
-        return "-c config_file=/etc/postgresql/postgresql.conf";
+        return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     @Override
     public Map<String, String> getEnvironments() {
         Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("POSTGRES_HOST", StorageContainerConstants.OPERATION_USER);
-        result.put("POSTGRES_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
+        result.put("LANG", "C.UTF-8");
+        result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/etc/postgresql/postgresql.conf");
+        return Collections.singleton("/etc/mysql/my.cnf");
     }
     
     @Override
     public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
-        return Collections.emptyList();
+        Collection<String> result = new LinkedList<>();
+        if (majorVersion > 5) {
+            result.add("21-env-grant-xa-privilege.sql");
+        }
+        return result;
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
-        return Collections.emptyList();
+        return Arrays.asList(8, 5);
     }
     
     @Override
@@ -77,7 +83,7 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.of("postgres");
+        return Optional.empty();
     }
     
     @Override

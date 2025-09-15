@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,18 +28,18 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for H2.
+ * Storage container configuration option for openGauss.
  */
-public final class H2StorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class OpenGaussStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
     public int getPort() {
-        return 0;
+        return 5432;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "";
+        return "opengauss/opengauss:3.1.0";
     }
     
     @Override
@@ -47,12 +49,12 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     
     @Override
     public Map<String, String> getEnvironments() {
-        return Collections.emptyMap();
+        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.emptyList();
+        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf.sample", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample");
     }
     
     @Override
@@ -67,16 +69,16 @@ public final class H2StorageContainerConfigurationOption implements StorageConta
     
     @Override
     public boolean withPrivilegedMode() {
-        return false;
+        return true;
     }
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.empty();
+        return Optional.of(StorageContainerConstants.OPERATION_USER);
     }
     
     @Override
     public long getStartupTimeoutSeconds() {
-        return 0L;
+        return 120L;
     }
 }

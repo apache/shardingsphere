@@ -15,65 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.dialect;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for MySQL.
+ * Storage container configuration option for Hive.
  */
-public final class MySQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class HiveStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
     @Override
     public int getPort() {
-        return 3306;
+        return 10000;
     }
     
     @Override
     public String getDefaultImageName() {
-        return "mysql:8.0.40";
+        return "apache/hive:4.0.1";
     }
     
     @Override
     public String getCommand() {
-        return "--server-id=" + ContainerUtils.generateMySQLServerId();
+        return "bash -c 'start-hive.sh && tail -f /dev/null'";
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1F);
+        Map<String, String> result = new HashMap<>(3, 1F);
+        result.put("SERVICE_NAME", "hiveserver2");
+        result.put("SERVICE_OPTS", "-Dhive.support.concurrency=true -Dhive.exec.dynamic.partition.mode=nonstrict -Dhive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DbTxnManager");
         result.put("LANG", "C.UTF-8");
-        result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/etc/mysql/my.cnf");
+        return Collections.singleton("/opt/hive/conf/hive-site.xml");
     }
     
     @Override
     public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
-        Collection<String> result = new LinkedList<>();
-        if (majorVersion > 5) {
-            result.add("21-env-grant-xa-privilege.sql");
-        }
-        return result;
+        return Collections.emptyList();
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
-        return Arrays.asList(8, 5);
+        return Collections.emptyList();
     }
     
     @Override
@@ -88,6 +82,6 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     
     @Override
     public long getStartupTimeoutSeconds() {
-        return 120L;
+        return 180L;
     }
 }
