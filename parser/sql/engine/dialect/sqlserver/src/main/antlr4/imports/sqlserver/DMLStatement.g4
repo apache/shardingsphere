@@ -351,6 +351,7 @@ queryHint
     | USE HINT LP_ useHitName (COMMA_ useHitName)* RP_
     | USE PLAN NCHAR_TEXT
     | LABEL EQ_ stringLiterals
+    | FOR TIMESTAMP AS OF stringLiterals
     ;
 
 optimizeForParameter
