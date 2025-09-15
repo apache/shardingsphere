@@ -59,7 +59,7 @@ public final class StorageContainerFactory {
             case "PostgreSQL":
             case "openGauss":
             case "MariaDB":
-                return new DockerStorageContainer(databaseType, storageContainerImage, storageContainerConfig);
+                return new DockerStorageContainer(databaseType, storageContainerImage, storageContainerConfig.getConfigurationOption(), storageContainerConfig.getScenario());
             case "Hive":
                 return new HiveContainer(storageContainerImage, storageContainerConfig);
             case "H2":
