@@ -34,7 +34,6 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -80,8 +79,8 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
         mapResources(new MountSQLResourceGenerator(storageContainerConfig.getConfigurationOption(), databaseType).generate(majorVersion, storageContainerConfig.getScenario()));
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
-        withStartupTimeout(Duration.of(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds(), ChronoUnit.SECONDS));
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), StorageContainerConstants.CHECK_READY_USER, StorageContainerConstants.CHECK_READY_PASSWORD)));
+        withStartupTimeout(Duration.ofSeconds(storageContainerConfig.getConfigurationOption().getStartupTimeoutSeconds()));
     }
     
     private void setCommands() {
