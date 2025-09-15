@@ -54,7 +54,7 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf");
+        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf.sample", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample");
     }
     
     @Override
