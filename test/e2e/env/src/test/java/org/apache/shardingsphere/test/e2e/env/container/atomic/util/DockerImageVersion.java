@@ -52,6 +52,10 @@ public final class DockerImageVersion {
      */
     public int getMajorVersion() {
         String[] split = StringUtils.substringBefore(version, "-").split("\\.");
-        return Integer.parseInt(split[0]);
+        try {
+            return Integer.parseInt(split[0]);
+        } catch (final NumberFormatException ignored) {
+            return 0;
+        }
     }
 }
