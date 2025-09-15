@@ -19,10 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
-
-import java.util.Map;
 
 /**
  * Docker storage container configuration.
@@ -34,8 +31,4 @@ public final class StorageContainerConfiguration {
     private final String scenario;
     
     private final StorageContainerConfigurationOption configurationOption;
-    
-    private final Map<String, DatabaseType> actualDatabaseTypes;
-    
-    private final Map<String, DatabaseType> expectedDatabaseTypes;
 }

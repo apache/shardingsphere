@@ -30,11 +30,14 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageV
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -108,8 +111,12 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     
     @Override
     protected void postStart() {
-        actualDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(storageContainerConfig.getActualDatabaseTypes())));
-        expectedDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(storageContainerConfig.getExpectedDatabaseTypes())));
+        actualDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(getDataSourceNameAndTypeMap(Type.ACTUAL))));
+        expectedDataSourceMap.putAll(createAccessDataSources(getDataSourceNames(getDataSourceNameAndTypeMap(Type.EXPECTED))));
+    }
+    
+    private Map<String, DatabaseType> getDataSourceNameAndTypeMap(final Type type) {
+        return null == storageContainerConfig.getScenario() ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(storageContainerConfig.getScenario(), databaseType, type);
     }
     
     private Collection<String> getDataSourceNames(final Map<String, DatabaseType> dataSourceNameAndTypeMap) {
