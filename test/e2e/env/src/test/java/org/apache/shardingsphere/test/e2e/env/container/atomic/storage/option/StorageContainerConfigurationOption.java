@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ import java.util.Optional;
 /**
  * Storage container configuration option.
  */
-public interface StorageContainerConfigurationOption {
+public interface StorageContainerConfigurationOption extends DatabaseTypedSPI {
     
     /**
      * Get container port.

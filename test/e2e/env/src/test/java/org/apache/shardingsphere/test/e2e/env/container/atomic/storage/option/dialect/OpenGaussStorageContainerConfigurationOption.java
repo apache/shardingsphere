@@ -81,4 +81,9 @@ public final class OpenGaussStorageContainerConfigurationOption implements Stora
     public long getStartupTimeoutSeconds() {
         return 120L;
     }
+    
+    @Override
+    public String getDatabaseType() {
+        return "openGauss";
+    }
 }

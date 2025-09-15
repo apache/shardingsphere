@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for  PostgreSQL.
+ * Storage container configuration option for PostgreSQL.
  */
 public final class PostgreSQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
     
@@ -83,5 +83,10 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     @Override
     public long getStartupTimeoutSeconds() {
         return 120L;
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

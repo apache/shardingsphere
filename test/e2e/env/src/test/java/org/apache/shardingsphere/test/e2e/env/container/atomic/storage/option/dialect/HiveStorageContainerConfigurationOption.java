@@ -84,4 +84,9 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     public long getStartupTimeoutSeconds() {
         return 180L;
     }
+    
+    @Override
+    public String getDatabaseType() {
+        return "Hive";
+    }
 }

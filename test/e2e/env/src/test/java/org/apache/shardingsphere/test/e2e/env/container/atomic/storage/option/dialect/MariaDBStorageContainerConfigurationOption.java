@@ -84,4 +84,9 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     public long getStartupTimeoutSeconds() {
         return 120L;
     }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MariaDB";
+    }
 }
