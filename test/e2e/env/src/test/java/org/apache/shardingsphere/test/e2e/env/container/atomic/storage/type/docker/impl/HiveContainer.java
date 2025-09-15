@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.doc
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 
 import java.io.IOException;
@@ -31,8 +31,8 @@ import java.io.IOException;
 @Slf4j
 public final class HiveContainer extends DockerStorageContainer {
     
-    public HiveContainer(final String containerImage, final StorageContainerConfiguration storageContainerConfig) {
-        super(TypedSPILoader.getService(DatabaseType.class, "Hive"), containerImage, storageContainerConfig);
+    public HiveContainer(final String containerImage, final StorageContainerConfigurationOption option, final String scenario) {
+        super(TypedSPILoader.getService(DatabaseType.class, "Hive"), containerImage, option, scenario);
     }
     
     @Override

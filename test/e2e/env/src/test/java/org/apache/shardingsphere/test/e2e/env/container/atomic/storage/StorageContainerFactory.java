@@ -61,9 +61,9 @@ public final class StorageContainerFactory {
             case "MariaDB":
                 return new DockerStorageContainer(databaseType, storageContainerImage, storageContainerConfig.getConfigurationOption(), storageContainerConfig.getScenario());
             case "Hive":
-                return new HiveContainer(storageContainerImage, storageContainerConfig);
+                return new HiveContainer(storageContainerImage, storageContainerConfig.getConfigurationOption(), storageContainerConfig.getScenario());
             case "H2":
-                return new H2Container(storageContainerConfig);
+                return new H2Container(storageContainerConfig.getScenario());
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
