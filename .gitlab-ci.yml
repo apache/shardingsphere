@@ -26,16 +26,14 @@ prepare_build_env:
   stage: prepare
   image: $JDK_BUILD_IMAGE
   script:
-    - if [ ! -d ${M2_DIR} ]; then mkdir -pv ${M2_DIR}; fi
-    - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
     - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils
     - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
   artifacts:
     reports:
       dotenv: build.env
-  cache:
-    paths:
-      - ${M2_DIR}
+#  cache:
+#    paths:
+#    - ${M2_DIR}
 
 
 build_java11:
@@ -45,12 +43,14 @@ build_java11:
   variables:
     ARTIFACTS_DIR: ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
   script:
+    - if [ ! -d ${M2_DIR} ]; then mkdir -pv ${M2_DIR}; fi
+    - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
     - ./mvnw clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
     - mkdir -pv ${CI_PROJECT_ROOT}/${PROJECT_VERSION} #/{jdbc,proxy,agent}
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
-  cache:
-    paths:
-      - ${M2_DIR}
+#  cache:
+#    paths:
+#      - ${M2_DIR}
   artifacts:
     paths:
       - ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
@@ -61,9 +61,9 @@ test_java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
   image: $JDK_TEST_IMAGE
-  cache:
-    paths:
-      - ${M2_DIR}
+#  cache:
+#    paths:
+#      - ${M2_DIR}
   dependencies:
     - build_java11
   script:
