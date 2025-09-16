@@ -36,7 +36,6 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     private final Properties completeIfMissedQueryProps = new Properties();
     
     public MySQLJdbcQueryPropertiesExtension() {
-        toBeOverrideQueryProps.setProperty("useSSL", Boolean.FALSE.toString());
         toBeOverrideQueryProps.setProperty("useServerPrepStmts", Boolean.FALSE.toString());
         toBeOverrideQueryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         toBeOverrideQueryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());

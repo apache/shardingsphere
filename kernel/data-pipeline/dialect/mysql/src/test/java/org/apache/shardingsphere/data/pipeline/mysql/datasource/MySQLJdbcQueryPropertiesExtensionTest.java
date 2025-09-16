@@ -53,8 +53,7 @@ class MySQLJdbcQueryPropertiesExtensionTest {
     }
     
     private void assertQueryProperties(final Properties actual, final String expectedNetTimeoutForStreamingResults) {
-        assertThat(actual.size(), is(8));
-        assertThat(actual.getProperty("useSSL"), is(Boolean.FALSE.toString()));
+        assertThat(actual.size(), is(7));
         assertThat(actual.getProperty("useServerPrepStmts"), is(Boolean.FALSE.toString()));
         assertThat(actual.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));
         assertThat(actual.getProperty("yearIsDateType"), is(Boolean.FALSE.toString()));
