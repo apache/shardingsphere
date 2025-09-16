@@ -21,22 +21,25 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
-public abstract class BaseContainerComposer implements Startable {
+/**
+ * Transaction base container composer.
+ */
+@Getter
+public abstract class TransactionBaseContainerComposer implements Startable {
     
-    @Getter
     private final ITContainers containers;
     
-    protected BaseContainerComposer(final String scenario) {
+    protected TransactionBaseContainerComposer(final String scenario) {
         containers = new ITContainers(scenario);
     }
     
     @Override
     public void start() {
-        getContainers().start();
+        containers.start();
     }
     
     @Override
     public void stop() {
-        getContainers().stop();
+        containers.stop();
     }
 }

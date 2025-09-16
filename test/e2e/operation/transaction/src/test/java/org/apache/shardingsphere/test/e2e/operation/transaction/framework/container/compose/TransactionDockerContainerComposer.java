@@ -46,15 +46,11 @@ import java.net.URL;
 import java.util.Objects;
 
 /**
- * Composed container, include governance container and database container.
+ * transaction composed container.
  */
 @Getter
 @Slf4j
-public final class DockerContainerComposer extends BaseContainerComposer {
-    
-    private final DatabaseType databaseType;
-    
-    private final GovernanceContainer governanceContainer;
+public final class TransactionDockerContainerComposer extends TransactionBaseContainerComposer {
     
     private final AdapterContainer proxyContainer;
     
@@ -62,10 +58,10 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     private final StorageContainer storageContainer;
     
-    public DockerContainerComposer(final TransactionTestParameter testParam) {
+    public TransactionDockerContainerComposer(final TransactionTestParameter testParam) {
         super(testParam.getScenario());
-        databaseType = testParam.getDatabaseType();
-        governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        DatabaseType databaseType = testParam.getDatabaseType();
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         TransactionE2EEnvTypeEnum envType = TransactionE2EEnvironment.getInstance().getItEnvType();
         if (TransactionE2EEnvTypeEnum.DOCKER == envType) {
             storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType,

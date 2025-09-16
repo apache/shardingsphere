@@ -51,12 +51,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Getter
     private final List<DockerStorageContainer> storageContainers = new LinkedList<>();
     
-    @Getter
-    private final GovernanceContainer governanceContainer;
-    
     public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
         this.databaseType = databaseType;
-        governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         if (storageContainerCount < 1) {
             throw new InvalidParameterException("storageContainerCount must >= 1");
         }

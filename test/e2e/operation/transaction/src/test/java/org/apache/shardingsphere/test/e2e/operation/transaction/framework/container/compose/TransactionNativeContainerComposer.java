@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose;
 
 /**
- * Native composed container, you need start ShardingSphere-Proxy at firstly.
+ * Transaction native composed container.
  */
-public final class NativeContainerComposer extends BaseContainerComposer {
+public final class TransactionNativeContainerComposer extends TransactionBaseContainerComposer {
     
-    public NativeContainerComposer() {
+    public TransactionNativeContainerComposer() {
         super("");
     }
     

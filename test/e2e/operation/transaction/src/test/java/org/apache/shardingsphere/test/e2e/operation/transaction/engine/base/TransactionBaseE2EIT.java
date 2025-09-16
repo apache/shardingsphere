@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionTestCaseRegistry;
-import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.DockerContainerComposer;
+import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose.TransactionDockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.param.TransactionTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -276,7 +276,7 @@ public abstract class TransactionBaseE2EIT {
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
         if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = (DockerStorageContainer) ((DockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
+            DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
             return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(),
                     containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }

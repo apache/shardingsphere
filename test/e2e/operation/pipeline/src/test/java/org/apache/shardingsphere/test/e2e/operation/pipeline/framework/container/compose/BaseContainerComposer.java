@@ -31,10 +31,10 @@ public abstract class BaseContainerComposer implements Startable {
     }
     
     /**
-     * Get proxy jdbc url.
+     * Get proxy jdbc URL.
      *
      * @param databaseName database name
-     * @return proxy jdbc url
+     * @return proxy jdbc URL
      */
     public abstract String getProxyJdbcUrl(String databaseName);
     
