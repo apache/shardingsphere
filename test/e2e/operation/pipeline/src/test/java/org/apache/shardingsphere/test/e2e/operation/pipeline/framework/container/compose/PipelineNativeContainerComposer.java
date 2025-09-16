@@ -34,9 +34,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Native composed container, you need start ShardingSphere-Proxy at firstly.
+ * Pipeline native composed container, need to start ShardingSphere-Proxy at firstly.
  */
-public final class NativeContainerComposer extends BaseContainerComposer {
+public final class PipelineNativeContainerComposer extends PipelineBaseContainerComposer {
     
     private static final PipelineE2EEnvironment ENV = PipelineE2EEnvironment.getInstance();
     
@@ -44,7 +44,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
     
     private final DatabaseType databaseType;
     
-    public NativeContainerComposer(final DatabaseType databaseType) {
+    public PipelineNativeContainerComposer(final DatabaseType databaseType) {
         this.databaseType = databaseType;
     }
     

@@ -21,12 +21,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
+/**
+ * Pipeline base container composer.
+ */
 @Getter
-public abstract class BaseContainerComposer implements Startable {
+public abstract class PipelineBaseContainerComposer implements Startable {
     
     private final ITContainers containers;
     
-    protected BaseContainerComposer() {
+    protected PipelineBaseContainerComposer() {
         containers = new ITContainers("");
     }
     
