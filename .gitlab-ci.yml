@@ -31,16 +31,19 @@ prepare_build_env:
     - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils
     - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
   artifacts:
-    paths:
-      - ${M2_DIR}
     reports:
       dotenv: build.env
+  cache:
+    paths:
+      - ${M2_DIR}
 
 
 build_java11:
   tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
+  variables:
+    ARTIFACTS_DIR: ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
   script:
     - ./mvnw clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
     - mkdir -pv ${CI_PROJECT_ROOT}/${PROJECT_VERSION} #/{jdbc,proxy,agent}
