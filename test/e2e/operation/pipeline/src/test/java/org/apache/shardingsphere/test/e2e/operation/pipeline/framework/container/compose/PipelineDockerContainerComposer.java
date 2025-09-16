@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.containe
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
@@ -53,10 +54,8 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
     
     public PipelineDockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
         this.databaseType = databaseType;
+        ShardingSpherePreconditions.checkState(storageContainerCount >= 1, () -> new InvalidParameterException("storageContainerCount must >= 1"));
         GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        if (storageContainerCount < 1) {
-            throw new InvalidParameterException("storageContainerCount must >= 1");
-        }
         for (int i = 0; i < storageContainerCount; i++) {
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(
                     databaseType, storageContainerImage, DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null), null));
