@@ -46,6 +46,8 @@ import java.util.stream.Collectors;
  */
 public final class NativeStorageContainer implements StorageContainer {
     
+    private final E2ETestEnvironment env;
+    
     private final DatabaseType databaseType;
     
     private final String scenario;
@@ -63,6 +65,7 @@ public final class NativeStorageContainer implements StorageContainer {
     private List<String> networkAliases;
     
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
+        env = E2ETestEnvironment.getInstance();
         this.databaseType = databaseType;
         this.scenario = scenario;
         option = DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null);
@@ -73,8 +76,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private void initDatabase() {
         DataSource dataSource = StorageContainerUtils.generateDataSource(
-                DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(), E2ETestEnvironment.getInstance().getNativeStoragePort()),
-                E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
+                DataSourceEnvironment.getURL(databaseType, env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword());
         new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
     }
     
@@ -88,9 +90,8 @@ public final class NativeStorageContainer implements StorageContainer {
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(),
-                    E2ETestEnvironment.getInstance().getNativeStoragePort(), each),
-                    E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
+            DataSource dataSource = StorageContainerUtils.generateDataSource(
+                    DataSourceEnvironment.getURL(databaseType, env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword());
             result.put(each, dataSource);
         }
         return result;
@@ -100,22 +101,9 @@ public final class NativeStorageContainer implements StorageContainer {
      * Get exposed port.
      *
      * @return exposed port
-     * @throws UnsupportedOperationException unsupported operation exception
      */
     public int getExposedPort() {
-        if ("MySQL".equalsIgnoreCase(databaseType.getType())) {
-            return 3306;
-        }
-        if ("PostgreSQL".equalsIgnoreCase(databaseType.getType())) {
-            return 5432;
-        }
-        if ("openGauss".equalsIgnoreCase(databaseType.getType())) {
-            return 5432;
-        }
-        if ("Hive".equalsIgnoreCase(databaseType.getType())) {
-            return 10000;
-        }
-        throw new UnsupportedOperationException(String.format("Unsupported database type: %s.", databaseType.getType()));
+        return option.getPort();
     }
     
     @Override
@@ -131,10 +119,10 @@ public final class NativeStorageContainer implements StorageContainer {
     public Map<String, String> getLinkReplacements() {
         Map<String, String> result = new HashMap<>(getNetworkAliases().size() + 2, 1F);
         for (String each : getNetworkAliases()) {
-            result.put(each + ":" + getExposedPort(), E2ETestEnvironment.getInstance().getNativeStorageHost() + ":" + E2ETestEnvironment.getInstance().getNativeStoragePort());
+            result.put(each + ":" + getExposedPort(), env.getNativeStorageHost() + ":" + env.getNativeStoragePort());
         }
-        result.put(StorageContainerConstants.OPERATION_USER, E2ETestEnvironment.getInstance().getNativeStorageUsername());
-        result.put(StorageContainerConstants.OPERATION_PASSWORD, E2ETestEnvironment.getInstance().getNativeStoragePassword());
+        result.put(StorageContainerConstants.OPERATION_USER, env.getNativeStorageUsername());
+        result.put(StorageContainerConstants.OPERATION_PASSWORD, env.getNativeStoragePassword());
         return result;
     }
 }
