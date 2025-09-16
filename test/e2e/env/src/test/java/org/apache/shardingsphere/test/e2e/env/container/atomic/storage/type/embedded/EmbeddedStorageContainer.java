@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.embedded;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
@@ -25,33 +26,44 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageConta
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Embedded storage container.
  */
-@Getter
-public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, StorageContainer {
+public final class EmbeddedStorageContainer implements EmbeddedITContainer, StorageContainer {
     
     private final DatabaseType databaseType;
     
     private final String scenario;
     
+    private final ScenarioDataPath scenarioDataPath;
+    
+    @Getter
     private final Map<String, DataSource> actualDataSourceMap;
     
+    @Getter
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    protected EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
+    public EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
+        scenarioDataPath = new ScenarioDataPath(scenario);
         actualDataSourceMap = createDataSourceMap(Type.ACTUAL);
         expectedDataSourceMap = createDataSourceMap(Type.EXPECTED);
     }
@@ -67,7 +79,38 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     }
     
     @Override
-    public final String getAbbreviation() {
+    @SneakyThrows({IOException.class, SQLException.class})
+    public void start() {
+        fillActualDataSet();
+        fillExpectedDataSet();
+    }
+    
+    private void fillActualDataSet() throws SQLException, IOException {
+        for (Entry<String, DataSource> entry : getActualDataSourceMap().entrySet()) {
+            executeInitSQL(entry.getValue(), scenarioDataPath.getInitSQLFile(Type.ACTUAL, databaseType));
+            Optional<String> dbInitSQLFile = scenarioDataPath.findActualDatabaseInitSQLFile(entry.getKey(), databaseType);
+            if (dbInitSQLFile.isPresent()) {
+                executeInitSQL(entry.getValue(), dbInitSQLFile.get());
+            }
+        }
+    }
+    
+    private void fillExpectedDataSet() throws SQLException, IOException {
+        for (Entry<String, DataSource> entry : getExpectedDataSourceMap().entrySet()) {
+            executeInitSQL(entry.getValue(), scenarioDataPath.getInitSQLFile(Type.EXPECTED, databaseType));
+        }
+    }
+    
+    private void executeInitSQL(final DataSource dataSource, final String initSQLFile) throws SQLException, IOException {
+        try (
+                Connection connection = dataSource.getConnection();
+                FileReader reader = new FileReader(initSQLFile)) {
+            RunScript.execute(connection, reader);
+        }
+    }
+    
+    @Override
+    public String getAbbreviation() {
         return databaseType.getType().toLowerCase();
     }
     
