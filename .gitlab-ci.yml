@@ -20,20 +20,51 @@ workflow:
       when: always
     - if: $CI_PIPELINE_SOURCE == "push"
 
-build_project:
+prepare_build_env:
+  tags: ["docker", "linux"]
+  stage: prepare
+  image: $JDK_BUILD_IMAGE
+  script:
+    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils
+    - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
+    - if [ ! -d ~/.m2 ]; then mkdir -pv ~/.m2; fi
+    - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
+  cache:
+    paths:
+      - "~/.m2"
+  artifacts:
+    reports:
+      dotenv: build.env
+
+
+build_java11:
   tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
   script:
-    - if [ ! -d ~/.m2 ]; then mkdir -pv ~/.m2; fi
-    - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
     - ./mvnw clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+    - mkdir -pv ${CI_PROJECT_ROOT}/${PROJECT_VERSION}/{jdbc,proxy,agent}
+    - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} artifacts
+  cache:
+    paths:
+      - "~/.m2"
   artifacts:
     paths: [
-      "distribution/jdbc/target/",
-      "distribution/proxy/target/",
-      "distribution/agent/target"
+      "artifacts"
     ]
+  dependencies:
+    - prepare_build_env
+
+test_java8:
+  tags: ["docker", "linux", "x86_64"]
+  stage: test
+  image: $JDK_TEST_IMAGE
+  cache:
+    paths:
+      - "~/.m2"
+  dependencies:
+    - build_java11
+
 
 # relhub deploy example:
 # http://git.red-soft.biz/red-database/red-database/-/blob/master/.gitlab-ci.yml#L779
@@ -44,4 +75,4 @@ deploy_to_release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - printf "\nThis is a placeholder for release hub deploy job\n"
+    - printf ${PROJECT_VERSION}
