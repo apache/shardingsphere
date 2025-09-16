@@ -110,7 +110,7 @@ public final class PipelineE2EEnvironment {
      * @return native database type
      */
     public String getNativeDatabaseType() {
-        return String.valueOf(props.get("pipeline.it.native.database"));
+        return String.valueOf(props.getProperty("pipeline.it.native.database"));
     }
     
     /**
@@ -120,7 +120,7 @@ public final class PipelineE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return String.valueOf(props.getOrDefault(String.format("pipeline.it.native.%s.username", databaseType.getType().toLowerCase()), "Root@123"));
+        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.username", databaseType.getType().toLowerCase()), "Root@123"));
     }
     
     /**
@@ -130,7 +130,7 @@ public final class PipelineE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return String.valueOf(props.getOrDefault(String.format("pipeline.it.native.%s.password", databaseType.getType().toLowerCase()), "Root@123"));
+        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.password", databaseType.getType().toLowerCase()), "Root@123"));
     }
     
     /**
