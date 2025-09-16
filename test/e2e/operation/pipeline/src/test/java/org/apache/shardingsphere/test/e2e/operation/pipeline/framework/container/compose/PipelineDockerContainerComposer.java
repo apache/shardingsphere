@@ -40,9 +40,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Composed container, include governance container and database container.
+ * Pipeline Composed container.
  */
-public final class DockerContainerComposer extends BaseContainerComposer {
+public final class PipelineDockerContainerComposer extends PipelineBaseContainerComposer {
     
     private final DatabaseType databaseType;
     
@@ -51,7 +51,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Getter
     private final List<DockerStorageContainer> storageContainers = new LinkedList<>();
     
-    public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
+    public PipelineDockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
         this.databaseType = databaseType;
         GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         if (storageContainerCount < 1) {

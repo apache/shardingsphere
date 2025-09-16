@@ -49,9 +49,9 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.command.ExtraSQLCom
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.BaseContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.DockerContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.NativeContainerComposer;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineDockerContainerComposer;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineNativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.awaitility.Awaitility;
 
@@ -104,7 +104,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private static final String PROXY_DATABASE = "sharding_db";
     
-    private final BaseContainerComposer containerComposer;
+    private final PipelineBaseContainerComposer containerComposer;
     
     private final ExtraSQLCommand extraSQLCommand;
     
@@ -123,8 +123,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
     public PipelineContainerComposer(final PipelineTestParameter testParam, final PipelineJobType jobType) {
         databaseType = testParam.getDatabaseType();
         containerComposer = PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER
-                ? new DockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
-                : new NativeContainerComposer(testParam.getDatabaseType());
+                ? new PipelineDockerContainerComposer(testParam.getDatabaseType(), testParam.getStorageContainerImage(), testParam.getStorageContainerCount())
+                : new PipelineNativeContainerComposer(testParam.getDatabaseType());
         if (PipelineE2EEnvironment.getInstance().getItEnvType() == PipelineEnvTypeEnum.DOCKER) {
             username = StorageContainerConstants.OPERATION_USER;
             password = StorageContainerConstants.OPERATION_PASSWORD;
@@ -279,7 +279,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer, final int storageContainerIndex) {
         if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
+            DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(storageContainerIndex);
             return isInContainer
                     ? DataSourceEnvironment.getURL(databaseType, storageContainer.getNetworkAliases().get(0), storageContainer.getExposedPort(), databaseName)
                     : storageContainer.getJdbcUrl(databaseName);
@@ -615,7 +615,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
         ShardingSpherePreconditions.checkNotNull(rootConfig.getRules(), () -> new IllegalStateException("rules is null"));
         if (PipelineEnvTypeEnum.DOCKER == PipelineE2EEnvironment.getInstance().getItEnvType()) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainers().get(0);
+            DockerStorageContainer storageContainer = ((PipelineDockerContainerComposer) containerComposer).getStorageContainers().get(0);
             String sourceUrl = String.join(":", storageContainer.getNetworkAliases().get(0), Integer.toString(storageContainer.getExposedPort()));
             String targetUrl = String.join(":", storageContainer.getHost(), Integer.toString(storageContainer.getMappedPort()));
             for (Map<String, Object> each : rootConfig.getDataSources().values()) {
