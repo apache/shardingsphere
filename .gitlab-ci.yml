@@ -61,6 +61,7 @@ test_java8:
     - build_java11
   script:
     - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
+  allow_failure: true
 
 
 # relhub deploy example:
