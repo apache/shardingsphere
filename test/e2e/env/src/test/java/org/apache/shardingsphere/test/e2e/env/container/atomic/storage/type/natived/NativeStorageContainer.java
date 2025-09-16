@@ -77,7 +77,9 @@ public final class NativeStorageContainer implements StorageContainer {
     private void initDatabase() {
         DataSource dataSource = StorageContainerUtils.generateDataSource(
                 DataSourceEnvironment.getURL(databaseType, env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword());
-        new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        if (null != option) {
+            new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
+        }
     }
     
     private Map<String, DataSource> createDataSourceMap(final Type type) {
@@ -103,7 +105,7 @@ public final class NativeStorageContainer implements StorageContainer {
      * @return exposed port
      */
     public int getExposedPort() {
-        return option.getPort();
+        return null == option ? 0 : option.getPort();
     }
     
     @Override
