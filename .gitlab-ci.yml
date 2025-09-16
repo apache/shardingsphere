@@ -47,9 +47,8 @@ build_java11:
     paths:
       - ${M2_DIR}
   artifacts:
-    paths: [
-      "artifacts"
-    ]
+    paths:
+      - ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
   dependencies:
     - prepare_build_env
 
