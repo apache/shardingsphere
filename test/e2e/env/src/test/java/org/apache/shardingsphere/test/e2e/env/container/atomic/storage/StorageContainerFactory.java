@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.HiveContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.embedded.impl.H2Container;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.embedded.EmbeddedStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 /**
@@ -65,7 +65,7 @@ public final class StorageContainerFactory {
             case "Hive":
                 return new HiveContainer(storageContainerImage, option, scenario);
             case "H2":
-                return new H2Container(scenario);
+                return new EmbeddedStorageContainer(databaseType, scenario);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
