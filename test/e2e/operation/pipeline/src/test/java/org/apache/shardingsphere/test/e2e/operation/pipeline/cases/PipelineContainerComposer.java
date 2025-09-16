@@ -498,7 +498,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             }
             result.add(row);
         }
-        return result; 
+        return result;
     }
     
     /**
