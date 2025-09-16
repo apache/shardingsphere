@@ -50,7 +50,7 @@ public final class E2ETestEnvironment {
     
     private final String nativeStorageHost;
     
-    private final String nativeStoragePort;
+    private final int nativeStoragePort;
     
     private final String nativeStorageUsername;
     
@@ -64,10 +64,10 @@ public final class E2ETestEnvironment {
         scenarios = getScenarios(props);
         smoke = Boolean.parseBoolean(props.getProperty("it.run.smoke"));
         clusterEnvironment = new ClusterEnvironment(props);
-        nativeStorageHost = props.getProperty("it.native.storage.host");
-        nativeStoragePort = props.getProperty("it.native.storage.port");
-        nativeStorageUsername = props.getProperty("it.native.storage.username");
-        nativeStoragePassword = props.getProperty("it.native.storage.password");
+        nativeStorageHost = props.getProperty("it.native.storage.host", "127.0.0.1");
+        nativeStoragePort = Integer.parseInt(props.getProperty("it.native.storage.port", "0"));
+        nativeStorageUsername = props.getProperty("it.native.storage.username", "root");
+        nativeStoragePassword = props.getProperty("it.native.storage.password", "Root@123");
         governanceCenter = props.getProperty("it.env.governance.center");
     }
     
