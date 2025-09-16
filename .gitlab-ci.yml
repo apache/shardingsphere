@@ -25,6 +25,8 @@ build_project:
   stage: build
   image: $JDK_BUILD_IMAGE
   script:
+    - if [ ! -d ~/.m2 ]; then mkdir -pv ~/.m2; fi
+    - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
     - ./mvnw clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
   artifacts:
     paths: [
