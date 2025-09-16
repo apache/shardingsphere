@@ -44,14 +44,9 @@ build_java11:
   variables:
     ARTIFACTS_DIR: ${CI_PROJECT_DIR}/${PROJECT_VERSION}
   script:
-    #- if [ ! -d ${M2_DIR} ]; then mkdir -pv ${M2_DIR}; fi
-    #- cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
     - ./mvnw -s ${M2_SETTINGSFILE} clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
-    - mkdir -pv ${ARTIFACTS_DIR} #/{jdbc,proxy,agent}
+    - mkdir -pv ${ARTIFACTS_DIR}
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${ARTIFACTS_DIR}
-#  cache:
-#    paths:
-#      - ${M2_DIR}
   artifacts:
     paths:
       - ${ARTIFACTS_DIR}
@@ -62,13 +57,10 @@ test_java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
   image: $JDK_TEST_IMAGE
-#  cache:
-#    paths:
-#      - ${M2_DIR}
   dependencies:
     - build_java11
   script:
-    - ./mvnw s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
+    - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
 
 
 # relhub deploy example:
