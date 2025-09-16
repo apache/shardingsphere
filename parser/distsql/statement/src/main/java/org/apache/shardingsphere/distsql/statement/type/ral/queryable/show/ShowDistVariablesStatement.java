@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.statement.type.ral.queryable.show;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 
@@ -27,6 +28,9 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class ShowDistVariablesStatement extends QueryableRALStatement {
+    
+    @Getter
+    private final boolean showTemporary;
     
     private final String likePattern;
     
