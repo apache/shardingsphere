@@ -59,7 +59,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.ACTUAL).entrySet().stream()
                 .filter(entry -> entry.getValue().getClass().isAssignableFrom(databaseType.getClass())).map(Entry::getKey).collect(Collectors.toList());
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
-        databaseNames.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
+        databaseNames.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, each),
                 "root", "Root@123")));
         return result;
     }
@@ -68,7 +68,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         Collection<String> databaseNames = DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, Type.EXPECTED).entrySet().stream()
                 .filter(entry -> entry.getValue().getClass().isAssignableFrom(databaseType.getClass())).map(Entry::getKey).collect(Collectors.toList());
         Map<String, DataSource> result = new LinkedHashMap<>(databaseNames.size(), 1F);
-        databaseNames.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + each),
+        databaseNames.forEach(each -> result.put(each, StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, null, 0, each),
                 "root", "Root@123")));
         return result;
     }
