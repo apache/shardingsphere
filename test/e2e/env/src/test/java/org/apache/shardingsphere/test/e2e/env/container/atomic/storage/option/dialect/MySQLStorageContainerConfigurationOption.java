@@ -90,4 +90,9 @@ public final class MySQLStorageContainerConfigurationOption implements StorageCo
     public long getStartupTimeoutSeconds() {
         return 120L;
     }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
+    }
 }

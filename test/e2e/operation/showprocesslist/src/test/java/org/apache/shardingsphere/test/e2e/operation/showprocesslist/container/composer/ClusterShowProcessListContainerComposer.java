@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.composer;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.parameter.ShowProcessListTestParameter;
@@ -57,7 +57,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
         containers = new ITContainers(testParam.getScenario());
         governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
-        StorageContainerConfigurationOption option = StorageContainerConfigurationOptionFactory.newInstance(testParam.getDatabaseType());
+        StorageContainerConfigurationOption option = DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, testParam.getDatabaseType()).orElse(null);
         StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", option, testParam.getScenario()));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),

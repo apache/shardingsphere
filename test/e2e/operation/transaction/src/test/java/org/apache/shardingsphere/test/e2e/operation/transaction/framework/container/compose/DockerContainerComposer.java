@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.framework.conta
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
@@ -33,7 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOptionFactory;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
@@ -67,8 +68,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         TransactionE2EEnvTypeEnum envType = TransactionE2EEnvironment.getInstance().getItEnvType();
         if (TransactionE2EEnvTypeEnum.DOCKER == envType) {
-            storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(
-                    databaseType, testParam.getStorageContainerImage(), StorageContainerConfigurationOptionFactory.newInstance(databaseType), testParam.getScenario()));
+            storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType,
+                    testParam.getStorageContainerImage(), DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null), testParam.getScenario()));
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }

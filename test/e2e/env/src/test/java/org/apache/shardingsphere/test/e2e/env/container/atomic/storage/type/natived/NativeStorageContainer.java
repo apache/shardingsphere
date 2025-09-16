@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.nat
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.mount.MountSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOptionFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
@@ -65,7 +65,7 @@ public final class NativeStorageContainer implements StorageContainer {
     public NativeStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
-        option = StorageContainerConfigurationOptionFactory.newInstance(databaseType);
+        option = DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null);
         initDatabase();
         actualDataSourceMap = createDataSourceMap(Type.ACTUAL);
         expectedDataSourceMap = createDataSourceMap(Type.EXPECTED);
