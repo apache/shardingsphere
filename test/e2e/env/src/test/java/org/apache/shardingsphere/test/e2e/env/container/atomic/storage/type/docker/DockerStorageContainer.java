@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -66,14 +67,15 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
     public DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfigurationOption option, final String scenario) {
-        super(databaseType.getType().toLowerCase(), getContainerImage(containerImage, option));
+        super(databaseType.getType().toLowerCase(), getContainerImage(containerImage, option, databaseType));
         this.databaseType = databaseType;
         this.option = option;
         this.scenario = scenario;
-        majorVersion = new DockerImageVersion(getContainerImage(containerImage, option)).getMajorVersion();
+        majorVersion = new DockerImageVersion(getContainerImage(containerImage, option, databaseType)).getMajorVersion();
     }
     
-    private static String getContainerImage(final String containerImage, final StorageContainerConfigurationOption option) {
+    private static String getContainerImage(final String containerImage, final StorageContainerConfigurationOption option, final DatabaseType databaseType) {
+        Preconditions.checkNotNull(option, "Can not support database type `%s`", databaseType.getType());
         return Strings.isNullOrEmpty(containerImage) ? option.getDefaultImageName() : containerImage;
     }
     
