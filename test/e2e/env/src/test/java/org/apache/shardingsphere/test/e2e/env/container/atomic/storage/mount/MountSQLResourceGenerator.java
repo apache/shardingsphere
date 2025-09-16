@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.mount;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -47,8 +46,6 @@ public final class MountSQLResourceGenerator {
     
     private final StorageContainerConfigurationOption option;
     
-    private final DatabaseType databaseType;
-    
     /**
      * Generate mount SQL resource map.
      *
@@ -59,38 +56,38 @@ public final class MountSQLResourceGenerator {
     public Map<String, String> generate(final int majorVersion, final String scenario) {
         Collection<String> toBeMountedSQLFiles = new LinkedList<>();
         for (String each : TO_BE_MOUNTED_COMMON_SQL_FILES) {
-            findToBeMountedCommonSQLFile(databaseType, each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
+            findToBeMountedCommonSQLFile(each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
         }
-        String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
+        String toBeMountedStandardEnvSQLFilePath = String.format("env/container/%s/init-sql/%s", option.getDatabaseType().toLowerCase(), TO_BE_MOUNTED_STANDARD_ENV_SQL_FILE);
         if (null != Thread.currentThread().getContextClassLoader().getResource(toBeMountedStandardEnvSQLFilePath)) {
             toBeMountedSQLFiles.add("/" + toBeMountedStandardEnvSQLFilePath);
         }
         for (String each : option.getAdditionalEnvMountedSQLResources(majorVersion)) {
-            getToBeMountedAdditionalEnvSQLFile(databaseType, each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
+            getToBeMountedAdditionalEnvSQLFile(each).ifPresent(optional -> toBeMountedSQLFiles.add("/" + optional));
         }
-        for (String each : getToBeMountedScenarioSQLFiles(databaseType, scenario)) {
+        for (String each : getToBeMountedScenarioSQLFiles(scenario)) {
             toBeMountedSQLFiles.add("/" + each);
         }
         return toBeMountedSQLFiles.stream().collect(Collectors.toMap(each -> each, each -> "/docker-entrypoint-initdb.d/" + new File(each).getName()));
     }
     
-    private Optional<String> findToBeMountedCommonSQLFile(final DatabaseType databaseType, final String toBeMountedSQLFile) {
-        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", databaseType.getType().toLowerCase(), toBeMountedSQLFile);
+    private Optional<String> findToBeMountedCommonSQLFile(final String toBeMountedSQLFile) {
+        String toBeMountedFilePath = String.format("container/%s/init-sql/%s", option.getDatabaseType().toLowerCase(), toBeMountedSQLFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
-    private Optional<String> getToBeMountedAdditionalEnvSQLFile(final DatabaseType databaseType, final String sqlFile) {
-        String toBeMountedFilePath = String.format("env/container/%s/init-sql/%s", databaseType.getType().toLowerCase(), sqlFile);
+    private Optional<String> getToBeMountedAdditionalEnvSQLFile(final String sqlFile) {
+        String toBeMountedFilePath = String.format("env/container/%s/init-sql/%s", option.getDatabaseType().toLowerCase(), sqlFile);
         return null == Thread.currentThread().getContextClassLoader().getResource(toBeMountedFilePath) ? Optional.empty() : Optional.of(toBeMountedFilePath);
     }
     
-    private Collection<String> getToBeMountedScenarioSQLFiles(final DatabaseType databaseType, final String scenario) {
+    private Collection<String> getToBeMountedScenarioSQLFiles(final String scenario) {
         Collection<String> result = new LinkedList<>();
-        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/" + TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE;
+        String actualScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, option.getType()) + "/" + TO_BE_MOUNTED_ACTUAL_SCENARIO_SQL_FILE;
         if (null != Thread.currentThread().getContextClassLoader().getResource(actualScenarioFile)) {
             result.add(actualScenarioFile);
         }
-        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/" + TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE;
+        String expectedScenarioFile = new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, option.getType()) + "/" + TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE;
         if (null != Thread.currentThread().getContextClassLoader().getResource(expectedScenarioFile)) {
             result.add(expectedScenarioFile);
         }

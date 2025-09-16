@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
  */
 public class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    private final DatabaseType databaseType;
-    
     private final StorageContainerConfigurationOption option;
     
     private final String scenario;
@@ -66,16 +64,15 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     @Getter
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
-    public DockerStorageContainer(final DatabaseType databaseType, final String containerImage, final StorageContainerConfigurationOption option, final String scenario) {
-        super(databaseType.getType().toLowerCase(), getContainerImage(containerImage, option, databaseType));
-        this.databaseType = databaseType;
+    public DockerStorageContainer(final String containerImage, final StorageContainerConfigurationOption option, final String scenario) {
+        super(option.getDatabaseType().toLowerCase(), getContainerImage(containerImage, option));
         this.option = option;
         this.scenario = scenario;
-        majorVersion = new DockerImageVersion(getContainerImage(containerImage, option, databaseType)).getMajorVersion();
+        majorVersion = new DockerImageVersion(getContainerImage(containerImage, option)).getMajorVersion();
     }
     
-    private static String getContainerImage(final String containerImage, final StorageContainerConfigurationOption option, final DatabaseType databaseType) {
-        Preconditions.checkNotNull(option, "Can not support database type `%s`", databaseType.getType());
+    private static String getContainerImage(final String containerImage, final StorageContainerConfigurationOption option) {
+        Preconditions.checkNotNull(option, "Can not support database type `%s`", option.getDatabaseType());
         return Strings.isNullOrEmpty(containerImage) ? option.getDefaultImageName() : containerImage;
     }
     
@@ -83,8 +80,8 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     protected final void configure() {
         setCommands();
         addEnvironments();
-        mapResources(new MountConfigurationResourceGenerator(option, databaseType).generate(majorVersion, scenario));
-        mapResources(new MountSQLResourceGenerator(option, databaseType).generate(majorVersion, scenario));
+        mapResources(new MountConfigurationResourceGenerator(option).generate(majorVersion, scenario));
+        mapResources(new MountSQLResourceGenerator(option).generate(majorVersion, scenario));
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(getURL(), StorageContainerConstants.CHECK_READY_USER, StorageContainerConstants.CHECK_READY_PASSWORD)));
@@ -110,8 +107,8 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     
     private String getURL() {
         return option.getDefaultDatabaseName(majorVersion)
-                .map(optional -> DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), optional))
-                .orElseGet(() -> DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()));
+                .map(optional -> DataSourceEnvironment.getURL(option.getType(), "localhost", getFirstMappedPort(), optional))
+                .orElseGet(() -> DataSourceEnvironment.getURL(option.getType(), "localhost", getFirstMappedPort()));
     }
     
     @Override
@@ -121,11 +118,11 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     }
     
     private Map<String, DatabaseType> getDataSourceNameAndTypeMap(final Type type) {
-        return null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, databaseType, type);
+        return null == scenario ? Collections.emptyMap() : DatabaseEnvironmentManager.getDatabaseTypes(scenario, option.getType(), type);
     }
     
     private Collection<String> getDataSourceNames(final Map<String, DatabaseType> dataSourceNameAndTypeMap) {
-        return dataSourceNameAndTypeMap.entrySet().stream().filter(entry -> entry.getValue() == databaseType).map(Entry::getKey).collect(Collectors.toList());
+        return dataSourceNameAndTypeMap.entrySet().stream().filter(entry -> entry.getValue() == option.getType()).map(Entry::getKey).collect(Collectors.toList());
     }
     
     private Map<String, DataSource> createAccessDataSources(final Collection<String> dataSourceNames) {
@@ -149,7 +146,8 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      * @return JDBC URL
      */
     public final String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
+        return DataSourceEnvironment.getURL(
+                option.getType(), getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
     }
     
     /**
@@ -172,7 +170,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     
     @Override
     public final String getAbbreviation() {
-        return databaseType.getType().toLowerCase();
+        return option.getDatabaseType().toLowerCase();
     }
     
     @Override
