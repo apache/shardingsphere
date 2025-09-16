@@ -21,7 +21,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "push"
 
 prepare_build_env:
-  tags: ["docker", "linux"]
+  tags: ["docker", "linux", "x86_64"]
   stage: prepare
   image: $JDK_BUILD_IMAGE
   script:
