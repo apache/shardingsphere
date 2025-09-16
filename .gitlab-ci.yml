@@ -5,6 +5,7 @@ variables:
   JDK_BUILD_IMAGE: registry.red-soft.biz:5000/jdk/temurin-11-jdk
   JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
   RELEASEHUB_CLIENT_IMAGE: registry.red-soft.biz:5000/utils/red-release-manager/client:master
+  M2_DIR: /root/.m2
   MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
 stages:
@@ -37,14 +38,14 @@ build_java11:
   stage: build
   image: $JDK_BUILD_IMAGE
   script:
-    - if [ ! -d ~/.m2 ]; then mkdir -pv ~/.m2; fi
+    - if [ ! -d ${M2_DIR} ]; then mkdir -pv ${M2_DIR}; fi
     - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
     - ./mvnw clean install -Prelease -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
-    - mkdir -pv ${CI_PROJECT_ROOT}/${PROJECT_VERSION}/{jdbc,proxy,agent}
-    - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} artifacts
+    - mkdir -pv ${CI_PROJECT_ROOT}/${PROJECT_VERSION} #/{jdbc,proxy,agent}
+    - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
   cache:
     paths:
-      - $HOME/.m2
+      - ${M2_DIR}
   artifacts:
     paths: [
       "artifacts"
@@ -58,11 +59,11 @@ test_java8:
   image: $JDK_TEST_IMAGE
   cache:
     paths:
-      - "~/.m2"
+      - ${M2_DIR}
   dependencies:
     - build_java11
   script:
-    - printf ${PROJECT_VERSION}
+    - ./mvnw install -T1C -B -ntp -fae
 
 
 # relhub deploy example:
