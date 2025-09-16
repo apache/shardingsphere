@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.runtime;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
 
@@ -66,8 +67,8 @@ public final class E2ETestEnvironment {
         clusterEnvironment = new ClusterEnvironment(props);
         nativeStorageHost = props.getProperty("it.native.storage.host", "127.0.0.1");
         nativeStoragePort = Integer.parseInt(props.getProperty("it.native.storage.port", "0"));
-        nativeStorageUsername = props.getProperty("it.native.storage.username", "root");
-        nativeStoragePassword = props.getProperty("it.native.storage.password", "Root@123");
+        nativeStorageUsername = props.getProperty("it.native.storage.username", StorageContainerConstants.OPERATION_USER);
+        nativeStoragePassword = props.getProperty("it.native.storage.password", StorageContainerConstants.OPERATION_PASSWORD);
         governanceCenter = props.getProperty("it.env.governance.center");
     }
     

@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 
 import javax.sql.DataSource;
@@ -68,8 +69,8 @@ public final class ShardingSphereJdbcEmbeddedContainer implements EmbeddedITCont
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
         result.setJdbcUrl("jdbc:shardingsphere:absolutepath:" + processFile(configPath, storageContainer.getLinkReplacements()));
-        result.setUsername("root");
-        result.setPassword("Root@123");
+        result.setUsername(StorageContainerConstants.OPERATION_USER);
+        result.setPassword(StorageContainerConstants.OPERATION_PASSWORD);
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         result.setLeakDetectionThreshold(10000L);
