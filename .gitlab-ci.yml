@@ -64,6 +64,8 @@ test_java8:
       - "~/.m2"
   dependencies:
     - build_java11
+  script:
+    - printf ${PROJECT_VERSION}
 
 
 # relhub deploy example:
