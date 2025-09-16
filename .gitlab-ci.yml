@@ -32,7 +32,7 @@ prepare_build_env:
     - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
   artifacts:
     paths:
-      - ${CI_PROJECT_ROOT}/${PROJECT_VERSION}
+      - ${M2_DIR}
     reports:
       dotenv: build.env
 
