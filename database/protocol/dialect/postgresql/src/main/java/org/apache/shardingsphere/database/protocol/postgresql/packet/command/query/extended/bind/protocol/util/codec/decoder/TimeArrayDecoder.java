@@ -25,6 +25,9 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Time;
 
+/**
+ * TimeArrayDecoder.
+ */
 public class TimeArrayDecoder extends AbstractObjectArrayDecoder<Time> {
     
     public TimeArrayDecoder() {
@@ -36,6 +39,5 @@ public class TimeArrayDecoder extends AbstractObjectArrayDecoder<Time> {
     public Time parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
         byte[] data = new byte[length];
         return new TimestampUtils(false, null).toTimeBin(null, data);
-        
     }
 }

@@ -31,6 +31,9 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 
+/**
+ * Utility class for processing PostgreSQL {@link PgArray}.
+ */
 public class ShardingSpherePgArrayUtils {
     
     private static final Field CONNECTION_FIELD;
@@ -46,6 +49,7 @@ public class ShardingSpherePgArrayUtils {
     
     /**
      * encode pgArray.
+     *
      * @param array PgArrayObject
      * @param charset charset
      * @return binary bytes array

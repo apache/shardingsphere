@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 
 /**
  * Decode two-dimensional array.
+ *
  * @param <A> baseType
  */
 public class TwoDimensionPrimitiveArrayEncoder<A> implements ArrayEncoder<A[][]> {
@@ -35,6 +36,7 @@ public class TwoDimensionPrimitiveArrayEncoder<A> implements ArrayEncoder<A[][]>
     
     /**
      * TwoDimensionPrimitiveArrayEncoder.
+     *
      * @param support The instance providing support for the base array type.
      */
     TwoDimensionPrimitiveArrayEncoder(final AbstractArrayEncoder<A> support) {
@@ -45,14 +47,12 @@ public class TwoDimensionPrimitiveArrayEncoder<A> implements ArrayEncoder<A[][]>
     @Override
     public void toBinaryRepresentation(final A[][] array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
         final byte[] buffer = new byte[4];
-        
         boolean hasNulls = false;
         for (int i = 0; !hasNulls && i < array.length; i++) {
             if (support.countNulls(array[i]) > 0) {
                 hasNulls = true;
             }
         }
-        
         // 2 dimension
         ByteConverter.int4(buffer, 0, 2);
         baos.write(buffer);
@@ -62,24 +62,20 @@ public class TwoDimensionPrimitiveArrayEncoder<A> implements ArrayEncoder<A[][]>
         // oid
         ByteConverter.int4(buffer, 0, support.getTypeOID(oid));
         baos.write(buffer);
-        
         // length
         ByteConverter.int4(buffer, 0, array.length);
         baos.write(buffer);
         // postgres defaults to 1 based lower bound
         ByteConverter.int4(buffer, 0, 1);
         baos.write(buffer);
-        
         ByteConverter.int4(buffer, 0, array.length > 0 ? Array.getLength(array[0]) : 0);
         baos.write(buffer);
         // postgresql uses 1 base by default
         ByteConverter.int4(buffer, 0, 1);
         baos.write(buffer);
-        
         for (int i = 0; i < array.length; i++) {
             support.toSingleDimensionBinaryRepresentation(array[i], baos, charset);
         }
-        
     }
     
 }

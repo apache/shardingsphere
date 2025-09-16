@@ -40,12 +40,10 @@ public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinary
         PgBinaryObj pgBinaryObj = new PgBinaryObj(bytes);
         pgBinaryObj.setType("time");
         return pgBinaryObj;
-        
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        
         long time = ((Time) value).getTime() * 1000 + TimeZone.getDefault().getRawOffset() * 1000L;
         payload.writeInt8(time);
     }

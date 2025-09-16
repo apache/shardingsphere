@@ -20,6 +20,9 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+/**
+ * BooleanArrayDecoder.
+ */
 public class BooleanArrayDecoder extends AbstractObjectArrayDecoder<Boolean> {
     
     public BooleanArrayDecoder() {

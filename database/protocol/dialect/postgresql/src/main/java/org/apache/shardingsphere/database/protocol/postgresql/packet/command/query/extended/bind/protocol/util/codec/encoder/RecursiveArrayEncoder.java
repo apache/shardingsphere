@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 
 /**
  * Decode multi-level nested array.
+ *
  * @param <A> base type
  */
 public class RecursiveArrayEncoder<A> implements ArrayEncoder {
@@ -38,6 +39,7 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
     
     /**
      * RecursiveArrayEncoder.
+     *
      * @param support The instance providing support for the base array type.
      */
     RecursiveArrayEncoder(final AbstractArrayEncoder<A> support, final @Positive int dimensions) {
@@ -55,14 +57,12 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
             }
             return false;
         }
-        
         int length = Array.getLength(array);
         for (int i = 0; i < length; i++) {
             Object item = Array.get(array, i);
             if (item == null) {
                 return true;
             }
-            
         }
         return false;
     }
@@ -70,11 +70,8 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
     @SneakyThrows(IOException.class)
     @Override
     public void toBinaryRepresentation(final Object array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
-        
         final boolean hasNulls = hasNulls(array, dimensions);
-        
         final byte[] buffer = new byte[4];
-        
         // dimensions
         ByteConverter.int4(buffer, 0, dimensions);
         baos.write(buffer);
@@ -84,23 +81,18 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
         // oid
         ByteConverter.int4(buffer, 0, support.getTypeOID(oid));
         baos.write(buffer);
-        
         // length
         ByteConverter.int4(buffer, 0, Array.getLength(array));
         baos.write(buffer);
         // postgresql uses 1 base by default
         ByteConverter.int4(buffer, 0, 1);
         baos.write(buffer);
-        
         writeArray(buffer, baos, array, dimensions, true, charset);
-        
     }
     
     @SneakyThrows(IOException.class)
-    private void writeArray(final byte[] buffer, final ByteArrayOutputStream baos,
-                            final Object array, final int depth, final boolean first, final Charset charset) {
+    private void writeArray(final byte[] buffer, final ByteArrayOutputStream baos, final Object array, final int depth, final boolean first, final Charset charset) {
         final int length = Array.getLength(array);
-        
         if (first) {
             ByteConverter.int4(buffer, 0, length > 0 ? Array.getLength(Array.get(array, 0)) : 0);
             baos.write(buffer);
@@ -108,7 +100,6 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
             ByteConverter.int4(buffer, 0, 1);
             baos.write(buffer);
         }
-        
         for (int i = 0; i < length; i++) {
             final Object subArray = Array.get(array, i);
             if (depth > 2) {

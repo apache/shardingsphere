@@ -25,6 +25,9 @@ import java.nio.charset.Charset;
 import java.sql.Time;
 import java.util.TimeZone;
 
+/**
+ * TimeArrayEncoder.
+ */
 public class TimeArrayEncoder extends AbstractArrayEncoder<Time> {
     
     public static final TimeArrayEncoder INSTANCE = new TimeArrayEncoder();

@@ -42,7 +42,6 @@ public abstract class AbstractObjectArrayDecoder<A> implements ArrayDecoder<A[]>
     
     @Override
     public void fromBinary(final A[] array, final int index, final int count, final ByteBuffer bytes, final Charset charset) {
-        
         // skip through to the requested index
         for (int i = 0; i < index; i++) {
             final int length = bytes.getInt();
@@ -50,7 +49,6 @@ public abstract class AbstractObjectArrayDecoder<A> implements ArrayDecoder<A[]>
                 bytes.position(bytes.position() + length);
             }
         }
-        
         for (int i = 0; i < count; i++) {
             final int length = bytes.getInt();
             if (length != -1) {
@@ -64,6 +62,7 @@ public abstract class AbstractObjectArrayDecoder<A> implements ArrayDecoder<A[]>
     
     /**
      * decode value.
+     *
      * @param length params length
      * @param bytes source bytes
      * @param charset charset used

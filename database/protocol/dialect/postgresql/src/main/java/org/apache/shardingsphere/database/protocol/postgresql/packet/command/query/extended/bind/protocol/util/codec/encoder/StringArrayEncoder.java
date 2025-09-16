@@ -24,6 +24,9 @@ import org.postgresql.jdbc.PgArray;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
+/**
+ * StringArrayEncoder.
+ */
 public final class StringArrayEncoder extends AbstractArrayEncoder<String> {
     
     public static final StringArrayEncoder INSTANCE = new StringArrayEncoder(Oid.TEXT);
@@ -53,7 +56,6 @@ public final class StringArrayEncoder extends AbstractArrayEncoder<String> {
         baos.write((byte) (length >>> 8));
         baos.write(length);
         baos.write(bytes);
-        
     }
     
     @Override

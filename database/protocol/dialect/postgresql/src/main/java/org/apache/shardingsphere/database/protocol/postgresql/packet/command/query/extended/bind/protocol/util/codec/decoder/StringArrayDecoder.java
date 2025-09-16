@@ -20,6 +20,9 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+/**
+ * StringArrayDecoder.
+ */
 public final class StringArrayDecoder extends AbstractObjectArrayDecoder<String> {
     
     public static final StringArrayDecoder INSTANCE = new StringArrayDecoder();
@@ -33,7 +36,6 @@ public final class StringArrayDecoder extends AbstractObjectArrayDecoder<String>
         byte[] data = new byte[length];
         bytes.get(data);
         return new String(data, charset);
-        
     }
     
 }

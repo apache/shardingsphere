@@ -41,7 +41,6 @@ public final class PostgreSQLTimeStampBinaryProtocolValue implements PostgreSQLB
         PgBinaryObj pgBinaryObj = new PgBinaryObj(bytes);
         pgBinaryObj.setType("timestamp");
         return pgBinaryObj;
-        
     }
     
     @Override

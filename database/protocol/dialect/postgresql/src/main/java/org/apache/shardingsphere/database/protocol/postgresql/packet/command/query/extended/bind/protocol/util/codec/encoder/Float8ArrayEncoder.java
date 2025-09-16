@@ -22,6 +22,9 @@ import org.postgresql.core.Oid;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
+/**
+ * Float8ArrayEncoder.
+ */
 public class Float8ArrayEncoder extends AbstractArrayEncoder<Double> {
     
     public static final Float8ArrayEncoder INSTANCE = new Float8ArrayEncoder();

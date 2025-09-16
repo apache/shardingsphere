@@ -25,6 +25,9 @@ import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+/**
+ * TimestampArrayDecoder.
+ */
 public class TimestampArrayDecoder extends AbstractObjectArrayDecoder<Timestamp> {
     
     public TimestampArrayDecoder() {

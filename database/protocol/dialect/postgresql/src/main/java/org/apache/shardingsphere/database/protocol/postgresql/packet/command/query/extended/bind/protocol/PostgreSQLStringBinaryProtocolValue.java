@@ -38,7 +38,6 @@ public final class PostgreSQLStringBinaryProtocolValue implements PostgreSQLBina
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        
         if (value instanceof byte[]) {
             payload.writeInt4(((byte[]) value).length);
             // we may convert charset?

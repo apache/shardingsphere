@@ -45,17 +45,14 @@ public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
     @Override
     public void write(final Number item, final ByteArrayOutputStream baos, final Charset charset) {
         byte[] numericBytes;
-        
         if (item instanceof BigDecimal) {
             numericBytes = ByteConverter.numeric((BigDecimal) item);
         } else if (item instanceof Double) {
             double d = (Double) item;
             numericBytes = buildSpecialNumericBytes(d);
-            
         } else {
             throw new UnsupportedOperationException("Unsupported Number type: " + item.getClass());
         }
-        
         int length = numericBytes.length;
         baos.write((byte) (length >>> 24));
         baos.write((byte) (length >>> 16));
@@ -74,6 +71,7 @@ public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
     
     /**
      * buildSpecialNumericBytes.
+     *
      * @param d NaN or Infinite double value
      * @return binary result
      * @throws IllegalArgumentException if d is not special numeric
@@ -89,6 +87,7 @@ public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
     
     /**
      * buildSpecialNumericBytes.
+     *
      * @param sign sign
      * @return binary value
      */

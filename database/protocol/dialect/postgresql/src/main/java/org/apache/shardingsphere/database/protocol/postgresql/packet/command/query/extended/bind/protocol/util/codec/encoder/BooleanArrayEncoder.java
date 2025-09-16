@@ -22,6 +22,9 @@ import org.postgresql.core.Oid;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
+/**
+ * BooleanArrayEncoder.
+ */
 public class BooleanArrayEncoder extends AbstractArrayEncoder<Boolean> {
     
     public static final BooleanArrayEncoder INSTANCE = new BooleanArrayEncoder();

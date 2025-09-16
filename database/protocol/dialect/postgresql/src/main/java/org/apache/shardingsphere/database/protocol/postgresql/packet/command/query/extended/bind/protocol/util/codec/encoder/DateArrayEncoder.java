@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Date;
 
+/**
+ * DateArrayEncoder.
+ */
 public final class DateArrayEncoder extends AbstractArrayEncoder<Date> {
     
     public static final DateArrayEncoder INSTANCE = new DateArrayEncoder();

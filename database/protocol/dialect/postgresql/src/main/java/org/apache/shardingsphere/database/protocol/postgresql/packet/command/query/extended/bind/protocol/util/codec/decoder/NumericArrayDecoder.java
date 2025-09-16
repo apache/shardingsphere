@@ -22,6 +22,9 @@ import org.postgresql.util.ByteConverter;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+/**
+ * NumericArrayDecoder.
+ */
 public class NumericArrayDecoder extends AbstractObjectArrayDecoder<Number> {
     
     public NumericArrayDecoder() {

@@ -46,14 +46,13 @@ public final class ArrayDecoding {
             (int) (21 / .75) + 1);
     
     static {
-        
         OID_TO_DECODER.put(Oid.TEXT, StringArrayDecoder.INSTANCE);
         OID_TO_DECODER.put(Oid.VARCHAR, StringArrayDecoder.INSTANCE);
-        
     }
     
     /**
      * getDecoder byOid.
+     *
      * @param oid oid
      * @param <A> base data type
      * @return ArrayDecoder
@@ -73,13 +72,10 @@ public final class ArrayDecoding {
     /**
      * Reads binary representation of array into object model.
      *
-     * @param index
-     *          1 based index of where to start on outermost array.
-     * @param count
-     *          The number of items to return from outermost array (beginning at
-     *          <i>index</i>).
-     * @param bytes
-     *          The binary representation of the array.
+     * @param index 1 based index of where to start on outermost array.
+     * @param count The number of items to return from outermost array (beginning at
+     *     <i>index</i>).
+     * @param bytes The binary representation of the array.
      * @param charset charset
      * @return The parsed array.
      */
@@ -88,20 +84,15 @@ public final class ArrayDecoding {
         final ByteBuffer buffer = ByteBuffer.wrap(bytes);
         buffer.order(ByteOrder.BIG_ENDIAN);
         final int dimensions = buffer.getInt();
-        // @SuppressWarnings("unused")
-        // final boolean hasNulls = buffer.getInt() != 0;
+        // hasNull
         buffer.getInt();
         final int elementOid = buffer.getInt();
-        
         @SuppressWarnings("rawtypes")
         final ArrayDecoder decoder = getDecoder(elementOid);
-        
         if (dimensions == 0) {
             return decoder.createArray(0);
         }
-        
         final int adjustedSkipIndex = index > 0 ? index - 1 : 0;
-        
         // optimize for single dimension array
         if (dimensions == 1) {
             int length = buffer.getInt();
@@ -113,26 +104,22 @@ public final class ArrayDecoding {
             decoder.fromBinary(array, adjustedSkipIndex, length, buffer, charset);
             return array;
         }
-        
         final int[] dimensionLengths = new int[dimensions];
         for (int i = 0; i < dimensions; i++) {
             dimensionLengths[i] = buffer.getInt();
             buffer.position(buffer.position() + 4);
         }
-        
         if (count > 0) {
             dimensionLengths[0] = Math.min(count, dimensionLengths[0]);
         }
-        
         final Object[] array = decoder.createMultiDimensionalArray(dimensionLengths);
-        
         storeValues(array, decoder, buffer, adjustedSkipIndex, dimensionLengths, 0, charset);
-        
         return array;
     }
     
     /**
      * decode from bytes and storeValues.
+     *
      * @param array target array
      * @param decoder decoder
      * @param bytes source data
@@ -146,7 +133,6 @@ public final class ArrayDecoding {
     private static <A> void storeValues(final Object[] array, final ArrayDecoder<A> decoder, final ByteBuffer bytes,
                                         final int skip, final int[] dimensionLengths, final int dim, final Charset charset) {
         assert dim <= dimensionLengths.length - 2;
-        
         for (int i = 0; i < skip; i++) {
             if (dim == dimensionLengths.length - 2) {
                 decoder.fromBinary((A) array[0], 0, dimensionLengths[dim + 1], bytes, charset);
@@ -154,7 +140,6 @@ public final class ArrayDecoding {
                 storeValues((Object[]) array[0], decoder, bytes, 0, dimensionLengths, dim + 1, charset);
             }
         }
-        
         for (int i = 0; i < dimensionLengths[dim]; i++) {
             if (dim == dimensionLengths.length - 2) {
                 decoder.fromBinary((A) array[i], 0, dimensionLengths[dim + 1], bytes, charset);

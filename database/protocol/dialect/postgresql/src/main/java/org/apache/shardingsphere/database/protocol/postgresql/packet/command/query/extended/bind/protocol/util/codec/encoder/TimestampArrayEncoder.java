@@ -25,6 +25,9 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 
+/**
+ * TimestampArrayEncoder.
+ */
 public class TimestampArrayEncoder extends AbstractArrayEncoder<Timestamp> {
     
     public static final TimestampArrayEncoder INSTANCE = new TimestampArrayEncoder();

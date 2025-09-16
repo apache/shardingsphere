@@ -21,13 +21,15 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
 /**
- * encoder to binary or String.
+ * encoder to binary.
+ *
  * @param <A> array data
  */
 public interface ArrayEncoder<A> {
     
     /**
      * toBinaryRepresentation.
+     *
      * @param array array
      * @param oid array oid
      * @param baos OutputStream to write

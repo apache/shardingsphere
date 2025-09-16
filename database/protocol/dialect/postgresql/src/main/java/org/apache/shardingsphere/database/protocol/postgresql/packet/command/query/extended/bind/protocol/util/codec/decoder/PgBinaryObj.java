@@ -23,23 +23,26 @@ import org.postgresql.util.PGobject;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+/**
+ * Cusmtom PgBinaryObj.
+ */
 public class PgBinaryObj extends PGobject implements PGBinaryObject {
     
     private byte[] bytes;
     
     public PgBinaryObj(final byte[] value) {
-        this.bytes = value;
+        bytes = value;
     }
     
     @Override
     public void setByteValue(final byte[] value, final int offset) throws SQLException {
         if (value == null) {
-            this.bytes = new byte[0];
+            bytes = new byte[0];
         } else {
             if (offset < 0 || offset > value.length) {
                 throw new SQLException("Invalid offset: " + offset);
             }
-            this.bytes = Arrays.copyOfRange(value, offset, value.length);
+            bytes = Arrays.copyOfRange(value, offset, value.length);
         }
     }
     

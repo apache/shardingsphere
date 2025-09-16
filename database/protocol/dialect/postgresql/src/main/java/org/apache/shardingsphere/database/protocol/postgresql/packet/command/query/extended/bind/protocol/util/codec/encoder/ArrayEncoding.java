@@ -59,7 +59,6 @@ public final class ArrayEncoding {
             (int) (14 / .75) + 1);
     
     static {
-        
         // todo override getTypeOID to support more oid type use same encoder
         ARRAY_CLASS_TO_ENCODER.put(Long.class, Int8ArrayEncoder.INSTANCE);
         ARRAY_CLASS_TO_ENCODER.put(Integer.class, Int4ArrayEncoder.INSTANCE);
@@ -74,19 +73,16 @@ public final class ArrayEncoding {
         ARRAY_CLASS_TO_ENCODER.put(Time.class, TimeArrayEncoder.INSTANCE);
         ARRAY_CLASS_TO_ENCODER.put(byte[].class, ByteaArrayEncoder.INSTANCE);
         ARRAY_CLASS_TO_ENCODER.put(Timestamp.class, TimestampArrayEncoder.INSTANCE);
-        
     }
     
     /**
      * Returns support for encoding <i>array</i>.
      *
-     * @param array
-     *          The array to encode. Must not be {@code null}.
+     * @param array The array to encode. Must not be {@code null}.
      * @param <A> base type
      * @return An instance capable of encoding <i>array</i> as a {@code String} at
-     *         minimum. Some types may support binary encoding.
-     * @throws PSQLException
-     *           if <i>array</i> is not a supported type.
+     *     minimum. Some types may support binary encoding.
+     * @throws PSQLException if <i>array</i> is not a supported type.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <A> ArrayEncoder<A[]> getArrayEncoder(final Object array) throws PSQLException {
@@ -103,7 +99,6 @@ public final class ArrayEncoding {
         if (subSubClazz == null) {
             throw new PSQLException(GT.tr("Invalid elements {0}", array), PSQLState.INVALID_PARAMETER_TYPE);
         }
-        
         subClazz = subSubClazz;
         int dimensions = 2;
         while (subClazz != null) {
@@ -118,7 +113,6 @@ public final class ArrayEncoding {
             ++dimensions;
             subClazz = subSubClazz;
         }
-        
         throw new PSQLException(GT.tr("Invalid elements {0}", array), PSQLState.INVALID_PARAMETER_TYPE);
     }
     

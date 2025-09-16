@@ -22,6 +22,9 @@ import org.postgresql.core.Oid;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 
+/**
+ * Int2ArrayEncoder.
+ */
 public final class Int2ArrayEncoder extends AbstractArrayEncoder<Short> {
     
     public static final Int2ArrayEncoder INSTANCE = new Int2ArrayEncoder();
@@ -38,7 +41,6 @@ public final class Int2ArrayEncoder extends AbstractArrayEncoder<Short> {
         baos.write(2);
         baos.write((byte) (item >>> 8));
         baos.write(item.byteValue());
-        
     }
     
     @Override

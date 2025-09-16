@@ -20,6 +20,9 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+/**
+ * Float8ArrayDecoder.
+ */
 public class Float8ArrayDecoder extends AbstractObjectArrayDecoder<Double> {
     
     public Float8ArrayDecoder() {

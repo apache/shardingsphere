@@ -25,6 +25,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+/**
+ * ByteaArrayEncoder.
+ */
 public final class ByteaArrayEncoder extends AbstractArrayEncoder<byte[]> {
     
     public static final ByteaArrayEncoder INSTANCE = new ByteaArrayEncoder();
@@ -37,7 +40,6 @@ public final class ByteaArrayEncoder extends AbstractArrayEncoder<byte[]> {
     @Override
     public void write(final byte[] item, final ByteArrayOutputStream baos, final Charset charset) {
         int length = item.length;
-        
         baos.write((byte) (length >>> 24));
         baos.write((byte) (length >>> 16));
         baos.write((byte) (length >>> 8));
@@ -49,7 +51,6 @@ public final class ByteaArrayEncoder extends AbstractArrayEncoder<byte[]> {
     public String toString(final byte[] item) {
         if (item == null) {
             return "NULL";
-            
         }
         StringBuilder sb = new StringBuilder();
         sb.append("\"\\\\x");

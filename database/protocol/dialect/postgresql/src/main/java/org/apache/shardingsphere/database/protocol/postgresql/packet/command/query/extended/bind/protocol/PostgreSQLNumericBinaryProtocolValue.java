@@ -38,11 +38,9 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     
     @Override
     public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
-        //
         if (value instanceof BigDecimal) {
             return ByteConverter.numeric((BigDecimal) value).length;
         }
-        
         if (value instanceof Double && (Double.isNaN((Double) value) || Double.isInfinite((Double) value))) {
             return 8;
         }
@@ -70,27 +68,23 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
             payload.writeBytes(ByteConverter.numeric((BigDecimal) value));
             return;
         }
-        
         if (value instanceof Double) {
             double d = (Double) value;
-            
             if (Double.isNaN(d)) {
                 writeSpecialNumeric(payload, NUMERIC_NAN);
                 return;
             }
-            
             if (Double.isInfinite(d)) {
                 writeSpecialNumeric(payload, d > 0 ? NUMERIC_PINF : NUMERIC_NINF);
                 return;
             }
-            
         }
-        
         throw new UnsupportedSQLOperationException("PostgreSQLNumericBinaryProtocolValue.getColumnLength()");
     }
     
     /**
      * writeSpecialNumeric.
+     *
      * @param payload payload
      * @param sign sign
      */

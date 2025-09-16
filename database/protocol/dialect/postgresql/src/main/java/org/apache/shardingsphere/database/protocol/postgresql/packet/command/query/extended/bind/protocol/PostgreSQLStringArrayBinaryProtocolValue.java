@@ -42,10 +42,8 @@ public final class PostgreSQLStringArrayBinaryProtocolValue implements PostgreSQ
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        
         byte[] result = ShardingSpherePgArrayUtils.getBinaryBytes(value, payload.getCharset());
         payload.writeInt4(result.length);
         payload.writeBytes(result);
-        
     }
 }

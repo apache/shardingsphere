@@ -25,6 +25,11 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 
+/**
+ * AbstractArrayEncoder.
+ *
+ * @param <D> data Type
+ */
 public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     private final int oid;
@@ -35,6 +40,7 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     /**
      * encode item to baos.
+     *
      * @param item item
      * @param baos baos
      * @param charset charset
@@ -43,6 +49,7 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     /**
      * get item String value.
+     *
      * @param item item toString
      * @return string value
      */
@@ -50,6 +57,7 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     /**
      * encode data without meeta data header.
+     *
      * @param array array to encode
      * @param baos output stream
      * @param charset charset
@@ -61,9 +69,7 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     @SneakyThrows(IOException.class)
     @Override
     public void toBinaryRepresentation(final D[] array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
-        
         final byte[] buffer = new byte[4];
-        
         // 1 dimension
         ByteConverter.int4(buffer, 0, 1);
         baos.write(buffer);
@@ -76,16 +82,15 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
         // length
         ByteConverter.int4(buffer, 0, array.length);
         baos.write(buffer);
-        
         // postgresql uses 1 base by default
         ByteConverter.int4(buffer, 0, 1);
         baos.write(buffer);
         writeBytes(array, baos, charset);
-        
     }
     
     /**
      * getTypeOID.
+     *
      * @param arrayOid The array oid to get base oid type for.
      * @return The base oid type for the given array oid type given to.
      */
@@ -111,6 +116,7 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     /**
      * decode array.
+     *
      * @param array array to decode
      * @param baos output stream
      * @param charset charset

@@ -75,6 +75,7 @@ public interface DatabaseProtocolFrontendEngine extends DatabaseTypedSPI {
     
     /**
      * init connectionSession.
+     *
      * @param connectionSession connectionSession
      */
     default void init(final ConnectionSession connectionSession) {
