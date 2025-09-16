@@ -73,7 +73,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private void initDatabase() {
         DataSource dataSource = StorageContainerUtils.generateDataSource(
-                DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(), Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort())),
+                DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(), E2ETestEnvironment.getInstance().getNativeStoragePort()),
                 E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
         new MountSQLResourceGenerator(option, databaseType).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
     }
@@ -89,7 +89,7 @@ public final class NativeStorageContainer implements StorageContainer {
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         for (String each : databaseNames) {
             DataSource dataSource = StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, E2ETestEnvironment.getInstance().getNativeStorageHost(),
-                    Integer.parseInt(E2ETestEnvironment.getInstance().getNativeStoragePort()), each),
+                    E2ETestEnvironment.getInstance().getNativeStoragePort(), each),
                     E2ETestEnvironment.getInstance().getNativeStorageUsername(), E2ETestEnvironment.getInstance().getNativeStoragePassword());
             result.put(each, dataSource);
         }
