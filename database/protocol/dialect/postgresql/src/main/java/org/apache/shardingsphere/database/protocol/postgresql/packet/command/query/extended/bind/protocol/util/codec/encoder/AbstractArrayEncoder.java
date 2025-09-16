@@ -105,13 +105,13 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
      * @return The number of {@code null} elements in <i>array</i>.
      */
     int countNulls(final D[] array) {
-        int nulls = 0;
+        int result = 0;
         for (int i = 0; i < array.length; i++) {
             if (array[i] == null) {
-                ++nulls;
+                ++result;
             }
         }
-        return nulls;
+        return result;
     }
     
     /**

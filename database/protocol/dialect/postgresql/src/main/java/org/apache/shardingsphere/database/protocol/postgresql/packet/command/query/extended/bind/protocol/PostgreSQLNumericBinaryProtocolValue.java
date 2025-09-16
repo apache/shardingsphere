@@ -51,15 +51,11 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
-        Number numeric = ByteConverter.numeric(bytes);
-        if (numeric instanceof Double) {
-            Double d = (Double) numeric;
-            byte[] specialNumericBytes = NumericArrayEncoder.buildSpecialNumericBytes(d);
-            PgBinaryObj pgBinaryObj = new PgBinaryObj(specialNumericBytes);
-            pgBinaryObj.setType("numeric");
-            return pgBinaryObj;
+        Object result = ByteConverter.numeric(bytes);
+        if (result instanceof Double) {
+            return parseDouble2Binary((Double) result);
         }
-        return numeric;
+        return result;
     }
     
     @Override
@@ -69,13 +65,13 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
             return;
         }
         if (value instanceof Double) {
-            double d = (Double) value;
-            if (Double.isNaN(d)) {
+            double doubleValue = (Double) value;
+            if (Double.isNaN(doubleValue)) {
                 writeSpecialNumeric(payload, NUMERIC_NAN);
                 return;
             }
-            if (Double.isInfinite(d)) {
-                writeSpecialNumeric(payload, d > 0 ? NUMERIC_PINF : NUMERIC_NINF);
+            if (Double.isInfinite(doubleValue)) {
+                writeSpecialNumeric(payload, doubleValue > 0 ? NUMERIC_PINF : NUMERIC_NINF);
                 return;
             }
         }
@@ -95,5 +91,18 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
         payload.writeInt2(sign);
         // scale
         payload.writeInt2(0);
+    }
+    
+    /**
+     * parseDouble2Binary.
+     *
+     * @param doubleValue doubleValue
+     * @return PgBinaryObj
+     */
+    private static PgBinaryObj parseDouble2Binary(final Double doubleValue) {
+        byte[] specialNumericBytes = NumericArrayEncoder.buildSpecialNumericBytes(doubleValue);
+        PgBinaryObj result = new PgBinaryObj(specialNumericBytes);
+        result.setType("numeric");
+        return result;
     }
 }

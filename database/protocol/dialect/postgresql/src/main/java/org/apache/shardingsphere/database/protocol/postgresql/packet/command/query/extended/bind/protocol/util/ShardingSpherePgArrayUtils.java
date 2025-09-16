@@ -63,9 +63,9 @@ public class ShardingSpherePgArrayUtils {
         } else {
             throw new UnsupportedSQLOperationException("can not encode" + array.getClass());
         }
-        byte[] bytes = pgArray.toBytes();
-        if (bytes != null) {
-            return bytes;
+        byte[] result = pgArray.toBytes();
+        if (result != null) {
+            return result;
         }
         BaseConnection connection = (BaseConnection) CONNECTION_FIELD.get(pgArray);
         assert connection != null;

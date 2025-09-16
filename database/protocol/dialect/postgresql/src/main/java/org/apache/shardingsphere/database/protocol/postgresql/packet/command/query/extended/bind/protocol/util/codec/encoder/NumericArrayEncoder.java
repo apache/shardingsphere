@@ -92,8 +92,8 @@ public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
      * @return binary value
      */
     private static byte[] buildSpecialNumericBytes(final int sign) {
-        byte[] bytes = new byte[8];
-        ByteConverter.int2(bytes, 4, sign);
-        return bytes;
+        byte[] result = new byte[8];
+        ByteConverter.int2(result, 4, sign);
+        return result;
     }
 }

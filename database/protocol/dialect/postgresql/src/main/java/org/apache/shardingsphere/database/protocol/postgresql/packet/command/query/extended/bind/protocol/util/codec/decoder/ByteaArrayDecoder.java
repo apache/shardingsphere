@@ -31,8 +31,8 @@ public class ByteaArrayDecoder extends AbstractObjectArrayDecoder<byte[]> {
     
     @Override
     public byte[] parseValue(final int length, final ByteBuffer bytes, final Charset charset) {
-        final byte[] array = new byte[length];
-        bytes.get(array);
-        return array;
+        final byte[] result = new byte[length];
+        bytes.get(result);
+        return result;
     }
 }

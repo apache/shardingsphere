@@ -49,13 +49,13 @@ public final class PostgreSQLArrayParameterDecoder {
                 tmpList = (List) tmpList.get(0);
             }
         }
-        Object[] array = (Object[]) Array.newInstance(Number.class, dimensionLengths);
-        if (array instanceof Number[]) {
-            parserNumber((Number[]) array, list);
+        Object[] result = (Object[]) Array.newInstance(Number.class, dimensionLengths);
+        if (result instanceof Number[]) {
+            parserNumber((Number[]) result, list);
         } else {
-            storeStringValues(array, list, dimensionLengths, 0);
+            storeStringValues(result, list, dimensionLengths, 0);
         }
-        return array;
+        return result;
     }
     
     /**
@@ -125,9 +125,9 @@ public final class PostgreSQLArrayParameterDecoder {
      * @return PgDimensionsArrayList
      */
     public PgDimensionsArrayList decodeFromString(final String fieldString, final char delim) {
-        final PgDimensionsArrayList arrayList = new PgDimensionsArrayList();
+        final PgDimensionsArrayList result = new PgDimensionsArrayList();
         if (fieldString == null) {
-            return arrayList;
+            return result;
         }
         final char[] chars = fieldString.toCharArray();
         StringBuilder buffer = null;
@@ -137,7 +137,7 @@ public final class PostgreSQLArrayParameterDecoder {
         // array dimension arrays
         final List<PgDimensionsArrayList> dims = new ArrayList<>();
         // currently processed array
-        PgDimensionsArrayList curArray = arrayList;
+        PgDimensionsArrayList curArray = result;
         // Starting with 8.0 non-standard (beginning index
         // isn't 1) bounds the dimensions are returned in the
         // data formatted like so "[0:3]={0,1,2,3,4}".
@@ -163,7 +163,7 @@ public final class PostgreSQLArrayParameterDecoder {
             } else if (!insideString && chars[i] == '{') {
                 // subarray start
                 if (dims.isEmpty()) {
-                    dims.add(arrayList);
+                    dims.add(result);
                 } else {
                     PgDimensionsArrayList array = new PgDimensionsArrayList();
                     PgDimensionsArrayList parent = dims.get(dims.size() - 1);
@@ -226,7 +226,7 @@ public final class PostgreSQLArrayParameterDecoder {
             }
             i++;
         }
-        return arrayList;
+        return result;
     }
     
     static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {

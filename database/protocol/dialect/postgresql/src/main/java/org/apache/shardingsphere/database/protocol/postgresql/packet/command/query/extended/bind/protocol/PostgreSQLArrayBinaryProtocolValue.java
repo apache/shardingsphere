@@ -72,9 +72,9 @@ public final class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinar
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         int oid = buf.getInt(8);
         String typeName = OID_TYPE_NAME.get(oid);
-        PgBinaryObj pgBinaryObj = new PgBinaryObj(bytes);
-        pgBinaryObj.setType(typeName);
-        return pgBinaryObj;
+        PgBinaryObj result = new PgBinaryObj(bytes);
+        result.setType(typeName);
+        return result;
     }
     
     @Override

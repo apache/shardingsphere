@@ -37,9 +37,9 @@ public final class PostgreSQLTimeBinaryProtocolValue implements PostgreSQLBinary
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] bytes = new byte[8];
         payload.getByteBuf().readBytes(bytes);
-        PgBinaryObj pgBinaryObj = new PgBinaryObj(bytes);
-        pgBinaryObj.setType("time");
-        return pgBinaryObj;
+        PgBinaryObj result = new PgBinaryObj(bytes);
+        result.setType("time");
+        return result;
     }
     
     @Override

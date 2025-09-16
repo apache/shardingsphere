@@ -62,9 +62,9 @@ public final class ArrayDecoding {
     private static <A> ArrayDecoder<A> getDecoder(final int oid) {
         final Integer key = oid;
         @SuppressWarnings("rawtypes")
-        final ArrayDecoder decoder = OID_TO_DECODER.get(key);
-        if (decoder != null) {
-            return decoder;
+        final ArrayDecoder result = OID_TO_DECODER.get(key);
+        if (result != null) {
+            return result;
         }
         throw new UnsupportedOperationException(GT.tr("Invalid decoder key {0}", key));
     }
@@ -100,9 +100,9 @@ public final class ArrayDecoding {
             if (count > 0) {
                 length = Math.min(length, count);
             }
-            final Object array = decoder.createArray(length);
-            decoder.fromBinary(array, adjustedSkipIndex, length, buffer, charset);
-            return array;
+            final Object result = decoder.createArray(length);
+            decoder.fromBinary(result, adjustedSkipIndex, length, buffer, charset);
+            return result;
         }
         final int[] dimensionLengths = new int[dimensions];
         for (int i = 0; i < dimensions; i++) {
@@ -112,9 +112,9 @@ public final class ArrayDecoding {
         if (count > 0) {
             dimensionLengths[0] = Math.min(count, dimensionLengths[0]);
         }
-        final Object[] array = decoder.createMultiDimensionalArray(dimensionLengths);
-        storeValues(array, decoder, buffer, adjustedSkipIndex, dimensionLengths, 0, charset);
-        return array;
+        final Object[] result = decoder.createMultiDimensionalArray(dimensionLengths);
+        storeValues(result, decoder, buffer, adjustedSkipIndex, dimensionLengths, 0, charset);
+        return result;
     }
     
     /**

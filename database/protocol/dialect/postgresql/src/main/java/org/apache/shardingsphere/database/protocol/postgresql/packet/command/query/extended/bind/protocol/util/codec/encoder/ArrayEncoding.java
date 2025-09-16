@@ -91,9 +91,9 @@ public final class ArrayEncoding {
         if (subClazz == null) {
             throw new PSQLException(GT.tr("Invalid elements {0}", array), PSQLState.INVALID_PARAMETER_TYPE);
         }
-        AbstractArrayEncoder<A> support = ARRAY_CLASS_TO_ENCODER.get(subClazz);
-        if (support != null) {
-            return support;
+        AbstractArrayEncoder<A> result = ARRAY_CLASS_TO_ENCODER.get(subClazz);
+        if (result != null) {
+            return result;
         }
         Class<?> subSubClazz = subClazz.getComponentType();
         if (subSubClazz == null) {
@@ -102,12 +102,12 @@ public final class ArrayEncoding {
         subClazz = subSubClazz;
         int dimensions = 2;
         while (subClazz != null) {
-            support = ARRAY_CLASS_TO_ENCODER.get(subClazz);
-            if (support != null) {
+            result = ARRAY_CLASS_TO_ENCODER.get(subClazz);
+            if (result != null) {
                 if (dimensions == 2) {
-                    return new TwoDimensionPrimitiveArrayEncoder(support);
+                    return new TwoDimensionPrimitiveArrayEncoder(result);
                 }
-                return new RecursiveArrayEncoder(support, dimensions);
+                return new RecursiveArrayEncoder(result, dimensions);
             }
             subSubClazz = subClazz.getComponentType();
             ++dimensions;
