@@ -34,15 +34,15 @@ public final class Int4ArrayEncoder extends AbstractArrayEncoder<Integer> {
     }
     
     @Override
-    public void write(final Integer item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(4);
-        baos.write((byte) (item >>> 24));
-        baos.write((byte) (item >>> 16));
-        baos.write((byte) (item >>> 8));
-        baos.write(item.byteValue());
+    public void write(final Integer item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(4);
+        bout.write((byte) (item >>> 24));
+        bout.write((byte) (item >>> 16));
+        bout.write((byte) (item >>> 8));
+        bout.write(item.byteValue());
     }
     
     @Override

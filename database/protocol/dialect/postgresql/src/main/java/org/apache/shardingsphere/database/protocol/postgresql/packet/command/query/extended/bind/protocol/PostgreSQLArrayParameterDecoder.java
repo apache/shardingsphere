@@ -37,10 +37,12 @@ public final class PostgreSQLArrayParameterDecoder {
      * @param parameterValue arrayString
      * @return array
      */
+    @SuppressWarnings("rawtypes")
     public Object decodeNumberArray(final String parameterValue) {
-        PgDimensionsArrayList list = decodeFromString(parameterValue, ',');
+        char delim = ',';
+        PgDimensionsArrayList list = decodeFromString(parameterValue, delim);
         int dims = list.dimensionsCount;
-        final int[] dimensionLengths = new int[dims];
+        int[] dimensionLengths = new int[dims];
         dimensionLengths[0] = list.size();
         List tmpList = (List) list.get(0);
         for (int i = 1; i < dims; i++) {
@@ -66,6 +68,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @param dimensionLengths dimensionLengths
      * @param dim dim
      */
+    @SuppressWarnings("rawtypes")
     private static void storeStringValues(final Object[] array, final List list, final int[] dimensionLengths,
                                           final int dim) {
         for (int i = 0; i < dimensionLengths[dim]; i++) {
@@ -84,6 +87,7 @@ public final class PostgreSQLArrayParameterDecoder {
      * @param target Number[]
      * @param source String list
      */
+    @SuppressWarnings("rawtypes")
     private static void parserNumber(final Number[] target, final List source) {
         for (int i = 0; i < target.length; i++) {
             Object o = source.get(i);
@@ -97,13 +101,13 @@ public final class PostgreSQLArrayParameterDecoder {
     /**
      * parse String to Number.
      *
-     * @param each String
+     * @param stringValue String
      * @return BigDecimal or Double
      */
-    private static Number parseNumber(final String each) {
-        String value = each;
+    private static Number parseNumber(final String stringValue) {
+        String value = stringValue;
         if (value.startsWith("\"") && value.endsWith("\"") && value.length() > 2) {
-            value = each.substring(1, value.length() - 1);
+            value = stringValue.substring(1, value.length() - 1);
         }
         if (Double.toString(Double.NaN).equals(value)) {
             return Double.NaN;
@@ -124,18 +128,18 @@ public final class PostgreSQLArrayParameterDecoder {
      * @param delim delim
      * @return PgDimensionsArrayList
      */
-    public PgDimensionsArrayList decodeFromString(final String fieldString, final char delim) {
-        final PgDimensionsArrayList result = new PgDimensionsArrayList();
+    private PgDimensionsArrayList decodeFromString(final String fieldString, final char delim) {
+        PgDimensionsArrayList result = new PgDimensionsArrayList();
         if (fieldString == null) {
             return result;
         }
-        final char[] chars = fieldString.toCharArray();
+        char[] chars = fieldString.toCharArray();
         StringBuilder buffer = null;
         boolean insideString = false;
         // needed for checking if NULL value occurred
         boolean wasInsideString = false;
         // array dimension arrays
-        final List<PgDimensionsArrayList> dims = new ArrayList<>();
+        List<PgDimensionsArrayList> dims = new ArrayList<>(10);
         // currently processed array
         PgDimensionsArrayList curArray = result;
         // Starting with 8.0 non-standard (beginning index
@@ -229,7 +233,7 @@ public final class PostgreSQLArrayParameterDecoder {
         return result;
     }
     
-    static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {
+    private static final class PgDimensionsArrayList extends ArrayList<@Nullable Object> {
         
         private static final long serialVersionUID = 1L;
         

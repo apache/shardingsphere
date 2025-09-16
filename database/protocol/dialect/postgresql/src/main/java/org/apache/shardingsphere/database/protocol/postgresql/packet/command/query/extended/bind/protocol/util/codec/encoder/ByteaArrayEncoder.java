@@ -38,13 +38,13 @@ public final class ByteaArrayEncoder extends AbstractArrayEncoder<byte[]> {
     
     @SneakyThrows(IOException.class)
     @Override
-    public void write(final byte[] item, final ByteArrayOutputStream baos, final Charset charset) {
+    public void write(final byte[] item, final ByteArrayOutputStream bout, final Charset charset) {
         int length = item.length;
-        baos.write((byte) (length >>> 24));
-        baos.write((byte) (length >>> 16));
-        baos.write((byte) (length >>> 8));
-        baos.write(length);
-        baos.write(item);
+        bout.write((byte) (length >>> 24));
+        bout.write((byte) (length >>> 16));
+        bout.write((byte) (length >>> 8));
+        bout.write(length);
+        bout.write(item);
     }
     
     @Override

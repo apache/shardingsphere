@@ -43,7 +43,7 @@ public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
     
     @SneakyThrows(IOException.class)
     @Override
-    public void write(final Number item, final ByteArrayOutputStream baos, final Charset charset) {
+    public void write(final Number item, final ByteArrayOutputStream bout, final Charset charset) {
         byte[] numericBytes;
         if (item instanceof BigDecimal) {
             numericBytes = ByteConverter.numeric((BigDecimal) item);
@@ -54,11 +54,11 @@ public final class NumericArrayEncoder extends AbstractArrayEncoder<Number> {
             throw new UnsupportedOperationException("Unsupported Number type: " + item.getClass());
         }
         int length = numericBytes.length;
-        baos.write((byte) (length >>> 24));
-        baos.write((byte) (length >>> 16));
-        baos.write((byte) (length >>> 8));
-        baos.write(length);
-        baos.write(numericBytes);
+        bout.write((byte) (length >>> 24));
+        bout.write((byte) (length >>> 16));
+        bout.write((byte) (length >>> 8));
+        bout.write(length);
+        bout.write(numericBytes);
     }
     
     @Override

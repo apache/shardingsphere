@@ -34,20 +34,20 @@ public class Float8ArrayEncoder extends AbstractArrayEncoder<Double> {
     }
     
     @Override
-    public void write(final Double item, final ByteArrayOutputStream baos, final Charset charset) {
+    public void write(final Double item, final ByteArrayOutputStream bout, final Charset charset) {
         long l = Double.doubleToRawLongBits(item);
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(8);
-        baos.write((byte) (l >>> 56));
-        baos.write((byte) (l >>> 48));
-        baos.write((byte) (l >>> 40));
-        baos.write((byte) (l >>> 32));
-        baos.write((byte) (l >>> 24));
-        baos.write((byte) (l >>> 16));
-        baos.write((byte) (l >>> 8));
-        baos.write((byte) l);
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(8);
+        bout.write((byte) (l >>> 56));
+        bout.write((byte) (l >>> 48));
+        bout.write((byte) (l >>> 40));
+        bout.write((byte) (l >>> 32));
+        bout.write((byte) (l >>> 24));
+        bout.write((byte) (l >>> 16));
+        bout.write((byte) (l >>> 8));
+        bout.write((byte) l);
     }
     
     @Override

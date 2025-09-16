@@ -34,13 +34,13 @@ public final class Int2ArrayEncoder extends AbstractArrayEncoder<Short> {
     }
     
     @Override
-    public void write(final Short item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(2);
-        baos.write((byte) (item >>> 8));
-        baos.write(item.byteValue());
+    public void write(final Short item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(2);
+        bout.write((byte) (item >>> 8));
+        bout.write(item.byteValue());
     }
     
     @Override

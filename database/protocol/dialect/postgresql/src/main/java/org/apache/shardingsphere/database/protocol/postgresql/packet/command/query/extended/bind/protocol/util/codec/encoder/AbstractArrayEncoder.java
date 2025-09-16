@@ -68,24 +68,24 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     
     @SneakyThrows(IOException.class)
     @Override
-    public void toBinaryRepresentation(final D[] array, final int oid, final ByteArrayOutputStream baos, final Charset charset) {
+    public void toBinaryRepresentation(final D[] array, final int oid, final ByteArrayOutputStream bout, final Charset charset) {
         final byte[] buffer = new byte[4];
         // 1 dimension
         ByteConverter.int4(buffer, 0, 1);
-        baos.write(buffer);
+        bout.write(buffer);
         // null
         ByteConverter.int4(buffer, 0, countNulls(array) > 0 ? 1 : 0);
-        baos.write(buffer);
+        bout.write(buffer);
         // oid
         ByteConverter.int4(buffer, 0, getTypeOID(oid));
-        baos.write(buffer);
+        bout.write(buffer);
         // length
         ByteConverter.int4(buffer, 0, array.length);
-        baos.write(buffer);
+        bout.write(buffer);
         // postgresql uses 1 base by default
         ByteConverter.int4(buffer, 0, 1);
-        baos.write(buffer);
-        writeBytes(array, baos, charset);
+        bout.write(buffer);
+        writeBytes(array, bout, charset);
     }
     
     /**
@@ -106,8 +106,8 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
      */
     int countNulls(final D[] array) {
         int result = 0;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == null) {
+        for (D each : array) {
+            if (each == null) {
                 ++result;
             }
         }
@@ -118,21 +118,22 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
      * decode array.
      *
      * @param array array to decode
-     * @param baos output stream
+     * @param bout output stream
      * @param charset charset
      */
+    @SuppressWarnings("unchecked")
     @SneakyThrows(IOException.class)
-    private void writeBytes(final D[] array, final ByteArrayOutputStream baos, final Charset charset) {
+    private void writeBytes(final D[] array, final ByteArrayOutputStream bout, final Charset charset) {
         
         byte[] buffer = new byte[4];
         int length = Array.getLength(array);
         for (int i = 0; i < length; i++) {
-            D d = (D) Array.get(array, i);
-            if (d == null) {
+            D each = (D) Array.get(array, i);
+            if (each == null) {
                 ByteConverter.int4(buffer, 0, -1);
-                baos.write(buffer);
+                bout.write(buffer);
             } else {
-                write(d, baos, charset);
+                write(each, bout, charset);
             }
         }
     }

@@ -34,19 +34,19 @@ public final class Int8ArrayEncoder extends AbstractArrayEncoder<Long> {
     }
     
     @Override
-    public void write(final Long item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(8);
-        baos.write((byte) (item >>> 56));
-        baos.write((byte) (item >>> 48));
-        baos.write((byte) (item >>> 40));
-        baos.write((byte) (item >>> 32));
-        baos.write((byte) (item >>> 24));
-        baos.write((byte) (item >>> 16));
-        baos.write((byte) (item >>> 8));
-        baos.write(item.byteValue());
+    public void write(final Long item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(8);
+        bout.write((byte) (item >>> 56));
+        bout.write((byte) (item >>> 48));
+        bout.write((byte) (item >>> 40));
+        bout.write((byte) (item >>> 32));
+        bout.write((byte) (item >>> 24));
+        bout.write((byte) (item >>> 16));
+        bout.write((byte) (item >>> 8));
+        bout.write(item.byteValue());
     }
     
     @Override

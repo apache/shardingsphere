@@ -32,8 +32,8 @@ public interface ArrayEncoder<A> {
      *
      * @param array array
      * @param oid array oid
-     * @param baos OutputStream to write
+     * @param bout OutputStream to write
      * @param charset charset
      */
-    void toBinaryRepresentation(A array, int oid, ByteArrayOutputStream baos, Charset charset);
+    void toBinaryRepresentation(A array, int oid, ByteArrayOutputStream bout, Charset charset);
 }

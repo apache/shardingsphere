@@ -34,12 +34,12 @@ public class BooleanArrayEncoder extends AbstractArrayEncoder<Boolean> {
     }
     
     @Override
-    public void write(final Boolean item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(1);
-        baos.write(item ? (byte) 1 : (byte) 0);
+    public void write(final Boolean item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(1);
+        bout.write(item ? (byte) 1 : (byte) 0);
     }
     
     @Override

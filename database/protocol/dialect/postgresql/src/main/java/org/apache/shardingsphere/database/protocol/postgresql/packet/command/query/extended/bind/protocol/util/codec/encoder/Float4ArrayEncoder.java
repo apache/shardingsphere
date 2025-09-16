@@ -34,16 +34,16 @@ public class Float4ArrayEncoder extends AbstractArrayEncoder<Float> {
     }
     
     @Override
-    public void write(final Float item, final ByteArrayOutputStream baos, final Charset charset) {
+    public void write(final Float item, final ByteArrayOutputStream bout, final Charset charset) {
         int i = Float.floatToRawIntBits(item);
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(4);
-        baos.write((byte) (i >>> 24));
-        baos.write((byte) (i >>> 16));
-        baos.write((byte) (i >>> 8));
-        baos.write(i);
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(4);
+        bout.write((byte) (i >>> 24));
+        bout.write((byte) (i >>> 16));
+        bout.write((byte) (i >>> 8));
+        bout.write(i);
     }
     
     @Override
