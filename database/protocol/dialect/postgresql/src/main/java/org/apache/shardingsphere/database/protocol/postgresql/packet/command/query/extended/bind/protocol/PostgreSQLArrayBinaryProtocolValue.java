@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
 import org.postgresql.core.Oid;
@@ -26,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinaryProtocolValue {
     
     public static final PostgreSQLArrayBinaryProtocolValue INSTANCE = new PostgreSQLArrayBinaryProtocolValue();
@@ -55,10 +58,6 @@ public final class PostgreSQLArrayBinaryProtocolValue implements PostgreSQLBinar
         OID_TYPE_NAME.put(Oid.NUMERIC, "numeric[]");
         // TODO not supported yet
         // oidTypeName.put(Oid.UUID_ARRAY, "uuid[]");
-    }
-    
-    private PostgreSQLArrayBinaryProtocolValue() {
-        
     }
     
     @Override
