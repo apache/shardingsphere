@@ -25,16 +25,16 @@ prepare_build_env:
   stage: prepare
   image: $JDK_BUILD_IMAGE
   script:
-    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils
-    - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
     - if [ ! -d ~/.m2 ]; then mkdir -pv ~/.m2; fi
     - cp ${CI_PROJECT_DIR}/ci/settings.xml ~/.m2
-  cache:
-    paths:
-      - "~/.m2"
+    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils
+    - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
   artifacts:
     reports:
       dotenv: build.env
+  cache:
+    paths:
+      - $HOME/.m2
 
 
 build_java11:
@@ -47,7 +47,7 @@ build_java11:
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} artifacts
   cache:
     paths:
-      - "~/.m2"
+      - $HOME/.m2
   artifacts:
     paths: [
       "artifacts"
