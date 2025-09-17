@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.MariaDBStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.MySQLStorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.OpenGaussStorageContainerConfigurationOption;
@@ -120,7 +121,7 @@ public final class PipelineE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.username", databaseType.getType().toLowerCase()), "Root@123"));
+        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.username", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_USER));
     }
     
     /**
@@ -130,7 +131,7 @@ public final class PipelineE2EEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.password", databaseType.getType().toLowerCase()), "Root@123"));
+        return String.valueOf(props.getProperty(String.format("pipeline.it.native.%s.password", databaseType.getType().toLowerCase()), StorageContainerConstants.OPERATION_PASSWORD));
     }
     
     /**
