@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.mode.lock.LockContext;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -74,6 +74,6 @@ class PrometheusPluginLifecycleServiceTest {
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(LockContext.class), mock(PersistRepository.class));
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, mock(PersistRepository.class), mock(ExclusiveOperatorContext.class));
     }
 }

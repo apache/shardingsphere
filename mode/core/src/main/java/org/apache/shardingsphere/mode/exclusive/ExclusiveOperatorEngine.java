@@ -15,21 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
+package org.apache.shardingsphere.mode.exclusive;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
+
+import java.sql.SQLException;
 
 /**
- * Migration prepare lock.
+ * Exclusive operator engine.
  */
 @RequiredArgsConstructor
-public final class MigrationPrepareLock implements GlobalLock {
+public final class ExclusiveOperatorEngine {
     
-    private final String jobId;
+    private final ExclusiveOperatorContext exclusiveOperatorContext;
     
-    @Override
-    public String getName() {
-        return String.format("migration_prepare_%s", jobId);
+    /**
+     * Operate with exclusive lock.
+     *
+     * @param operation exclusive operation
+     * @param timeoutMillis timeout millis
+     * @param callback callback
+     * @throws SQLException SQL exception
+     */
+    public void operate(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback callback) throws SQLException {
+        if (exclusiveOperatorContext.start(operation, timeoutMillis)) {
+            try {
+                callback.execute();
+            } finally {
+                exclusiveOperatorContext.stop(operation);
+            }
+        }
     }
 }
