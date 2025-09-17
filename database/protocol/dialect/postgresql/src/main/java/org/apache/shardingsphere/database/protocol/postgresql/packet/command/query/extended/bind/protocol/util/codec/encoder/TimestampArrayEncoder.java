@@ -37,20 +37,20 @@ public class TimestampArrayEncoder extends AbstractArrayEncoder<Timestamp> {
     }
     
     @Override
-    public void write(final Timestamp item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(8);
+    public void write(final Timestamp item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(8);
         long postgreSQLTime = PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(item);
-        baos.write((byte) (postgreSQLTime >>> 56));
-        baos.write((byte) (postgreSQLTime >>> 48));
-        baos.write((byte) (postgreSQLTime >>> 40));
-        baos.write((byte) (postgreSQLTime >>> 32));
-        baos.write((byte) (postgreSQLTime >>> 24));
-        baos.write((byte) (postgreSQLTime >>> 16));
-        baos.write((byte) (postgreSQLTime >>> 8));
-        baos.write((byte) postgreSQLTime);
+        bout.write((byte) (postgreSQLTime >>> 56));
+        bout.write((byte) (postgreSQLTime >>> 48));
+        bout.write((byte) (postgreSQLTime >>> 40));
+        bout.write((byte) (postgreSQLTime >>> 32));
+        bout.write((byte) (postgreSQLTime >>> 24));
+        bout.write((byte) (postgreSQLTime >>> 16));
+        bout.write((byte) (postgreSQLTime >>> 8));
+        bout.write((byte) postgreSQLTime);
     }
     
     @Override

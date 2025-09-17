@@ -48,14 +48,14 @@ public final class StringArrayEncoder extends AbstractArrayEncoder<String> {
     
     @SneakyThrows
     @Override
-    public void write(final String item, final ByteArrayOutputStream baos, final Charset charset) {
+    public void write(final String item, final ByteArrayOutputStream bout, final Charset charset) {
         byte[] bytes = item.getBytes(charset);
         int length = bytes.length;
-        baos.write((byte) (length >>> 24));
-        baos.write((byte) (length >>> 16));
-        baos.write((byte) (length >>> 8));
-        baos.write(length);
-        baos.write(bytes);
+        bout.write((byte) (length >>> 24));
+        bout.write((byte) (length >>> 16));
+        bout.write((byte) (length >>> 8));
+        bout.write(length);
+        bout.write(bytes);
     }
     
     @Override

@@ -37,20 +37,20 @@ public class TimeArrayEncoder extends AbstractArrayEncoder<Time> {
     }
     
     @Override
-    public void write(final Time item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(8);
+    public void write(final Time item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(8);
         long time = item.getTime() * 1000 + TimeZone.getDefault().getRawOffset() * 1000L;
-        baos.write((byte) (time >>> 56));
-        baos.write((byte) (time >>> 48));
-        baos.write((byte) (time >>> 40));
-        baos.write((byte) (time >>> 32));
-        baos.write((byte) (time >>> 24));
-        baos.write((byte) (time >>> 16));
-        baos.write((byte) (time >>> 8));
-        baos.write((byte) time);
+        bout.write((byte) (time >>> 56));
+        bout.write((byte) (time >>> 48));
+        bout.write((byte) (time >>> 40));
+        bout.write((byte) (time >>> 32));
+        bout.write((byte) (time >>> 24));
+        bout.write((byte) (time >>> 16));
+        bout.write((byte) (time >>> 8));
+        bout.write((byte) time);
     }
     
     @Override

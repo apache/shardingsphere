@@ -39,13 +39,13 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
     }
     
     /**
-     * encode item to baos.
+     * encode item to baut.
      *
      * @param item item
-     * @param baos baos
+     * @param bout baut
      * @param charset charset
      */
-    public abstract void write(D item, ByteArrayOutputStream baos, Charset charset);
+    public abstract void write(D item, ByteArrayOutputStream bout, Charset charset);
     
     /**
      * get item String value.
@@ -59,11 +59,11 @@ public abstract class AbstractArrayEncoder<D> implements ArrayEncoder<D[]> {
      * encode data without meeta data header.
      *
      * @param array array to encode
-     * @param baos output stream
+     * @param bout output stream
      * @param charset charset
      */
-    public void toSingleDimensionBinaryRepresentation(final D[] array, final ByteArrayOutputStream baos, final Charset charset) {
-        writeBytes(array, baos, charset);
+    public void toSingleDimensionBinaryRepresentation(final D[] array, final ByteArrayOutputStream bout, final Charset charset) {
+        writeBytes(array, bout, charset);
     }
     
     @SneakyThrows(IOException.class)

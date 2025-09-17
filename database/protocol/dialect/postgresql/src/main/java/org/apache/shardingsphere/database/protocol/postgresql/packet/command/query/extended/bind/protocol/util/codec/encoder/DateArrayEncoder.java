@@ -40,14 +40,14 @@ public final class DateArrayEncoder extends AbstractArrayEncoder<Date> {
     
     @SneakyThrows({PSQLException.class, IOException.class})
     @Override
-    public void write(final Date item, final ByteArrayOutputStream baos, final Charset charset) {
-        baos.write(0);
-        baos.write(0);
-        baos.write(0);
-        baos.write(4);
+    public void write(final Date item, final ByteArrayOutputStream bout, final Charset charset) {
+        bout.write(0);
+        bout.write(0);
+        bout.write(0);
+        bout.write(4);
         byte[] binaryDate = new byte[4];
         new TimestampUtils(false, null).toBinDate(null, binaryDate, item);
-        baos.write(binaryDate);
+        bout.write(binaryDate);
     }
     
     @Override
