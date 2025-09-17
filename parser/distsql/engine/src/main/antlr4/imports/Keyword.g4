@@ -346,3 +346,7 @@ CHECK_PRIVILEGES
 TIMEOUT
     : T I M E O U T
     ;
+
+TEMP
+    : T E M P
+    ;
