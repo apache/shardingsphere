@@ -20,12 +20,10 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.env;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.MariaDBStorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.MySQLStorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.OpenGaussStorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.dialect.PostgreSQLStorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 
@@ -48,25 +46,10 @@ public final class PipelineE2EEnvironment {
     
     private final PipelineProxyTypeEnum itProxyType;
     
-    private final List<String> mysqlVersions;
-    
-    private final List<String> mariadbVersions;
-    
-    private final List<String> postgresqlVersions;
-    
-    private final List<String> openGaussVersions;
-    
-    private final List<String> oracleVersions;
-    
     private PipelineE2EEnvironment() {
         props = loadProperties();
         itEnvType = PipelineEnvTypeEnum.valueOf(props.getProperty("pipeline.it.env.type", PipelineEnvTypeEnum.NONE.name()).toUpperCase());
         itProxyType = PipelineProxyTypeEnum.valueOf(props.getProperty("pipeline.it.proxy.type", PipelineProxyTypeEnum.NONE.name()).toUpperCase());
-        mysqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mysql.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
-        mariadbVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.mariadb.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
-        postgresqlVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.postgresql.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
-        openGaussVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.opengauss.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
-        oracleVersions = Arrays.stream(props.getOrDefault("pipeline.it.docker.oracle.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
     }
     
     @SneakyThrows(IOException.class)
@@ -82,27 +65,14 @@ public final class PipelineE2EEnvironment {
     }
     
     /**
-     * Get actual data source connection.
+     * Get actual database port.
      *
      * @param databaseType database type
-     * @return jdbc connection
-     * @throws UnsupportedOperationException unsupported operation exception
+     * @return actual database port
      */
     public int getActualDatabasePort(final DatabaseType databaseType) {
-        switch (databaseType.getType()) {
-            case "MySQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mysql.port", new MySQLStorageContainerConfigurationOption().getPort()).toString());
-            case "MariaDB":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.mariadb.port", new MariaDBStorageContainerConfigurationOption().getPort()).toString());
-            case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.postgresql.port", new PostgreSQLStorageContainerConfigurationOption().getPort()).toString());
-            case "openGauss":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.opengauss.port", new OpenGaussStorageContainerConfigurationOption().getPort()).toString());
-            case "Oracle":
-                return Integer.parseInt(props.getOrDefault("pipeline.it.native.oracle.port", 1521).toString());
-            default:
-                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
-        }
+        int defaultPort = DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType).getPort();
+        return Integer.parseInt(props.getProperty(String.format("pipeline.it.native.%s.port", databaseType.getType().toLowerCase()), String.valueOf(defaultPort)));
     }
     
     /**
@@ -148,26 +118,13 @@ public final class PipelineE2EEnvironment {
      *
      * @param databaseType database type
      * @return database storage container images
-     * @throws UnsupportedOperationException unsupported operation exception
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
-        if (PipelineEnvTypeEnum.NATIVE == getItEnvType()) {
+        if (PipelineEnvTypeEnum.NATIVE == itEnvType) {
             return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
-        switch (databaseType.getType()) {
-            case "MySQL":
-                return mysqlVersions;
-            case "MariaDB":
-                return mariadbVersions;
-            case "PostgreSQL":
-                return postgresqlVersions;
-            case "openGauss":
-                return openGaussVersions;
-            case "Oracle":
-                return oracleVersions;
-            default:
-                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
-        }
+        return Arrays.stream(props.getOrDefault(String.format("pipeline.it.docker.%s.version", databaseType.getType().toLowerCase()), "").toString()
+                .split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
     }
 }
