@@ -28,7 +28,8 @@ prepare_build_env:
   image: $JDK_BUILD_IMAGE
   script:
     - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils m4
-    - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
+    - PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+    - echo PROJECT_VERSION=${PROJECT_VERSION} >> build.env
     - m4 -DRSHRD_VERSION=${PROJECT_VERSION} ci/artifacts.m4 >> ci/artifacts
   artifacts:
     reports:
@@ -55,6 +56,8 @@ build_java11:
 test_java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   image: $JDK_TEST_IMAGE
   dependencies:
     - build_java11
