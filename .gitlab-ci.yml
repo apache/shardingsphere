@@ -33,7 +33,6 @@ prepare_build_env:
   artifacts:
     reports:
       dotenv: build.env
-  cache:
     paths:
       - ci/artifacts
 
