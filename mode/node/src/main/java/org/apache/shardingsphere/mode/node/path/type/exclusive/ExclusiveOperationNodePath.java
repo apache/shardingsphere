@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.statistics;
+package org.apache.shardingsphere.mode.node.path.type.exclusive;
 
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.node.path.NodePath;
+import org.apache.shardingsphere.mode.node.path.NodePathEntity;
 
 /**
- * Statistics lock.
+ * Exclusive operation node path.
  */
-public final class StatisticsLock implements GlobalLock {
+@NodePathEntity("/exclusive_operation/${name}")
+@RequiredArgsConstructor
+@Getter
+public final class ExclusiveOperationNodePath implements NodePath {
     
-    @Override
-    public String getName() {
-        return "statistics";
-    }
+    private final String name;
 }

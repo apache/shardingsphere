@@ -21,11 +21,11 @@ import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExec
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorClusterModeRequired;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mode.lock.LockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.lock.exception.NotLockedClusterException;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
+
+import java.sql.SQLException;
 
 /**
  * Unlock cluster executor.
@@ -34,20 +34,14 @@ import org.apache.shardingsphere.mode.state.ShardingSphereState;
 public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<UnlockClusterStatement> {
     
     @Override
-    public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) {
+    public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkState(contextManager);
-        LockContext lockContext = contextManager.getLockContext();
-        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(new ClusterLock());
         long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
-        if (lockContext.tryLock(lockDefinition, timeoutMillis)) {
-            try {
-                checkState(contextManager);
-                contextManager.getPersistServiceFacade().getStateService().update(ShardingSphereState.OK);
-                // TODO unlock snapshot info if locked
-            } finally {
-                lockContext.unlock(lockDefinition);
-            }
-        }
+        contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), timeoutMillis, () -> {
+            checkState(contextManager);
+            contextManager.getPersistServiceFacade().getStateService().update(ShardingSphereState.OK);
+            // TODO unlock snapshot info if locked
+        });
     }
     
     private void checkState(final ContextManager contextManager) {

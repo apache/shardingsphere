@@ -21,9 +21,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
-import org.apache.shardingsphere.mode.lock.LockContext;
-import org.apache.shardingsphere.mode.lock.LockDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLockDefinition;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -102,17 +99,18 @@ public final class BackendTransactionManager implements TransactionManager {
             return;
         }
         DatabaseType databaseType = ProxyContext.getInstance().getDatabaseType();
-        LockContext lockContext = ProxyContext.getInstance().getContextManager().getLockContext();
         boolean isNeedLock = isNeedLockWhenCommit();
-        LockDefinition lockDefinition = null;
+        if (isNeedLock) {
+            // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
+            ProxyContext.getInstance().getContextManager().getExclusiveOperatorEngine().operate(new TransactionCommitOperation(), 200L, () -> commit(databaseType));
+        } else {
+            commit(databaseType);
+        }
+    }
+    
+    private void commit(final DatabaseType databaseType) throws SQLException {
         try {
             // FIXME if timeout when lock required, TSO not assigned, but commit will continue, solution is use redis lock in impl to instead of reg center's lock. #35041
-            if (isNeedLock) {
-                lockDefinition = new GlobalLockDefinition(new TransactionCommitLock());
-                if (!lockContext.tryLock(lockDefinition, 200L)) {
-                    return;
-                }
-            }
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().beforeCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
             }
@@ -124,9 +122,6 @@ public final class BackendTransactionManager implements TransactionManager {
         } finally {
             for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
                 entry.getValue().afterCommit(entry.getKey(), databaseType, connection.getCachedConnections().values(), getTransactionContext());
-            }
-            if (isNeedLock) {
-                lockContext.unlock(lockDefinition);
             }
             for (Connection each : connection.getCachedConnections().values()) {
                 ConnectionSavepointManager.getInstance().transactionFinished(each);

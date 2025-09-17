@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock;
-
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
+package org.apache.shardingsphere.mode.exclusive;
 
 /**
- * Cluster lock.
+ * Exclusive operation.
  */
-public final class ClusterLock implements GlobalLock {
+public interface ExclusiveOperation {
     
-    @Override
-    public String getName() {
-        return "cluster_lock";
-    }
+    /**
+     * Get operation name.
+     *
+     * @return operation name
+     */
+    String getName();
 }

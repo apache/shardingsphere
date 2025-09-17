@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
+package org.apache.shardingsphere.data.pipeline.scenario.migration.preparer;
 
-import org.apache.shardingsphere.mode.manager.cluster.lock.global.GlobalLock;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperation;
 
 /**
- * Transaction commit lock.
+ * Migration prepare exclusive operation.
  */
-public final class TransactionCommitLock implements GlobalLock {
+@RequiredArgsConstructor
+public final class MigrationPrepareOperation implements ExclusiveOperation {
+    
+    private final String jobId;
     
     @Override
     public String getName() {
-        return "transaction_commit";
+        return String.format("migration_prepare_%s", jobId);
     }
 }
