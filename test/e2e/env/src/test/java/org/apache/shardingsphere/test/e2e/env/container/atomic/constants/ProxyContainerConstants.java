@@ -30,8 +30,6 @@ public final class ProxyContainerConstants {
     
     public static final String PASSWORD = "Proxy@123";
     
-    public static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
-    
     public static final String PROXY_ROOT_PATH_IN_CONTAINER = "/opt/shardingsphere-proxy/";
     
     public static final String CONFIG_PATH_IN_CONTAINER = PROXY_ROOT_PATH_IN_CONTAINER + "conf/";
