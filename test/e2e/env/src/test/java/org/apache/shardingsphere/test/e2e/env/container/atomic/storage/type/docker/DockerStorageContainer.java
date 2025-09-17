@@ -56,7 +56,6 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     
     private final String scenario;
     
-    @Getter
     private final int majorVersion;
     
     @Getter
