@@ -20,18 +20,15 @@ package org.apache.shardingsphere.mode.exclusive;
 import java.sql.SQLException;
 
 /**
- * Exclusive operation callback.
- *
- * @param <T> type of return value
+ * Exclusive operation void callback.
  */
 @FunctionalInterface
-public interface ExclusiveOperationCallback<T> {
+public interface ExclusiveOperationVoidCallback {
     
     /**
      * Execute.
      *
-     * @return execution result
      * @throws SQLException SQL exception
      */
-    T execute() throws SQLException;
+    void execute() throws SQLException;
 }
