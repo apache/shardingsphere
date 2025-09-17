@@ -74,7 +74,7 @@ deploy_to_release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci-url ${CI_URL} --context ${BUILD_TYPE}
+    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts --ci-url ${CI_URL} #--context ${BUILD_TYPE}
   only:
     variables:
       - $RELEASE_HUB_KEY
