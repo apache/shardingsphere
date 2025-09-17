@@ -30,20 +30,42 @@ public final class ExclusiveOperatorEngine {
     private final ExclusiveOperatorContext exclusiveOperatorContext;
     
     /**
-     * Operate with exclusive lock.
+     * Operate with exclusive operation and void callback.
+     *
+     * @param operation exclusive operation
+     * @param timeoutMillis timeout millis
+     * @param voidCallback void callback
+     * @throws SQLException SQL exception
+     */
+    public void operate(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationVoidCallback voidCallback) throws SQLException {
+        operateWithResult(operation, timeoutMillis, asVoidCallback(voidCallback));
+    }
+    
+    private ExclusiveOperationCallback<Void> asVoidCallback(final ExclusiveOperationVoidCallback voidCallback) {
+        return () -> {
+            voidCallback.execute();
+            return null;
+        };
+    }
+    
+    /**
+     * Operate with exclusive operation and return result.
      *
      * @param operation exclusive operation
      * @param timeoutMillis timeout millis
      * @param callback callback
+     * @param <T> type of return value
+     * @return execution result
      * @throws SQLException SQL exception
      */
-    public void operate(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback callback) throws SQLException {
+    public <T> T operateWithResult(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback<T> callback) throws SQLException {
         if (exclusiveOperatorContext.start(operation, timeoutMillis)) {
             try {
-                callback.execute();
+                return callback.execute();
             } finally {
                 exclusiveOperatorContext.stop(operation);
             }
         }
+        return null;
     }
 }
