@@ -21,11 +21,12 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase.TransactionTestCaseParameter;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.command.CommonSQLCommand;
@@ -275,12 +276,12 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName, final TransactionContainerComposer containerComposer) {
+        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, containerComposer.getDatabaseType());
         if (ENV.getItEnvType() == TransactionE2EEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = (DockerStorageContainer) ((TransactionDockerContainerComposer) containerComposer.getContainerComposer()).getStorageContainer();
-            return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(),
-                    containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
+            return dataSourceEnvironment.getURL(containerComposer.getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
         }
-        return DataSourceEnvironment.getURL(containerComposer.getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(containerComposer.getDatabaseType()), databaseName);
+        return dataSourceEnvironment.getURL("127.0.0.1", ENV.getActualDataSourceDefaultPort(containerComposer.getDatabaseType()), databaseName);
     }
     
     /**
@@ -297,8 +298,10 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private void executeWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute:{}.", sql);
-        connection.createStatement().execute(sql);
+        log.info("Connection execute: {}.", sql);
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
         Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
@@ -306,9 +309,9 @@ public abstract class TransactionBaseE2EIT {
         try (Connection connection = containerComposer.getDataSource().getConnection()) {
             int retryNumber = 0;
             while (retryNumber <= 3) {
-                try {
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(sql);
+                try (
+                        Statement statement = connection.createStatement();
+                        ResultSet resultSet = statement.executeQuery(sql)) {
                     int result = 0;
                     while (resultSet.next()) {
                         result++;

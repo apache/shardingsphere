@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.mount.Mou
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -75,9 +75,10 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private void initDatabase() {
-        DataSource dataSource = StorageContainerUtils.generateDataSource(
-                DataSourceEnvironment.getURL(databaseType, env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword());
         if (null != option) {
+            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+            DataSource dataSource = StorageContainerUtils.generateDataSource(
+                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword());
             new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
         }
     }
@@ -91,9 +92,10 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
+        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
         for (String each : databaseNames) {
             DataSource dataSource = StorageContainerUtils.generateDataSource(
-                    DataSourceEnvironment.getURL(databaseType, env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword());
+                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword());
             result.put(each, dataSource);
         }
         return result;

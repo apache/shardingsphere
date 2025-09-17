@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.doc
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.StorageContainerConstants;
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -106,9 +107,10 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     }
     
     private String getURL() {
+        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
         return option.getDefaultDatabaseName(majorVersion)
-                .map(optional -> DataSourceEnvironment.getURL(option.getType(), "localhost", getFirstMappedPort(), optional))
-                .orElseGet(() -> DataSourceEnvironment.getURL(option.getType(), "localhost", getFirstMappedPort()));
+                .map(optional -> dataSourceEnvironment.getURL("localhost", getFirstMappedPort(), optional))
+                .orElseGet(() -> dataSourceEnvironment.getURL("localhost", getFirstMappedPort()));
     }
     
     @Override
@@ -146,8 +148,8 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      * @return JDBC URL
      */
     public final String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(
-                option.getType(), getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
+        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
+        return dataSourceEnvironment.getURL(getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
     }
     
     /**
