@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl;
 
 import com.google.common.base.Strings;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.AdapterContainer;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.Ad
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
@@ -65,8 +66,9 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
         }
         addEnv("TZ", "UTC");
         mapResources(config.getMountedResources());
-        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
-                getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
+        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+        setWaitStrategy(new JdbcConnectionWaitStrategy(() -> DriverManager.getConnection(
+                dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)));
         withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
@@ -74,8 +76,9 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
         if (null == dataSource) {
-            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()),
-                    ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
+            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
+                    dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
         }
         return targetDataSourceProvider.get();
     }

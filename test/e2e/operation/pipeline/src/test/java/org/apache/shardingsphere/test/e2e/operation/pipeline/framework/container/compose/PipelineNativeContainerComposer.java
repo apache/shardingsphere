@@ -19,11 +19,12 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.framework.containe
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.appender.JdbcUrlAppender;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 
 import java.sql.Connection;
@@ -54,12 +55,13 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
         int actualDatabasePort = ENV.getActualDatabasePort(databaseType);
         String username = ENV.getActualDataSourceUsername(databaseType);
         String password = ENV.getActualDataSourcePassword(databaseType);
+        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
         String jdbcUrl;
         switch (databaseType.getType()) {
             case "MySQL":
             case "MariaDB":
                 String queryAllTables = String.format("select table_name from information_schema.tables where table_schema='%s' and table_type='BASE TABLE'", databaseName);
-                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
+                jdbcUrl = dataSourceEnvironment.getURL("localhost", actualDatabasePort, databaseName);
                 try (
                         Connection connection = DriverManager.getConnection(
                                 jdbcUrlAppender.appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString()))), username, password)) {
@@ -73,7 +75,7 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
                 break;
             case "openGauss":
             case "PostgreSQL":
-                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, databaseName);
+                jdbcUrl = dataSourceEnvironment.getURL("localhost", actualDatabasePort, databaseName);
                 try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
                     dropTableWithSchema(connection, "public");
                     dropTableWithSchema(connection, "test");
@@ -81,7 +83,7 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
                 }
                 break;
             case "Oracle":
-                jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", actualDatabasePort, "");
+                jdbcUrl = dataSourceEnvironment.getURL("localhost", actualDatabasePort, "");
                 try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
                     dropTableWithOracle(connection, databaseName);
                 }
@@ -121,7 +123,7 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
         DatabaseType databaseType = "Oracle".equals(this.databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : this.databaseType;
-        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
+        return DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType).getURL("localhost", 3307, databaseName);
     }
     
     @Override

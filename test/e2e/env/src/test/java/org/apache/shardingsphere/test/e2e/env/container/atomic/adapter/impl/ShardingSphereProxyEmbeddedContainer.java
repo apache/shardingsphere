@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
@@ -38,8 +39,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.Storage
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.wait.JdbcConnectionWaitStrategy;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 import org.testcontainers.utility.Base58;
@@ -93,8 +94,9 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
         if (null == dataSource) {
-            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, "127.0.0.1", 3307, config.getProxyDataSourceName()),
-                    ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
+            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(
+                    "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
         }
         return targetDataSourceProvider.get();
     }

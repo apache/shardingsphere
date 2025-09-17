@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.Z
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.config.proxy.PipelineProxyContainerConfigurationFactory;
@@ -91,7 +91,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
             port = proxyContainer.getFirstMappedPort();
         }
         DatabaseType databaseType = "Oracle".equals(this.databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : this.databaseType;
-        return DataSourceEnvironment.getURL(databaseType, host, port, databaseName);
+        return DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType).getURL(host, port, databaseName);
     }
     
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Optional;
 /**
  * Storage container configuration option.
  */
+@SingletonSPI
 public interface StorageContainerConfigurationOption extends DatabaseTypedSPI {
     
     /**
