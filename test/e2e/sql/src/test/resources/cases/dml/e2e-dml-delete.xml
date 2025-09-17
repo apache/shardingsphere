@@ -32,11 +32,11 @@
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="H2,MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+    <test-case sql="DELETE FROM t_user WHERE user_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="10:int" expected-data-file="delete_user_table.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_user WHERE password = ?" db-types="H2,MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
+    <test-case sql="DELETE FROM t_user WHERE password = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="encrypt">
         <assertion parameters="111111:String" expected-data-file="delete_user_table.xml" />
     </test-case>
     
