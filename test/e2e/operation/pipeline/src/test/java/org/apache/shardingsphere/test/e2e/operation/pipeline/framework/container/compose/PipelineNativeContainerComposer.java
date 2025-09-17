@@ -41,8 +41,6 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     
     private static final PipelineE2EEnvironment ENV = PipelineE2EEnvironment.getInstance();
     
-    private final JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
-    
     private final DatabaseType databaseType;
     
     public PipelineNativeContainerComposer(final DatabaseType databaseType) {
@@ -60,26 +58,17 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
         switch (databaseType.getType()) {
             case "MySQL":
             case "MariaDB":
-                String queryAllTables = String.format("select table_name from information_schema.tables where table_schema='%s' and table_type='BASE TABLE'", databaseName);
-                jdbcUrl = dataSourceEnvironment.getURL("localhost", actualDatabasePort, databaseName);
-                try (
-                        Connection connection = DriverManager.getConnection(
-                                jdbcUrlAppender.appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString()))), username, password)) {
-                    try (ResultSet resultSet = connection.createStatement().executeQuery(queryAllTables)) {
-                        List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
-                        for (String each : actualTableNames) {
-                            connection.createStatement().executeUpdate(String.format("drop table %s", each));
-                        }
-                    }
+                jdbcUrl = new JdbcUrlAppender().appendQueryProperties(dataSourceEnvironment.getURL("localhost", actualDatabasePort, databaseName),
+                        PropertiesBuilder.build(new Property("allowPublicKeyRetrieval", Boolean.TRUE.toString())));
+                try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+                    dropTableWithMySQL(connection, databaseName);
                 }
                 break;
             case "openGauss":
             case "PostgreSQL":
                 jdbcUrl = dataSourceEnvironment.getURL("localhost", actualDatabasePort, databaseName);
                 try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
-                    dropTableWithSchema(connection, "public");
-                    dropTableWithSchema(connection, "test");
-                    connection.createStatement().execute("DROP SCHEMA IF EXISTS test;");
+                    dropTableWithPostgreSQL(connection);
                 }
                 break;
             case "Oracle":
@@ -92,6 +81,16 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
         }
     }
     
+    private void dropTableWithMySQL(final Connection connection, final String databaseName) throws SQLException {
+        String queryAllTables = String.format("SELECT table_name FROM information_schema.tables WHERE table_schema='%s' and table_type='BASE TABLE'", databaseName);
+        try (ResultSet resultSet = connection.createStatement().executeQuery(queryAllTables)) {
+            List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
+            for (String each : actualTableNames) {
+                connection.createStatement().executeUpdate(String.format("DROP TABLE %s", each));
+            }
+        }
+    }
+    
     private List<String> getFirstColumnValueFromResult(final ResultSet resultSet) throws SQLException {
         List<String> result = new LinkedList<>();
         while (resultSet.next()) {
@@ -100,18 +99,24 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
         return result;
     }
     
-    private void dropTableWithSchema(final Connection connection, final String schema) throws SQLException {
-        String queryAllTables = "select tablename from pg_tables where schemaname='%s'";
+    private void dropTableWithPostgreSQL(final Connection connection) throws SQLException {
+        dropTableWithPostgreSQL(connection, "public");
+        dropTableWithPostgreSQL(connection, "test");
+        connection.createStatement().execute("DROP SCHEMA IF EXISTS test;");
+    }
+    
+    private void dropTableWithPostgreSQL(final Connection connection, final String schema) throws SQLException {
+        String queryAllTables = "SELECT tablename FROM pg_tables WHERE='%s'";
         try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
             List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
             for (String each : actualTableNames) {
-                connection.createStatement().executeUpdate(String.format("drop table %s.%s", schema, each));
+                connection.createStatement().executeUpdate(String.format("DROP TABLE %s.%s", schema, each));
             }
         }
     }
     
     private void dropTableWithOracle(final Connection connection, final String schema) throws SQLException {
-        String queryAllTables = String.format("SELECT TABLE_NAME FROM ALL_TABLES WHERE OWNER = '%s'", schema);
+        String queryAllTables = String.format("SELECT TABLE_NAME FROM ALL_TABLES WHERE OWNER='%s'", schema);
         try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
             List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
             for (String each : actualTableNames) {
