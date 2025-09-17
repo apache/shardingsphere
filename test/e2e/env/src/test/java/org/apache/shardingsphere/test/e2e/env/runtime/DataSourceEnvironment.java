@@ -33,8 +33,6 @@ public final class DataSourceEnvironment {
      */
     public static String getDriverClassName(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
-            case "H2":
-                return "org.h2.Driver";
             case "MySQL":
                 return "com.mysql.cj.jdbc.Driver";
             case "MariaDB":
@@ -61,9 +59,6 @@ public final class DataSourceEnvironment {
      */
     public static String getURL(final DatabaseType databaseType, final String host, final int port) {
         switch (databaseType.getType()) {
-            case "H2":
-                E2ETestEnvironment env = E2ETestEnvironment.getInstance();
-                return String.format("jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=%s;PASSWORD=%s", env.getNativeStorageUsername(), env.getNativeStoragePassword());
             case "MySQL":
                 return String.format("jdbc:mysql://%s:%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
                         + "&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowMultiQueries=true&rewriteBatchedStatements=true", host, port);
@@ -93,10 +88,6 @@ public final class DataSourceEnvironment {
      */
     public static String getURL(final DatabaseType databaseType, final String host, final int port, final String dataSourceName) {
         switch (databaseType.getType()) {
-            case "H2":
-                E2ETestEnvironment env = E2ETestEnvironment.getInstance();
-                return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=%s;PASSWORD=%s",
-                        dataSourceName, env.getNativeStorageUsername(), env.getNativeStoragePassword());
             case "MySQL":
                 return String.format(
                         "jdbc:mysql://%s:%s/%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"

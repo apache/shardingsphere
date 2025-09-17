@@ -113,7 +113,7 @@
         <assertion parameters="1:int, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
     
-    <!--<test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
+    <!--<test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">-->
     <!--<assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="pro_insert_order_value.xml" />-->
     <!--</test-case>-->
     

@@ -194,7 +194,7 @@ public final class E2ETestParameterGenerator {
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL,openGauss,Hive" : databaseTypes;
+        String candidates = Strings.isNullOrEmpty(databaseTypes) ? "MySQL,Oracle,SQLServer,PostgreSQL,openGauss,Hive" : databaseTypes;
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(each -> TypedSPILoader.getService(DatabaseType.class, each)).collect(Collectors.toList());
     }
 }
