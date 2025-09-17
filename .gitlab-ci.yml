@@ -27,15 +27,15 @@ prepare_build_env:
   stage: prepare
   image: $JDK_BUILD_IMAGE
   script:
-    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils
+    - apt update && DEBIAN_FRONTEND=noninteractive apt install -y libxml2-utils m4
     - echo PROJECT_VERSION=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml) >> build.env
+    - m4 -DRSHRD_VERSION=${PROJECT_VERSION} >> ci/artifacts
   artifacts:
     reports:
       dotenv: build.env
-#  cache:
-#    paths:
-#    - ${M2_DIR}
-
+  cache:
+    paths:
+      - ci/artifacts
 
 build_java11:
   tags: ["docker", "linux", "x86_64"]
@@ -63,7 +63,6 @@ test_java8:
     - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
   allow_failure: true
 
-
 # relhub deploy example:
 # http://git.red-soft.biz/red-database/red-database/-/blob/master/.gitlab-ci.yml#L779
 
@@ -73,4 +72,4 @@ deploy_to_release_hub:
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - printf ${PROJECT_VERSION}
+    - cat ci/artifacts
