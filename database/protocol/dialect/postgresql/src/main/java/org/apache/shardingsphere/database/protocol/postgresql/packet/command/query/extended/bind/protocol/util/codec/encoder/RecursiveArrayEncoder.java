@@ -31,6 +31,7 @@ import java.nio.charset.Charset;
  *
  * @param <A> base type
  */
+@SuppressWarnings("rawtypes")
 public class RecursiveArrayEncoder<A> implements ArrayEncoder {
     
     private final AbstractArrayEncoder<A> support;
@@ -91,21 +92,22 @@ public class RecursiveArrayEncoder<A> implements ArrayEncoder {
     }
     
     @SneakyThrows(IOException.class)
-    private void writeArray(final byte[] buffer, final ByteArrayOutputStream baos, final Object array, final int depth, final boolean first, final Charset charset) {
+    @SuppressWarnings("unchecked")
+    private void writeArray(final byte[] buffer, final ByteArrayOutputStream bout, final Object array, final int depth, final boolean first, final Charset charset) {
         int length = Array.getLength(array);
         if (first) {
             ByteConverter.int4(buffer, 0, length > 0 ? Array.getLength(Array.get(array, 0)) : 0);
-            baos.write(buffer);
+            bout.write(buffer);
             // postgresql uses 1 base by default
             ByteConverter.int4(buffer, 0, 1);
-            baos.write(buffer);
+            bout.write(buffer);
         }
         for (int i = 0; i < length; i++) {
             Object subArray = Array.get(array, i);
             if (depth > 2) {
-                writeArray(buffer, baos, subArray, depth - 1, i == 0, charset);
+                writeArray(buffer, bout, subArray, depth - 1, i == 0, charset);
             } else {
-                support.toSingleDimensionBinaryRepresentation((A[]) subArray, baos, charset);
+                support.toSingleDimensionBinaryRepresentation((A[]) subArray, bout, charset);
             }
         }
     }
