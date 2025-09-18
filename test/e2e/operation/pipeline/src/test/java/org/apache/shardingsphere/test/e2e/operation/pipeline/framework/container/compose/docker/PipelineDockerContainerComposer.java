@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.Shar
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.ZookeeperContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
@@ -58,8 +57,8 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
         ShardingSpherePreconditions.checkState(storageContainerCount >= 1, () -> new InvalidParameterException("storageContainerCount must >= 1"));
         GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         for (int i = 0; i < storageContainerCount; i++) {
-            DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(
-                    databaseType, storageContainerImage, DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null), null));
+            DockerStorageContainer storageContainer = getContainers().registerContainer(
+                    new DockerStorageContainer(storageContainerImage, DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType), null));
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
             storageContainers.add(storageContainer);
         }
