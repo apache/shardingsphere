@@ -46,4 +46,11 @@ public interface GovernanceContainerOption extends TypedSPI {
      * @return success log pattern
      */
     String getSuccessLogPattern();
+    
+    /**
+     * Get abbreviation.
+     *
+     * @return abbreviation
+     */
+    String getAbbreviation();
 }

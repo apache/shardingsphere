@@ -46,6 +46,6 @@ public final class GovernanceContainer extends DockerITContainer {
     
     @Override
     public String getAbbreviation() {
-        return getName();
+        return option.getAbbreviation();
     }
 }
