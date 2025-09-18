@@ -29,9 +29,6 @@ workflow:
   parallel:
     matrix:
       - TYPE: ["static", "mostly", "dynamic"]
-  only:
-    variables:
-      - ${PROJECT_VERSION}
   dependencies:
     - prepare_build_env
   variables:
