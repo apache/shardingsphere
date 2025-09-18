@@ -54,6 +54,7 @@ prepare_build_env:
 
 build:proxy-native-docker:
   extends: .build-proxy-native-template
+  stage: build
   script: 
     - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
 
@@ -80,7 +81,7 @@ test:java8:
     - if: $CI_COMMIT_BRANCH == "master"
   image: $JDK_TEST_IMAGE
   dependencies:
-    - build_java11
+    - build:java11
   script:
     - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
   allow_failure: true
