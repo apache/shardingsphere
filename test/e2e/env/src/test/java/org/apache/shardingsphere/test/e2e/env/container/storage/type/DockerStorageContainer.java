@@ -31,9 +31,9 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountConfi
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.DockerImageVersion;
+import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
-import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
@@ -63,6 +63,8 @@ public final class DockerStorageContainer extends DockerITContainer implements S
     
     private final int majorVersion;
     
+    private final DataSourceEnvironment dataSourceEnvironment;
+    
     @Getter
     private final Map<String, DataSource> actualDataSourceMap = new LinkedHashMap<>();
     
@@ -74,6 +76,7 @@ public final class DockerStorageContainer extends DockerITContainer implements S
         this.option = option;
         this.scenario = scenario;
         majorVersion = new DockerImageVersion(getContainerImage(containerImage, option)).getMajorVersion();
+        dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
     }
     
     private static String getContainerImage(final String containerImage, final StorageContainerConfigurationOption option) {
@@ -85,20 +88,11 @@ public final class DockerStorageContainer extends DockerITContainer implements S
     protected void configure() {
         setCommands();
         addEnvironments();
-        mapResources(new MountConfigurationResourceGenerator(option).generate(majorVersion, scenario));
-        if (option.isSupportDockerEntrypoint()) {
-            mapResources(new MountSQLResourceGenerator(option).generate(majorVersion, scenario));
-        }
+        mountConfigurations();
+        mountSQLFiles();
         setPrivilegedMode();
         withExposedPorts(getExposedPort());
-        if (option.isSupportDockerEntrypoint()) {
-            setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
-                    getURL(), StorageContainerConstants.CHECK_READY_USER, StorageContainerConstants.CHECK_READY_PASSWORD)));
-        } else {
-            setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
-                    getURL(), option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""), option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))));
-        }
-        withStartupTimeout(Duration.ofSeconds(option.getStartupTimeoutSeconds()));
+        setWaitStrategy();
     }
     
     private void setCommands() {
@@ -112,14 +106,30 @@ public final class DockerStorageContainer extends DockerITContainer implements S
         option.getEnvironments().forEach(this::addEnv);
     }
     
+    private void mountConfigurations() {
+        mapResources(new MountConfigurationResourceGenerator(option).generate(majorVersion, scenario));
+    }
+    
+    private void mountSQLFiles() {
+        if (option.isSupportDockerEntrypoint()) {
+            mapResources(new MountSQLResourceGenerator(option).generate(majorVersion, scenario));
+        }
+    }
+    
     private void setPrivilegedMode() {
         if (option.withPrivilegedMode()) {
             withPrivilegedMode(true);
         }
     }
     
+    private void setWaitStrategy() {
+        String user = option.isSupportDockerEntrypoint() ? StorageContainerConstants.CHECK_READY_USER : option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse("");
+        String password = option.isSupportDockerEntrypoint() ? StorageContainerConstants.CHECK_READY_PASSWORD : option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse("");
+        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(getURL(), user, password)));
+        withStartupTimeout(Duration.ofSeconds(option.getStartupTimeoutSeconds()));
+    }
+    
     private String getURL() {
-        DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
         return option.getDefaultDatabaseName(majorVersion)
                 .map(optional -> dataSourceEnvironment.getURL("localhost", getFirstMappedPort(), optional))
                 .orElseGet(() -> dataSourceEnvironment.getURL("localhost", getFirstMappedPort()));
@@ -133,7 +143,7 @@ public final class DockerStorageContainer extends DockerITContainer implements S
         }
         Thread.sleep(10000L);
         try (
-                Connection connection = DriverManager.getConnection(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType()).getURL("localhost", getFirstMappedPort()),
+                Connection connection = DriverManager.getConnection(dataSourceEnvironment.getURL("localhost", getFirstMappedPort()),
                         option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""), option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
             for (String each : new MountSQLResourceGenerator(option).generate(majorVersion, scenario).keySet()) {
                 SQLScriptUtils.execute(connection, each);
