@@ -21,8 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.impl.HiveContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 
 /**
@@ -60,9 +59,8 @@ public final class StorageContainerFactory {
             case "PostgreSQL":
             case "openGauss":
             case "MariaDB":
-                return new DockerStorageContainer(storageContainerImage, option, scenario);
             case "Hive":
-                return new HiveContainer(storageContainerImage, option, scenario);
+                return new DockerStorageContainer(storageContainerImage, option, scenario);
             default:
                 throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
