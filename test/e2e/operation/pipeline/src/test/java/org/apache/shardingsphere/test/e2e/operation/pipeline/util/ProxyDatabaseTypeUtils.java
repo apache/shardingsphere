@@ -30,7 +30,7 @@ public final class ProxyDatabaseTypeUtils {
     
     /**
      * Get proxy database type.
-     * 
+     *
      * @param databaseType database type
      * @return proxy database type
      */
