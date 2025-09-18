@@ -21,7 +21,6 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPi
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
@@ -92,8 +91,7 @@ class CreateTableSQLGeneratorIT {
     }
     
     private void startStorageContainer(final DatabaseType databaseType, final String storageContainerImage) {
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(
-                databaseType, storageContainerImage, DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null), null);
+        storageContainer = new DockerStorageContainer(storageContainerImage, DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType), null);
         storageContainer.start();
     }
     
