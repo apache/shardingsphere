@@ -22,6 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Proxy database type utility class.
  */
@@ -35,6 +38,12 @@ public final class ProxyDatabaseTypeUtils {
      * @return proxy database type
      */
     public static DatabaseType getProxyDatabaseType(final DatabaseType databaseType) {
-        return "Oracle".equals(databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : databaseType;
+        return getUnsupportedProxyDatabaseTypes().stream().anyMatch(each -> each.equals(databaseType.getTrunkDatabaseType().orElse(databaseType).getType()))
+                ? TypedSPILoader.getService(DatabaseType.class, "MySQL")
+                : databaseType;
+    }
+    
+    private static Collection<String> getUnsupportedProxyDatabaseTypes() {
+        return Collections.singleton("Oracle");
     }
 }
