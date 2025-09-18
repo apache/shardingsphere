@@ -37,6 +37,7 @@ workflow:
   dependencies:
     - prepare_build_env
   variables:
+    DOCKER_TLS_VERIFY: 0
     DOCKERFILES: "distribution/proxy-native"
     OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${PROJECT_VERSION}-${TYPE}
 
