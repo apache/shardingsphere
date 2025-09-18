@@ -16,10 +16,9 @@ stages:
 
 workflow:
   rules:
-    - if: ${CI_COMMIT_BRANCH} == "master"
+    - if: $CI_COMMIT_BRANCH == "master"
       when: always
-    #- if: $CI_PIPELINE_SOURCE == "push"
-    - if: ${CI_PIPELINE_SOURCE} == "web"
+    - if: $CI_PIPELINE_SOURCE == "web"
 
 ######
 # Templates
