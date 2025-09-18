@@ -111,11 +111,19 @@ wsl --install
 
 ### Windows Server
 
-对于通常的 Windows Server 2025 实例，操作等同于 Windows 11 Home 24H2。
+对于通常的 `Windows Server 2025` 实例，操作等同于 `Windows 11 Home 24H2`。
+
 但受 https://github.com/rancher-sandbox/rancher-desktop/issues/3999 影响，
-如果开发者正在使用的 Windows Server 2025 实例包含可运行 Windows Containers 的 Docker Engine，
-则需要根据 https://github.com/microsoft/Windows-Containers/pull/602 的内容来完全卸载 Docker Engine，
-再安装 Rancher Desktop。
+如果开发者正在使用的 `Windows Server 2025` 实例包含可运行 Windows Containers 的 Docker Engine，
+则需要使用 Microsoft 提供的脚本卸载 Docker Engine 后，再安装 Rancher Desktop。
+可在 PowerShell 7 执行如下命令，
+
+```shell
+iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
+.\uninstall-docker-ce.ps1 -Force
+ri .\uninstall-docker-ce.ps1
+```
+
 这类操作常见于 `windows-2025` 的 GitHub Actions Runner 中。
 
 ## 处理单元测试

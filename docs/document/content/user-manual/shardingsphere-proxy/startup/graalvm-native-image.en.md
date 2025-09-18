@@ -377,7 +377,7 @@ ShardingSphere does not provide the build configuration required to build Docker
 
 ### Wasm Module Limitations
 
-Although `Oracle GraalVM Early Access Builds For JDK 25 EA 24` already supports building GraalVM Native Image in the form of `Wasm Module`,
-ShardingSphere is not yet ready to test CI under OpenJDK 25.
+Although `Oracle GraalVM Early Access Builds For JDK 26 EA 3` already supports building GraalVM Native Image in the form of `Wasm Module`,
+ShardingSphere is not yet ready to test CI under OpenJDK 26.
 
 Currently, ShardingSphere Proxy Native does not provide the build configuration required to compile to `Wasm Module`.

@@ -116,7 +116,9 @@ jobs:
       - name: Setup Rancher Desktop without GUI on Windows Server
         if: matrix.os == 'windows-2025'
         run: |
-          ./test/native/src/test/resources/test-native/ps1/uninstall-docker-engine-for-wcow.ps1
+          iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
+          .\uninstall-docker-ce.ps1 -Force
+          ri .\uninstall-docker-ce.ps1
           winget install --id jazzdelightsme.WingetPathUpdater --source winget
           winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
           rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false

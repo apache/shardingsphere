@@ -118,12 +118,20 @@ This article does not discuss changing the default logging driver in `/etc/docke
 
 ### Windows Server
 
-For a regular Windows Server 2025 instance, the operation is equivalent to Windows 11 Home 24H2.
-However, affected by https://github.com/rancher-sandbox/rancher-desktop/issues/3999 ,
-if the Windows Server 2025 instance that the developer is using contains Docker Engine that can run Windows Containers,
-it is necessary to completely uninstall Docker Engine according to the content of https://github.com/microsoft/Windows-Containers/pull/602 ,
-and then install Rancher Desktop.
-This type of operation is common in the GitHub Actions Runner of `windows-2025`.
+For standard `Windows Server 2025` instances, the operation is equivalent to that for `Windows 11 Home 24H2`.
+
+However, due to https://github.com/rancher-sandbox/rancher-desktop/issues/3999 ,
+if developers are using `Windows Server 2025` instances that include Docker Engine, which can run Windows Containers,
+they will need to uninstall Docker Engine using the script provided by Microsoft before installing Rancher Desktop.
+You can execute the following command in PowerShell 7:
+
+```shell
+iwr -Uri "https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1" -OutFile uninstall-docker-ce.ps1
+.\uninstall-docker-ce.ps1 -Force
+ri .\uninstall-docker-ce.ps1
+```
+
+This type of operation is commonly found in the GitHub Actions Runner for `windows-2025`.
 
 ## Handling unit tests
 
