@@ -25,7 +25,7 @@ workflow:
 ######
 
 .build-proxy-native-template:
-  image: docker/dind
+  image: registry.red-soft.biz:5000/docker/docker:dind
   parallel:
     matrix:
       - TYPE: ["static", "mostly", "dynamic"]
