@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.storage.mount;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 import java.io.File;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MountConfigurationResourceGenerator {
     
-    private final StorageContainerConfigurationOption option;
+    private final StorageContainerOption option;
     
     /**
      * Generate mount configuration resource map.

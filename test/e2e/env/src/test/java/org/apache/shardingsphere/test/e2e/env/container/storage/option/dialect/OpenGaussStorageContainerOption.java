@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect;
 
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for PostgreSQL.
+ * Storage container option for openGauss.
  */
-public final class PostgreSQLStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class OpenGaussStorageContainerOption implements StorageContainerOption {
     
     @Override
     public int getPort() {
@@ -39,25 +39,22 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public String getDefaultImageName() {
-        return "postgres:12-alpine";
+        return "opengauss/opengauss:3.1.0";
     }
     
     @Override
     public String getCommand() {
-        return "-c config_file=/etc/postgresql/postgresql.conf";
+        return "";
     }
     
     @Override
     public Map<String, String> getEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1F);
-        result.put("POSTGRES_HOST", StorageContainerConstants.OPERATION_USER);
-        result.put("POSTGRES_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
-        return result;
+        return Collections.singletonMap("GS_PASSWORD", StorageContainerConstants.OPERATION_PASSWORD);
     }
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/etc/postgresql/postgresql.conf");
+        return Arrays.asList("/usr/local/opengauss/share/postgresql/postgresql.conf.sample", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample");
     }
     
     @Override
@@ -72,12 +69,12 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public boolean withPrivilegedMode() {
-        return false;
+        return true;
     }
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.of("postgres");
+        return Optional.of(StorageContainerConstants.OPERATION_USER);
     }
     
     @Override
@@ -87,6 +84,6 @@ public final class PostgreSQLStorageContainerConfigurationOption implements Stor
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "openGauss";
     }
 }

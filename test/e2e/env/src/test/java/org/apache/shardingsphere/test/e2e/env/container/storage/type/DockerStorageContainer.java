@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContain
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountConfigurationResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  */
 public final class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
-    private final StorageContainerConfigurationOption option;
+    private final StorageContainerOption option;
     
     private final String scenario;
     
@@ -71,7 +71,7 @@ public final class DockerStorageContainer extends DockerITContainer implements S
     @Getter
     private final Map<String, DataSource> expectedDataSourceMap = new LinkedHashMap<>();
     
-    public DockerStorageContainer(final String containerImage, final StorageContainerConfigurationOption option, final String scenario) {
+    public DockerStorageContainer(final String containerImage, final StorageContainerOption option, final String scenario) {
         super(option.getDatabaseType().toLowerCase(), getContainerImage(containerImage, option));
         this.option = option;
         this.scenario = scenario;
@@ -79,7 +79,7 @@ public final class DockerStorageContainer extends DockerITContainer implements S
         dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
     }
     
-    private static String getContainerImage(final String containerImage, final StorageContainerConfigurationOption option) {
+    private static String getContainerImage(final String containerImage, final StorageContainerOption option) {
         Preconditions.checkNotNull(option, "Can not support database type `%s`", option.getDatabaseType());
         return Strings.isNullOrEmpty(containerImage) ? option.getDefaultImageName() : containerImage;
     }

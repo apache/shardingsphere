@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option.
+ * Storage container option.
  */
 @SingletonSPI
-public interface StorageContainerConfigurationOption extends DatabaseTypedSPI {
+public interface StorageContainerOption extends DatabaseTypedSPI {
     
     /**
      * Get container port.

@@ -17,20 +17,22 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.ContainerUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for MariaDB.
+ * Storage container option for MySQL.
  */
-public final class MariaDBStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class MySQLStorageContainerOption implements StorageContainerOption {
     
     @Override
     public int getPort() {
@@ -39,7 +41,7 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     
     @Override
     public String getDefaultImageName() {
-        return "mariadb:11";
+        return "mysql:8.0.40";
     }
     
     @Override
@@ -57,17 +59,21 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     
     @Override
     public Collection<String> getMountedConfigurationResources() {
-        return Collections.singleton("/etc/mysql/mariadb.cnf");
+        return Collections.singleton("/etc/mysql/my.cnf");
     }
     
     @Override
     public Collection<String> getAdditionalEnvMountedSQLResources(final int majorVersion) {
-        return Collections.emptyList();
+        Collection<String> result = new LinkedList<>();
+        if (majorVersion > 5) {
+            result.add("21-env-grant-xa-privilege.sql");
+        }
+        return result;
     }
     
     @Override
     public List<Integer> getSupportedMajorVersions() {
-        return Collections.emptyList();
+        return Arrays.asList(8, 5);
     }
     
     @Override
@@ -87,6 +93,6 @@ public final class MariaDBStorageContainerConfigurationOption implements Storage
     
     @Override
     public String getDatabaseType() {
-        return "MariaDB";
+        return "MySQL";
     }
 }
