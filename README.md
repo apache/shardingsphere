@@ -169,6 +169,9 @@ With the client end connecting directly to the database, it provides services in
 
 :link: For more details, follow this [link to the official website](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-jdbc).
 
+> **Note**: When using ShardingSphere-JDBC adapter, pay attention to your application's memory configuration. Antlr uses an internal cache to improve performance during SQL parsing. If your application has too many SQL templates, the cache will continue to grow, occupying a large amount of heap memory.
+According to feedback from the ANTLR official [issue#4232](https://github.com/antlr/antlr4/issues/4232), this issue has not yet been optimized. When connecting your application to ShardingSphere-JDBC, it is recommended to set a reasonable heap memory size using the `-Xmx` parameter to avoid OOM errors caused by insufficient memory.
+
 ### ShardingSphere-Proxy
 
 <hr>
