@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker;
+package org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.google.common.base.Preconditions;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 /**
  * Docker storage container.
  */
-public class DockerStorageContainer extends DockerITContainer implements StorageContainer {
+public final class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
     private final StorageContainerConfigurationOption option;
     
@@ -82,7 +82,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     }
     
     @Override
-    protected final void configure() {
+    protected void configure() {
         setCommands();
         addEnvironments();
         mapResources(new MountConfigurationResourceGenerator(option).generate(majorVersion, scenario));
@@ -126,7 +126,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
     
     @SneakyThrows({SQLException.class, InterruptedException.class})
     @Override
-    protected final void containerIsStarted(final InspectContainerResponse containerInfo) {
+    protected void containerIsStarted(final InspectContainerResponse containerInfo) {
         if (option.isSupportDockerEntrypoint()) {
             return;
         }
@@ -164,7 +164,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      * @param dataSourceName data source name
      * @return access data source
      */
-    public final DataSource createAccessDataSource(final String dataSourceName) {
+    public DataSource createAccessDataSource(final String dataSourceName) {
         return StorageContainerUtils.generateDataSource(getJdbcUrl(dataSourceName), StorageContainerConstants.OPERATION_USER, StorageContainerConstants.OPERATION_PASSWORD, 20);
     }
     
@@ -174,7 +174,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      * @param dataSourceName datasource name
      * @return JDBC URL
      */
-    public final String getJdbcUrl(final String dataSourceName) {
+    public String getJdbcUrl(final String dataSourceName) {
         DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType());
         return dataSourceEnvironment.getURL(getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? option.getDefaultDatabaseName(majorVersion).orElse("") : dataSourceName);
     }
@@ -184,7 +184,7 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      *
      * @return exposed database container port
      */
-    public final int getExposedPort() {
+    public int getExposedPort() {
         return option.getPort();
     }
     
@@ -193,17 +193,17 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
      *
      * @return mapped database container port
      */
-    public final int getMappedPort() {
+    public int getMappedPort() {
         return getMappedPort(getExposedPort());
     }
     
     @Override
-    public final String getAbbreviation() {
+    public String getAbbreviation() {
         return option.getDatabaseType().toLowerCase();
     }
     
     @Override
-    public final Map<String, String> getLinkReplacements() {
+    public Map<String, String> getLinkReplacements() {
         Map<String, String> result = new HashMap<>();
         for (String each : getNetworkAliases()) {
             for (Integer exposedPort : getExposedPorts()) {

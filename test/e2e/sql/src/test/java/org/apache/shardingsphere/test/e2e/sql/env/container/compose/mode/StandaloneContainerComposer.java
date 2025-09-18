@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.enums.Ada
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment.Type;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.ContainerComposer;

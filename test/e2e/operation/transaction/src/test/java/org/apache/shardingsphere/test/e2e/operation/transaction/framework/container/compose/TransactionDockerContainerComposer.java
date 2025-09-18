@@ -35,8 +35,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.Z
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.option.StorageContainerConfigurationOption;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.natived.NativeStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.enums.TransactionE2EEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.config.TransactionProxyContainerConfigurationFactory;

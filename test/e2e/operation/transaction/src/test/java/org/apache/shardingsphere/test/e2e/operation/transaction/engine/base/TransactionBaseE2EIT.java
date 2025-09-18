@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.docker.DockerStorageContainer;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.operation.transaction.cases.base.BaseTransactionTestCase.TransactionTestCaseParameter;
