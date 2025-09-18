@@ -148,8 +148,8 @@ public abstract class TransactionBaseE2EIT {
         for (Class<? extends BaseTransactionTestCase> each : testParam.getTransactionTestCaseClasses()) {
             log.info("Transaction IT {} -> {} test begin.", testParam, each.getSimpleName());
             try {
-                each.getConstructor(TransactionTestCaseParameter.class).newInstance(new TransactionTestCaseParameter(this, containerComposer.getDataSource(), testParam.getTransactionTypes().get(0)))
-                        .execute(containerComposer);
+                each.getConstructor(TransactionTestCaseParameter.class).newInstance(
+                        new TransactionTestCaseParameter(this, containerComposer.getDataSource(), testParam.getTransactionTypes().get(0))).execute(containerComposer);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -167,8 +167,8 @@ public abstract class TransactionBaseE2EIT {
             }
             log.info("Call transaction IT {} -> {} -> {} -> {} test begin.", testParam, transactionType, provider, each.getSimpleName());
             try {
-                each.getConstructor(TransactionTestCaseParameter.class).newInstance(new TransactionTestCaseParameter(this, containerComposer.getDataSource(), transactionType))
-                        .execute(containerComposer);
+                each.getConstructor(TransactionTestCaseParameter.class).newInstance(
+                        new TransactionTestCaseParameter(this, containerComposer.getDataSource(), transactionType)).execute(containerComposer);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
@@ -196,7 +196,7 @@ public abstract class TransactionBaseE2EIT {
      * @throws SQLException SQL exception
      */
     public void dropAccountTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "drop table if exists account;");
+        executeWithLog(connection, "DROP TABLE IF EXISTS account;");
     }
     
     private void alterLocalTransactionRule(final TransactionContainerComposer containerComposer) throws SQLException {
