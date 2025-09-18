@@ -26,6 +26,11 @@ workflow:
 
 .build-proxy-native-template:
   image: registry.red-soft.biz:5000/docker/docker:dind
+  services:
+    - name: registry.red-soft.biz:5000/docker/docker:dind
+      entrypoint: [ "dockerd-entrypoint.sh" ]
+      alias: docker
+      command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
   parallel:
     matrix:
       - TYPE: ["static", "mostly", "dynamic"]
