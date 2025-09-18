@@ -49,7 +49,7 @@ public interface DialectPipelineNativeContainerDropTableOption extends DatabaseT
     
     /**
      * Get drop schema SQL.
-     * 
+     *
      * @return drop schema SQL
      */
     Optional<String> getDropSchemaSQL();
