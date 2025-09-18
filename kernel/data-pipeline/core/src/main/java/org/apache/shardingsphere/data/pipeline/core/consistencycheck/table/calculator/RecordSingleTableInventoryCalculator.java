@@ -311,7 +311,7 @@ public final class RecordSingleTableInventoryCalculator extends AbstractStreamin
     
     private SingleTableInventoryCalculateParameter buildPointRangeQueryCalculateParameter(final SingleTableInventoryCalculateParameter param, final Object uniqueKeyValue) {
         SingleTableInventoryCalculateParameter result = new SingleTableInventoryCalculateParameter(param.getDataSource(), param.getTable(), param.getColumnNames(),
-                Collections.singletonList(param.getFirstUniqueKey()), QueryType.POINT_QUERY);
+                Collections.singletonList(param.getFirstUniqueKey()), QueryType.POINT_QUERY, param.getQueryCondition());
         result.setUniqueKeysValues(Collections.singletonList(uniqueKeyValue));
         result.setShardingColumnsNames(param.getShardingColumnsNames());
         result.setShardingColumnsValues(param.getShardingColumnsValues());
