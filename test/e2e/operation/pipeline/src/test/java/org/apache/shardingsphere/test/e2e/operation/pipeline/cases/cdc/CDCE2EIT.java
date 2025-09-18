@@ -28,10 +28,12 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.CDCLoginPara
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartStreamingParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.TableInventoryCheckParameter;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
@@ -191,6 +193,8 @@ class CDCE2EIT {
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(qualifiedTable.getSchemaName(), qualifiedTable.getTableName());
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(tableMetaData.getColumnMetaData(tableMetaData.getPrimaryKeyColumns().get(0)));
         ConsistencyCheckJobItemProgressContext progressContext = new ConsistencyCheckJobItemProgressContext("", 0, sourceDataSource.getDatabaseType().getType());
+        progressContext.getTableCheckRangePositions().add(new TableCheckRangePosition(0, null, qualifiedTable.getTableName(),
+                new UnsupportedKeyIngestPosition(), new UnsupportedKeyIngestPosition(), null));
         TableInventoryCheckParameter param = new TableInventoryCheckParameter("", sourceDataSource, targetDataSource, qualifiedTable, qualifiedTable,
                 tableMetaData.getColumnNames(), uniqueKeys, null, progressContext);
         TableDataConsistencyChecker tableChecker = TypedSPILoader.getService(TableDataConsistencyChecker.class, "DATA_MATCH", new Properties());
