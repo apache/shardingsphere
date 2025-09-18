@@ -64,7 +64,7 @@ build:proxy-native-docker:
   script:
     - dockerd-entrypoint.sh &
     - sleep 10
-    - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
+    - docker --tls=false build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
 
 build:java11:
   tags: ["docker", "linux", "x86_64"]
