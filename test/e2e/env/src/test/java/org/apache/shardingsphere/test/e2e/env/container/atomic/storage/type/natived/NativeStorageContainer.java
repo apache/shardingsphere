@@ -92,8 +92,13 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
         DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
-        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> StorageContainerUtils.generateDataSource(
-                dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword(), 2)));
+        Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
+        for (String each : databaseNames) {
+            DataSource dataSource = StorageContainerUtils.generateDataSource(
+                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword(), 2);
+            result.put(each, dataSource);
+        }
+        return result;
     }
     
     /**
