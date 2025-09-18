@@ -18,14 +18,21 @@
 package org.apache.shardingsphere.test.e2e.env.container.governance;
 
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
  * Governance container.
  */
-public abstract class GovernanceContainer extends DockerITContainer {
+public final class GovernanceContainer extends DockerITContainer {
     
-    protected GovernanceContainer(final String name, final String containerImage) {
-        super(name, containerImage);
+    private final GovernanceContainerOption option;
+    
+    public GovernanceContainer(final GovernanceContainerOption option) {
+        super(option.getType().toString().toLowerCase(), option.getDefaultImageName());
+        this.option = option;
+        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(option.getSuccessLogPattern()));
+        withExposedPorts(option.getPort());
     }
     
     /**
@@ -33,5 +40,12 @@ public abstract class GovernanceContainer extends DockerITContainer {
      *
      * @return server list
      */
-    public abstract String getServerLists();
+    public String getServerLists() {
+        return getHost() + ":" + getMappedPort(option.getPort());
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return getName();
+    }
 }
