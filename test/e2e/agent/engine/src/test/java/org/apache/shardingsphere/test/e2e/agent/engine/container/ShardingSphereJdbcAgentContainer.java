@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.agent.engine.container;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 

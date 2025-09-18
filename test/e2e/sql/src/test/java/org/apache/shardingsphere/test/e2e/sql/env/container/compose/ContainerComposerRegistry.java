@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.sql.env.container.compose;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode.StandaloneContainerComposer;
 
