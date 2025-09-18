@@ -131,8 +131,9 @@ public class DockerStorageContainer extends DockerITContainer implements Storage
             return;
         }
         Thread.sleep(10000L);
-        try (Connection connection = DriverManager.getConnection(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType()).getURL("localhost", getFirstMappedPort()),
-                option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""), option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
+        try (
+                Connection connection = DriverManager.getConnection(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, option.getType()).getURL("localhost", getFirstMappedPort()),
+                        option.getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""), option.getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
             for (String each : new MountSQLResourceGenerator(option).generate(majorVersion, scenario).keySet()) {
                 SQLScriptUtils.execute(connection, each);
             }
