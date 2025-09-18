@@ -29,7 +29,7 @@ workflow:
   services:
     - name: registry.red-soft.biz:5000/docker-images/3rdparty/docker:27.3.1-dind
       entrypoint: [ "dockerd-entrypoint.sh" ]
-      alias: docker
+      #alias: docker
       command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
   parallel:
     matrix:
