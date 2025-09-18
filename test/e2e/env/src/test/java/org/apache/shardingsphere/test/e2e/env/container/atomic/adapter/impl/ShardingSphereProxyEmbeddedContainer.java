@@ -96,7 +96,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
         if (null == dataSource) {
             DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(dataSourceEnvironment.getURL(
-                    "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
+                    "127.0.0.1", 3307, config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();
     }

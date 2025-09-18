@@ -33,44 +33,17 @@ import javax.sql.DataSource;
 public final class StorageContainerUtils {
     
     /**
-     * Generate datasource.
+     * Generate data source.
      *
-     * @param jdbcUrl JDBC URL for generating datasource
-     * @param username username
-     * @param password password
-     * @return data source
-     */
-    public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password) {
-        return generateDataSource(jdbcUrl, username, password, 2);
-    }
-    
-    /**
-     * Generate datasource.
-     *
-     * @param jdbcUrl JDBC URL for generating datasource
+     * @param jdbcUrl JDBC URL
      * @param username username
      * @param password password
      * @param maximumPoolSize maximum pool size
      * @return data source
      */
     public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password, final int maximumPoolSize) {
-        String driverClassName = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, DatabaseTypeFactory.get(jdbcUrl)).getDriverClassName();
-        return generateDataSource(jdbcUrl, username, password, maximumPoolSize, driverClassName);
-    }
-    
-    /**
-     * Generate datasource.
-     *
-     * @param jdbcUrl JDBC URL for generating datasource
-     * @param username username
-     * @param password password
-     * @param maximumPoolSize maximum pool size
-     * @param driverClassName driver class name
-     * @return data source
-     */
-    public static DataSource generateDataSource(final String jdbcUrl, final String username, final String password, final int maximumPoolSize, final String driverClassName) {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(driverClassName);
+        result.setDriverClassName(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, DatabaseTypeFactory.get(jdbcUrl)).getDriverClassName());
         result.setJdbcUrl(jdbcUrl);
         result.setUsername(username);
         result.setPassword(password);

@@ -78,7 +78,7 @@ public final class NativeStorageContainer implements StorageContainer {
         if (null != option) {
             DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
             DataSource dataSource = StorageContainerUtils.generateDataSource(
-                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword());
+                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort()), env.getNativeStorageUsername(), env.getNativeStoragePassword(), 2);
             new MountSQLResourceGenerator(option).generate(0, scenario).keySet().forEach(each -> SQLScriptUtils.execute(dataSource, each));
         }
     }
@@ -91,14 +91,9 @@ public final class NativeStorageContainer implements StorageContainer {
     }
     
     private Map<String, DataSource> getDataSourceMap(final Collection<String> databaseNames) {
-        Map<String, DataSource> result = new HashMap<>(databaseNames.size(), 1F);
         DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
-        for (String each : databaseNames) {
-            DataSource dataSource = StorageContainerUtils.generateDataSource(
-                    dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword());
-            result.put(each, dataSource);
-        }
-        return result;
+        return databaseNames.stream().collect(Collectors.toMap(each -> each, each -> StorageContainerUtils.generateDataSource(
+                dataSourceEnvironment.getURL(env.getNativeStorageHost(), env.getNativeStoragePort(), each), env.getNativeStorageUsername(), env.getNativeStoragePassword(), 2)));
     }
     
     /**
