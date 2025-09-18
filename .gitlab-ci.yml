@@ -5,8 +5,6 @@ variables:
   JDK_BUILD_IMAGE: registry.red-soft.biz:5000/jdk/temurin-11-jdk
   JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
   RELEASEHUB_CLIENT_IMAGE: registry.red-soft.biz:5000/utils/red-release-manager/client:master
-  GRAALVM_IMAGE: <> #TODO
-  GRAALVM_IMAVE_STATIC: <> #TODO
   M2_SETTINGSFILE: ${CI_PROJECT_DIR}/ci/settings.xml
   MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
@@ -16,19 +14,30 @@ stages:
   - test
   - deploy
 
+workflow:
+  rules:
+    - if: ${CI_COMMIT_BRANCH} == "master"
+      when: always
+    #- if: $CI_PIPELINE_SOURCE == "push"
+    - if: ${CI_PIPELINE_SOURCE} == "web"
+
 ######
 # Templates
 ######
 
-.build_docker:
-  tags: ["docker", "linux", "x86_64"]
-
-
-workflow:
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-      when: always
-    #- if: $CI_PIPELINE_SOURCE == "push"
+.build-proxy-native-template:
+  image: docker/dind
+  parallel:
+    matrix:
+      - TYPE: ["static", "mostly", "dynamic"]
+  only:
+    variables:
+      - ${PROJECT_VERSION}
+  dependencies:
+    - prepare_build_env
+  variables:
+    DOCKERFILES: "distribution/proxy-native"
+    OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${PROJECT_VERSION}-${TYPE}
 
 prepare_build_env:
   tags: ["docker", "linux", "x86_64"]
@@ -45,11 +54,14 @@ prepare_build_env:
     paths:
       - ci/artifacts
 
-build:proxy-native:
-  extends: .build_docker
 
 
-build_java11:
+build:proxy-native-docker:
+  extends: .build-proxy-native-template
+  script: 
+    - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
+
+build:java11:
   tags: ["docker", "linux", "x86_64"]
   stage: build
   image: $JDK_BUILD_IMAGE
@@ -60,12 +72,12 @@ build_java11:
     - mkdir -pv ${ARTIFACTS_DIR}
     - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${ARTIFACTS_DIR}
   artifacts:
-    paths:
-      - ${ARTIFACTS_DIR}
+    #paths:
+    #  - ${ARTIFACTS_DIR}
   dependencies:
     - prepare_build_env
 
-test_java8:
+test:java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
   rules:
