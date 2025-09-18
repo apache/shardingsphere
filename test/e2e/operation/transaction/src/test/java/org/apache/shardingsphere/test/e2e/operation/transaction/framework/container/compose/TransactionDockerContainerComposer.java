@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterTyp
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
@@ -60,7 +61,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
     public TransactionDockerContainerComposer(final TransactionTestParameter testParam) {
         super(testParam.getScenario());
         DatabaseType databaseType = testParam.getDatabaseType();
-        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
         TransactionE2EEnvTypeEnum envType = TransactionE2EEnvironment.getInstance().getItEnvType();
         if (TransactionE2EEnvTypeEnum.DOCKER == envType) {
             storageContainer = getContainers().registerContainer(new DockerStorageContainer(

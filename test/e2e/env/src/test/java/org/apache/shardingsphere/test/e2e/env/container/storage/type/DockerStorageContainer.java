@@ -210,7 +210,7 @@ public final class DockerStorageContainer extends DockerITContainer implements S
     
     @Override
     public String getAbbreviation() {
-        return option.getDatabaseType().toLowerCase();
+        return getName();
     }
     
     @Override

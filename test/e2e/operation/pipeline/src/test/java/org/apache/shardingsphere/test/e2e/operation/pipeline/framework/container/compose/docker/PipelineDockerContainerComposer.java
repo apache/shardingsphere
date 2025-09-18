@@ -21,11 +21,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
@@ -55,7 +56,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
     public PipelineDockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage, final int storageContainerCount) {
         this.databaseType = databaseType;
         ShardingSpherePreconditions.checkState(storageContainerCount >= 1, () -> new InvalidParameterException("storageContainerCount must >= 1"));
-        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
         for (int i = 0; i < storageContainerCount; i++) {
             DockerStorageContainer storageContainer = getContainers().registerContainer(
                     new DockerStorageContainer(storageContainerImage, DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null));

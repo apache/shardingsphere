@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.showprocesslist.container.c
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMod
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
@@ -56,7 +57,9 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
     
     public ClusterShowProcessListContainerComposer(final ShowProcessListTestParameter testParam) {
         containers = new ITContainers(testParam.getScenario());
-        governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
+        governanceContainer = isClusterMode(testParam.getRunMode())
+                ? containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")))
+                : null;
         StorageContainer storageContainer = containers.registerContainer(
                 new DockerStorageContainer("", DatabaseTypedSPILoader.getService(StorageContainerOption.class, testParam.getDatabaseType()), testParam.getScenario()));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),

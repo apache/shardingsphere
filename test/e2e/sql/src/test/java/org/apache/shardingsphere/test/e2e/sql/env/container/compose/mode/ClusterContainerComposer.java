@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.sql.env.container.compose.mode;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMod
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
@@ -57,7 +58,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
     public ClusterContainerComposer(final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
         containers = new ITContainers(scenario);
         // TODO support other types of governance
-        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
+        governanceContainer = containers.registerContainer(new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper")));
         Type envType = E2ETestEnvironment.getInstance().getClusterEnvironment().getType();
         storageContainer = containers.registerContainer(Type.DOCKER == envType
                 ? new DockerStorageContainer(E2ETestEnvironment.getInstance().getClusterEnvironment().getDatabaseImages().get(databaseType),

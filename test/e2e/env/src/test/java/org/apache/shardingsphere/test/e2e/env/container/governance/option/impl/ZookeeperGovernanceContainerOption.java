@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.env.container.governance.impl;
+package org.apache.shardingsphere.test.e2e.env.container.governance.option.impl;
 
-import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 
 /**
- * Zookeeper container.
+ * Governance container option for Zookeeper.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+public final class ZookeeperGovernanceContainerOption implements GovernanceContainerOption {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
+    @Override
+    public int getPort() {
+        return 2181;
     }
     
     @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
+    public String getDefaultImageName() {
+        return "zookeeper:3.6.2";
     }
     
     @Override
-    public String getAbbreviation() {
-        return "zk";
+    public String getSuccessLogPattern() {
+        return ".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*";
+    }
+    
+    @Override
+    public Object getType() {
+        return "ZooKeeper";
     }
 }

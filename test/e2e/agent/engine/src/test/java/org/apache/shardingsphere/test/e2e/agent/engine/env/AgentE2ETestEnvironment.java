@@ -38,7 +38,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterTyp
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainerFactory;
+import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
@@ -120,7 +120,7 @@ public final class AgentE2ETestEnvironment {
         StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
         proxyContainer.dependsOn(storageContainer);
         containers.registerContainer(storageContainer);
-        GovernanceContainer governanceContainer = GovernanceContainerFactory.newInstance("ZooKeeper");
+        GovernanceContainer governanceContainer = new GovernanceContainer(TypedSPILoader.getService(GovernanceContainerOption.class, "ZooKeeper"));
         proxyContainer.dependsOn(governanceContainer);
         containers.registerContainer(governanceContainer);
         if (null != agentPluginContainer) {
