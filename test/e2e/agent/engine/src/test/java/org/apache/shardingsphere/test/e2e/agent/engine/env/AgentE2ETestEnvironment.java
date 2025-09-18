@@ -114,7 +114,7 @@ public final class AgentE2ETestEnvironment {
     }
     
     private void createProxyEnvironment(final DockerITContainer agentPluginContainer) {
-        containers = new ITContainers();
+        containers = new ITContainers(null);
         ShardingSphereProxyClusterContainer proxyContainer = new ShardingSphereProxyClusterContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
         StorageContainer storageContainer = StorageContainerFactory.newInstance(
@@ -148,7 +148,7 @@ public final class AgentE2ETestEnvironment {
     }
     
     private void createJDBCEnvironment(final DockerITContainer agentPluginContainer) {
-        containers = new ITContainers();
+        containers = new ITContainers(null);
         StorageContainer storageContainer = StorageContainerFactory.newInstance(
                 databaseType, imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType), null);
         ShardingSphereJdbcAgentContainer jdbcAgentContainer = new ShardingSphereJdbcAgentContainer(
