@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.operation.transaction.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
 /**

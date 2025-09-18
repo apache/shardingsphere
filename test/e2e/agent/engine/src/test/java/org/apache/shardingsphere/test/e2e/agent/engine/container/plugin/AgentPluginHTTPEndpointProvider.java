@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.agent.engine.container.plugin;
 
-import org.apache.shardingsphere.test.e2e.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 
 /**
  * Agent plugin HTTP endpoint provider.

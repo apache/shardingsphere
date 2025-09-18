@@ -1,0 +1,74 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
+
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
+import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
+
+import javax.sql.DataSource;
+import java.sql.DriverManager;
+import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * ShardingSphere proxy container.
+ */
+public final class ShardingSphereProxyStandaloneContainer extends DockerITContainer implements AdapterContainer {
+    
+    private final DatabaseType databaseType;
+    
+    private final AdaptorContainerConfiguration config;
+    
+    private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
+    
+    public ShardingSphereProxyStandaloneContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
+        super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
+        this.databaseType = databaseType;
+        this.config = config;
+    }
+    
+    @Override
+    protected void configure() {
+        withExposedPorts(3307, 3308);
+        mapResources(config.getMountedResources());
+        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
+                DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType).getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
+    }
+    
+    @Override
+    public DataSource getTargetDataSource(final String serverLists) {
+        DataSource dataSource = targetDataSourceProvider.get();
+        if (null == dataSource) {
+            DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
+            targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
+                    dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD, 2));
+        }
+        return targetDataSourceProvider.get();
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
+    }
+}
