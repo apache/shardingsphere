@@ -15,36 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config;
+package org.apache.shardingsphere.data.pipeline.core.consistencycheck.position;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml.YamlTableCheckRangePosition;
-
-import java.util.List;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.PrimaryKeyIngestPosition;
 
 /**
- * Yaml data consistency check job item progress.
+ * Table check range position.
  */
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-public final class YamlConsistencyCheckJobItemProgress implements YamlPipelineJobItemProgressConfiguration {
+@ToString
+public final class TableCheckRangePosition {
     
-    private String status;
+    private final Integer splittingItem;
     
-    private String tableNames;
+    private final String sourceDataNode;
     
-    private String ignoredTableNames;
+    private final String logicTableName;
     
-    private Long checkedRecordsCount;
+    private final PrimaryKeyIngestPosition<?> sourceRange;
     
-    private Long recordsCount;
+    private final PrimaryKeyIngestPosition<?> targetRange;
     
-    private Long checkBeginTimeMillis;
+    private final String queryCondition;
     
-    private Long checkEndTimeMillis;
+    private volatile Object sourcePosition;
     
-    private List<YamlTableCheckRangePosition> tableCheckRangePositions;
+    private volatile Object targetPosition;
     
-    private String sourceDatabaseType;
+    private volatile boolean finished;
+    
+    private volatile Boolean matched;
 }

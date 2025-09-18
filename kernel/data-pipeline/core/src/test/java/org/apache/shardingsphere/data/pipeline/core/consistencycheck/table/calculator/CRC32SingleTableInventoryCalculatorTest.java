@@ -66,7 +66,8 @@ class CRC32SingleTableInventoryCalculatorTest {
     void setUp() throws SQLException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         List<PipelineColumnMetaData> uniqueKeys = Collections.singletonList(new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true));
-        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new QualifiedTable(null, "foo_tbl"), Arrays.asList("foo_col", "bar_col"), uniqueKeys, QueryType.RANGE_QUERY);
+        parameter = new SingleTableInventoryCalculateParameter(pipelineDataSource, new QualifiedTable(null, "foo_tbl"),
+                Arrays.asList("foo_col", "bar_col"), uniqueKeys, QueryType.RANGE_QUERY, null);
         when(pipelineDataSource.getDatabaseType()).thenReturn(databaseType);
         when(pipelineDataSource.getConnection()).thenReturn(connection);
     }

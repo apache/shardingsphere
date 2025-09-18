@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml.YamlTableCheckRangePosition;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.yaml.YamlTableCheckRangePositionSwapper;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.type.UnsupportedKeyIngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
@@ -36,8 +39,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -53,23 +57,39 @@ class ConsistencyCheckJobExecutorCallbackTest {
     void assertBuildPipelineJobItemContext() {
         ConsistencyCheckJobId pipelineJobId = new ConsistencyCheckJobId(new PipelineContextKey(InstanceType.PROXY), JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId());
         String checkJobId = PipelineJobIdUtils.marshal(pipelineJobId);
-        Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
+        List<YamlTableCheckRangePosition> expectedYamlTableCheckRangePositions = Collections.singletonList(createYamlTableCheckRangePosition());
         PipelineAPIFactory.getPipelineGovernanceFacade(PipelineContextUtils.getContextKey()).getJobItemFacade().getProcess().persist(checkJobId, 0,
-                YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
+                YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectedYamlTableCheckRangePositions)));
         ConsistencyCheckJobExecutorCallback callback = new ConsistencyCheckJobExecutorCallback();
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(createYamlConsistencyCheckJobConfiguration(checkJobId));
         PipelineJobItemManager<ConsistencyCheckJobItemProgress> jobItemManager = new PipelineJobItemManager<>(new ConsistencyCheckJobType().getYamlJobItemProgressSwapper());
         Optional<ConsistencyCheckJobItemProgress> jobItemProgress = jobItemManager.getProgress(jobConfig.getJobId(), 0);
         ConsistencyCheckJobItemContext actual = callback.buildJobItemContext(jobConfig, 0, jobItemProgress.orElse(null), null, null);
-        assertThat(actual.getProgressContext().getSourceTableCheckPositions(), is(expectTableCheckPosition));
-        assertThat(actual.getProgressContext().getTargetTableCheckPositions(), is(expectTableCheckPosition));
+        YamlTableCheckRangePositionSwapper tableCheckPositionSwapper = new YamlTableCheckRangePositionSwapper();
+        List<YamlTableCheckRangePosition> actualYamlTableCheckPositions = actual.getProgressContext().getTableCheckRangePositions().stream()
+                .map(tableCheckPositionSwapper::swapToYamlConfiguration).collect(Collectors.toList());
+        assertThat(actualYamlTableCheckPositions.size(), is(expectedYamlTableCheckRangePositions.size()));
+        for (int i = 0; i < actualYamlTableCheckPositions.size(); i++) {
+            assertThat(actualYamlTableCheckPositions.get(i), is(expectedYamlTableCheckRangePositions.get(i)));
+        }
     }
     
-    private YamlConsistencyCheckJobItemProgress createYamlConsistencyCheckJobItemProgress(final Map<String, Object> expectTableCheckPosition) {
+    private YamlTableCheckRangePosition createYamlTableCheckRangePosition() {
+        YamlTableCheckRangePosition result = new YamlTableCheckRangePosition();
+        result.setSplittingItem(0);
+        result.setSourceDataNode("ds_0.t_order");
+        result.setLogicTableName("t_order");
+        result.setSourceRange(new UnsupportedKeyIngestPosition().toString());
+        result.setTargetRange(new UnsupportedKeyIngestPosition().toString());
+        result.setSourcePosition(100);
+        result.setTargetPosition(100);
+        return result;
+    }
+    
+    private YamlConsistencyCheckJobItemProgress createYamlConsistencyCheckJobItemProgress(final List<YamlTableCheckRangePosition> yamlTableCheckRangePositions) {
         YamlConsistencyCheckJobItemProgress result = new YamlConsistencyCheckJobItemProgress();
         result.setStatus(JobStatus.RUNNING.name());
-        result.setSourceTableCheckPositions(expectTableCheckPosition);
-        result.setTargetTableCheckPositions(expectTableCheckPosition);
+        result.setTableCheckRangePositions(yamlTableCheckRangePositions);
         return result;
     }
     

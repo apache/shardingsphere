@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.consistencycheck.position.TableCheckRangePosition;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.SingleTableInventoryCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.yaml.YamlTableDataConsistencyCheckResult;
@@ -74,11 +75,14 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
     
     private TableDataConsistencyCheckResult checkSingleTableInventoryData(final TableInventoryCheckParameter param, final ThreadPoolExecutor executor) {
         SingleTableInventoryCalculateParameter sourceParam = new SingleTableInventoryCalculateParameter(param.getSourceDataSource(), param.getSourceTable(),
-                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY);
-        sourceParam.setQueryRange(new QueryRange(param.getProgressContext().getSourceTableCheckPositions().get(param.getSourceTable().getTableName()), true, null));
+                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
+        TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
+        sourceParam.setQueryRange(new QueryRange(null != checkRangePosition.getSourcePosition() ? checkRangePosition.getSourcePosition() : checkRangePosition.getSourceRange().getBeginValue(),
+                true, checkRangePosition.getSourceRange().getEndValue()));
         SingleTableInventoryCalculateParameter targetParam = new SingleTableInventoryCalculateParameter(param.getTargetDataSource(), param.getTargetTable(),
-                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY);
-        targetParam.setQueryRange(new QueryRange(param.getProgressContext().getTargetTableCheckPositions().get(param.getTargetTable().getTableName()), true, null));
+                param.getColumnNames(), param.getUniqueKeys(), QueryType.RANGE_QUERY, param.getQueryCondition());
+        targetParam.setQueryRange(new QueryRange(null != checkRangePosition.getTargetPosition() ? checkRangePosition.getTargetPosition() : checkRangePosition.getTargetRange().getBeginValue(),
+                true, checkRangePosition.getTargetRange().getEndValue()));
         SingleTableInventoryCalculator sourceCalculator = buildSingleTableInventoryCalculator();
         this.sourceCalculator = sourceCalculator;
         SingleTableInventoryCalculator targetCalculator = buildSingleTableInventoryCalculator();
@@ -110,17 +114,21 @@ public abstract class MatchingTableInventoryChecker implements TableInventoryChe
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKeys={}", param.getJobId(), param.getSourceTable(), param.getTargetTable(), param.getUniqueKeys());
                 break;
             }
+            TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
             if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                param.getProgressContext().getSourceTableCheckPositions().put(param.getSourceTable().getTableName(), sourceCalculatedResult.getMaxUniqueKeyValue().get());
+                checkRangePosition.setSourcePosition(sourceCalculatedResult.getMaxUniqueKeyValue().get());
             }
             if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                param.getProgressContext().getTargetTableCheckPositions().put(param.getTargetTable().getTableName(), targetCalculatedResult.getMaxUniqueKeyValue().get());
+                checkRangePosition.setTargetPosition(targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
             param.getProgressContext().onProgressUpdated(new PipelineJobUpdateProgress(sourceCalculatedResult.getRecordsCount()));
         }
+        TableCheckRangePosition checkRangePosition = param.getProgressContext().getTableCheckRangePositions().get(param.getSplittingItem());
+        checkRangePosition.setFinished(true);
         if (sourceCalculatedResults.hasNext() || targetCalculatedResults.hasNext()) {
             checkResult.setMatched(false);
         }
+        checkRangePosition.setMatched(checkResult.isMatched());
         return new YamlTableDataConsistencyCheckResultSwapper().swapToObject(checkResult);
     }
     

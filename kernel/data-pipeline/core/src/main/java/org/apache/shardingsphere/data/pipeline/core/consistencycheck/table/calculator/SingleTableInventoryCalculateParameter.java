@@ -68,6 +68,8 @@ public final class SingleTableInventoryCalculateParameter {
     
     private final QueryType queryType;
     
+    private final String queryCondition;
+    
     /**
      * Get database type.
      *
