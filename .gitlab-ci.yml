@@ -23,23 +23,26 @@ workflow:
 ######
 # Templates
 ######
-
+# We're using DooD instead of DinD here because of performance considerations,
+# since compilation requires a lot of resources (both RAM and CPU).
+# Mind the mountpoint for /var/run/docker.sock that should be configured in gitlab-runner's config.toml
+# in order for this to work.
 .build-proxy-native-template:
   image: registry.red-soft.biz:5000/docker-images/3rdparty/docker:27.3.1
-  services:
-    - name: registry.red-soft.biz:5000/docker-images/3rdparty/docker:27.3.1-dind
-      entrypoint: [ "dockerd-entrypoint.sh" ]
-      #alias: docker
-      command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
   parallel:
     matrix:
       - TYPE: ["static", "mostly", "dynamic"]
   dependencies:
     - prepare_build_env
   variables:
-    DOCKER_TLS_VERIFY: 0
     DOCKERFILES: "distribution/proxy-native"
     OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${PROJECT_VERSION}-${TYPE}
+
+
+
+######
+# Preparation
+######
 
 prepare_build_env:
   tags: ["docker", "linux", "x86_64"]
@@ -57,14 +60,16 @@ prepare_build_env:
       - ci/artifacts
 
 
-
+######
+# Building
+######
 build:proxy-native-docker:
   extends: .build-proxy-native-template
   stage: build
   script:
-    - dockerd-entrypoint.sh &
-    - sleep 10
-    - docker --tls=false build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
+    - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
+    # TODO: push to registry
+    - docker rmi ${OUT_IMAGE}
 
 build:java11:
   tags: ["docker", "linux", "x86_64"]
@@ -82,6 +87,9 @@ build:java11:
   dependencies:
     - prepare_build_env
 
+######
+# Testing
+######
 test:java8:
   tags: ["docker", "linux", "x86_64"]
   stage: test
@@ -94,7 +102,9 @@ test:java8:
     - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
   allow_failure: true
 
-
+######
+# Deploying
+######
 # Auth key for release hub is pulled from group envvars
 deploy_to_release_hub:
   stage: deploy
