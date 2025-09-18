@@ -77,12 +77,27 @@ public final class HiveStorageContainerConfigurationOption implements StorageCon
     
     @Override
     public Optional<String> getDefaultDatabaseName(final int majorVersion) {
-        return Optional.empty();
+        return Optional.of("default");
     }
     
     @Override
     public long getStartupTimeoutSeconds() {
         return 180L;
+    }
+    
+    @Override
+    public boolean isSupportDockerEntrypoint() {
+        return false;
+    }
+    
+    @Override
+    public Optional<String> getDefaultUserWhenUnsupportedDockerEntrypoint() {
+        return Optional.of("");
+    }
+    
+    @Override
+    public Optional<String> getDefaultPasswordWhenUnsupportedDockerEntrypoint() {
+        return Optional.of("");
     }
     
     @Override
