@@ -61,6 +61,17 @@ public final class SQLScriptUtils {
         }
     }
     
+    /**
+     * Execute SQL script.
+     *
+     * @param connection connection
+     * @param scriptFilePath script file path
+     */
+    @SneakyThrows({SQLException.class, IOException.class})
+    public static void execute(final Connection connection, final String scriptFilePath) {
+        executeBatch(connection, readSQLs(scriptFilePath));
+    }
+    
     private static Collection<String> readSQLs(final String scriptFilePath) throws IOException {
         Collection<String> result = new LinkedList<>();
         try (

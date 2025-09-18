@@ -102,4 +102,31 @@ public interface StorageContainerConfigurationOption extends DatabaseTypedSPI {
      * @return container startup timeout seconds
      */
     long getStartupTimeoutSeconds();
+    
+    /**
+     * Whether support docker entrypoint.
+     *
+     * @return is support docker entrypoint or not
+     */
+    default boolean isSupportDockerEntrypoint() {
+        return true;
+    }
+    
+    /**
+     * Get default user when unsupported docker entrypoint.
+     *
+     * @return default user
+     */
+    default Optional<String> getDefaultUserWhenUnsupportedDockerEntrypoint() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get default password when unsupported docker entrypoint.
+     *
+     * @return default password
+     */
+    default Optional<String> getDefaultPasswordWhenUnsupportedDockerEntrypoint() {
+        return Optional.empty();
+    }
 }
