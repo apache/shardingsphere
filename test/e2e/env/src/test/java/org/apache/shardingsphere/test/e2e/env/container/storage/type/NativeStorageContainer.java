@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.SQLScriptUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
@@ -52,7 +52,7 @@ public final class NativeStorageContainer implements StorageContainer {
     
     private final String scenario;
     
-    private final StorageContainerConfigurationOption option;
+    private final StorageContainerOption option;
     
     @Getter
     private final Map<String, DataSource> actualDataSourceMap;
@@ -68,7 +68,7 @@ public final class NativeStorageContainer implements StorageContainer {
         env = E2ETestEnvironment.getInstance();
         this.databaseType = databaseType;
         this.scenario = scenario;
-        option = DatabaseTypedSPILoader.findService(StorageContainerConfigurationOption.class, databaseType).orElse(null);
+        option = DatabaseTypedSPILoader.findService(StorageContainerOption.class, databaseType).orElse(null);
         initDatabase();
         actualDataSourceMap = createDataSourceMap(Type.ACTUAL);
         expectedDataSourceMap = createDataSourceMap(Type.EXPECTED);

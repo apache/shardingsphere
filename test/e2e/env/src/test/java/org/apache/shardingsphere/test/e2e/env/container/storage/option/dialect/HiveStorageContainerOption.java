@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.storage.option.dialect;
 
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,9 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Storage container configuration option for Hive.
+ * Storage container option for Hive.
  */
-public final class HiveStorageContainerConfigurationOption implements StorageContainerConfigurationOption {
+public final class HiveStorageContainerOption implements StorageContainerOption {
     
     @Override
     public int getPort() {

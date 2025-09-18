@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSph
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.NativeStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.transaction.env.TransactionE2EEnvironment;
@@ -64,7 +64,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         TransactionE2EEnvTypeEnum envType = TransactionE2EEnvironment.getInstance().getItEnvType();
         if (TransactionE2EEnvTypeEnum.DOCKER == envType) {
             storageContainer = getContainers().registerContainer(new DockerStorageContainer(
-                    testParam.getStorageContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, databaseType), testParam.getScenario()));
+                    testParam.getStorageContainerImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), testParam.getScenario()));
         } else {
             storageContainer = getContainers().registerContainer(new NativeStorageContainer(databaseType, testParam.getScenario()));
         }

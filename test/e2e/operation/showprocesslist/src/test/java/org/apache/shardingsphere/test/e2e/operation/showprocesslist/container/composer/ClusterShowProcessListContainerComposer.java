@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainer
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.operation.showprocesslist.env.ShowProcessListEnvironment;
@@ -58,7 +58,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         containers = new ITContainers(testParam.getScenario());
         governanceContainer = isClusterMode(testParam.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
         StorageContainer storageContainer = containers.registerContainer(
-                new DockerStorageContainer("", DatabaseTypedSPILoader.getService(StorageContainerConfigurationOption.class, testParam.getDatabaseType()), testParam.getScenario()));
+                new DockerStorageContainer("", DatabaseTypedSPILoader.getService(StorageContainerOption.class, testParam.getDatabaseType()), testParam.getScenario()));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(), new LinkedList<>(),
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");

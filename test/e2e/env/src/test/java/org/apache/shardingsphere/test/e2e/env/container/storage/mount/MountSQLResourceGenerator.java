@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.env.container.storage.mount;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConfigurationOption;
+import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioDataPath.Type;
 
@@ -44,7 +44,7 @@ public final class MountSQLResourceGenerator {
     
     private static final String TO_BE_MOUNTED_EXPECTED_SCENARIO_SQL_FILE = "60-scenario-expected-init.sql";
     
-    private final StorageContainerConfigurationOption option;
+    private final StorageContainerOption option;
     
     /**
      * Generate mount SQL resource map.
