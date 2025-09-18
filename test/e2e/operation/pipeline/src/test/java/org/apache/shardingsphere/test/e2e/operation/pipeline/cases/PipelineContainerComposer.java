@@ -51,8 +51,8 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvi
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.enums.PipelineProxyTypeEnum;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineDockerContainerComposer;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineNativeContainerComposer;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.docker.PipelineDockerContainerComposer;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.PipelineNativeContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.awaitility.Awaitility;
 
