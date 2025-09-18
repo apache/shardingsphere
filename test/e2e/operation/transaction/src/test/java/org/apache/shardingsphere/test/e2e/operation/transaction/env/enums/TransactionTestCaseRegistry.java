@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.operation.transaction.env.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.e2e.operation.transaction.engine.database.mysql.MySQLJdbcTransactionE2ETT;
