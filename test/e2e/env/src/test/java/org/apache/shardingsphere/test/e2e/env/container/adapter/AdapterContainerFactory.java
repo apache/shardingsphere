@@ -21,13 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereMultiProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyStandaloneContainer;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.runtime.cluster.ClusterEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.scenario.path.ScenarioCommonPath;
@@ -55,12 +55,7 @@ public final class AdapterContainerFactory {
                                                final AdaptorContainerConfiguration containerConfig, final StorageContainer storageContainer, final String envType) {
         switch (adapter) {
             case PROXY:
-                if (ClusterEnvironment.Type.NATIVE.name().equalsIgnoreCase(envType)) {
-                    return new ShardingSphereProxyEmbeddedContainer(databaseType, containerConfig);
-                }
-                return AdapterMode.CLUSTER == mode
-                        ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
-                        : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
+                return newProxyInstance(mode, databaseType, containerConfig, envType);
             case PROXY_RANDOM:
                 return new ShardingSphereMultiProxyClusterContainer(databaseType, containerConfig);
             case JDBC:
@@ -68,5 +63,12 @@ public final class AdapterContainerFactory {
             default:
                 throw new RuntimeException(String.format("Unknown adapter `%s`.", adapter));
         }
+    }
+    
+    private static AdapterContainer newProxyInstance(final AdapterMode mode, final DatabaseType databaseType, final AdaptorContainerConfiguration containerConfig, final String envType) {
+        if (ClusterEnvironment.Type.NATIVE.name().equalsIgnoreCase(envType)) {
+            return new ShardingSphereProxyEmbeddedContainer(databaseType, containerConfig);
+        }
+        return AdapterMode.CLUSTER == mode ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig) : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
     }
 }
