@@ -78,7 +78,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
         if (null == dataSource) {
             DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
-                    dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
+                    dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();
     }
