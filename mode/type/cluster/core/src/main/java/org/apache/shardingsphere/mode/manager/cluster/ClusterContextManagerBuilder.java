@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriber;
 import org.apache.shardingsphere.mode.deliver.DeliverEventSubscriberRegistry;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
@@ -58,8 +59,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(new ComputeNodeInstance(param.getInstanceMetaData(), param.getLabels()), modeConfig, eventBusContext);
         ClusterPersistRepository repository = getClusterPersistRepository(config, computeNodeInstanceContext);
         computeNodeInstanceContext.init(new ClusterWorkerIdGenerator(repository, param.getInstanceMetaData().getId()));
+        ExclusiveOperatorEngine exclusiveOperatorEngine = new ExclusiveOperatorEngine(new ClusterExclusiveOperatorContext(repository));
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, new ClusterExclusiveOperatorContext(repository));
+        ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, exclusiveOperatorEngine);
         registerOnline(computeNodeInstanceContext, param, result);
         new DeliverEventSubscriberRegistry(result.getComputeNodeInstanceContext().getEventBusContext()).register(createDeliverEventSubscribers(repository));
         return result;

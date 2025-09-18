@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
@@ -47,8 +48,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         computeNodeInstanceContext.init(new StandaloneWorkerIdGenerator());
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
+        ExclusiveOperatorEngine exclusiveOperatorEngine = new ExclusiveOperatorEngine(new StandaloneExclusiveOperatorContext());
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
-        return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, new StandaloneExclusiveOperatorContext());
+        return new ContextManager(metaDataContexts, computeNodeInstanceContext, repository, exclusiveOperatorEngine);
     }
     
     @Override

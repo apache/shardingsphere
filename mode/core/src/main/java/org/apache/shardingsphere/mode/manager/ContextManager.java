@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -74,20 +73,17 @@ public final class ContextManager implements AutoCloseable {
     
     private final MetaDataContextManager metaDataContextManager;
     
-    private final ExclusiveOperatorContext exclusiveOperatorContext;
-    
     private final ExclusiveOperatorEngine exclusiveOperatorEngine;
     
     public ContextManager(final MetaDataContexts metaDataContexts, final ComputeNodeInstanceContext computeNodeInstanceContext,
-                          final PersistRepository repository, final ExclusiveOperatorContext exclusiveOperatorContext) {
+                          final PersistRepository repository, final ExclusiveOperatorEngine exclusiveOperatorEngine) {
         this.metaDataContexts = metaDataContexts;
         this.computeNodeInstanceContext = computeNodeInstanceContext;
-        this.exclusiveOperatorContext = exclusiveOperatorContext;
+        this.exclusiveOperatorEngine = exclusiveOperatorEngine;
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         metaDataContextManager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, repository);
         persistServiceFacade = new PersistServiceFacade(repository, computeNodeInstanceContext.getModeConfiguration(), metaDataContextManager);
         stateContext = new StateContext(persistServiceFacade.getStateService().load());
-        exclusiveOperatorEngine = new ExclusiveOperatorEngine(exclusiveOperatorContext);
         ContextManagerLifecycleListenerFactory.getListeners(this).forEach(each -> each.onInitialized(this));
     }
     
