@@ -40,6 +40,11 @@ public final class ZookeeperGovernanceContainerOption implements GovernanceConta
     }
     
     @Override
+    public String getAbbreviation() {
+        return "zk";
+    }
+    
+    @Override
     public Object getType() {
         return "ZooKeeper";
     }
