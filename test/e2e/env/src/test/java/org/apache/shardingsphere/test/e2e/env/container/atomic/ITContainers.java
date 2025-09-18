@@ -55,10 +55,6 @@ public final class ITContainers implements Startable {
     
     private volatile boolean started;
     
-    public ITContainers() {
-        scenario = null;
-    }
-    
     /**
      * Register container.
      *
