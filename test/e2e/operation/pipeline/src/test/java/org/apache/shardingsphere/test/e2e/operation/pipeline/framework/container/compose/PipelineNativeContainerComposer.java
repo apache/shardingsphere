@@ -21,11 +21,11 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.appender.JdbcUrlAppender;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.env.PipelineE2EEnvironment;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseTypeUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -127,8 +127,7 @@ public final class PipelineNativeContainerComposer extends PipelineBaseContainer
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        DatabaseType databaseType = "Oracle".equals(this.databaseType.getType()) ? TypedSPILoader.getService(DatabaseType.class, "MySQL") : this.databaseType;
-        return DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType).getURL("localhost", 3307, databaseName);
+        return DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, ProxyDatabaseTypeUtils.getProxyDatabaseType(databaseType)).getURL("localhost", 3307, databaseName);
     }
     
     @Override
