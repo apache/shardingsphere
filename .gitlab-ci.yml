@@ -5,7 +5,8 @@ variables:
   JDK_BUILD_IMAGE: registry.red-soft.biz:5000/jdk/temurin-11-jdk
   JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
   RELEASEHUB_CLIENT_IMAGE: registry.red-soft.biz:5000/utils/red-release-manager/client:master
-  M2_DIR: /root/.m2
+  GRAALVM_IMAGE: <> #TODO
+  GRAALVM_IMAVE_STATIC: <> #TODO
   M2_SETTINGSFILE: ${CI_PROJECT_DIR}/ci/settings.xml
   MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
 
@@ -15,12 +16,19 @@ stages:
   - test
   - deploy
 
+######
+# Templates
+######
+
+.build_docker:
+  tags: ["docker", "linux", "x86_64"]
+
 
 workflow:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
       when: always
-    - if: $CI_PIPELINE_SOURCE == "push"
+    #- if: $CI_PIPELINE_SOURCE == "push"
 
 prepare_build_env:
   tags: ["docker", "linux", "x86_64"]
@@ -36,6 +44,10 @@ prepare_build_env:
       dotenv: build.env
     paths:
       - ci/artifacts
+
+build:proxy-native:
+  extends: .build_docker
+
 
 build_java11:
   tags: ["docker", "linux", "x86_64"]
@@ -65,16 +77,14 @@ test_java8:
     - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
   allow_failure: true
 
-# relhub deploy example:
-# http://git.red-soft.biz/red-database/red-database/-/blob/master/.gitlab-ci.yml#L779
 
-# TODO: add release hub key (client pulls it from system envvars)
+# Auth key for release hub is pulled from group envvars
 deploy_to_release_hub:
   stage: deploy
   tags: ["docker", "x86_64", "linux"]
   image: $RELEASEHUB_CLIENT_IMAGE
   script:
-    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts #--ci-url ${CI_URL} --context ${BUILD_TYPE}
+    - relmanager_client deploy rshrd ${PROJECT_VERSION} --artifacts ci/artifacts #--ci-url ${CI_URL} #--context ${BUILD_TYPE}
   only:
     variables:
       - $RELEASE_HUB_KEY
