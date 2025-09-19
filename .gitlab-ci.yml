@@ -36,7 +36,6 @@ workflow:
     - prepare_build_env
   variables:
     DOCKERFILES: "distribution/proxy-native"
-    OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${PROJECT_VERSION}-${TYPE}
 
 
 
@@ -67,7 +66,7 @@ build:proxy-native-docker:
   extends: .build-proxy-native-template
   stage: build
   script:
-    - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} -t ${OUT_IMAGE}
+    - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} --build-arg PROJECT_VERSION=${PROJECT_VERSION} -t ${OUT_IMAGE}
     # TODO: push to registry
     - docker rmi ${OUT_IMAGE}
 
