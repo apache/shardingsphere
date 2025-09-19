@@ -36,6 +36,7 @@ workflow:
     - prepare_build_env
   variables:
     DOCKERFILES: "distribution/proxy-native"
+    OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${PROJECT_VERSION}-${TYPE}
 
 
 
