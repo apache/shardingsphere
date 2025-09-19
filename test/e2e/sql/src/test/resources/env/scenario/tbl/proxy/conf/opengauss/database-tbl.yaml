@@ -21,7 +21,7 @@ dataSources:
   tbl:
     url: jdbc:opengauss://opengauss.tbl.host:5432/tbl
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

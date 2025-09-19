@@ -111,7 +111,7 @@ mode:
       provider: H2
       jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
       username: test
-      password: Test@123
+      password: Test@9876
 ```
 
 - Cluster mode.
