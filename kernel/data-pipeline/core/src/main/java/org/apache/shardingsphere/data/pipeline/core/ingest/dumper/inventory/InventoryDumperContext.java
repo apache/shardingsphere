@@ -23,10 +23,12 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Inventory dumper context.
@@ -43,6 +45,8 @@ public final class InventoryDumperContext {
     private String logicTableName;
     
     private List<PipelineColumnMetaData> uniqueKeyColumns;
+    
+    private List<ShardingSphereIdentifier> targetUniqueKeysNames;
     
     private List<String> insertColumnNames;
     
@@ -63,6 +67,18 @@ public final class InventoryDumperContext {
     public InventoryDumperContext(final DumperCommonContext commonContext) {
         this.commonContext = new DumperCommonContext(
                 commonContext.getDataSourceName(), commonContext.getDataSourceConfig(), commonContext.getTableNameMapper(), commonContext.getTableAndSchemaNameMapper());
+    }
+    
+    /**
+     * Set unique key columns.
+     *
+     * @param uniqueKeyColumns unique key columns
+     */
+    public void setUniqueKeyColumns(final List<PipelineColumnMetaData> uniqueKeyColumns) {
+        this.uniqueKeyColumns = uniqueKeyColumns;
+        targetUniqueKeysNames = hasUniqueKey()
+                ? uniqueKeyColumns.stream().map(each -> new ShardingSphereIdentifier(each.getName())).collect(Collectors.toList())
+                : Collections.emptyList();
     }
     
     /**
