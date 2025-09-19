@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
@@ -66,10 +65,8 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
                 getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage(),
                 "");
         String envType = ShowProcessListEnvironment.getInstance().getItEnvType().name();
-        jdbcContainer = AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(),
-                containerConfig, storageContainer, envType);
-        proxyContainer = AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(),
-                containerConfig, storageContainer, envType);
+        jdbcContainer = AdapterContainerFactory.newInstance(AdapterType.JDBC, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
+        proxyContainer = AdapterContainerFactory.newInstance(AdapterType.PROXY, testParam.getDatabaseType(), testParam.getScenario(), containerConfig, storageContainer, envType);
         if (proxyContainer instanceof DockerITContainer) {
             if (isClusterMode(testParam.getRunMode())) {
                 ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);

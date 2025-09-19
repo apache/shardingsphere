@@ -39,6 +39,4 @@ public final class ProxyContainerConstants {
     public static final String PROXY_CONTAINER_NAME_PREFIX = "ShardingSphere-Proxy";
     
     public static final String PROXY_CONTAINER_IMAGE = "apache/shardingsphere-proxy-test";
-    
-    public static final String PROXY_CONTAINER_ABBREVIATION = "proxy";
 }

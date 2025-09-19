@@ -56,7 +56,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         }
         synchronized (containerComposers) {
             if (!containerComposers.containsKey(key)) {
-                containerComposers.put(key, createContainerComposer(isClusterMode(adapterMode, adapterType), scenario, databaseType, adapterMode, adapterType));
+                containerComposers.put(key, createContainerComposer(isClusterMode(adapterMode, adapterType), scenario, databaseType, adapterType));
             }
             return containerComposers.get(key);
         }
@@ -66,8 +66,8 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         return AdapterMode.CLUSTER == adapterMode && AdapterType.PROXY == adapterType;
     }
     
-    private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterMode adapterMode, final AdapterType adapterType) {
-        return clusterMode ? new ClusterContainerComposer(scenario, databaseType, adapterMode, adapterType) : new StandaloneContainerComposer(scenario, databaseType, adapterMode, adapterType);
+    private ContainerComposer createContainerComposer(final boolean clusterMode, final String scenario, final DatabaseType databaseType, final AdapterType adapterType) {
+        return clusterMode ? new ClusterContainerComposer(scenario, databaseType, adapterType) : new StandaloneContainerComposer(scenario, databaseType, adapterType);
     }
     
     @Override
