@@ -21,7 +21,7 @@ dataSources:
   passthrough:
     url: jdbc:opengauss://opengauss.passthrough.host:5432/passthrough?stringtype=unspecified
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

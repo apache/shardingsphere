@@ -22,7 +22,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.shadow.host:5432/db?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -32,7 +32,7 @@ dataSources:
     url: jdbc:postgresql://postgresql.shadow.host:5432/shadow_db?ssl=on&sslmode=prefer
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

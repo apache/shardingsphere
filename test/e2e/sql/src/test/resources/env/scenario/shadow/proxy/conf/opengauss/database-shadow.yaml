@@ -21,7 +21,7 @@ dataSources:
   db:
     url: jdbc:opengauss://opengauss.shadow.host:5432/db
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -30,7 +30,7 @@ dataSources:
   shadow_db:
     url: jdbc:opengauss://opengauss.shadow.host:5432/shadow_db
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
