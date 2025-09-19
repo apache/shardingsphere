@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorCo
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereMultiProxyClusterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereMultiProxiesClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyStandaloneContainer;
@@ -57,7 +57,7 @@ public final class AdapterContainerFactory {
             case PROXY:
                 return newProxyInstance(mode, databaseType, containerConfig, envType);
             case PROXY_RANDOM:
-                return new ShardingSphereMultiProxyClusterContainer(databaseType, containerConfig);
+                return new ShardingSphereMultiProxiesClusterContainer(databaseType, containerConfig);
             case JDBC:
                 return new ShardingSphereJdbcEmbeddedContainer(storageContainer, new ScenarioCommonPath(scenario).getRuleConfigurationFile(databaseType));
             default:

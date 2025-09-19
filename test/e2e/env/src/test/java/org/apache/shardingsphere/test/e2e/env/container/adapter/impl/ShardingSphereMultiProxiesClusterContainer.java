@@ -39,15 +39,15 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere proxy container for cluster mode.
+ * ShardingSphere multi-proxies cluster container.
  */
-public final class ShardingSphereMultiProxyClusterContainer implements AdapterContainer, ComboITContainer {
+public final class ShardingSphereMultiProxiesClusterContainer implements AdapterContainer, ComboITContainer {
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
     private final Collection<ShardingSphereProxyClusterContainer> proxyClusterContainers = new LinkedList<>();
     
-    public ShardingSphereMultiProxyClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
+    public ShardingSphereMultiProxiesClusterContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         ShardingSphereProxyClusterContainer proxy1 = new ShardingSphereProxyClusterContainer(databaseType, config);
         proxy1.setAbbreviation("proxy1");
         proxy1.setName("proxy1");
