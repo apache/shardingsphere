@@ -52,8 +52,8 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     protected void configure() {
         withExposedPorts(3307, 3308);
         mapResources(config.getMountedResources());
-        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
-                DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType).getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), "proxy", "Proxy@123")));
+        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType)
+                .getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)));
     }
     
     @Override
@@ -62,7 +62,7 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
         if (null == dataSource) {
             DataSourceEnvironment dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(
-                    dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD, 2));
+                    dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD, 2));
         }
         return targetDataSourceProvider.get();
     }

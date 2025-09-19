@@ -131,7 +131,7 @@ public final class TransactionE2EEnvironment {
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
         return itEnvType == TransactionE2EEnvTypeEnum.NATIVE
-                ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USERNAME))
+                ? String.valueOf(props.getOrDefault(String.format("transaction.it.native.%s.username", databaseType.getType().toLowerCase()), ProxyContainerConstants.USER))
                 : StorageContainerConstants.OPERATION_USER;
     }
     
