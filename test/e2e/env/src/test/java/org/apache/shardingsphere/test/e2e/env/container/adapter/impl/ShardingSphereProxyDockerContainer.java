@@ -17,24 +17,27 @@
 
 package org.apache.shardingsphere.test.e2e.env.container.adapter.impl;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
+import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.datasource.DataSourceEnvironment;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ShardingSphere proxy container for standalone mode.
+ * ShardingSphere proxy docker container.
  */
-public final class ShardingSphereProxyStandaloneContainer extends DockerITContainer implements AdapterContainer {
+public final class ShardingSphereProxyDockerContainer extends DockerITContainer implements AdapterContainer {
     
     private final AdaptorContainerConfiguration config;
     
@@ -42,7 +45,7 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyStandaloneContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
+    public ShardingSphereProxyDockerContainer(final DatabaseType databaseType, final AdaptorContainerConfiguration config) {
         super(ProxyContainerConstants.PROXY_CONTAINER_NAME_PREFIX, config.getAdapterContainerImage());
         this.config = config;
         dataSourceEnvironment = DatabaseTypedSPILoader.getService(DataSourceEnvironment.class, databaseType);
@@ -50,10 +53,18 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     
     @Override
     protected void configure() {
-        withExposedPorts(3307, 3308);
+        if (!Strings.isNullOrEmpty(config.getContainerCommand())) {
+            setCommand(config.getContainerCommand());
+        }
+        withExposedPorts(3307, 33071, 3308);
+        if (!config.getPortBindings().isEmpty()) {
+            setPortBindings(config.getPortBindings());
+        }
+        addEnv("TZ", "UTC");
         mapResources(config.getMountedResources());
         setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(
                 dataSourceEnvironment.getURL(getHost(), getMappedPort(3307), config.getProxyDataSourceName()), ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD)));
+        withStartupTimeout(Duration.of(120L, ChronoUnit.SECONDS));
     }
     
     @Override
@@ -68,6 +79,6 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     
     @Override
     public String getAbbreviation() {
-        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
+        return "proxy";
     }
 }

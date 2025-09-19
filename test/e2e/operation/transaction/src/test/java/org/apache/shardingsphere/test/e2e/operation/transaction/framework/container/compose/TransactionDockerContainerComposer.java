@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterMode;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereJdbcEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
@@ -72,8 +71,7 @@ public final class TransactionDockerContainerComposer extends TransactionBaseCon
         if (AdapterType.PROXY.getValue().equalsIgnoreCase(testParam.getAdapter())) {
             jdbcContainer = null;
             AdaptorContainerConfiguration containerConfig = TransactionProxyContainerConfigurationFactory.newInstance(testParam.getScenario(), databaseType, testParam.getPortBindings());
-            proxyContainer =
-                    AdapterContainerFactory.newInstance(AdapterMode.CLUSTER, AdapterType.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, envType.name());
+            proxyContainer = AdapterContainerFactory.newInstance(AdapterType.PROXY, databaseType, testParam.getScenario(), containerConfig, storageContainer, envType.name());
             if (proxyContainer instanceof DockerITContainer) {
                 ((DockerITContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
             }

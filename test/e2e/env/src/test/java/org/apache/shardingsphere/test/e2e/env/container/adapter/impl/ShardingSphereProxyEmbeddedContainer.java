@@ -99,7 +99,7 @@ public final class ShardingSphereProxyEmbeddedContainer implements AdapterContai
     
     @Override
     public String getAbbreviation() {
-        return ProxyContainerConstants.PROXY_CONTAINER_ABBREVIATION;
+        return "proxy";
     }
     
     @Override

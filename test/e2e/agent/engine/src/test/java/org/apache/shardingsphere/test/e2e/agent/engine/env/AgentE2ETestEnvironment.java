@@ -35,7 +35,7 @@ import org.apache.shardingsphere.test.e2e.env.container.DockerITContainer;
 import org.apache.shardingsphere.test.e2e.env.container.ITContainers;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.enums.AdapterType;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
@@ -115,7 +115,7 @@ public final class AgentE2ETestEnvironment {
     
     private void createProxyEnvironment(final DockerITContainer agentPluginContainer) {
         containers = new ITContainers(null);
-        ShardingSphereProxyClusterContainer proxyContainer = new ShardingSphereProxyClusterContainer(databaseType, getAdaptorContainerConfiguration());
+        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, getAdaptorContainerConfiguration());
         proxyContainer.withLogConsumer(testConfig.isLogEnabled() ? this::collectLogs : null);
         StorageContainer storageContainer = new DockerStorageContainer(imageConfig.getMysqlImage(), DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType), null);
         proxyContainer.dependsOn(storageContainer);

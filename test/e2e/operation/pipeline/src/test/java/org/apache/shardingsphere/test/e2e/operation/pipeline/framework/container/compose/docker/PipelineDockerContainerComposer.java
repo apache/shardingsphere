@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.e2e.env.container.governance.option.GovernanceContainerOption;
@@ -48,7 +48,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
     
     private final DatabaseType databaseType;
     
-    private ShardingSphereProxyClusterContainer proxyContainer;
+    private ShardingSphereProxyDockerContainer proxyContainer;
     
     @Getter
     private final List<DockerStorageContainer> storageContainers = new LinkedList<>();
@@ -72,7 +72,7 @@ public final class PipelineDockerContainerComposer extends PipelineBaseContainer
             }
             getContainers().registerContainer(proxyContainer);
         } else {
-            ShardingSphereProxyClusterContainer proxyClusterContainer = new ShardingSphereProxyClusterContainer(proxyDatabaseType, containerConfig);
+            ShardingSphereProxyDockerContainer proxyClusterContainer = new ShardingSphereProxyDockerContainer(proxyDatabaseType, containerConfig);
             for (DockerStorageContainer each : storageContainers) {
                 proxyClusterContainer.dependsOn(governanceContainer, each);
             }
